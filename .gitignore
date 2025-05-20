@@ -1,0 +1,16 @@
+# Flutter build and tool directories
+build/
+.dart_tool/
+
+# Flutter plugin files
+.flutter-plugins
+.flutter-plugins-dependencies
+
+# Editor files
+*.iml
+
+# macOS and Windows Finder metadata
+.DS_Store
+
+# Build cache file
+build/cache.dill.track.dill

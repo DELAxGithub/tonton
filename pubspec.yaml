@@ -50,6 +50,7 @@ dev_dependencies:
   mockito: ^5.4.4        # Added for mocking in tests
   integration_test:      # Added for integration testing
     sdk: flutter
+  dashbook: any
 
 flutter:
   uses-material-design: true

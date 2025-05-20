@@ -1,0 +1,23 @@
+name: dashbook-capture
+
+on:
+  pull_request:
+    paths:
+      - 'lib/**'
+      - '.github/workflows/dashbook.yml'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.22.0'
+      - name: Pub get
+        run: flutter pub get
+      - name: Dashbook headless screenshot
+        run: |
+          flutter run -d web-server lib/dashbook.dart --release --dart-define=HEADLESS=true &
+          sleep 60
+          # TODO: add script to capture PNG via puppeteer or similar

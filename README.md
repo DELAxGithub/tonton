@@ -22,3 +22,11 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.\nSee [docs/ICON_FONT.md](docs/ICON_FONT.md) for instructions on generating the custom icon font.
+
+### UI Catalog (Dashbook)
+
+```bash
+flutter run -d chrome lib/dashbook.dart
+```
+
+ブラウザが自動起動し、Theme / Icons / Atoms を確認できます。

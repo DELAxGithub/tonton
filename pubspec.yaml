@@ -58,6 +58,7 @@ flutter:
     - lib/l10n/ # For localization
     - assets/images/ # Assuming you have images here
     - assets/icons/svg/ # For your SVG icons
+    - assets/fonts/ # Generated icon font
     # If your font files are in assets/fonts/, you don't strictly need 'assets/fonts/' here
     # AS LONG AS they are declared under the 'fonts:' section below.
     # However, some people like to declare the top-level folder here too for clarity.
@@ -83,7 +84,6 @@ flutter:
           weight: 800
         - asset: assets/fonts/NotoSansJP-Black.ttf
           weight: 900
-    # You might add other font families here later, e.g., your custom TontonIcon font
-    # - family: TontonIcons
-    #   fonts:
-    #     - asset: assets/fonts/TontonIcons.ttf
+    - family: TontonIcons
+      fonts:
+        - asset: assets/fonts/TontonIcons.ttf

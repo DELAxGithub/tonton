@@ -1,0 +1,118 @@
+# Flow: Step 1 -> Step 2 -> Step 3
+
+# --- Step 1: 写真撮影画面 ---
+screen_name: "AIMealLogging_Step1_Camera"
+description: "食事の写真を撮影する画面。シンプルで分かりやすい操作性。"
+elements:
+  - element_type: "CameraViewfinder"
+    description: "全画面表示のカメラプレビュー。"
+    overlay_elements: # カメラプレビュー上に表示される要素
+      - type: "CloseButton"
+        position: "TopLeft"
+        action: "DismissAIMealLoggingFlow"
+      - type: "FlashToggleButton"
+        position: "TopRight"
+      - type: "GridToggleButton" # グリッド表示ON/OFF (任意)
+        position: "TopRight"
+      - type: "ShutterButton"
+        description: "大きく押しやすい撮影ボタン。豚の鼻モチーフなど遊び心も？"
+        position: "BottomCenter"
+        action: "CapturePhotoAndProceedToStep2"
+      - type: "GalleryAccessButton"
+        description: "端末のギャラリーから写真を選択するボタン"
+        position: "BottomLeft"
+        action: "OpenPhotoGalleryAndProceedToStep2"
+  - element_type: "InstructionText"
+    content: "お皿全体が写るように撮影してね！"
+    position: "AboveShutterButton"
+    style: "FriendlyInstructionText"
+
+# --- Step 2: AI解析中画面 ---
+screen_name: "AIMealLogging_Step2_Analyzing"
+description: "撮影した写真をAIが解析している間の待機画面。ユーザーを飽きさせない工夫。"
+elements:
+  - element_type: "AnimatedVisual"
+    description: >
+      可愛いローディングアニメーション。
+      例: 豚シェフが料理を分析している、食べ物のイラストがスキャンされてキラキラする、
+      カロリーや栄養素のアイコンが飛び交うなど。
+    style: "FullWidthThemedAnimation"
+  - element_type: "ProgressIndicatorWithMessage"
+    message_template: "おいしさを解析中... {progress_percent}%" # または "写真から魔法をかけてるよ！"
+    style: "FriendlyProgressText"
+  - element_type: "CancelButton" # (任意) 解析に時間がかかりすぎる場合のキャンセル
+    text: "キャンセル"
+    action: "ReturnToStep1"
+    position: "BottomCenter"
+
+# --- Step 3: AI解析結果確認・編集画面 ---
+screen_name: "AIMealLogging_Step3_ConfirmEdit"
+description: "AIによる解析結果を表示し、ユーザーが確認・修正して記録を完了する画面。"
+elements:
+  - element_type: "Header"
+    title: "これで合ってる？"
+    left_action_icon: "BackArrowIcon"
+    left_action: "ReturnToStep1_RetakePhoto" # 再撮影オプション
+    # right_action_text: "手動で入力" # 手入力への切り替え (もし残すなら)
+    # right_action: "NavigateToManualMealInputScreen"
+
+  - element_type: "CapturedImagePreview"
+    image_source: "{captured_meal_photo}"
+    size: "MediumThumbnail" # 上部に小さく表示
+    action_overlay: # 画像上に再撮影ボタンなど (任意)
+      - type: "IconButton"
+        icon: "RetakeCameraIcon"
+        action: "ReturnToStep1_RetakePhoto"
+
+  - element_type: "EstimatedMealInfoSection"
+    title: "AIが解析した食事内容"
+    sub_elements:
+      - type: "EditableTextField"
+        label: "料理名"
+        initial_value: "{ai_suggested_meal_name}" # 例: AIが提案した料理名候補 (複数あれば選択式)
+        helper_text: "タップして編集できるよ"
+      - type: "NutritionValueRow" # カロリー
+        label: "カロリー"
+        value: "{ai_estimated_calories}"
+        unit: "kcal"
+        editable: true
+        edit_action: "ShowCalorieEditorModal" # Stepper, Slider, TextFieldなどで編集
+      - type: "PFCGroupDisplayEditable" # タンパク質・脂質・炭水化物
+        protein_value: "{ai_estimated_protein}"
+        fat_value: "{ai_estimated_fat}"
+        carb_value: "{ai_estimated_carbs}"
+        unit: "g"
+        editable: true
+        edit_action: "ShowPFCEditorModal"
+      - type: "QuickEditPrompt" # Lose It!参考
+        prompt_text: "量はこれでOK？ (例: 半分くらい食べた、など)"
+        action_buttons:
+          - text: "半分"
+            value_multiplier: 0.5
+          - text: "普通"
+            value_multiplier: 1.0
+          - text: "多め"
+            value_multiplier: 1.5
+          - text: "詳細編集" # 上記の編集モーダルを開く
+            action: "ShowPFCEditorModal"
+  
+  - element_type: "MealTimeSelector" # 食事のタイミング選択
+    label: "いつの食事？"
+    options: ["朝食", "昼食", "夕食", "間食"]
+    selected_value: "{default_or_user_selected_meal_time}"
+    style: "SegmentedControlThemed"
+
+  - element_type: "MemoField" # (任意) 食事に関するメモ
+    label: "メモ (任意)"
+    placeholder: "例: とても美味しかった！友達と半分こした。"
+
+  - element_type: "PrimaryActionButton"
+    text: "この内容で記録する！"
+    icon_leading: "CheckmarkPigIcon" # 豚の確認アイコン
+    action: "SaveMealRecordAndShowConfirmation"
+    style: "LargeThemedButton"
+
+  - element_type: "SecondaryButton"
+    text: "もう一度AI解析"
+    action: "TriggerReAnalysisWithSameImage" # (もし可能なら)
+    style: "OutlineButton"

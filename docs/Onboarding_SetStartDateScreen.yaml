@@ -1,0 +1,32 @@
+# Flow: Screen 1 -> Screen 2 -> Screen 3 ... -> HomeScreen
+
+# --- オンボーディングの一画面例: 開始日設定 ---
+screen_name: "Onboarding_SetStartDateScreen"
+description: "「最初の食事入力日」を開始日とするか、特定の日付を開始日とするかを選択させる画面。"
+elements:
+  - element_type: "IllustrationHeader"
+    image: "CutePigLookingAtCalendarIllustration" # カレンダーを見る豚のイラスト
+    title: "いつから始める？"
+    subtitle: "「トントン」の記録開始日を決めよう！"
+
+  - element_type: "OptionSelectorCard"
+    options:
+      - option_id: "first_meal_date"
+        title: "はじめて食事を記録した日"
+        description: "最初の食事記録をスタート日にします。\n（これがおすすめ！貯金の感覚が掴みやすいよ）"
+        icon: "RecommendedPigIcon"
+        is_default: true
+      - option_id: "specific_date"
+        title: "特定の日付を選ぶ"
+        description: "カレンダーから開始日を選びます。"
+        icon: "CalendarIcon"
+    action: "SaveStartDatePreference"
+
+  - element_type: "DatePicker" # option_id 'specific_date' 選択時に表示
+    visibility_condition: "selected_option_id == 'specific_date'"
+    # ... (カレンダー設定)
+
+  - element_type: "PrimaryActionButton"
+    text: "これでOK！"
+    action: "ProceedToNextOnboardingStepOrFinish"
+    style: "LargeThemedButton"

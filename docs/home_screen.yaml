@@ -1,0 +1,110 @@
+screen_name: "HomeScreen"
+description: "ユーザーがアプリを開いた時に最初に表示される画面。今日の状況と総貯金額、主要アクションへの導線。"
+style_guide_ref: "ChatGPT Image May 19, 2025, 01_01_46 PM.jpg" # このスタイルを基本とする
+
+elements:
+  - element_type: "Header"
+    content_left: "あいさつ (例: おはよう、[ユーザー名]さん！)"
+    content_right:
+      - type: "Icon"
+        icon_name: "SettingsPiggyIcon" # 豚の顔をした設定アイコン
+        action: "NavigateToSettingsScreen"
+
+  - element_type: "MainHeroSection"
+    purpose: "総カロリー貯金と豚の貯金箱"
+    layout: "Centered"
+    sub_elements:
+      - type: "AnimatedPiggyBankGraphic"
+        description: >
+          可愛い豚の貯金箱のイラスト。
+          総貯金額に応じて見た目が少しリッチになったり、
+          今日のカロリー貯金が発生した際に「カロリーコイン」がチャリンと入るアニメーション。
+        feedback_animation: "CoinDepositEffect" # 例: 今日の貯金がプラスになった時
+      - type: "LargeTextDisplay"
+        label: "わたしのトントン貯金"
+        value_template: "+{total_savings} kcal" # 例: +3,500 kcal
+        style: "PrimaryValueText"
+      - type: "SmallButton"
+        text: "貯金をつかう"
+        icon: "GiftIcon" # プレゼントアイコン
+        action: "NavigateToUseSavingsScreen" # またはモーダル表示
+        style: "SubtleButton"
+
+  - element_type: "DailySummaryGrid"
+    title: "今日のバランス"
+    layout: "Horizontal, 2 or 3 items" # Foodvisorのようなリング表示を意識
+    sub_elements:
+      - type: "ProgressRingCard"
+        label: "食べたキロカロリー"
+        value_current: "{eaten_calories}"
+        value_target: "/ {target_calories} kcal"
+        progress_percent: "{eaten_progress_percent}"
+        icon: "DiningForkKnifeIcon" # 食器アイコン
+        color_scheme: "IntakeColors"
+      - type: "ProgressRingCard" # またはシンプルな数値表示
+        label: "活動したキロカロリー"
+        value_current: "{burned_calories} kcal"
+        icon: "RunningShoeIcon" # 運動アイコン
+        color_scheme: "BurnedColors"
+      - type: "HighlightMetricCard"
+        label: "今日の貯金"
+        value_template: "{daily_savings_sign}{daily_savings_value} kcal" # 例: +250 kcal or -100 kcal
+        icon: "DailyPiggyCoinIcon" # 今日の貯金額を示すアイコン
+        style: "EmphasizePositiveOrNegative" # プラスなら緑、マイナスなら赤など
+
+  - element_type: "PFCBalanceDisplay" # Foodvisor参考
+    title: "今日の栄養バランス (PFC)"
+    layout: "HorizontalCompactBarCharts" # または小さな円グラフ3つ
+    sub_elements:
+      - type: "NutrientBar"
+        nutrient_name: "タンパク質"
+        current_value: "{protein_grams}"
+        target_value: "{target_protein_grams} g"
+        color: "ProteinColor"
+      - type: "NutrientBar"
+        nutrient_name: "脂質"
+        current_value: "{fat_grams}"
+        target_value: "{target_fat_grams} g"
+        color: "FatColor"
+      - type: "NutrientBar"
+        nutrient_name: "炭水化物"
+        current_value: "{carbs_grams}"
+        target_value: "{target_carbs_grams} g"
+        color: "CarbsColor"
+
+  - element_type: "PrimaryActionButton"
+    text: "📷 写真でパシャ！食事をきろく"
+    icon_leading: "CameraFancyIcon" # テーマに合ったカメラアイコン
+    action: "NavigateToAIMealLogging_Step1_Camera"
+    style: "LargeThemedButton" # アプリのメインカラーを使った目立つボタン
+
+  - element_type: "QuickAccessRow" # または小さなカード群
+    layout: "Horizontal, space-around"
+    sub_elements:
+      - type: "NavigationIconLink"
+        icon: "SavingsGraphPigIcon" # 貯金推移グラフアイコン (豚モチーフ入り)
+        label: "貯金ダイアリー"
+        action: "NavigateToSavingsTrendScreen"
+      - type: "NavigationIconLink"
+        icon: "WeightScalePigIcon" # 体重記録アイコン (豚モチーフ入り)
+        label: "体重ジャーニー"
+        action: "NavigateToWeightTrendScreen"
+      - type: "NavigationIconLink"
+        icon: "AICoachPigIcon" # AIコーチアイコン (豚モチーフ入り)
+        label: "トントンコーチ"
+        action: "NavigateToAICoachScreen"
+
+  - element_type: "BottomNavigationBar" # Foodvisorのように中央にカメラボタンを置くのも良い
+    style: "ThemedBottomNav"
+    tabs:
+      - icon: "HomePigIcon"
+        label: "ホーム"
+        is_active: true
+      - icon: "CameraActionIcon" # 中央に配置し、他より目立たせるスタイル (Foodvisor参考)
+        label: "記録する" # タップでAI画像記録フローへ
+        action: "NavigateToAIMealLogging_Step1_Camera" # PrimaryActionButtonと同じ
+        style: "CenterProminentButton"
+      - icon: "ChartBarPigIcon"
+        label: "グラフ" # 貯金と体重のグラフをまとめたページなど
+      # - icon: "SettingsPiggyIcon" # ヘッダーにあるので、ここは別の機能でも良い (例: コミュニティ、レシピなど将来的なもの)
+      #   label: "設定"

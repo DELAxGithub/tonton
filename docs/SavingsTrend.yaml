@@ -1,0 +1,46 @@
+screen_name: "SavingsTrendScreen"
+description: "カロリー貯金の累計推移グラフ、月ごとのサマリー、貯金利用機能への導線。"
+elements:
+  - element_type: "Header"
+    title: "カロリー貯金ダイアリー🐖"
+    left_action_icon: "BackArrowIcon"
+    left_action: "NavigateBack"
+
+  - element_type: "TotalSavingsDisplayCard"
+    style: "ThemedCard"
+    sub_elements:
+      - type: "LargeText"
+        label: "現在の総貯金"
+        value: "+{total_savings_kcal} kcal"
+        style: "HighlightPrimaryValue"
+      - type: "SmallButton"
+        text: "貯金をつかってご褒美！"
+        icon: "GiftBoxIcon"
+        action: "NavigateToUseSavingsScreen" # 使う画面へ
+        style: "ThemedSubtleButton"
+
+  - element_type: "SavingsTrendChartSection"
+    title: "貯金の推移"
+    chart_type: "InteractiveLineChart" # または BarChart
+    data_points_template: "[{date: 'YYYY-MM-DD', savings_change: +300, total_savings: 1200}, ...]"
+    time_period_selector: ["1週間", "1ヶ月", "3ヶ月", "全期間"] # 期間切り替え
+    empty_state_message: "まだ貯金の記録がないみたい。今日からコツコツ貯めよう！"
+    chart_style: "FriendlyChartStyle" # ポップな色使い、ツールチップ表示など
+
+  - element_type: "MonthlySummaryList" # または月ごとの折りたたみセクション
+    title: "月ごとの貯金レポート"
+    items_template: # 各月をタップすると詳細表示
+      - month: "2025年5月"
+        total_saved_this_month: "+1500 kcal"
+        total_used_this_month: "-500 kcal"
+        net_change: "+1000 kcal"
+        action: "ViewMayDetails" # 月間詳細（日別リストなど）へ
+    style: "AccordionList"
+
+  - element_type: "SavingsTipsCarousel" # (任意) 貯金を増やすコツなど
+    title: "トントン貯金術♪"
+    items_template:
+      - tip_title: "間食をフルーツに！"
+        tip_details: "お菓子をフルーツに変えるだけで、1日約100kcal貯金できるかも？"
+        tip_icon: "AppleIcon"
+    style: "HorizontalScrollableCards"

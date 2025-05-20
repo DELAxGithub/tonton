@@ -87,3 +87,4 @@ flutter:
     - family: TontonIcons
       fonts:
         - asset: assets/fonts/TontonIcons.ttf
+          weight: 400

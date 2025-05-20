@@ -9,6 +9,35 @@ class TontonIcons {
   /// Check if the platform is iOS
   static final bool _isIOS = defaultTargetPlatform == TargetPlatform.iOS;
 
+  /// Font family name for custom icons
+  static const String _fontFamily = 'TontonIcons';
+
+  // Custom icon definitions from the generated font
+  static const IconData _iconArrow = IconData(0xe000, fontFamily: _fontFamily);
+  static const IconData _iconBicycle = IconData(0xe001, fontFamily: _fontFamily);
+  static const IconData _iconCamera = IconData(0xe002, fontFamily: _fontFamily);
+  static const IconData _iconCoin = IconData(0xe003, fontFamily: _fontFamily);
+  static const IconData _iconGraph = IconData(0xe004, fontFamily: _fontFamily);
+  static const IconData _iconPigface = IconData(0xe005, fontFamily: _fontFamily);
+  static const IconData _iconPiggybank = IconData(0xe006, fontFamily: _fontFamily);
+  static const IconData _iconPresent = IconData(0xe007, fontFamily: _fontFamily);
+  static const IconData _iconRestaurant = IconData(0xe008, fontFamily: _fontFamily);
+  static const IconData _iconScale = IconData(0xe009, fontFamily: _fontFamily);
+  static const IconData _iconWorkout = IconData(0xe00a, fontFamily: _fontFamily);
+
+  // Public accessors for custom icons
+  static IconData get arrow => _iconArrow;
+  static IconData get bicycle => _iconBicycle;
+  static IconData get camera => _iconCamera;
+  static IconData get coin => _iconCoin;
+  static IconData get graph => _iconGraph;
+  static IconData get pigface => _iconPigface;
+  static IconData get piggybank => _iconPiggybank;
+  static IconData get present => _iconPresent;
+  static IconData get restaurantIcon => _iconRestaurant;
+  static IconData get scale => _iconScale;
+  static IconData get workout => _iconWorkout;
+
   /// Returns an icon representing the [MealTimeType].
   static IconData mealTimeIcon(MealTimeType type) {
     switch (type) {
@@ -32,16 +61,16 @@ class TontonIcons {
       _isIOS ? CupertinoIcons.house : Icons.home;
   
   /// Icon for the activity tab
-  static IconData get activity => 
-      _isIOS ? CupertinoIcons.waveform_path : Icons.fitness_center;
+  static IconData get activity =>
+      _isIOS ? CupertinoIcons.waveform_path : _iconWorkout;
 
   /// Icon for the food/meal tab
-  static IconData get food => 
-      _isIOS ? CupertinoIcons.cart : Icons.restaurant;
+  static IconData get food =>
+      _isIOS ? CupertinoIcons.cart : _iconRestaurant;
   
   /// Icon for the analytics/insights tab
-  static IconData get insights => 
-      _isIOS ? CupertinoIcons.graph_square : Icons.insights;
+  static IconData get insights =>
+      _isIOS ? CupertinoIcons.graph_square : _iconGraph;
   
   /// Icon for the settings tab
   static IconData get settings => 
@@ -64,8 +93,8 @@ class TontonIcons {
       _isIOS ? CupertinoIcons.chart_bar : Icons.trending_up;
   
   /// Icon for weight
-  static IconData get weight => 
-      _isIOS ? CupertinoIcons.arrow_down_circle : Icons.monitor_weight;
+  static IconData get weight =>
+      _isIOS ? CupertinoIcons.arrow_down_circle : _iconScale;
   
   /// Icon for calendar
   static IconData get calendar => 

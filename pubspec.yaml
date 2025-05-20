@@ -53,29 +53,37 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-  generate: true
+  generate: true # For localization
   assets:
-    - lib/l10n/
-    - assets/fonts/ # Assuming you might still want to keep the font files in assets, even if not declared here. Or remove this line if font files are also deleted.
-  
-  # fonts:
-  #   - family: Noto Sans JP
-  #     fonts:
-  #       - asset: assets/fonts/NotoSansJP-Thin.ttf
-  #         weight: 100
-  #       - asset: assets/fonts/NotoSansJP-ExtraLight.ttf
-  #         weight: 200
-  #       - asset: assets/fonts/NotoSansJP-Light.ttf
-  #         weight: 300
-  #       - asset: assets/fonts/NotoSansJP-Regular.ttf
-  #         weight: 400
-  #       - asset: assets/fonts/NotoSansJP-Medium.ttf
-  #         weight: 500
-  #       - asset: assets/fonts/NotoSansJP-SemiBold.ttf
-  #         weight: 600
-  #       - asset: assets/fonts/NotoSansJP-Bold.ttf
-  #         weight: 700
-  #       - asset: assets/fonts/NotoSansJP-ExtraBold.ttf
-  #         weight: 800
-  #       - asset: assets/fonts/NotoSansJP-Black.ttf
-  #         weight: 900
+    - lib/l10n/ # For localization
+    - assets/images/ # Assuming you have images here
+    - assets/icons/svg/ # For your SVG icons
+    # If your font files are in assets/fonts/, you don't strictly need 'assets/fonts/' here
+    # AS LONG AS they are declared under the 'fonts:' section below.
+    # However, some people like to declare the top-level folder here too for clarity.
+
+  fonts:
+    - family: Noto Sans JP
+      fonts:
+        - asset: assets/fonts/NotoSansJP-Thin.ttf
+          weight: 100
+        - asset: assets/fonts/NotoSansJP-ExtraLight.ttf
+          weight: 200
+        - asset: assets/fonts/NotoSansJP-Light.ttf
+          weight: 300
+        - asset: assets/fonts/NotoSansJP-Regular.ttf
+          weight: 400 # Default weight if no weight is specified
+        - asset: assets/fonts/NotoSansJP-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/NotoSansJP-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/NotoSansJP-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/NotoSansJP-ExtraBold.ttf
+          weight: 800
+        - asset: assets/fonts/NotoSansJP-Black.ttf
+          weight: 900
+    # You might add other font families here later, e.g., your custom TontonIcon font
+    # - family: TontonIcons
+    #   fonts:
+    #     - asset: assets/fonts/TontonIcons.ttf

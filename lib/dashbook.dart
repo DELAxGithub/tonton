@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'design_system/atoms/tonton_icon.dart';
 import 'design_system/atoms/tonton_text.dart';
 import 'design_system/atoms/tonton_button.dart';
+import 'design_system/atoms/tonton_card_base.dart';
+import 'theme/tokens.dart';
 
 Dashbook createDashbook() {
   final dashbook = Dashbook();
@@ -55,6 +57,19 @@ Dashbook createDashbook() {
           break;
       }
       return Center(child: button);
+    })
+    ..add('TontonCardBase', (ctx) {
+      final elevation = ctx.listProperty<double>(
+        'elevation',
+        Elevation.level1,
+        const [Elevation.level0, Elevation.level1, Elevation.level2],
+      );
+      return Center(
+        child: TontonCardBase(
+          elevation: elevation,
+          child: const TontonText('カード'),
+        ),
+      );
     });
 
   return dashbook;

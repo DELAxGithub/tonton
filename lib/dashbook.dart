@@ -8,6 +8,8 @@ import 'design_system/atoms/tonton_card_base.dart';
 import 'design_system/molecules/daily_stat_ring.dart';
 import 'design_system/molecules/pfc_bar_display.dart';
 import 'design_system/molecules/navigation_link_card.dart';
+import 'design_system/organisms/hero_piggy_bank_display.dart';
+import 'design_system/organisms/daily_summary_section.dart';
 import 'theme/theme.dart';
 import 'utils/icon_mapper.dart';
 import 'theme/tokens.dart';
@@ -138,6 +140,21 @@ Dashbook createDashbook() {
               onTap: () {},
             ),
           ],
+        ));
+
+  // Organisms
+  dashbook.storiesOf('Organisms')
+    ..add('HeroPiggyBankDisplay', (_) => Center(
+          child: HeroPiggyBankDisplay(
+            totalSavings: 3500,
+            onUsePressed: () {},
+          ),
+        ))
+    ..add('DailySummarySection', (_) => DailySummarySection(
+          eatenCalories: 1200,
+          targetCalories: 2000,
+          burnedCalories: 500,
+          dailySavings: 250,
         ));
 
   return dashbook;

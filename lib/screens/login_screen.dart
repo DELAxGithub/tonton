@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../design_system/atoms/tonton_button.dart';
+import '../design_system/templates/standard_page_layout.dart';
 import '../routes/router.dart';
 import '../providers/auth_provider.dart';
 
@@ -65,15 +67,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> { // Changed to Consu
       appBar: AppBar(
         title: const Text('Login'),
       ),
-      body: Center(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24.0),
-          child: Form(
+      body: StandardPageLayout(
+        children: [
+          Form(
             key: _formKey,
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: <Widget>[
+              children: [
                 Text(
                   'Welcome back to Tonton!',
                   style: Theme.of(context).textTheme.headlineSmall,
@@ -117,15 +117,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> { // Changed to Consu
                 const SizedBox(height: 24.0),
                 _isLoading
                     ? const Center(child: CircularProgressIndicator())
-                    : ElevatedButton(
+                    : TontonButton.primary(
+                        label: 'Login',
                         onPressed: _login,
-                        style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 16.0),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8.0),
-                          ),
-                        ),
-                        child: const Text('Login'),
                       ),
                 const SizedBox(height: 16.0),
                 Row(

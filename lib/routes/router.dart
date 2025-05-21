@@ -10,7 +10,10 @@ import '../screens/login_screen.dart';
 import '../screens/signup_screen.dart';
 import '../screens/meal_input_screen_new.dart';
 import '../screens/savings_trend_screen.dart';
+import '../screens/use_savings_screen.dart';
 import '../screens/profile_screen.dart';
+import '../screens/onboarding_set_start_date_screen.dart';
+import '../screens/settings_screen.dart';
 import '../screens/progress_achievements_screen.dart';
 import '../screens/ai_meal_logging/ai_meal_logging_step1_camera.dart';
 import '../screens/ai_meal_logging/ai_meal_logging_step2_analyzing.dart';
@@ -32,7 +35,10 @@ class TontonRoutes {
   static const String addMeal = '/add-meal';
   static const String editMeal = '/edit-meal';
   static const String savingsTrend = '/savings-trend';
+  static const String useSavings = '/use-savings';
+  static const String onboardingStartDate = '/onboarding/start-date';
   static const String profile = '/profile';
+  static const String settings = '/settings';
   static const String progressAchievements = '/progress-achievements';
   static const String aiMealCamera = '/ai-meal/camera';
   static const String aiMealAnalyzing = '/ai-meal/analyzing';
@@ -82,6 +88,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: TontonRoutes.signup,
         name: 'signup',
         builder: (context, state) => const SignupScreen(),
+      ),
+      GoRoute(
+        path: TontonRoutes.onboardingStartDate,
+        name: 'onboardingStartDate',
+        builder: (context, state) => const OnboardingSetStartDateScreen(),
       ),
 
       // Shell route with bottom navigation
@@ -141,12 +152,22 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: 'savingsTrend',
         builder: (context, state) => const SavingsTrendScreen(),
       ),
+      GoRoute(
+        path: TontonRoutes.useSavings,
+        name: 'useSavings',
+        builder: (context, state) => const UseSavingsScreen(),
+      ),
 
       // Profile route
       GoRoute(
         path: TontonRoutes.profile,
         name: 'profile',
         builder: (context, state) => const ProfileScreen(),
+      ),
+      GoRoute(
+        path: TontonRoutes.settings,
+        name: 'settings',
+        builder: (context, state) => const SettingsScreen(),
       ),
 
       GoRoute(

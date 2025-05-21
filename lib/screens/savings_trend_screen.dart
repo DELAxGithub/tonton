@@ -5,6 +5,9 @@ import 'package:go_router/go_router.dart';
 import '../models/calorie_savings_record.dart';
 import '../providers/calorie_savings_provider.dart';
 import '../models/dummy_data_scenario.dart';
+import '../design_system/atoms/tonton_button.dart';
+import '../utils/icon_mapper.dart';
+import '../routes/router.dart';
 
 class SavingsTrendScreen extends ConsumerWidget {
   const SavingsTrendScreen({super.key});
@@ -92,6 +95,14 @@ class SavingsTrendScreen extends ConsumerWidget {
                 const SizedBox(width: 16),
                 const Text('今月', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
               ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: TontonButton.primary(
+              label: '貯金をつかってご褒美！',
+              leading: TontonIcons.present,
+              onPressed: () => context.push(TontonRoutes.useSavings),
             ),
           ),
           

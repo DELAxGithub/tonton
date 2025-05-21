@@ -166,7 +166,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> { // Changed to Con
               ],
             ),
           ),
-        ),
+        ],
       ),
     );
   }

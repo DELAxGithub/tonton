@@ -13,6 +13,7 @@ import '../providers/monthly_progress_provider.dart';
 import '../utils/date_formatter.dart';
 import '../utils/icon_mapper.dart';
 import '../routes/router.dart';
+import '../routes/app_page.dart';
 import '../theme/app_theme.dart';
 import '../widgets/meal_record_card.dart';
 import '../widgets/ai_advice_display_new.dart';
@@ -25,9 +26,7 @@ class HomeScreenNew extends ConsumerStatefulWidget {
   ConsumerState<HomeScreenNew> createState() => _HomeScreenNewState();
 }
 
-class _HomeScreenNewState extends ConsumerState<HomeScreenNew> {
-  // Current bottom navigation index
-  int _currentIndex = 0;
+class _HomeScreenNewState extends ConsumerState<HomeScreenNew> implements AppPage {
 
   @override
   void initState() {
@@ -43,6 +42,25 @@ class _HomeScreenNewState extends ConsumerState<HomeScreenNew> {
       }
     });
   }
+
+  @override
+  PreferredSizeWidget? buildAppBar(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return AppBar(
+      title: Text(l10n.appTitle),
+      actions: [
+        IconButton(
+          icon: Icon(TontonIcons.profile),
+          onPressed: () {
+            context.push(TontonRoutes.profile);
+          },
+        ),
+      ],
+    );
+  }
+
+  @override
+  Widget? buildFloatingActionButton(BuildContext context) => null;
   
   @override
   Widget build(BuildContext context) {
@@ -64,89 +82,20 @@ class _HomeScreenNewState extends ConsumerState<HomeScreenNew> {
     // Calculate calorie balance
     final calorieBalance = totalBurnedCalories - todayTotalCalories;
     
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.appTitle),
-        actions: [
-          IconButton(
-            icon: Icon(TontonIcons.profile),
-            onPressed: () {
-              context.push(TontonRoutes.profile);
-            },
-          ),
-        ],
+    return _buildHomeTab(
+      context: context,
+      todayMeals: todayMeals,
+      todayTotalCalories: todayTotalCalories,
+      activeCalories: activeCalories,
+      basalCalories: basalCalories,
+      totalBurnedCalories: totalBurnedCalories,
+      calorieBalance: calorieBalance,
+      monthlyProgress: monthlyProgressAsync.when(
+        data: (summary) => summary.completionPercentage,
+        loading: () => 0,
+        error: (_, __) => 0,
       ),
-      body: IndexedStack(
-        index: _currentIndex,
-        children: [
-          // Home tab
-          _buildHomeTab(
-            context: context,
-            todayMeals: todayMeals,
-            todayTotalCalories: todayTotalCalories,
-            activeCalories: activeCalories,
-            basalCalories: basalCalories,
-            totalBurnedCalories: totalBurnedCalories,
-            calorieBalance: calorieBalance,
-            monthlyProgress: monthlyProgressAsync.when(
-              data: (summary) => summary.completionPercentage,
-              loading: () => 0,
-              error: (_, __) => 0,
-            ),
-          ),
-          
-          // Activity tab - To be implemented
-          Center(child: Text(l10n.tabActivity)),
-          
-          // Meals tab - To be implemented
-          Center(child: Text(l10n.tabMeals)),
-          
-          // Insights tab - To be implemented
-          Center(child: Text(l10n.tabInsights)),
-        ],
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        type: BottomNavigationBarType.fixed,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-        items: [
-          BottomNavigationBarItem(
-            icon: Icon(TontonIcons.home),
-            label: l10n.tabHome,
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(TontonIcons.activity),
-            label: l10n.tabActivity,
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(TontonIcons.food),
-            label: l10n.tabMeals,
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(TontonIcons.insights),
-            label: l10n.tabInsights,
-          ),
-        ],
-      ),
-      floatingActionButton: _buildFloatingActionButton(),
     );
-  }
-  
-  Widget _buildFloatingActionButton() {
-    if (_currentIndex == 2) { // Meals tab
-      return FloatingActionButton(
-        onPressed: () {
-          context.pushNamed('addMeal');
-        },
-        tooltip: AppLocalizations.of(context).addMeal,
-        child: Icon(TontonIcons.add),
-      );
-    }
-    return const SizedBox.shrink();
   }
   
   Widget _buildHomeTab({

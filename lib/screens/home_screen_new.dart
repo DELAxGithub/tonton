@@ -71,7 +71,7 @@ class _HomeScreenNewState extends ConsumerState<HomeScreenNew> {
           IconButton(
             icon: Icon(TontonIcons.profile),
             onPressed: () {
-              context.pushNamed('profile');
+              context.push(TontonRoutes.profile);
             },
           ),
         ],

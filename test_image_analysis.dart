@@ -13,10 +13,13 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
   // Initialize Supabase using environment variables
-  final supabaseUrl =
-      Platform.environment['SUPABASE_URL'] ?? const String.fromEnvironment('SUPABASE_URL');
-  final supabaseAnonKey = Platform.environment['SUPABASE_ANON_KEY'] ??
-      const String.fromEnvironment('SUPABASE_ANON_KEY');
+  final supabaseUrl = Platform.environment['SUPABASE_URL'];
+  final supabaseAnonKey = Platform.environment['SUPABASE_ANON_KEY'];
+
+  if (supabaseUrl == null || supabaseAnonKey == null) {
+    throw Exception('SUPABASE_URL and SUPABASE_ANON_KEY must be provided as environment variables');
+  }
+
   await Supabase.initialize(
     url: supabaseUrl,
     anonKey: supabaseAnonKey,
@@ -51,17 +54,17 @@ final _autoAnalyzeProvider = StateProvider<bool>((ref) => true);
 final testImagesProvider = Provider<List<Map<String, dynamic>>>((ref) => [
   {
     'name': 'Apple',
-    'path': '/Users/hiroshikodera/repos/_active/apps/Tonton/test_images/apple.jpg',
+    'path': 'test_images/apple.jpg',
     'description': 'Simple single food item'
   },
   {
     'name': 'Meal',
-    'path': '/Users/hiroshikodera/repos/_active/apps/Tonton/test_images/meal.jpg',
+    'path': 'test_images/meal.jpg',
     'description': 'Colorful meal with vegetables'
   },
   {
     'name': 'Dark Meal',
-    'path': '/Users/hiroshikodera/repos/_active/apps/Tonton/test_images/dark_meal.jpg',
+    'path': 'test_images/dark_meal.jpg',
     'description': 'Meal in low-light conditions'
   },
 ]);

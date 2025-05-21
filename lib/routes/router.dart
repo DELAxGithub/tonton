@@ -11,6 +11,7 @@ import '../screens/signup_screen.dart';
 import '../screens/meal_input_screen_new.dart';
 import '../screens/savings_trend_screen.dart';
 import '../screens/profile_screen.dart';
+import '../screens/progress_achievements_screen.dart';
 import '../screens/ai_meal_logging/ai_meal_logging_step1_camera.dart';
 import '../screens/ai_meal_logging/ai_meal_logging_step2_analyzing.dart';
 import '../screens/ai_meal_logging/ai_meal_logging_step3_confirm_edit.dart';
@@ -32,6 +33,7 @@ class TontonRoutes {
   static const String editMeal = '/edit-meal';
   static const String savingsTrend = '/savings-trend';
   static const String profile = '/profile';
+  static const String progressAchievements = '/progress-achievements';
   static const String aiMealCamera = '/ai-meal/camera';
   static const String aiMealAnalyzing = '/ai-meal/analyzing';
   static const String aiMealConfirm = '/ai-meal/confirm';
@@ -145,6 +147,12 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: TontonRoutes.profile,
         name: 'profile',
         builder: (context, state) => const ProfileScreen(),
+      ),
+
+      GoRoute(
+        path: TontonRoutes.progressAchievements,
+        name: 'progressAchievements',
+        builder: (context, state) => const ProgressAchievementsScreen(),
       ),
 
       // AI meal logging flow

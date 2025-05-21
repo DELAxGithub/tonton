@@ -18,6 +18,12 @@ jobs:
         run: flutter pub get
       - name: Dashbook headless screenshot
         run: |
-          flutter run -d web-server lib/dashbook.dart --release --dart-define=HEADLESS=true &
+          flutter run -d web-server --web-port 7357 lib/dashbook.dart --release --dart-define=HEADLESS=true &
           sleep 60
-          # TODO: add script to capture PNG via puppeteer or similar
+          npm install puppeteer
+          node tools/dashbook_capture.js
+          kill $(jobs -p)
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dashbook-screenshot
+          path: dashbook_screenshot.png

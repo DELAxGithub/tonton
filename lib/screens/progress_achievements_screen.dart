@@ -24,6 +24,9 @@ class ProgressAchievementsScreen extends ConsumerWidget implements AppPage {
   }
 
   @override
+  Widget? buildFloatingActionButton(BuildContext context) => null;
+
+  @override
   Widget build(BuildContext context, WidgetRef ref) {
     final records = ref.watch(calorieSavingsDataProvider);
     final totalSavings =

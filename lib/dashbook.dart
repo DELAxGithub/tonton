@@ -38,7 +38,7 @@ Dashbook createDashbook() {
     ..add('TontonText', (ctx) => Center(
           child: TontonText(
             ctx.textProperty('text', 'こんにちは Tonton!'),
-            style: Theme.of(ctx.context).textTheme.headlineSmall,
+            style: Theme.of(ctx).textTheme.headlineSmall,
           ),
         ))
     ..add('TontonButton', (ctx) {

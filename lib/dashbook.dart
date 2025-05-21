@@ -5,6 +5,9 @@ import 'design_system/atoms/tonton_icon.dart';
 import 'design_system/atoms/tonton_text.dart';
 import 'design_system/atoms/tonton_button.dart';
 import 'design_system/atoms/tonton_card_base.dart';
+import 'design_system/molecules/daily_stat_ring.dart';
+import 'design_system/molecules/pfc_bar_display.dart';
+import 'design_system/molecules/navigation_link_card.dart';
 import 'theme/theme.dart';
 import 'utils/icon_mapper.dart';
 import 'theme/tokens.dart';
@@ -82,6 +85,60 @@ Dashbook createDashbook() {
         ),
       );
     });
+
+  // Molecules
+  dashbook.storiesOf('Molecules')
+    ..add('DailyStatRing', (_) => Center(
+          child: DailyStatRing(
+            icon: TontonIcons.food,
+            label: '食べたキロカロリー',
+            currentValue: '1200',
+            targetValue: '/ 2000 kcal',
+            progress: 0.6,
+          ),
+        ))
+    ..add('DailyStatRing - Burned', (_) => Center(
+          child: DailyStatRing(
+            icon: TontonIcons.workout,
+            label: '活動したキロカロリー',
+            currentValue: '500 kcal',
+            progress: 0.5,
+            color: Colors.orange,
+          ),
+        ))
+    ..add('PfcBarDisplay', (_) => PfcBarDisplay(
+          title: '今日の栄養バランス',
+          nutrients: const [
+            NutrientBarData(
+                label: 'タンパク質', current: 40, target: 60, color: Colors.red),
+            NutrientBarData(
+                label: '脂質', current: 20, target: 40, color: Colors.orange),
+            NutrientBarData(
+                label: '炭水化物', current: 150, target: 250, color: Colors.blue),
+          ],
+        ))
+    ..add('NavigationLinkCard', (_) => Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            NavigationLinkCard(
+              icon: TontonIcons.trend,
+              label: '貯金ダイアリー',
+              onTap: () {},
+            ),
+            const SizedBox(width: Spacing.md),
+            NavigationLinkCard(
+              icon: TontonIcons.weight,
+              label: '体重ジャーニー',
+              onTap: () {},
+            ),
+            const SizedBox(width: Spacing.md),
+            NavigationLinkCard(
+              icon: TontonIcons.ai,
+              label: 'トントンコーチ',
+              onTap: () {},
+            ),
+          ],
+        ));
 
   return dashbook;
 }

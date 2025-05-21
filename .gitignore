@@ -1,16 +1,29 @@
-# Flutter build and tool directories
-build/
+# Flutter/Dart
 .dart_tool/
-
-# Flutter plugin files
 .flutter-plugins
 .flutter-plugins-dependencies
-
-# Editor files
+.packages
+.pub-cache/
+.pub/
+build/
+ios/Pods/
+ios/.symlinks/
+ios/Flutter/App.framework
+ios/Flutter/Flutter.framework
+# Android
+*.apk
+*.aab
+# macOS / Windows
 *.iml
-
-# macOS and Windows Finder metadata
+windows/flutter/ephemeral/
+linux/flutter/ephemeral/
+macos/flutter/ephemeral/
+# General
+*.log
 .DS_Store
-
-# Build cache file
-build/cache.dill.track.dill
+# Rider files
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates

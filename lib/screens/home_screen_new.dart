@@ -71,7 +71,7 @@ class _HomeScreenNewState extends ConsumerState<HomeScreenNew> {
           IconButton(
             icon: Icon(TontonIcons.profile),
             onPressed: () {
-              // TODO: Navigate to profile screen or settings
+              context.pushNamed('profile');
             },
           ),
         ],

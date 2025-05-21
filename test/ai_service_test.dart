@@ -25,8 +25,8 @@ void main() {
       return; // Skip test requiring actual image file and Supabase services
       
       // Create a test image or point to an existing test image
-      // Replace with a real path to a test image
-      final testImagePath = '/path/to/test/food_image.jpg';
+      // Use a path relative to the test assets directory
+      final testImagePath = 'test/assets/test_food_image.jpg';
       final imageFile = File(testImagePath);
       
       if (!imageFile.existsSync()) {

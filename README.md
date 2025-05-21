@@ -30,3 +30,16 @@ flutter run -d chrome lib/dashbook.dart
 ```
 
 ブラウザが自動起動し、Theme / Icons / Atoms を確認できます。
+
+### Environment Variables
+
+The app requires Supabase credentials to run. Set these variables in your shell
+or pass them at build time:
+
+```bash
+export SUPABASE_URL="https://your-project.supabase.co"
+export SUPABASE_ANON_KEY="your-anon-key"
+```
+
+These values are read in `lib/main.dart` and test scripts via
+`Platform.environment`/`String.fromEnvironment`.

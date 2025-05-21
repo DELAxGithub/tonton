@@ -12,10 +12,14 @@ import 'package:tonton/services/ai_service.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
-  // Initialize Supabase
+  // Initialize Supabase using environment variables
+  final supabaseUrl =
+      Platform.environment['SUPABASE_URL'] ?? const String.fromEnvironment('SUPABASE_URL');
+  final supabaseAnonKey = Platform.environment['SUPABASE_ANON_KEY'] ??
+      const String.fromEnvironment('SUPABASE_ANON_KEY');
   await Supabase.initialize(
-    url: 'https://lagkyztrqvquxnijmcpo.supabase.co',
-    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxhZ2t5enRycXZxdXhuaWptY3BvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDczMjQwNjEsImV4cCI6MjA2MjkwMDA2MX0.wemvw0dQSsGP9KDOG4LnoYzawZoxOOAgep2gvzmnc_g',
+    url: supabaseUrl,
+    anonKey: supabaseAnonKey,
   );
   
   runApp(

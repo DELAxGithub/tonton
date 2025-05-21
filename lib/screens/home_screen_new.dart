@@ -10,13 +10,21 @@ import '../providers/health_provider.dart';
 import '../providers/meal_records_provider.dart';
 import '../providers/ai_advice_provider.dart';
 import '../providers/monthly_progress_provider.dart';
+import '../providers/calorie_savings_provider.dart';
 import '../utils/date_formatter.dart';
 import '../utils/icon_mapper.dart';
 import '../routes/router.dart';
 import '../routes/app_page.dart';
 import '../theme/app_theme.dart';
+import '../theme/tokens.dart';
 import '../widgets/meal_record_card.dart';
 import '../widgets/ai_advice_display_new.dart';
+import '../design_system/templates/standard_page_layout.dart';
+import '../design_system/organisms/hero_piggy_bank_display.dart';
+import '../design_system/organisms/daily_summary_section.dart';
+import '../design_system/molecules/navigation_link_card.dart';
+import '../design_system/molecules/pfc_bar_display.dart';
+import '../design_system/atoms/tonton_button.dart';
 
 /// A completely redesigned home screen with better information layout
 class HomeScreenNew extends ConsumerStatefulWidget {
@@ -65,358 +73,86 @@ class _HomeScreenNewState extends ConsumerState<HomeScreenNew> implements AppPag
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    
-    // Get today's meals
+
+    // Calorie savings data (dummy/demo from provider)
+    final savingsRecords = ref.watch(calorieSavingsDataProvider);
+    final totalSavings =
+        savingsRecords.isNotEmpty ? savingsRecords.last.cumulativeSavings : 0.0;
+
+    // Meals and nutrition data
     final todayMeals = ref.watch(todaysMealRecordsProvider);
-    final todayTotalCalories = ref.watch(todaysTotalCaloriesProvider);
-    
-    // Get activity data 
-    final healthProvider = provider_pkg.Provider.of<HealthProvider>(context);
-    final activeCalories = healthProvider.activeCaloriesForToday;
-    final basalCalories = healthProvider.basalCaloriesForToday;
-    final totalBurnedCalories = activeCalories + basalCalories;
-    
-    // Get monthly progress
-    final monthlyProgressAsync = ref.watch(monthlyProgressSummaryProvider);
-    
-    // Calculate calorie balance
-    final calorieBalance = totalBurnedCalories - todayTotalCalories;
-    
-    return _buildHomeTab(
-      context: context,
-      todayMeals: todayMeals,
-      todayTotalCalories: todayTotalCalories,
-      activeCalories: activeCalories,
-      basalCalories: basalCalories,
-      totalBurnedCalories: totalBurnedCalories,
-      calorieBalance: calorieBalance,
-      monthlyProgress: monthlyProgressAsync.when(
-        data: (summary) => summary.completionPercentage,
-        loading: () => 0,
-        error: (_, __) => 0,
-      ),
-    );
-  }
-  
-  Widget _buildHomeTab({
-    required BuildContext context,
-    required List<MealRecord> todayMeals,
-    required double todayTotalCalories,
-    required double activeCalories,
-    required double basalCalories,
-    required double totalBurnedCalories,
-    required double calorieBalance,
-    required double monthlyProgress,
-  }) {
-    final l10n = AppLocalizations.of(context);
-    final theme = Theme.of(context);
-    final today = DateTime.now();
-    
-    return RefreshIndicator(
-      onRefresh: () async {
-        // Refresh health data
-        final healthProvider = provider_pkg.Provider.of<HealthProvider>(context, listen: false);
-        await healthProvider.fetchHealthData();
-      },
-      child: SingleChildScrollView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        padding: const EdgeInsets.all(TontonSpacing.md),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+    final dailySummaryAsync = ref.watch(todayCalorieSummaryProvider);
+
+    final protein =
+        todayMeals.fold<double>(0, (sum, m) => sum + m.protein);
+    final fat = todayMeals.fold<double>(0, (sum, m) => sum + m.fat);
+    final carbs = todayMeals.fold<double>(0, (sum, m) => sum + m.carbs);
+
+    return dailySummaryAsync.when(
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (e, _) => Center(child: Text('Error: $e')),
+      data: (summary) {
+        return StandardPageLayout(
           children: [
-            // Today's date
-            Text(
-              DateFormatter.formatDate(today),
-              style: theme.textTheme.titleMedium?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
+            HeroPiggyBankDisplay(
+              totalSavings: totalSavings,
+              onUsePressed: () {},
             ),
-            const SizedBox(height: TontonSpacing.md),
-            
-            // Calorie summary card
-            _buildCalorieSummaryCard(
-              context: context,
-              consumed: todayTotalCalories,
-              burned: totalBurnedCalories,
-              balance: calorieBalance,
+            const SizedBox(height: Spacing.lg),
+            DailySummarySection(
+              eatenCalories: summary.totalCaloriesConsumed,
+              targetCalories: 2000,
+              burnedCalories: summary.totalCaloriesBurned,
+              dailySavings: summary.netCalories,
             ),
-            const SizedBox(height: TontonSpacing.lg),
-            
-            // Monthly progress
-            _buildProgressSection(
-              context: context,
-              monthlyProgress: monthlyProgress,
+            const SizedBox(height: Spacing.lg),
+            PfcBarDisplay(
+              title: '今日の栄養バランス (PFC)',
+              nutrients: [
+                NutrientBarData(
+                    label: 'タンパク質', current: protein, target: 60, color: Colors.red),
+                NutrientBarData(
+                    label: '脂質', current: fat, target: 70, color: Colors.orange),
+                NutrientBarData(
+                    label: '炭水化物', current: carbs, target: 250, color: Colors.blue),
+              ],
             ),
-            const SizedBox(height: TontonSpacing.lg),
-            
-            // Today's Meals Section
-            Text(
-              l10n.todaysMeals,
-              style: theme.textTheme.titleLarge,
+            const SizedBox(height: Spacing.lg),
+            TontonButton.primary(
+              label: '📷 写真でパシャ！食事をきろく',
+              onPressed: () => context.push(TontonRoutes.addMeal),
+              leading: TontonIcons.camera,
             ),
-            const SizedBox(height: TontonSpacing.sm),
-            
-            // Today's meals
-            todayMeals.isEmpty 
-              ? _buildEmptyMealsState(context)
-              : _buildMealsList(context, todayMeals),
-            
-            const SizedBox(height: TontonSpacing.lg),
-            
-            // AI Advice Section
-            _buildAiAdviceSection(todayMeals, context),
-            
-            // Add some bottom spacing for visibility
-            const SizedBox(height: TontonSpacing.xxl),
-          ],
-        ),
-      ),
-    );
-  }
-  
-  Widget _buildCalorieSummaryCard({
-    required BuildContext context,
-    required double consumed,
-    required double burned,
-    required double balance,
-  }) {
-    final l10n = AppLocalizations.of(context);
-    final theme = Theme.of(context);
-    
-    return Card(
-      elevation: 2,
-      child: Padding(
-        padding: const EdgeInsets.all(TontonSpacing.md),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              l10n.todaysCalories,
-              style: theme.textTheme.titleMedium,
-            ),
-            const SizedBox(height: TontonSpacing.md),
-            
+            const SizedBox(height: Spacing.lg),
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                // Consumed
-                Expanded(
-                  child: Column(
-                    children: [
-                      Icon(
-                        TontonIcons.food,
-                        color: theme.colorScheme.primary,
-                      ),
-                      const SizedBox(height: TontonSpacing.xs),
-                      Text(
-                        l10n.consumed,
-                        style: theme.textTheme.bodySmall,
-                      ),
-                      Text(
-                        '${consumed.toStringAsFixed(0)} kcal',
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          color: theme.colorScheme.primary,
-                        ),
-                      ),
-                    ],
-                  ),
+                NavigationLinkCard(
+                  icon: TontonIcons.trend,
+                  label: '貯金ダイアリー',
+                  onTap: () => context.push(TontonRoutes.savingsTrend),
                 ),
-                
-                Container(
-                  height: 50,
-                  width: 1,
-                  color: theme.colorScheme.outlineVariant,
+                NavigationLinkCard(
+                  icon: TontonIcons.weight,
+                  label: '体重ジャーニー',
+                  onTap: () {},
                 ),
-                
-                // Burned
-                Expanded(
-                  child: Column(
-                    children: [
-                      Icon(
-                        TontonIcons.energy,
-                        color: theme.colorScheme.secondary,
-                      ),
-                      const SizedBox(height: TontonSpacing.xs),
-                      Text(
-                        l10n.burned,
-                        style: theme.textTheme.bodySmall,
-                      ),
-                      Text(
-                        '${burned.toStringAsFixed(0)} kcal',
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          color: theme.colorScheme.secondary,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                
-                Container(
-                  height: 50,
-                  width: 1,
-                  color: theme.colorScheme.outlineVariant,
-                ),
-                
-                // Balance
-                Expanded(
-                  child: Column(
-                    children: [
-                      Icon(
-                        balance >= 0 ? TontonIcons.trend : Icons.arrow_downward,
-                        color: balance >= 0 
-                          ? TontonColors.success 
-                          : TontonColors.error,
-                      ),
-                      const SizedBox(height: TontonSpacing.xs),
-                      Text(
-                        l10n.balance,
-                        style: theme.textTheme.bodySmall,
-                      ),
-                      Text(
-                        '${balance.toStringAsFixed(0)} kcal',
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          color: balance >= 0 
-                            ? TontonColors.success 
-                            : TontonColors.error,
-                        ),
-                      ),
-                    ],
-                  ),
+                NavigationLinkCard(
+                  icon: TontonIcons.ai,
+                  label: 'トントンコーチ',
+                  onTap: () {},
                 ),
               ],
             ),
+            const SizedBox(height: Spacing.lg),
+            _buildAiAdviceSection(todayMeals, context),
+            const SizedBox(height: Spacing.xxl),
           ],
-        ),
-      ),
-    );
-  }
-  
-  Widget _buildProgressSection({
-    required BuildContext context,
-    required double monthlyProgress,
-  }) {
-    final l10n = AppLocalizations.of(context);
-    final theme = Theme.of(context);
-    
-    // Calculate progress percentage (capped at 100%)
-    final progressPercentage = (monthlyProgress / 100).clamp(0.0, 1.0);
-    
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              l10n.yourProgress,
-              style: theme.textTheme.titleLarge,
-            ),
-            TextButton.icon(
-              onPressed: () {
-                context.push(TontonRoutes.savingsTrend);
-              },
-              icon: Icon(TontonIcons.trend, size: 16),
-              label: Text(l10n.calorieSavingsGraph),
-            ),
-          ],
-        ),
-        const SizedBox(height: TontonSpacing.sm),
-        
-        Card(
-          elevation: 1,
-          child: Padding(
-            padding: const EdgeInsets.all(TontonSpacing.md),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      l10n.monthlyGoal,
-                      style: theme.textTheme.titleSmall,
-                    ),
-                    Text(
-                      '${monthlyProgress.toStringAsFixed(0)}%',
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        color: theme.colorScheme.primary,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: TontonSpacing.sm),
-                
-                // Progress bar
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(TontonRadius.full),
-                  child: LinearProgressIndicator(
-                    value: progressPercentage,
-                    minHeight: 8,
-                    backgroundColor: theme.colorScheme.primaryContainer.withOpacity(0.3),
-                    color: theme.colorScheme.primary,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-  
-  Widget _buildEmptyMealsState(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    final theme = Theme.of(context);
-    
-    return SizedBox(
-      height: 200,
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              TontonIcons.food,
-              size: 48,
-              color: theme.colorScheme.primary.withOpacity(0.5),
-            ),
-            const SizedBox(height: TontonSpacing.md),
-            Text(
-              l10n.noMealsRecorded,
-              style: theme.textTheme.bodyLarge?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-            ),
-            const SizedBox(height: TontonSpacing.sm),
-            Text(
-              l10n.tapAddMeal,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant.withOpacity(0.7),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-  
-  Widget _buildMealsList(BuildContext context, List<MealRecord> meals) {
-    return ListView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: meals.length,
-      itemBuilder: (context, index) {
-        final meal = meals[index];
-        return MealRecordCard(
-          mealRecord: meal,
-          onTap: () {
-            context.pushNamed(
-              'editMeal',
-              extra: meal,
-            );
-          },
         );
       },
     );
   }
+  
   
   Widget _buildAiAdviceSection(List<MealRecord> todayMeals, BuildContext context) {
     final aiAdviceState = ref.watch(aiAdviceProvider);

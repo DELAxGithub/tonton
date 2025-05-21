@@ -11,9 +11,14 @@ import '../screens/signup_screen.dart';
 import '../screens/meal_input_screen_new.dart';
 import '../screens/savings_trend_screen.dart';
 import '../screens/profile_screen.dart';
+import '../screens/ai_meal_logging/ai_meal_logging_step1_camera.dart';
+import '../screens/ai_meal_logging/ai_meal_logging_step2_analyzing.dart';
+import '../screens/ai_meal_logging/ai_meal_logging_step3_confirm_edit.dart';
 import '../widgets/main_navigation_bar.dart';
 import 'app_page.dart';
 import '../models/meal_record.dart';
+import 'dart:io';
+import '../models/estimated_meal_nutrition.dart';
 
 /// Route names for named navigation
 class TontonRoutes {
@@ -27,6 +32,9 @@ class TontonRoutes {
   static const String editMeal = '/edit-meal';
   static const String savingsTrend = '/savings-trend';
   static const String profile = '/profile';
+  static const String aiMealCamera = '/ai-meal/camera';
+  static const String aiMealAnalyzing = '/ai-meal/analyzing';
+  static const String aiMealConfirm = '/ai-meal/confirm';
 }
 
 /// Provider for the router configuration
@@ -137,6 +145,32 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: TontonRoutes.profile,
         name: 'profile',
         builder: (context, state) => const ProfileScreen(),
+      ),
+
+      // AI meal logging flow
+      GoRoute(
+        path: TontonRoutes.aiMealCamera,
+        name: 'aiMealCamera',
+        builder: (context, state) => const AIMealLoggingStep1Camera(),
+      ),
+      GoRoute(
+        path: TontonRoutes.aiMealAnalyzing,
+        name: 'aiMealAnalyzing',
+        builder: (context, state) {
+          final File image = state.extra as File;
+          return AIMealLoggingStep2Analyzing(imageFile: image);
+        },
+      ),
+      GoRoute(
+        path: TontonRoutes.aiMealConfirm,
+        name: 'aiMealConfirm',
+        builder: (context, state) {
+          final Map extra = state.extra as Map;
+          return AIMealLoggingStep3ConfirmEdit(
+            imageFile: extra['image'] as File,
+            nutrition: extra['nutrition'] as EstimatedMealNutrition,
+          );
+        },
       ),
     ],
   );

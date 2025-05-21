@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart'; // Import Riverpod
 
 import 'login_screen.dart'; // Import LoginScreen
-import '../providers/auth_provider.dart'; // Import AuthProvider
+import '../design_system/templates/standard_page_layout.dart';
+import '../design_system/atoms/tonton_button.dart';
+import '../providers/auth_provider.dart';
 
 class SignupScreen extends ConsumerStatefulWidget { // Changed to ConsumerStatefulWidget
   const SignupScreen({super.key});
@@ -70,15 +72,13 @@ class _SignupScreenState extends ConsumerState<SignupScreen> { // Changed to Con
       appBar: AppBar(
         title: const Text('Sign Up'),
       ),
-      body: Center(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24.0),
-          child: Form(
+      body: StandardPageLayout(
+        children: [
+          Form(
             key: _formKey,
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: <Widget>[
+              children: [
                 Text(
                   'Create your Tonton Account',
                   style: Theme.of(context).textTheme.headlineSmall,
@@ -144,15 +144,9 @@ class _SignupScreenState extends ConsumerState<SignupScreen> { // Changed to Con
                 const SizedBox(height: 24.0),
                 _isLoading
                     ? const Center(child: CircularProgressIndicator())
-                    : ElevatedButton(
+                    : TontonButton.primary(
+                        label: 'Sign Up',
                         onPressed: _signup,
-                        style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 16.0),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8.0),
-                          ),
-                        ),
-                        child: const Text('Sign Up'),
                       ),
                 const SizedBox(height: 16.0),
                 Row(

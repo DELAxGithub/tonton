@@ -43,3 +43,20 @@ export SUPABASE_ANON_KEY="your-anon-key"
 
 These values are read in `lib/main.dart` and test scripts via
 `Platform.environment`/`String.fromEnvironment`.
+## Development Progress
+
+The following milestones summarize the main features implemented so far:
+
+- Custom design system with theme, design tokens, and icon fonts.
+- Atom widgets such as **TontonIcon** and **TontonText**.
+- Molecules like **TontonButton** and **TontonCardBase**, showcased in Dashbook.
+- Dashbook UI catalog set up for rapid component previews.
+- Integration with Supabase for backend services and Edge Functions.
+- HealthKit integration on iOS.
+- Navigation structure using **go_router** with an AppShell and profile screen.
+- Home screen layout with daily stats ring and PFC bar display.
+- AI meal logging flow powered by the Gemini-based image analysis service.
+- Progress and achievements screen to track user goals.
+
+These features establish the core architecture and primary screens of the TonTon application, providing a solid foundation for further development.
+

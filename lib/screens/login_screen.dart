@@ -137,7 +137,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> { // Changed to Consu
               ],
             ),
           ),
-        ),
+        ],
       ),
     );
   }

@@ -7,6 +7,7 @@ import '../screens/login_screen.dart';
 import '../screens/signup_screen.dart';
 import '../screens/meal_input_screen_new.dart';
 import '../screens/savings_trend_screen.dart';
+import '../screens/profile_screen.dart';
 import '../models/meal_record.dart';
 
 /// Route names for named navigation
@@ -17,6 +18,7 @@ class TontonRoutes {
   static const String addMeal = '/add-meal';
   static const String editMeal = '/edit-meal';
   static const String savingsTrend = '/savings-trend';
+  static const String profile = '/profile';
 }
 
 /// Provider for the router configuration
@@ -91,6 +93,13 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: TontonRoutes.savingsTrend,
         name: 'savingsTrend',
         builder: (context, state) => const SavingsTrendScreen(),
+      ),
+
+      // Profile route
+      GoRoute(
+        path: TontonRoutes.profile,
+        name: 'profile',
+        builder: (context, state) => const ProfileScreen(),
       ),
     ],
   );

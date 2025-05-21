@@ -20,6 +20,7 @@ import '../screens/ai_meal_logging/ai_meal_logging_step2_analyzing.dart';
 import '../screens/ai_meal_logging/ai_meal_logging_step3_confirm_edit.dart';
 import '../widgets/main_navigation_bar.dart';
 import 'app_page.dart';
+import '../design_system/templates/app_shell.dart';
 import '../models/meal_record.dart';
 import 'dart:io';
 import '../models/estimated_meal_nutrition.dart';
@@ -96,15 +97,16 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
 
       // Shell route with bottom navigation
-      ShellRoute(
-        builder: (context, state, child) {
-          final appBar = child is AppPage ? child.buildAppBar(context) : null;
-          final fab = child is AppPage ? child.buildFloatingActionButton(context) : null;
-          return AppShell(
-            appBar: appBar,
-            floatingActionButton: fab,
-            bottomNavigationBar: MainNavigationBar(location: state.matchedLocation),
-            body: child,
+        ShellRoute(
+          builder: (context, state, child) {
+            final appPage = child is AppPage ? child as AppPage : null;
+            final appBar = appPage?.buildAppBar(context);
+            final fab = appPage?.buildFloatingActionButton(context);
+            return AppShell(
+              appBar: appBar,
+              floatingActionButton: fab,
+              bottomNavigationBar: MainNavigationBar(location: state.matchedLocation),
+              body: child,
           );
         },
         routes: [

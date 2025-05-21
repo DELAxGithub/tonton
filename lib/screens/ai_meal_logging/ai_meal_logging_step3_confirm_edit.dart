@@ -69,7 +69,6 @@ class _State extends ConsumerState<AIMealLoggingStep3ConfirmEdit> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(

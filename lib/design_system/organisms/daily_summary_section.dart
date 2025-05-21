@@ -79,7 +79,7 @@ class _SavingsCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final positive = savings >= 0;
-    final color = positive ? TontonColors.success : TontonColors.error;
+    final color = positive ? theme.colorScheme.success : theme.colorScheme.error;
     final prefix = positive ? '+' : '-';
 
     return TontonCardBase(

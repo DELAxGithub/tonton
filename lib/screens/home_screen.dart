@@ -171,7 +171,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                       child: Row(
                         children: [
                           Icon(
-                            energyIcon(),
+                            TontonIcons.energy,
                             color: Theme.of(context).colorScheme.primary,
                             size: 16,
                           ),

@@ -19,11 +19,11 @@ Dashbook createDashbook() {
 
   // Theme
   dashbook.storiesOf('Theme')
-    ..add('Color Palette', (_) => const _ColorPaletteStory());
+    .add('Color Palette', (_) => const _ColorPaletteStory());
 
   // Icons
   dashbook.storiesOf('Icons')
-    ..add('Gallery', (_) => const _IconGalleryStory());
+    .add('Gallery', (_) => const _IconGalleryStory());
 
   // Atoms
   dashbook.storiesOf('Atoms')
@@ -35,10 +35,12 @@ Dashbook createDashbook() {
             color: Colors.pink,
           ),
         ))
-    ..add('TontonText', (ctx) => Center(
-          child: TontonText(
-            ctx.textProperty('text', 'こんにちは Tonton!'),
-            style: Theme.of(ctx).textTheme.headlineSmall,
+    ..add('TontonText', (ctx) => Builder( // Wrap with Builder
+          builder: (context) => Center( // 'context' here is a valid BuildContext
+            child: TontonText(
+              ctx.textProperty('text', 'こんにちは Tonton!'),
+              style: Theme.of(context).textTheme.headlineSmall, // Use 'context'
+            ),
           ),
         ))
     ..add('TontonButton', (ctx) {

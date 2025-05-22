@@ -27,3 +27,7 @@ macos/flutter/ephemeral/
 *.user
 *.userosscache
 *.sln.docstates
+*.DS_Store
+
+# Local secrets
+.env

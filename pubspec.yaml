@@ -17,7 +17,7 @@ dependencies:
   flutter_riverpod: ^2.5.1
   riverpod_annotation: ^2.3.5
   uuid: ^4.4.0
-  intl: ^0.19.0
+  intl: ^0.20.2
   shared_preferences: ^2.2.2
   http: ^1.1.0
   flutter_dotenv: ^5.1.0 # Already present, ensure version is compatible or update if needed.
@@ -56,6 +56,8 @@ flutter:
   uses-material-design: true
   generate: true # For localization
   assets:
+    - .env
+    - assets/images/
     - lib/l10n/ # For localization
     - assets/images/ # Assuming you have images here
     - assets/icons/svg/ # For your SVG icons

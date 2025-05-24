@@ -6,13 +6,26 @@ A health tracking application with iOS HealthKit integration.
 
 - **Frontend:** Flutter, Riverpod (state management)
 - **Backend:** Supabase (Edge Functions)
-- **AI Integration:** OpenAI API (GPT-4o model)
+- **AI Integration:** OpenAI API (GPT-4 model)
 - **Local Storage:** Hive, SharedPreferences
 - **Health Integration:** iOS HealthKit
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+### 環境変数の設定
+
+1. `.env.example`ファイルをコピーして`.env`ファイルを作成:
+   ```bash
+   cp .env.example .env
+   ```
+
+2. `.env`ファイルを編集し、必要な認証情報を設定:
+   ```plaintext
+   SUPABASE_URL=your_supabase_project_url
+   SUPABASE_ANON_KEY=your_supabase_anon_key
+   ```
+
+詳細な設定手順は[環境変数の設定ガイド](docs/env_setup_guide.md)を参照してください。
 
 A few resources to get you started if this is your first Flutter project:
 

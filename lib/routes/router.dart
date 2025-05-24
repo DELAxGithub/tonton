@@ -12,7 +12,9 @@ import '../screens/meal_input_screen_new.dart';
 import '../screens/savings_trend_screen.dart';
 import '../screens/use_savings_screen.dart';
 import '../screens/profile_screen.dart';
+import '../features/onboarding/onboarding_screen.dart';
 import '../screens/onboarding_set_start_date_screen.dart';
+import '../providers/onboarding_providers.dart';
 import '../screens/settings_screen.dart';
 import '../screens/progress_achievements_screen.dart';
 import '../screens/ai_meal_logging/ai_meal_logging_step1_camera.dart';
@@ -37,6 +39,7 @@ class TontonRoutes {
   static const String editMeal = '/edit-meal';
   static const String savingsTrend = '/savings-trend';
   static const String useSavings = '/use-savings';
+  static const String onboardingIntro = '/onboarding';
   static const String onboardingStartDate = '/onboarding/start-date';
   static const String profile = '/profile';
   static const String settings = '/settings';
@@ -49,6 +52,7 @@ class TontonRoutes {
 /// Provider for the router configuration
 final routerProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authStateChangesProvider);
+  final onboardingCompleted = ref.watch(onboardingCompletedProvider);
   
   return GoRouter(
     initialLocation: TontonRoutes.home,
@@ -61,20 +65,32 @@ final routerProvider = Provider<GoRouter>((ref) {
         error: (_, __) => false,
       );
       
-      // Determine if the user is going to an auth page
-      final isAuthRoute = state.matchedLocation == TontonRoutes.login || 
+      // Determine if the user is going to an auth or onboarding page
+      final isAuthRoute = state.matchedLocation == TontonRoutes.login ||
                           state.matchedLocation == TontonRoutes.signup;
+      final isOnboardingRoute = state.matchedLocation == TontonRoutes.onboardingIntro ||
+                                state.matchedLocation == TontonRoutes.onboardingStartDate;
       
       // If the user is not logged in and trying to access a protected page
       if (!isLoggedIn && !isAuthRoute) {
         return TontonRoutes.login;
       }
-      
-      // If the user is logged in and trying to access an auth page
-      if (isLoggedIn && isAuthRoute) {
+
+      // If onboarding is incomplete, force onboarding flow
+      if (isLoggedIn && !onboardingCompleted && !isOnboardingRoute) {
+        return TontonRoutes.onboardingIntro;
+      }
+
+      // Prevent accessing onboarding again once completed
+      if (isLoggedIn && onboardingCompleted && isOnboardingRoute) {
         return TontonRoutes.home;
       }
-      
+
+      // If the user is logged in and trying to access an auth page
+      if (isLoggedIn && isAuthRoute) {
+        return onboardingCompleted ? TontonRoutes.home : TontonRoutes.onboardingIntro;
+      }
+
       // No redirect needed
       return null;
     },
@@ -89,6 +105,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: TontonRoutes.signup,
         name: 'signup',
         builder: (context, state) => const SignupScreen(),
+      ),
+      GoRoute(
+        path: TontonRoutes.onboardingIntro,
+        name: 'onboardingIntro',
+        builder: (context, state) => const OnboardingScreen(),
       ),
       GoRoute(
         path: TontonRoutes.onboardingStartDate,

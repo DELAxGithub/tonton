@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart'; // Import Riverpod
 
-import 'login_screen.dart'; // Import LoginScreen
+import 'package:go_router/go_router.dart';
+
+import '../routes/router.dart';
 import '../design_system/templates/standard_page_layout.dart';
 import '../design_system/atoms/tonton_button.dart';
 import '../providers/auth_provider.dart';
@@ -44,11 +46,9 @@ class _SignupScreenState extends ConsumerState<SignupScreen> { // Changed to Con
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Signup successful! Please check your email to confirm.')), // Or navigate directly if email confirmation is off
           );
-          // Navigate to LoginScreen after successful signup, prompting user to login
-          // Or, if auto-login after signup (and email confirm is off/handled), navigate to HomeScreen
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => const LoginScreen()), // Go to login after signup
-          );
+          // Navigate to the login screen using the GoRouter
+          // The router will handle any redirects based on auth state
+          context.go(TontonRoutes.login);
         }
       } catch (e) {
         if (mounted) {
@@ -155,9 +155,8 @@ class _SignupScreenState extends ConsumerState<SignupScreen> { // Changed to Con
                     const Text("Already have an account?"),
                     TextButton(
                       onPressed: () {
-                        Navigator.of(context).pushReplacement(
-                          MaterialPageRoute(builder: (context) => const LoginScreen()),
-                        );
+                        // Navigate directly to the login screen using GoRouter
+                        context.go(TontonRoutes.login);
                       },
                       child: const Text('Login'),
                     ),

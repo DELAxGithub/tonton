@@ -105,13 +105,11 @@ void main() async { // Modified to be async
   final startDateNotifier = OnboardingStartDateNotifier();
   final onboardingService = OnboardingService(startDateNotifier);
   await onboardingService.ensureInitialized();
-  final completed = await onboardingService.isOnboardingCompleted();
   final firstLaunch = await onboardingService.getFirstLaunch();
 
   runApp(
     ProviderScope(
       overrides: [
-        onboardingCompletedProvider.overrideWithValue(completed),
         firstLaunchTimestampProvider.overrideWithValue(firstLaunch),
         onboardingStartDateProvider.overrideWith((ref) => startDateNotifier),
       ],

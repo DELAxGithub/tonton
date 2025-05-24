@@ -14,6 +14,7 @@ import 'providers/health_provider.dart';
 import 'routes/router.dart'; // Import router configuration
 import 'services/onboarding_service.dart';
 import 'providers/onboarding_providers.dart';
+import 'providers/onboarding_start_date_provider.dart';
 import 'theme/app_theme.dart'; // Import application theme
 import 'l10n/app_localizations.dart';
 
@@ -92,7 +93,9 @@ void main() async { // Modified to be async
   
   await _initHive(); // Added Hive initialization call
   developer.log('TonTon App starting after initialization...', name: 'TonTon.main');
-  final onboardingService = OnboardingService();
+  final startDateNotifier = OnboardingStartDateNotifier();
+  final onboardingService = OnboardingService(startDateNotifier);
+  await onboardingService.ensureInitialized();
   final completed = await onboardingService.isOnboardingCompleted();
   final firstLaunch = await onboardingService.getFirstLaunch();
 
@@ -101,6 +104,7 @@ void main() async { // Modified to be async
       overrides: [
         onboardingCompletedProvider.overrideWithValue(completed),
         firstLaunchTimestampProvider.overrideWithValue(firstLaunch),
+        onboardingStartDateProvider.overrideWith((ref) => startDateNotifier),
       ],
       child: const MyApp(),
     ),

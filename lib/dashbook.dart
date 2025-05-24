@@ -149,6 +149,7 @@ Dashbook createDashbook() {
     ..add('HeroPiggyBankDisplay', (_) => Center(
           child: HeroPiggyBankDisplay(
             totalSavings: 3500,
+            recentChange: 250,
             onUsePressed: () {},
           ),
         ))

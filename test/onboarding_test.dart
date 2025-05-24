@@ -10,7 +10,7 @@ import 'package:tonton/routes/router.dart';
 import 'package:tonton/providers/onboarding_providers.dart';
 
 void main() {
-  GoRouter createTestRouter(WidgetRef ref) {
+  GoRouter createTestRouter(Ref ref) {
     final completed = ref.watch(onboardingCompletedProvider);
     return GoRouter(
       initialLocation: completed ? TontonRoutes.home : TontonRoutes.onboardingIntro,
@@ -32,7 +32,7 @@ void main() {
       ProviderScope(
         overrides: [
           onboardingCompletedProvider.overrideWithValue(false),
-          routerProvider.overrideWithProvider(Provider((ref) => createTestRouter(ref))),
+          routerProvider.overrideWith((ref) => createTestRouter(ref)),
         ],
         child: const MyApp(),
       ),
@@ -47,7 +47,7 @@ void main() {
       ProviderScope(
         overrides: [
           onboardingCompletedProvider.overrideWithValue(true),
-          routerProvider.overrideWithProvider(Provider((ref) => createTestRouter(ref))),
+          routerProvider.overrideWith((ref) => createTestRouter(ref)),
         ],
         child: const MyApp(),
       ),

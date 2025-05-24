@@ -1,10 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../services/onboarding_service.dart';
+import 'onboarding_start_date_provider.dart';
 
 /// Provides the onboarding service instance.
 final onboardingServiceProvider = Provider<OnboardingService>((ref) {
-  return OnboardingService();
+  return OnboardingService(ref.read(onboardingStartDateProvider.notifier));
 });
 
 /// Provides the persisted onboarding completion status.

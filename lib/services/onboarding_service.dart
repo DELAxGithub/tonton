@@ -1,7 +1,13 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../providers/onboarding_start_date_provider.dart';
+
 /// Handles persistence of onboarding status and first launch timestamp.
 class OnboardingService {
+  OnboardingService(this._startDateNotifier);
+
+  final OnboardingStartDateNotifier _startDateNotifier;
+
   static const String _firstLaunchKey = 'firstLaunchTimestamp';
   static const String _completedKey = 'onboardingCompleted';
 
@@ -14,6 +20,16 @@ class OnboardingService {
   Future<void> setFirstLaunch(DateTime date) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_firstLaunchKey, date.toIso8601String());
+  }
+
+  /// Initializes first launch and start date if this is the first app run.
+  Future<void> ensureInitialized() async {
+    final firstLaunch = await getFirstLaunch();
+    if (firstLaunch == null) {
+      final now = DateTime.now();
+      await setFirstLaunch(now);
+      await _startDateNotifier.setDate(now);
+    }
   }
 
   Future<bool> isOnboardingCompleted() async {

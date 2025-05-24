@@ -7,7 +7,6 @@ import '../design_system/templates/standard_page_layout.dart';
 import '../design_system/atoms/tonton_button.dart';
 import '../utils/icon_mapper.dart';
 import '../routes/router.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../providers/onboarding_start_date_provider.dart';
 
 class OnboardingSetStartDateScreen extends ConsumerStatefulWidget {
@@ -25,6 +24,16 @@ class _OnboardingSetStartDateScreenState
   _StartDateOption _option = _StartDateOption.firstMeal;
   DateTime _selectedDate = DateTime.now();
 
+  @override
+  void initState() {
+    super.initState();
+    final stored = ref.read(onboardingStartDateProvider);
+    if (stored != null) {
+      _option = _StartDateOption.specific;
+      _selectedDate = stored;
+    }
+  }
+
   Future<void> _pickDate() async {
     final picked = await showDatePicker(
       context: context,
@@ -38,13 +47,9 @@ class _OnboardingSetStartDateScreenState
   }
 
   Future<void> _next() async {
-    final prefs = await SharedPreferences.getInstance();
     final startDate =
         _option == _StartDateOption.specific ? _selectedDate : DateTime.now();
-    await prefs.setString('onboardingStartDate', startDate.toIso8601String());
-    await ref
-        .read(onboardingStartDateProvider.notifier)
-        .setDate(startDate);
+    await ref.read(onboardingStartDateProvider.notifier).setDate(startDate);
     if (!mounted) return;
     context.go(TontonRoutes.home);
   }

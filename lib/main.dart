@@ -3,7 +3,8 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:provider/provider.dart' as provider_pkg;
 import 'dart:developer' as developer;
-import 'dart:io' show Platform; // For accessing environment variables
+import 'dart:io' show Platform;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -59,33 +60,41 @@ Future<void> _initHive() async {
 
 void main() async { // Modified to be async
   WidgetsFlutterBinding.ensureInitialized();
-  
-  // // Initialize Firebase // Removed
-  // try { // Removed
-  //   await Firebase.initializeApp( // Removed
-  //     options: DefaultFirebaseOptions.currentPlatform, // Removed
-  //   ); // Removed
-  //   developer.log('Firebase initialized successfully', name: 'TonTon.FirebaseInit'); // Removed
-  // } catch (e, stack) { // Removed
-  //   developer.log('Error initializing Firebase: $e', name: 'TonTon.FirebaseInit.Error', error: e, stackTrace: stack); // Removed
-  //   // Continue app initialization even if Firebase fails // Removed
-  // } // Removed
+
+  try {
+    await dotenv.load(fileName: ".env");
+    developer.log('.env file loaded successfully', name: 'TonTon.EnvLoad');
+  } catch (e) {
+    developer.log('Could not load .env file. Using compile-time variables if available. Error: $e', 
+      name: 'TonTon.EnvLoad.Error');
+    // エラーが発生しても継続できるように、デフォルト値を設定
+    dotenv.testLoad(fileInput: '''
+      SUPABASE_URL=default_url
+      SUPABASE_ANON_KEY=default_key
+    ''');
+  }
 
   // Initialize Supabase using environment variables
   try {
-    final supabaseUrl =
-        Platform.environment['SUPABASE_URL'] ?? const String.fromEnvironment('SUPABASE_URL');
-    final supabaseAnonKey = Platform.environment['SUPABASE_ANON_KEY'] ??
-        const String.fromEnvironment('SUPABASE_ANON_KEY');
+    final supabaseUrl = dotenv.env['SUPABASE_URL'] ??
+                      Platform.environment['SUPABASE_URL'] ??
+                      const String.fromEnvironment('SUPABASE_URL');
+    final supabaseAnonKey = dotenv.env['SUPABASE_ANON_KEY'] ??
+                          Platform.environment['SUPABASE_ANON_KEY'] ??
+                          const String.fromEnvironment('SUPABASE_ANON_KEY');
+
+    if (supabaseUrl.isEmpty || supabaseAnonKey.isEmpty) {
+      throw Exception('Supabase URL or Anon Key is missing. Ensure .env file is set up or variables are passed via --dart-define.');
+    }
 
     await Supabase.initialize(
       url: supabaseUrl,
       anonKey: supabaseAnonKey,
     );
-    developer.log('Supabase initialized successfully', name: 'TonTon.SupabaseInit');
+    developer.log('Supabase initialized successfully with URL: $supabaseUrl', name: 'TonTon.SupabaseInit');
   } catch (e, stack) {
     developer.log('Error initializing Supabase: $e', name: 'TonTon.SupabaseInit.Error', error: e, stackTrace: stack);
-    // Decide how to handle Supabase init failure, e.g., show an error and exit, or continue with limited functionality.
+    rethrow;
   }
   
   await _initHive(); // Added Hive initialization call

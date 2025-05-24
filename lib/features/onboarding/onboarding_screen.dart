@@ -34,6 +34,8 @@ class OnboardingScreen extends ConsumerWidget {
 
     final service = ref.read(onboardingServiceProvider);
     await service.completeOnboarding();
+    // Update reactive onboarding completion state
+    await ref.read(onboardingCompletedProvider.notifier).complete();
 
     // Save default start date if not set
     if (ref.read(onboardingStartDateProvider) == null) {

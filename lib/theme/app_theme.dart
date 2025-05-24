@@ -157,7 +157,7 @@ class TontonRadius {
 class TontonShadows {
   static List<BoxShadow> get small => [
     BoxShadow(
-      color: Colors.black.withOpacity(0.1),
+        color: Colors.black.withAlpha((0.1 * 255).round()),
       blurRadius: 4,
       offset: const Offset(0, 1),
     ),
@@ -165,7 +165,7 @@ class TontonShadows {
 
   static List<BoxShadow> get medium => [
     BoxShadow(
-      color: Colors.black.withOpacity(0.1),
+        color: Colors.black.withAlpha((0.1 * 255).round()),
       blurRadius: 8,
       offset: const Offset(0, 4),
     ),
@@ -173,7 +173,7 @@ class TontonShadows {
 
   static List<BoxShadow> get large => [
     BoxShadow(
-      color: Colors.black.withOpacity(0.1),
+        color: Colors.black.withAlpha((0.1 * 255).round()),
       blurRadius: 16,
       offset: const Offset(0, 8),
     ),
@@ -256,7 +256,7 @@ class TontonTheme {
         borderRadius: BorderRadius.circular(TontonRadius.full),
       ),
     ),
-    tabBarTheme: TabBarTheme(
+    tabBarTheme: TabBarThemeData(
       labelColor: TontonColors.primary,
       unselectedLabelColor: TontonColors.neutral600,
       indicatorColor: TontonColors.primary,
@@ -304,7 +304,7 @@ class TontonTheme {
     ),
     chipTheme: ChipThemeData(
       backgroundColor: TontonColors.neutral200,
-      selectedColor: TontonColors.primary.withOpacity(0.2),
+        selectedColor: TontonColors.primary.withAlpha((0.2 * 255).round()),
       labelStyle: TontonTypography.bodySmall,
       padding: const EdgeInsets.symmetric(
         horizontal: TontonSpacing.sm,
@@ -390,7 +390,7 @@ class TontonTheme {
         borderRadius: BorderRadius.circular(TontonRadius.full),
       ),
     ),
-    tabBarTheme: TabBarTheme(
+    tabBarTheme: TabBarThemeData(
       labelColor: TontonColors.primary,
       unselectedLabelColor: TontonColors.neutral400,
       indicatorColor: TontonColors.primary,
@@ -438,7 +438,7 @@ class TontonTheme {
     ),
     chipTheme: ChipThemeData(
       backgroundColor: TontonColors.neutral700,
-      selectedColor: TontonColors.primary.withOpacity(0.3),
+        selectedColor: TontonColors.primary.withAlpha((0.3 * 255).round()),
       labelStyle: TontonTypography.bodySmall,
       padding: const EdgeInsets.symmetric(
         horizontal: TontonSpacing.sm,

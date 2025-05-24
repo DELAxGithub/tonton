@@ -9,6 +9,10 @@ import 'package:tonton/screens/home_screen_new.dart';
 import 'package:tonton/routes/router.dart';
 import 'package:tonton/providers/onboarding_providers.dart';
 
+class TestOnboardingCompletionNotifier extends StateNotifier<bool> {
+  TestOnboardingCompletionNotifier(bool value) : super(value);
+}
+
 void main() {
   GoRouter createTestRouter(Ref ref) {
     final completed = ref.watch(onboardingCompletedProvider);
@@ -31,7 +35,9 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          onboardingCompletedProvider.overrideWithValue(false),
+          onboardingCompletedProvider.overrideWith(
+            (ref) => TestOnboardingCompletionNotifier(false),
+          ),
           routerProvider.overrideWith((ref) => createTestRouter(ref)),
         ],
         child: const MyApp(),
@@ -46,7 +52,9 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          onboardingCompletedProvider.overrideWithValue(true),
+          onboardingCompletedProvider.overrideWith(
+            (ref) => TestOnboardingCompletionNotifier(true),
+          ),
           routerProvider.overrideWith((ref) => createTestRouter(ref)),
         ],
         child: const MyApp(),

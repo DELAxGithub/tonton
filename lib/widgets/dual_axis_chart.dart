@@ -5,33 +5,33 @@ import '../models/calorie_savings_record.dart';
 
 class DualAxisChart extends StatelessWidget {
   final List<CalorieSavingsRecord> records;
-  final List<double> weights;
+  final List<double> bodyFatMasses;
 
   const DualAxisChart({
     super.key,
     required this.records,
-    required this.weights,
+    required this.bodyFatMasses,
   });
 
   @override
   Widget build(BuildContext context) {
-    if (records.isEmpty || weights.isEmpty) {
+    if (records.isEmpty || bodyFatMasses.isEmpty) {
       return const Center(child: Text('No data'));
     }
 
-    final minWeight = weights.reduce(math.min);
-    final maxWeight = weights.reduce(math.max);
+    final minFatMass = bodyFatMasses.reduce(math.min);
+    final maxFatMass = bodyFatMasses.reduce(math.max);
     final maxSavings =
         records.map((r) => r.cumulativeSavings).reduce(math.max);
 
-    final scale = (maxWeight - minWeight) / (maxSavings == 0 ? 1 : maxSavings);
+    final scale = (maxFatMass - minFatMass) / (maxSavings == 0 ? 1 : maxSavings);
 
     return LineChart(
       LineChartData(
         minX: 0,
         maxX: (records.length - 1).toDouble(),
-        minY: minWeight,
-        maxY: maxWeight,
+        minY: minFatMass,
+        maxY: maxFatMass,
         gridData: const FlGridData(show: true, drawVerticalLine: false),
         titlesData: FlTitlesData(
           bottomTitles: AxisTitles(
@@ -55,7 +55,7 @@ class DualAxisChart extends StatelessWidget {
               showTitles: true,
               reservedSize: 40,
               getTitlesWidget: (value, meta) {
-                final savings = ((value - minWeight) / scale).round();
+                final savings = ((value - minFatMass) / scale).round();
                 return Text('$savings');
               },
             ),
@@ -65,8 +65,8 @@ class DualAxisChart extends StatelessWidget {
         lineBarsData: [
           LineChartBarData(
             spots: [
-              for (int i = 0; i < weights.length; i++)
-                FlSpot(i.toDouble(), weights[i])
+              for (int i = 0; i < bodyFatMasses.length; i++)
+                FlSpot(i.toDouble(), bodyFatMasses[i])
             ],
             isCurved: true,
             color: Colors.orange,
@@ -76,7 +76,7 @@ class DualAxisChart extends StatelessWidget {
           LineChartBarData(
             spots: [
               for (int i = 0; i < records.length; i++)
-                FlSpot(i.toDouble(), minWeight + records[i].cumulativeSavings * scale)
+                FlSpot(i.toDouble(), minFatMass + records[i].cumulativeSavings * scale)
             ],
             isCurved: true,
             color: Colors.blue,

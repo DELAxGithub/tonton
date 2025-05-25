@@ -5,6 +5,7 @@ import '../widgets/dual_axis_chart.dart';
 
 import '../providers/calorie_savings_provider.dart';
 import '../providers/health_provider.dart';
+import '../providers/onboarding_start_date_provider.dart';
 import '../design_system/organisms/hero_piggy_bank_display.dart';
 import '../design_system/templates/standard_page_layout.dart';
 import '../design_system/atoms/tonton_text.dart';
@@ -25,11 +26,27 @@ class ProgressAchievementsScreen extends ConsumerWidget implements AppPage {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final records = ref.watch(calorieSavingsDataProvider);
+    final startDate = ref.watch(onboardingStartDateProvider);
+    final allRecords = ref.watch(calorieSavingsDataProvider);
+
+    // Filter records from start date up to yesterday
+    final today = DateTime.now();
+    final yesterday = DateTime(today.year, today.month, today.day - 1);
+    final records = allRecords.where((r) {
+      if (r.date.isAfter(yesterday)) return false;
+      if (startDate != null && r.date.isBefore(startDate)) return false;
+      return true;
+    }).toList();
+
     final totalSavings =
         records.isNotEmpty ? records.last.cumulativeSavings : 0.0;
-    final weights = records
-        .map((r) => 70 - r.cumulativeSavings / 7700)
+
+    // Placeholder body fat mass calculation
+    final bodyFatMasses = records
+        .map((r) {
+          final weight = 70 - r.cumulativeSavings / 7700;
+          return weight * 0.2; // TODO: use real body fat % data
+        })
         .toList(growable: false);
 
     return provider_pkg.Consumer<HealthProvider>(
@@ -40,7 +57,7 @@ class ProgressAchievementsScreen extends ConsumerWidget implements AppPage {
             const SizedBox(height: Spacing.lg),
             SizedBox(
               height: 200,
-              child: DualAxisChart(records: records, weights: weights),
+              child: DualAxisChart(records: records, bodyFatMasses: bodyFatMasses),
             ),
             const SizedBox(height: Spacing.lg),
             const TontonCardBase(

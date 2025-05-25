@@ -29,6 +29,9 @@ class OnboardingService {
       final now = DateTime.now();
       await setFirstLaunch(now);
       await _startDateNotifier.setDate(now);
+    } else if (_startDateNotifier.state == null) {
+      // Auto-detect start date based on first launch if not set
+      await _startDateNotifier.setDate(firstLaunch);
     }
   }
 

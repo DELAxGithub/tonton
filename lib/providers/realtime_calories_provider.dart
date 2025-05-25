@@ -2,7 +2,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/daily_summary.dart';
 import '../services/daily_summary_service.dart';
-import 'meal_records_provider.dart';
 import 'monthly_progress_provider.dart';
 import 'providers.dart';
 

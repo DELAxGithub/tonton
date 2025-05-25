@@ -34,6 +34,7 @@ class _State extends ConsumerState<AIMealLoggingStep3ConfirmEdit> {
   MealTimeType _mealTime = MealTimeType.lunch;
   DateTime _selectedDate = DateTime.now();
   TimeOfDay _selectedTime = TimeOfDay.now();
+  bool _isSaving = false;
 
   @override
   void initState() {
@@ -80,6 +81,8 @@ class _State extends ConsumerState<AIMealLoggingStep3ConfirmEdit> {
   }
 
   Future<void> _save() async {
+    if (_isSaving) return;
+    setState(() => _isSaving = true);
     final record = MealRecord(
       mealName: _name.text,
       calories: double.tryParse(_calories.text) ?? 0,
@@ -95,9 +98,28 @@ class _State extends ConsumerState<AIMealLoggingStep3ConfirmEdit> {
         _selectedTime.minute,
       ),
     );
-    await ref.read(mealRecordsProvider.notifier).addMealRecord(record);
-    if (!mounted) return;
-    context.go(TontonRoutes.home);
+    try {
+      await ref.read(mealRecordsProvider.notifier).addMealRecord(record);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('${record.mealName}を記録しました！'),
+          backgroundColor: Colors.green,
+        ),
+      );
+      context.go(TontonRoutes.home);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('保存に失敗しました: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isSaving = false);
+    }
   }
 
   @override
@@ -156,8 +178,17 @@ class _State extends ConsumerState<AIMealLoggingStep3ConfirmEdit> {
             ),
             const SizedBox(height: 32),
             FilledButton(
-              onPressed: _save,
-              child: const Text('この内容で記録する！'),
+              onPressed: _isSaving ? null : _save,
+              child: _isSaving
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
+                    )
+                  : const Text('この内容で記録する！'),
             ),
             const SizedBox(height: 8),
             OutlinedButton(

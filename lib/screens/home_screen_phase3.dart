@@ -17,6 +17,7 @@ import '../design_system/molecules/pfc_bar_display.dart';
 import '../design_system/molecules/navigation_link_card.dart';
 import '../design_system/atoms/tonton_button.dart';
 import '../widgets/ai_advice_display_new.dart';
+import '../widgets/todays_meal_records_list.dart';
 import '../utils/icon_mapper.dart';
 import '../theme/tokens.dart';
 import '../routes/router.dart';
@@ -101,6 +102,8 @@ class HomeScreenPhase3 extends ConsumerWidget {
               ),
               dailySavings: summary.netCalories,
             ),
+            const SizedBox(height: Spacing.lg),
+            const TodaysMealRecordsList(),
             const SizedBox(height: Spacing.lg),
             PfcBarDisplay(
               title: '今日の栄養バランス (PFC)',

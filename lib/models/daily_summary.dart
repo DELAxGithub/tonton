@@ -28,6 +28,7 @@ class DailySummary {
   });
 
   double get netCalories => caloriesBurned - caloriesConsumed;
+  double get totalCaloriesBurned => caloriesBurned;
 
   @override
   String toString() {

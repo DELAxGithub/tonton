@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../l10n/app_localizations.dart';
 import '../routes/app_page.dart';
-import '../routes/router.dart';
 import '../utils/icon_mapper.dart';
 
 class MealsScreen extends ConsumerWidget implements AppPage {

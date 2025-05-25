@@ -206,10 +206,10 @@ class CombinedChart extends StatelessWidget {
   final double monthlyTarget;
   
   const CombinedChart({
-    Key? key,
+    super.key,
     required this.records,
     required this.monthlyTarget,
-  }) : super(key: key);
+  });
   
   @override
   Widget build(BuildContext context) {
@@ -351,9 +351,9 @@ class DailyBalanceBars extends StatelessWidget {
   final List<CalorieSavingsRecord> records;
   
   const DailyBalanceBars({
-    Key? key, 
+    super.key,
     required this.records,
-  }) : super(key: key);
+  });
   
   @override
   Widget build(BuildContext context) {
@@ -435,11 +435,11 @@ class DailyBalanceBars extends StatelessWidget {
 
 class SavingsDataTable extends StatelessWidget {
   final List<CalorieSavingsRecord> records;
-  
+
   const SavingsDataTable({
-    Key? key,
+    super.key,
     required this.records,
-  }) : super(key: key);
+  });
   
   @override
   Widget build(BuildContext context) {

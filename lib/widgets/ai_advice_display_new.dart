@@ -236,9 +236,9 @@ class AiAdviceDisplayNew extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(TontonSpacing.xs),
           decoration: BoxDecoration(
-            color: isHighlighted 
+            color: isHighlighted
                 ? theme.colorScheme.primary
-                : theme.colorScheme.surfaceVariant,
+                : theme.colorScheme.surfaceContainerHighest,
             borderRadius: BorderRadius.circular(TontonRadius.sm),
           ),
           child: Icon(

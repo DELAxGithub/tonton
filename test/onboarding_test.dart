@@ -35,8 +35,10 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          onboardingCompletedProvider.overrideWith(
-            (ref) => TestOnboardingCompletionNotifier(false),
+          onboardingCompletedProvider.overrideWithProvider(
+            StateNotifierProvider<TestOnboardingCompletionNotifier, bool>(
+              (ref) => TestOnboardingCompletionNotifier(false),
+            ),
           ),
           routerProvider.overrideWith((ref) => createTestRouter(ref)),
         ],
@@ -52,8 +54,10 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          onboardingCompletedProvider.overrideWith(
-            (ref) => TestOnboardingCompletionNotifier(true),
+          onboardingCompletedProvider.overrideWithProvider(
+            StateNotifierProvider<TestOnboardingCompletionNotifier, bool>(
+              (ref) => TestOnboardingCompletionNotifier(true),
+            ),
           ),
           routerProvider.overrideWith((ref) => createTestRouter(ref)),
         ],

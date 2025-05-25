@@ -515,7 +515,7 @@ class _MealInputScreenNewState extends ConsumerState<MealInputScreenNew> {
             width: double.infinity,
             margin: const EdgeInsets.only(bottom: TontonSpacing.sm),
             decoration: BoxDecoration(
-              color: theme.colorScheme.surfaceVariant.withOpacity(0.3),
+              color: theme.colorScheme.surfaceContainerHighest.withOpacity(0.3),
               borderRadius: BorderRadius.circular(TontonRadius.md),
               border: Border.all(
                 color: theme.colorScheme.outline.withOpacity(0.5),

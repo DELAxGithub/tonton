@@ -28,14 +28,14 @@ void main(List<String> arguments) async {
     // Get image path
     String? imagePath = args['image'] as String?;
     if (imagePath == null || imagePath.isEmpty) {
-      print('Error: No image path provided.');
+      stdout.writeln('Error: No image path provided.');
       printUsage(parser);
       exit(1);
     }
 
     final file = File(imagePath);
     if (!await file.exists()) {
-      print('Error: File not found: $imagePath');
+      stdout.writeln('Error: File not found: $imagePath');
       exit(1);
     }
 
@@ -43,10 +43,10 @@ void main(List<String> arguments) async {
     final bytes = await file.readAsBytes();
     final mimeType = lookupMimeType(imagePath) ?? 'application/octet-stream';
     
-    print('\nImage Information:');
-    print('- Path: $imagePath');
-    print('- Size: ${(bytes.length / 1024).toStringAsFixed(2)} KB');
-    print('- MIME type: $mimeType');
+    stdout.writeln('\nImage Information:');
+    stdout.writeln('- Path: $imagePath');
+    stdout.writeln('- Size: ${(bytes.length / 1024).toStringAsFixed(2)} KB');
+    stdout.writeln('- MIME type: $mimeType');
 
     // Check if we should only show info
     if (args['info'] == true) {
@@ -62,21 +62,21 @@ void main(List<String> arguments) async {
     await processImage(file, outdir, maxWidth, quality);
 
   } catch (e) {
-    print('Error: $e');
+    stdout.writeln('Error: $e');
     printUsage(parser);
     exit(1);
   }
 }
 
 void printUsage(ArgParser parser) {
-  print('Usage: dart test_image_processing.dart --image=path/to/image.jpg [options]');
-  print(parser.usage);
+  stdout.writeln('Usage: dart test_image_processing.dart --image=path/to/image.jpg [options]');
+  stdout.writeln(parser.usage);
 }
 
 Future<void> processImage(File imageFile, String outdir, int maxWidth, int quality) async {
-  print('\nProcessing image:');
-  print('- Max width: $maxWidth px');
-  print('- Quality: $quality%');
+  stdout.writeln('\nProcessing image:');
+  stdout.writeln('- Max width: $maxWidth px');
+  stdout.writeln('- Quality: $quality%');
   
   // Create output directory if it doesn't exist
   final outputDir = Directory(outdir);
@@ -90,14 +90,14 @@ Future<void> processImage(File imageFile, String outdir, int maxWidth, int quali
   // Decode the image
   final img.Image? originalImage = img.decodeImage(imageBytes);
   if (originalImage == null) {
-    print('Error: Failed to decode image.');
+    stdout.writeln('Error: Failed to decode image.');
     return;
   }
 
-  print('\nOriginal image:');
-  print('- Width: ${originalImage.width} px');
-  print('- Height: ${originalImage.height} px');
-  print('- Format: ${originalImage.format.name}');
+  stdout.writeln('\nOriginal image:');
+  stdout.writeln('- Width: ${originalImage.width} px');
+  stdout.writeln('- Height: ${originalImage.height} px');
+  stdout.writeln('- Format: ${originalImage.format.name}');
   
   // Check if resizing is needed
   img.Image processedImage = originalImage;
@@ -107,7 +107,7 @@ Future<void> processImage(File imageFile, String outdir, int maxWidth, int quali
     final ratio = originalImage.width / maxWidth;
     final newHeight = (originalImage.height / ratio).round();
     
-    print('\nResizing image...');
+    stdout.writeln('\nResizing image...');
     processedImage = img.copyResize(
       originalImage,
       width: maxWidth,
@@ -116,17 +116,17 @@ Future<void> processImage(File imageFile, String outdir, int maxWidth, int quali
     );
     resized = true;
     
-    print('- New width: ${processedImage.width} px');
-    print('- New height: ${processedImage.height} px');
+    stdout.writeln('- New width: ${processedImage.width} px');
+    stdout.writeln('- New height: ${processedImage.height} px');
   } else {
-    print('\nImage is already smaller than max width, skipping resize.');
+    stdout.writeln('\nImage is already smaller than max width, skipping resize.');
   }
   
   // Save as JPEG
   final filename = path.basenameWithoutExtension(imageFile.path);
   final jpegOutput = File('$outdir/${filename}_processed.jpg');
   
-  print('\nEncoding as JPEG with quality: $quality%');
+  stdout.writeln('\nEncoding as JPEG with quality: $quality%');
   final jpegBytes = img.encodeJpg(processedImage, quality: quality);
   await jpegOutput.writeAsBytes(jpegBytes);
   
@@ -135,18 +135,18 @@ Future<void> processImage(File imageFile, String outdir, int maxWidth, int quali
   final pngBytes = img.encodePng(processedImage);
   await pngOutput.writeAsBytes(pngBytes);
   
-  print('\nProcessed images saved:');
-  print('- JPEG (${(jpegBytes.length / 1024).toStringAsFixed(2)} KB): ${jpegOutput.path}');
-  print('- PNG (${(pngBytes.length / 1024).toStringAsFixed(2)} KB): ${pngOutput.path}');
+  stdout.writeln('\nProcessed images saved:');
+  stdout.writeln('- JPEG (${(jpegBytes.length / 1024).toStringAsFixed(2)} KB): ${jpegOutput.path}');
+  stdout.writeln('- PNG (${(pngBytes.length / 1024).toStringAsFixed(2)} KB): ${pngOutput.path}');
   
-  print('\nCompression results:');
-  print('- Original size: ${(imageBytes.length / 1024).toStringAsFixed(2)} KB');
-  print('- JPEG size: ${(jpegBytes.length / 1024).toStringAsFixed(2)} KB (${(100 * jpegBytes.length / imageBytes.length).toStringAsFixed(1)}%)');
-  print('- PNG size: ${(pngBytes.length / 1024).toStringAsFixed(2)} KB (${(100 * pngBytes.length / imageBytes.length).toStringAsFixed(1)}%)');
+  stdout.writeln('\nCompression results:');
+  stdout.writeln('- Original size: ${(imageBytes.length / 1024).toStringAsFixed(2)} KB');
+  stdout.writeln('- JPEG size: ${(jpegBytes.length / 1024).toStringAsFixed(2)} KB (${(100 * jpegBytes.length / imageBytes.length).toStringAsFixed(1)}%)');
+  stdout.writeln('- PNG size: ${(pngBytes.length / 1024).toStringAsFixed(2)} KB (${(100 * pngBytes.length / imageBytes.length).toStringAsFixed(1)}%)');
   
   if (resized) {
-    print('- Resized: Yes (from ${originalImage.width}x${originalImage.height} to ${processedImage.width}x${processedImage.height})');
+    stdout.writeln('- Resized: Yes (from ${originalImage.width}x${originalImage.height} to ${processedImage.width}x${processedImage.height})');
   } else {
-    print('- Resized: No');
+    stdout.writeln('- Resized: No');
   }
 }

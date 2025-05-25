@@ -2,7 +2,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../services/onboarding_service.dart'; // Assuming this path is correct
 import 'onboarding_start_date_provider.dart'; // Assuming this path is correct
-import 'onboarding_completion_provider.dart'; // Assuming this path is correct
 
 // 2. All export directives next
 // It seems you want to re-export onboardingCompletedProvider.

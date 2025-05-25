@@ -37,7 +37,6 @@ class AiAdviceService {
       final errorMessage = e.details?.toString() ?? e.toString();
       developer.log('Supabase FunctionException: $errorMessage', name: 'TonTon.AiAdviceService');
       developer.log('Details: ${e.details}', name: 'TonTon.AiAdviceService'); // Log details which might contain response info
-      // print('Response: ${e.response}'); // REMOVE THIS LINE or comment out
 
       String detailedMessage = "Error calling meal advice function";
       if (e.details != null) {

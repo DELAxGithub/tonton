@@ -10,6 +10,7 @@ import '../screens/savings_trend_screen.dart';
 import '../screens/use_savings_screen.dart';
 import '../features/onboarding/onboarding_screen.dart';
 import '../screens/onboarding_set_start_date_screen.dart';
+import '../screens/weight_input_screen.dart';
 import '../providers/onboarding_providers.dart';
 import '../screens/settings_screen.dart';
 import '../screens/progress_achievements_screen.dart';
@@ -33,6 +34,7 @@ class TontonRoutes {
   static const String useSavings = '/use-savings';
   static const String onboardingIntro = '/onboarding';
   static const String onboardingStartDate = '/onboarding/start-date';
+  static const String onboardingWeight = '/onboarding/weight';
   static const String profile = '/profile';
   static const String settings = '/settings';
   static const String progressAchievements = '/progress-achievements';
@@ -107,6 +109,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: TontonRoutes.onboardingStartDate,
         name: 'onboardingStartDate',
         builder: (context, state) => const OnboardingSetStartDateScreen(),
+      ),
+      GoRoute(
+        path: TontonRoutes.onboardingWeight,
+        name: 'onboardingWeight',
+        builder: (context, state) => const WeightInputScreen(),
       ),
 
       // Shell route with bottom navigation

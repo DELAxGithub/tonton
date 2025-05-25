@@ -15,6 +15,7 @@ import '../providers/onboarding_providers.dart';
 import '../screens/settings_screen.dart';
 import '../screens/progress_achievements_screen.dart';
 import '../screens/profile_screen.dart';
+import '../screens/tonton_coach_screen.dart';
 import '../screens/ai_meal_logging/ai_meal_logging_step1_camera.dart';
 import '../screens/ai_meal_logging/ai_meal_logging_step2_analyzing.dart';
 import '../screens/ai_meal_logging/ai_meal_logging_step3_confirm_edit.dart';
@@ -39,6 +40,7 @@ class TontonRoutes {
   static const String profile = '/profile';
   static const String settings = '/settings';
   static const String progressAchievements = '/progress-achievements';
+  static const String tontonCoach = '/tonton-coach';
   static const String aiMealCamera = '/ai-meal/camera';
   static const String aiMealAnalyzing = '/ai-meal/analyzing';
   static const String aiMealConfirm = '/ai-meal/confirm';
@@ -143,6 +145,11 @@ final routerProvider = Provider<GoRouter>((ref) {
             path: TontonRoutes.savingsTrend,
             name: 'savingsTrend',
             builder: (context, state) => const SavingsTrendScreen(),
+          ),
+          GoRoute(
+            path: TontonRoutes.tontonCoach,
+            name: 'tontonCoach',
+            builder: (context, state) => const TontonCoachScreen(),
           ),
         ],
       ),

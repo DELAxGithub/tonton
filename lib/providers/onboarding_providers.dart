@@ -1,6 +1,7 @@
 // 1. All import directives first
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../services/onboarding_service.dart'; // Assuming this path is correct
+import '../services/health_service.dart';
 import 'onboarding_start_date_provider.dart'; // Assuming this path is correct
 
 // 2. All export directives next
@@ -11,11 +12,9 @@ export 'onboarding_completion_provider.dart' show onboardingCompletedProvider;
 // 3. THEN, all other declarations (providers, functions, classes, etc.)
 /// Provides the onboarding service instance.
 final onboardingServiceProvider = Provider<OnboardingService>((ref) {
-  // Ensure onboardingStartDateProvider.notifier is what you intend to read here
-  // Typically, you'd read the provider itself, not just the notifier, unless
-  // OnboardingService specifically needs the Notifier instance.
-  // If OnboardingService needs the Notifier to call methods on it, this is fine.
-  return OnboardingService(ref.read(onboardingStartDateProvider.notifier));
+  final startNotifier = ref.read(onboardingStartDateProvider.notifier);
+  final healthService = HealthService();
+  return OnboardingService(startNotifier, healthService);
 });
 
 /// Provides the first launch timestamp if available.

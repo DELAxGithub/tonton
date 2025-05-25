@@ -110,8 +110,10 @@ void main() async { // Modified to be async
   runApp(
     ProviderScope(
       overrides: [
-        firstLaunchTimestampProvider.overrideWithValue(firstLaunch),
         onboardingStartDateProvider.overrideWith((ref) => startDateNotifier),
+        firstLaunchTimestampProvider.overrideWith(
+          (ref) async => firstLaunch,
+        ),
       ],
       child: const MyApp(),
     ),

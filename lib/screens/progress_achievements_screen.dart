@@ -41,16 +41,21 @@ class ProgressAchievementsScreen extends ConsumerWidget implements AppPage {
     final totalSavings =
         records.isNotEmpty ? records.last.cumulativeSavings : 0.0;
 
-    // Placeholder body fat mass calculation
-    final bodyFatMasses = records
+    // Body fat mass calculation using latest available data
+    final placeholderMasses = records
         .map((r) {
           final weight = 70 - r.cumulativeSavings / 7700;
-          return weight * 0.2; // TODO: use real body fat % data
+          return weight * 0.2;
         })
         .toList(growable: false);
 
     return provider_pkg.Consumer<HealthProvider>(
       builder: (context, hp, child) {
+        final latestMass = hp.yesterdayWeight?.bodyFatMass;
+        final bodyFatMasses = latestMass != null
+            ? List<double>.filled(records.length, latestMass)
+            : placeholderMasses;
+
         return StandardPageLayout(
           children: [
             HeroPiggyBankDisplay(totalSavings: totalSavings),

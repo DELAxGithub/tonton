@@ -51,7 +51,7 @@ class _OnboardingSetStartDateScreenState
         _option == _StartDateOption.specific ? _selectedDate : DateTime.now();
     await ref.read(onboardingStartDateProvider.notifier).setDate(startDate);
     if (!mounted) return;
-    context.go(TontonRoutes.home);
+    context.go(TontonRoutes.onboardingWeight);
   }
 
   @override

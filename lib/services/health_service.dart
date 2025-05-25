@@ -193,10 +193,16 @@ class HealthService {
         }
       }
 
+      double? bodyFatMass;
+      if (bodyFatPercentage != null) {
+        bodyFatMass = weightInKg * bodyFatPercentage;
+      }
+
       final record = WeightRecord(
         weight: weightInKg,
         date: latestWeightData.dateFrom,
         bodyFatPercentage: bodyFatPercentage,
+        bodyFatMass: bodyFatMass,
       );
       
       developer.log('Built weight record: ${record.toString()}', name: 'TonTon.HealthService');

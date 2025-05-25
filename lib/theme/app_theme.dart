@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 /// TonTon app's color palette
 class TontonColors {
   // Primary brand colors
-  static const Color primary = Color(0xFF38A3A5);  // Teal
+  static const Color primary = Color(0xFFF7B6B9);  // Pink
   static const Color secondary = Color(0xFF57CC99); // Green
   static const Color tertiary = Color(0xFF80ED99); // Light Green
 

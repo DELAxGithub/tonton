@@ -6,7 +6,6 @@ import 'package:tonton/main.dart';
 import 'package:tonton/features/onboarding/onboarding_screen.dart';
 import 'package:tonton/screens/home_screen_phase3.dart';
 import 'package:tonton/routes/router.dart';
-import 'package:tonton/providers/onboarding_providers.dart';
 import 'package:tonton/providers/onboarding_completion_provider.dart';
 
 class TestOnboardingCompletionNotifier extends OnboardingCompletionNotifier {

@@ -11,6 +11,9 @@ class OnboardingStartDateNotifier extends StateNotifier<DateTime?> {
 
   final DailySummaryDataService _summaryService;
 
+  /// Exposes the current start date value.
+  DateTime? get current => state;
+
   Future<void> _load() async {
     final prefs = await SharedPreferences.getInstance();
     final iso = prefs.getString('onboardingStartDate');

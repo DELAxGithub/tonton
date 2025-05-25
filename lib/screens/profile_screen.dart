@@ -134,6 +134,7 @@ class ProfileScreen extends ConsumerWidget {
       firstDate: DateTime.now().subtract(const Duration(days: 365)),
       lastDate: DateTime.now(),
     ).then((picked) {
+      if (!context.mounted) return;
       if (picked != null) {
         ref.read(onboardingStartDateProvider.notifier).setDate(picked);
         ScaffoldMessenger.of(context).showSnackBar(

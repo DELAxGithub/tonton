@@ -52,7 +52,7 @@ class OnboardingService {
       await setFirstLaunch(now);
       await _startDateNotifier.setDate(now);
       await requestHealthPermissionsIfNeeded();
-    } else if (_startDateNotifier.state == null) {
+    } else if (_startDateNotifier.current == null) {
       // Auto-detect start date based on first launch if not set
       await _startDateNotifier.setDate(firstLaunch);
       await requestHealthPermissionsIfNeeded();

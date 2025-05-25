@@ -87,8 +87,10 @@ class ProgressAchievementsScreen extends ConsumerWidget implements AppPage {
             ),
           ],
         );
-      },
-    );
+        },
+      );
+    },
+  );
   }
 }
 

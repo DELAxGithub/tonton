@@ -9,7 +9,8 @@ class MainNavigationBar extends StatelessWidget {
   const MainNavigationBar({super.key, required this.location});
 
   int _locationToIndex(String loc) {
-    if (loc.startsWith(TontonRoutes.graphs)) return 2;
+    if (loc.startsWith(TontonRoutes.savingsTrend)) return 2;
+    if (loc.startsWith(TontonRoutes.aiMealCamera)) return 1;
     return 0;
   }
 
@@ -22,7 +23,7 @@ class MainNavigationBar extends StatelessWidget {
         context.go(TontonRoutes.aiMealCamera);
         break;
       case 2:
-        context.go(TontonRoutes.graphs);
+        context.go(TontonRoutes.savingsTrend);
         break;
     }
   }

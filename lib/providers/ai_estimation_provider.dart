@@ -39,22 +39,25 @@ class AIEstimationNotifier extends StateNotifier<AsyncValue<EstimatedMealNutriti
   // which directly processes the image file with Gemini via an Edge Function.
   // The userId parameter is removed as it's not directly needed for this analysis step.
   // Image upload for record persistence will be handled separately.
-  Future<void> estimateNutritionFromImageFile(File imageFile) async {
+  Future<EstimatedMealNutrition?> estimateNutritionFromImageFile(File imageFile) async {
     state = const AsyncValue.loading();
     try {
       // Call the new AIService method that sends the image file directly
       final result = await _aiService.estimateNutritionFromImageFile(imageFile);
       if (result != null) {
         state = AsyncValue.data(result);
+        return result;
       } else {
         // This case might occur if the service method itself returns null without throwing
         // or if the Gemini function returns a valid response that results in null (e.g. no food detected)
         state = AsyncValue.error('Failed to get nutrition data from image.', StackTrace.current);
+        return null;
       }
     } catch (e, stackTrace) {
       // This will catch errors thrown by _aiService.estimateNutritionFromImageFile
       // (e.g., network issues, Edge Function errors, parsing errors)
       state = AsyncValue.error(e, stackTrace);
+      return null;
     }
   }
 }

@@ -53,15 +53,22 @@ class HomeScreenPhase3 extends ConsumerWidget {
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (e, _) => Center(child: Text('Error: $e')),
       data: (summary) {
+        final l10n = AppLocalizations.of(context);
         return StandardPageLayout(
           children: [
             Padding(
               padding: const EdgeInsets.only(bottom: Spacing.md),
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
                     '$greeting、$userName',
                     style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                  IconButton(
+                    icon: Icon(TontonIcons.pigface),
+                    tooltip: l10n.tabSettings,
+                    onPressed: () => context.push(TontonRoutes.settings),
                   ),
                 ],
               ),

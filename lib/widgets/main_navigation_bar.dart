@@ -37,28 +37,32 @@ class MainNavigationBar extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final currentIndex = _locationToIndex(location);
 
-    return BottomNavigationBar(
-      currentIndex: currentIndex,
-      type: BottomNavigationBarType.fixed,
-      onTap: (index) => _onTap(index, context),
-      items: [
-        BottomNavigationBarItem(
-          icon: Icon(TontonIcons.home),
-          label: l10n.tabHome,
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(TontonIcons.activity),
-          label: l10n.tabActivity,
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(TontonIcons.food),
-          label: l10n.tabMeals,
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(TontonIcons.insights),
-          label: l10n.tabInsights,
-        ),
-      ],
+    return BottomAppBar(
+      shape: const CircularNotchedRectangle(),
+      notchMargin: 6,
+      child: BottomNavigationBar(
+        currentIndex: currentIndex,
+        type: BottomNavigationBarType.fixed,
+        onTap: (index) => _onTap(index, context),
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(TontonIcons.home),
+            label: l10n.tabHome,
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(TontonIcons.activity),
+            label: l10n.tabActivity,
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(TontonIcons.food),
+            label: l10n.tabMeals,
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(TontonIcons.insights),
+            label: l10n.tabInsights,
+          ),
+        ],
+      ),
     );
   }
 }

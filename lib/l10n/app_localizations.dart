@@ -51,6 +51,7 @@ class AppLocalizations {
   String get tabMeals => _getString('tabMeals') ?? '';
   String get tabHome => _getString('tabHome') ?? '';
   String get tabInsights => _getString('tabInsights') ?? '';
+  String get tabRecord => _getString('tabRecord') ?? '';
   String get todaysMeals => _getString('todaysMeals') ?? '';
   String get todaysCalories => _getString('todaysCalories') ?? '';
   String get consumed => _getString('consumed') ?? '';

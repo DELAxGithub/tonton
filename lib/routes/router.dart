@@ -18,6 +18,7 @@ import '../screens/profile_screen.dart';
 import '../features/onboarding/onboarding_screen.dart';
 import '../screens/onboarding_set_start_date_screen.dart';
 import '../providers/onboarding_providers.dart';
+import '../l10n/app_localizations.dart';
 import '../screens/settings_screen.dart';
 import '../screens/progress_achievements_screen.dart';
 import '../screens/ai_meal_logging/ai_meal_logging_step1_camera.dart';
@@ -29,6 +30,7 @@ import '../design_system/templates/app_shell.dart';
 import '../models/meal_record.dart';
 import 'dart:io';
 import '../models/estimated_meal_nutrition.dart';
+import '../utils/icon_mapper.dart';
 
 /// Route names for named navigation
 class TontonRoutes {
@@ -125,10 +127,14 @@ final routerProvider = Provider<GoRouter>((ref) {
           builder: (context, state, child) {
             final appPage = child is AppPage ? child as AppPage : null;
             final appBar = appPage?.buildAppBar(context);
-            final fab = appPage?.buildFloatingActionButton(context);
             return AppShell(
               appBar: appBar,
-              floatingActionButton: fab,
+              floatingActionButton: FloatingActionButton(
+                onPressed: () => context.go(TontonRoutes.aiMealCamera),
+                tooltip: AppLocalizations.of(context).tabRecord,
+                child: Icon(TontonIcons.camera),
+              ),
+              floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
               bottomNavigationBar: MainNavigationBar(location: state.matchedLocation),
               body: child,
           );

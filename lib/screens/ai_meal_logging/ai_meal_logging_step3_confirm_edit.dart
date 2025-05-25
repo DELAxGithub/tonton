@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 
 import '../../models/estimated_meal_nutrition.dart';
 import '../../models/meal_record.dart';
@@ -31,6 +32,8 @@ class _State extends ConsumerState<AIMealLoggingStep3ConfirmEdit> {
   late final TextEditingController _fat;
   late final TextEditingController _carbs;
   MealTimeType _mealTime = MealTimeType.lunch;
+  DateTime _selectedDate = DateTime.now();
+  TimeOfDay _selectedTime = TimeOfDay.now();
 
   @override
   void initState() {
@@ -54,7 +57,29 @@ class _State extends ConsumerState<AIMealLoggingStep3ConfirmEdit> {
     super.dispose();
   }
 
-  void _save() {
+  Future<void> _pickDate() async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate,
+      firstDate: DateTime.now().subtract(const Duration(days: 365)),
+      lastDate: DateTime.now().add(const Duration(days: 365)),
+    );
+    if (picked != null) {
+      setState(() => _selectedDate = picked);
+    }
+  }
+
+  Future<void> _pickTime() async {
+    final picked = await showTimePicker(
+      context: context,
+      initialTime: _selectedTime,
+    );
+    if (picked != null) {
+      setState(() => _selectedTime = picked);
+    }
+  }
+
+  Future<void> _save() async {
     final record = MealRecord(
       mealName: _name.text,
       calories: double.tryParse(_calories.text) ?? 0,
@@ -62,8 +87,16 @@ class _State extends ConsumerState<AIMealLoggingStep3ConfirmEdit> {
       fat: double.tryParse(_fat.text) ?? 0,
       carbs: double.tryParse(_carbs.text) ?? 0,
       mealTimeType: _mealTime,
+      consumedAt: DateTime(
+        _selectedDate.year,
+        _selectedDate.month,
+        _selectedDate.day,
+        _selectedTime.hour,
+        _selectedTime.minute,
+      ),
     );
-    ref.read(mealRecordsProvider.notifier).addMealRecord(record);
+    await ref.read(mealRecordsProvider.notifier).addMealRecord(record);
+    if (!mounted) return;
     context.go(TontonRoutes.home);
   }
 
@@ -96,6 +129,19 @@ class _State extends ConsumerState<AIMealLoggingStep3ConfirmEdit> {
             LabeledTextField(label: '脂質', controller: _fat),
             const SizedBox(height: 8),
             LabeledTextField(label: '炭水化物', controller: _carbs),
+            const SizedBox(height: 16),
+            ListTile(
+              leading: const Icon(Icons.calendar_today),
+              title: const Text('いつ食べた？'),
+              subtitle: Text(DateFormat.yMd().format(_selectedDate)),
+              onTap: _pickDate,
+            ),
+            ListTile(
+              leading: const Icon(Icons.access_time),
+              title: const Text('何時に食べた？'),
+              subtitle: Text(_selectedTime.format(context)),
+              onTap: _pickTime,
+            ),
             const SizedBox(height: 16),
             SegmentedButton<MealTimeType>(
               segments: MealTimeType.values

@@ -263,7 +263,7 @@ class _NutritionEditorState extends State<NutritionEditor> {
             data: SliderThemeData(
               activeTrackColor: color,
               inactiveTrackColor:
-                  color.withValues(alpha: (0.2 * 255).round()),
+                  color.withValues(opacity: 0.2),
               thumbColor: color,
             ),
             child: Slider(

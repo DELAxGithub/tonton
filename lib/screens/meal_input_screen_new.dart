@@ -517,11 +517,11 @@ class _MealInputScreenNewState extends ConsumerState<MealInputScreenNew> {
             margin: const EdgeInsets.only(bottom: TontonSpacing.sm),
             decoration: BoxDecoration(
               color: theme.colorScheme.surfaceContainerHighest
-                  .withValues(alpha: (0.3 * 255).round()),
+                  .withValues(opacity: 0.3),
               borderRadius: BorderRadius.circular(TontonRadius.md),
               border: Border.all(
                 color: theme.colorScheme.outline
-                    .withValues(alpha: (0.5 * 255).round()),
+                    .withValues(opacity: 0.5),
                 style: BorderStyle.solid,
               ),
             ),
@@ -533,7 +533,7 @@ class _MealInputScreenNewState extends ConsumerState<MealInputScreenNew> {
                     Icons.add_a_photo,
                     size: 48,
                     color: theme.colorScheme.primary
-                        .withValues(alpha: (0.7 * 255).round()),
+                        .withValues(opacity: 0.7),
                   ),
                   const SizedBox(height: TontonSpacing.sm),
                   Text(
@@ -675,7 +675,7 @@ class _MealInputScreenNewState extends ConsumerState<MealInputScreenNew> {
         // Help text
         Card(
           color: theme.colorScheme.primaryContainer
-              .withValues(alpha: (0.3 * 255).round()),
+              .withValues(opacity: 0.3),
           child: Padding(
             padding: const EdgeInsets.all(TontonSpacing.md),
             child: Column(

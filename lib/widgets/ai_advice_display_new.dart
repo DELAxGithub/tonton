@@ -30,7 +30,7 @@ class AiAdviceDisplayNew extends StatelessWidget {
             padding: const EdgeInsets.all(TontonSpacing.md),
             decoration: BoxDecoration(
               color: theme.colorScheme.primaryContainer
-                  .withValues(alpha: (0.7 * 255).round()),
+                  .withValues(opacity: 0.7),
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(TontonRadius.lg),
                 topRight: Radius.circular(TontonRadius.lg),
@@ -292,10 +292,10 @@ class AiAdviceDisplayNew extends StatelessWidget {
         vertical: TontonSpacing.xs,
       ),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: (0.1 * 255).round()),
+        color: color.withValues(opacity: 0.1),
         borderRadius: BorderRadius.circular(TontonRadius.md),
         border: Border.all(
-          color: color.withValues(alpha: (0.3 * 255).round()),
+          color: color.withValues(opacity: 0.3),
         ),
       ),
       child: Column(

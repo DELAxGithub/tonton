@@ -6,9 +6,6 @@ import '../providers/auth_provider.dart';
 import '../screens/home_screen_new.dart';
 import '../screens/home_screen_phase3.dart';
 import '../config/feature_flags.dart';
-import '../screens/activity_screen.dart';
-import '../screens/meals_screen.dart';
-import '../screens/insights_screen.dart';
 import '../screens/login_screen.dart';
 import '../screens/signup_screen.dart';
 import '../screens/meal_input_screen_new.dart';
@@ -21,6 +18,7 @@ import '../providers/onboarding_providers.dart';
 import '../l10n/app_localizations.dart';
 import '../screens/settings_screen.dart';
 import '../screens/progress_achievements_screen.dart';
+import '../screens/graphs_screen.dart';
 import '../screens/ai_meal_logging/ai_meal_logging_step1_camera.dart';
 import '../screens/ai_meal_logging/ai_meal_logging_step2_analyzing.dart';
 import '../screens/ai_meal_logging/ai_meal_logging_step3_confirm_edit.dart';
@@ -35,9 +33,7 @@ import '../utils/icon_mapper.dart';
 /// Route names for named navigation
 class TontonRoutes {
   static const String home = '/';
-  static const String activity = '/activity';
-  static const String meals = '/meals';
-  static const String insights = '/insights';
+  static const String graphs = '/graphs';
   static const String login = '/login';
   static const String signup = '/signup';
   static const String addMeal = '/add-meal';
@@ -129,12 +125,6 @@ final routerProvider = Provider<GoRouter>((ref) {
             final appBar = appPage?.buildAppBar(context);
             return AppShell(
               appBar: appBar,
-              floatingActionButton: FloatingActionButton(
-                onPressed: () => context.go(TontonRoutes.aiMealCamera),
-                tooltip: AppLocalizations.of(context).tabRecord,
-                child: Icon(TontonIcons.camera),
-              ),
-              floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
               bottomNavigationBar: MainNavigationBar(location: state.matchedLocation),
               body: child,
           );
@@ -149,19 +139,9 @@ final routerProvider = Provider<GoRouter>((ref) {
                     : const HomeScreenNew(),
           ),
           GoRoute(
-            path: TontonRoutes.activity,
-            name: 'activity',
-            builder: (context, state) => const ActivityScreen(),
-          ),
-          GoRoute(
-            path: TontonRoutes.meals,
-            name: 'meals',
-            builder: (context, state) => const MealsScreen(),
-          ),
-          GoRoute(
-            path: TontonRoutes.insights,
-            name: 'insights',
-            builder: (context, state) => const InsightsScreen(),
+            path: TontonRoutes.graphs,
+            name: 'graphs',
+            builder: (context, state) => const GraphsScreen(),
           ),
         ],
       ),

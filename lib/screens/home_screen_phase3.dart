@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../l10n/app_localizations.dart';
 import '../providers/auth_provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../providers/meal_records_provider.dart';
 import '../providers/ai_advice_provider.dart';
 import '../providers/calorie_savings_provider.dart';
@@ -31,6 +32,14 @@ class HomeScreenPhase3 extends ConsumerWidget {
     return 'こんばんは';
   }
 
+  String _displayName(User? user) {
+    final meta = user?.userMetadata ?? {};
+    final name = meta['full_name'] ?? meta['name'] ?? meta['username'];
+    if (name is String && name.isNotEmpty) return name;
+    final email = user?.email ?? '';
+    return email.split('@').first;
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(currentUserProvider);
@@ -47,7 +56,7 @@ class HomeScreenPhase3 extends ConsumerWidget {
     final carbs = todayMeals.fold<double>(0, (sum, m) => sum + m.carbs);
 
     final greeting = _greetingFor(DateTime.now());
-    final userName = user?.userMetadata?['full_name'] ?? user?.email ?? '';
+    final userName = _displayName(user);
 
     return dailySummaryAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
@@ -88,9 +97,24 @@ class HomeScreenPhase3 extends ConsumerWidget {
             PfcBarDisplay(
               title: '今日の栄養バランス (PFC)',
               nutrients: [
-                NutrientBarData(label: 'タンパク質', current: protein, target: 60, color: Colors.red),
-                NutrientBarData(label: '脂質', current: fat, target: 70, color: Colors.orange),
-                NutrientBarData(label: '炭水化物', current: carbs, target: 250, color: Colors.blue),
+                NutrientBarData(
+                  label: 'タンパク質',
+                  current: protein,
+                  target: 60,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+                NutrientBarData(
+                  label: '脂質',
+                  current: fat,
+                  target: 70,
+                  color: Theme.of(context).colorScheme.secondary,
+                ),
+                NutrientBarData(
+                  label: '炭水化物',
+                  current: carbs,
+                  target: 250,
+                  color: Theme.of(context).colorScheme.tertiary,
+                ),
               ],
             ),
             const SizedBox(height: Spacing.lg),

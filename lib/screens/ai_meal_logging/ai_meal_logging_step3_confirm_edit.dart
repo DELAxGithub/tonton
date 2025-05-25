@@ -64,7 +64,7 @@ class _State extends ConsumerState<AIMealLoggingStep3ConfirmEdit> {
       mealTimeType: _mealTime,
     );
     ref.read(mealRecordsProvider.notifier).addMealRecord(record);
-    context.go(TontonRoutes.meals);
+    context.go(TontonRoutes.home);
   }
 
   @override

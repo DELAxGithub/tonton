@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
+import '../utils/color_utils.dart';
 
 /// A card for displaying a health or nutrition metric
 class MetricCard extends StatelessWidget {
@@ -62,7 +63,8 @@ class MetricCard extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.all(TontonSpacing.xs),
                         decoration: BoxDecoration(
-                          color: cardColor.withOpacity(0.2),
+                          color:
+                              cardColor.withValues(alpha: (0.2 * 255).round()),
                           borderRadius: BorderRadius.circular(TontonRadius.sm),
                         ),
                         child: Icon(

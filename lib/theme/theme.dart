@@ -20,8 +20,7 @@ class TontonColors {
 final tontonLightScheme = ColorScheme.fromSeed(
   seedColor: TontonColors.pigPink,
   brightness: Brightness.light,
-  background: TontonColors.offWhite,
-  surface:    TontonColors.surface,
+  surface:    TontonColors.offWhite,
   error:      TontonColors.softRed,
 );
 

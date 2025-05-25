@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import '../utils/color_utils.dart';
 
 import '../enums/meal_time_type.dart';
 import '../models/meal_record.dart';
@@ -515,10 +516,12 @@ class _MealInputScreenNewState extends ConsumerState<MealInputScreenNew> {
             width: double.infinity,
             margin: const EdgeInsets.only(bottom: TontonSpacing.sm),
             decoration: BoxDecoration(
-              color: theme.colorScheme.surfaceContainerHighest.withOpacity(0.3),
+              color: theme.colorScheme.surfaceContainerHighest
+                  .withValues(alpha: (0.3 * 255).round()),
               borderRadius: BorderRadius.circular(TontonRadius.md),
               border: Border.all(
-                color: theme.colorScheme.outline.withOpacity(0.5),
+                color: theme.colorScheme.outline
+                    .withValues(alpha: (0.5 * 255).round()),
                 style: BorderStyle.solid,
               ),
             ),
@@ -529,7 +532,8 @@ class _MealInputScreenNewState extends ConsumerState<MealInputScreenNew> {
                   Icon(
                     Icons.add_a_photo,
                     size: 48,
-                    color: theme.colorScheme.primary.withOpacity(0.7),
+                    color: theme.colorScheme.primary
+                        .withValues(alpha: (0.7 * 255).round()),
                   ),
                   const SizedBox(height: TontonSpacing.sm),
                   Text(
@@ -670,7 +674,8 @@ class _MealInputScreenNewState extends ConsumerState<MealInputScreenNew> {
         
         // Help text
         Card(
-          color: theme.colorScheme.primaryContainer.withOpacity(0.3),
+          color: theme.colorScheme.primaryContainer
+              .withValues(alpha: (0.3 * 255).round()),
           child: Padding(
             padding: const EdgeInsets.all(TontonSpacing.md),
             child: Column(

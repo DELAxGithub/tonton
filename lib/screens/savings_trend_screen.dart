@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:go_router/go_router.dart';
 import '../models/calorie_savings_record.dart';
+import '../utils/color_utils.dart';
 import '../providers/calorie_savings_provider.dart';
 import '../models/dummy_data_scenario.dart';
 import '../design_system/atoms/tonton_button.dart';
@@ -295,7 +296,7 @@ class CombinedChart extends StatelessWidget {
             dotData: const FlDotData(show: true),
             belowBarData: BarAreaData(
               show: true,
-              color: Colors.blue.withOpacity(0.2),
+              color: Colors.blue.withValues(alpha: (0.2 * 255).round()),
             ),
           ),
         ],
@@ -325,7 +326,8 @@ class CombinedChart extends StatelessWidget {
         ),
         lineTouchData: LineTouchData(
           touchTooltipData: LineTouchTooltipData(
-            tooltipBgColor: Colors.blue.withOpacity(0.8),
+            tooltipBgColor:
+                Colors.blue.withValues(alpha: (0.8 * 255).round()),
             getTooltipItems: (List<LineBarSpot> touchedSpots) {
               return touchedSpots.map((LineBarSpot touchedSpot) {
                 final index = touchedSpot.x.toInt();

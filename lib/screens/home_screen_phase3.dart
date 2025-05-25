@@ -7,6 +7,7 @@ import '../providers/auth_provider.dart';
 import '../providers/meal_records_provider.dart';
 import '../providers/ai_advice_provider.dart';
 import '../providers/calorie_savings_provider.dart';
+import '../providers/monthly_progress_provider.dart';
 import '../design_system/templates/standard_page_layout.dart';
 import '../design_system/organisms/hero_piggy_bank_display.dart';
 import '../design_system/organisms/daily_summary_section.dart';

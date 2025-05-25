@@ -143,18 +143,12 @@ class HomeScreenPhase3 extends ConsumerWidget {
                 NavigationLinkCard(
                   icon: TontonIcons.weight,
                   label: '体重ジャーニー',
-                  onTap: () =>
-                      ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('準備中です')), // TODO
-                  ),
+                  onTap: () => context.push(TontonRoutes.progressAchievements),
                 ),
                 NavigationLinkCard(
                   icon: TontonIcons.ai,
                   label: 'トントンコーチ',
-                  onTap: () =>
-                      ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('準備中です')), // TODO
-                  ),
+                  onTap: () => context.push(TontonRoutes.tontonCoach),
                 ),
               ],
             ),

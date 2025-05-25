@@ -89,7 +89,6 @@ class HomeScreenPhase3 extends ConsumerWidget {
             const SizedBox(height: Spacing.lg),
             DailySummarySection(
               eatenCalories: summary.totalCaloriesConsumed,
-              targetCalories: 2000,
               burnedCalories: summary.totalCaloriesBurned,
               dailySavings: summary.netCalories,
             ),

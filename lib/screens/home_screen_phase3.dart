@@ -93,7 +93,7 @@ class HomeScreenPhase3 extends ConsumerWidget {
               eatenCalories: summary.totalCaloriesConsumed,
               burnedCalories: summary.totalCaloriesBurned,
               realtimeBurnedCalories: realtimeSummaryAsync.maybeWhen(
-                data: (s) => s.totalCaloriesBurned,
+                data: (s) => s.caloriesBurned,
                 orElse: () => null,
               ),
               dailySavings: summary.netCalories,

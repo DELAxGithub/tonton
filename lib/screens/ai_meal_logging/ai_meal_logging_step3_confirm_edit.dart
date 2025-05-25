@@ -105,8 +105,16 @@ class _State extends ConsumerState<AIMealLoggingStep3ConfirmEdit> {
         SnackBar(
           content: Text('${record.mealName}を記録しました！'),
           backgroundColor: Colors.green,
+          duration: const Duration(seconds: 2),
         ),
       );
+      // Debugging information for navigation issues
+      print('Navigator mounted: $mounted');
+      print('Current route: ${GoRouter.of(context).location}');
+      // Give the snackbar a moment to appear before navigating
+      await Future.delayed(const Duration(milliseconds: 500));
+
+      if (!mounted) return;
       context.go(TontonRoutes.home);
     } catch (e) {
       if (mounted) {

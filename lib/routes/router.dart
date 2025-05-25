@@ -11,7 +11,6 @@ import '../screens/use_savings_screen.dart';
 import '../features/onboarding/onboarding_screen.dart';
 import '../screens/onboarding_set_start_date_screen.dart';
 import '../providers/onboarding_providers.dart';
-import '../l10n/app_localizations.dart';
 import '../screens/settings_screen.dart';
 import '../screens/progress_achievements_screen.dart';
 import '../screens/graphs_screen.dart';
@@ -21,10 +20,8 @@ import '../screens/ai_meal_logging/ai_meal_logging_step3_confirm_edit.dart';
 import '../widgets/main_navigation_bar.dart';
 import 'app_page.dart';
 import '../design_system/templates/app_shell.dart';
-import '../models/meal_record.dart';
 import 'dart:io';
 import '../models/estimated_meal_nutrition.dart';
-import '../utils/icon_mapper.dart';
 
 /// Route names for named navigation
 class TontonRoutes {

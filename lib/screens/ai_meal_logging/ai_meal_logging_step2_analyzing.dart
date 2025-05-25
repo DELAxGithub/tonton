@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../providers/ai_estimation_provider.dart';
 import '../../routes/router.dart';
+import '../../models/estimated_meal_nutrition.dart';
 
 /// Step 2: Screen showing analysis progress.
 class AIMealLoggingStep2Analyzing extends ConsumerStatefulWidget {

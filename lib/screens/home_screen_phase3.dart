@@ -45,9 +45,12 @@ class HomeScreenPhase3 extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(currentUserProvider);
 
-    final savingsRecords = ref.watch(calorieSavingsDataProvider);
-    final totalSavings =
-        savingsRecords.isNotEmpty ? savingsRecords.last.cumulativeSavings : 0.0;
+    final savingsRecordsAsync = ref.watch(calorieSavingsDataProvider);
+    final totalSavings = savingsRecordsAsync.maybeWhen(
+      data: (records) =>
+          records.isNotEmpty ? records.last.cumulativeSavings : 0.0,
+      orElse: () => 0.0,
+    );
 
     final todayMeals = ref.watch(todaysMealRecordsProvider);
     final dailySummaryAsync = ref.watch(todayCalorieSummaryProvider);

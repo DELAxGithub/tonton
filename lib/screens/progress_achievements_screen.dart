@@ -26,38 +26,43 @@ class ProgressAchievementsScreen extends ConsumerWidget implements AppPage {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final startDate = ref.watch(onboardingStartDateProvider);
-    final allRecords = ref.watch(calorieSavingsDataProvider);
+    final allRecordsAsync = ref.watch(calorieSavingsDataProvider);
 
-    // Filter records from start date up to yesterday
-    final today = DateTime.now();
-    final yesterday = DateTime(today.year, today.month, today.day - 1);
-    final records = allRecords.where((r) {
-      if (r.date.isAfter(yesterday)) return false;
-      if (startDate != null && r.date.isBefore(startDate)) return false;
-      return true;
-    }).toList();
+    return allRecordsAsync.when(
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (e, _) => Center(child: Text('Error: $e')),
+      data: (allRecords) {
+        final startDate = ref.watch(onboardingStartDateProvider);
 
-    final totalSavings =
-        records.isNotEmpty ? records.last.cumulativeSavings : 0.0;
+        // Filter records from start date up to yesterday
+        final today = DateTime.now();
+        final yesterday = DateTime(today.year, today.month, today.day - 1);
+        final records = allRecords.where((r) {
+          if (r.date.isAfter(yesterday)) return false;
+          if (startDate != null && r.date.isBefore(startDate)) return false;
+          return true;
+        }).toList();
 
-    // Body fat mass calculation using latest available data
-    final placeholderMasses = records
-        .map((r) {
-          final weight = 70 - r.cumulativeSavings / 7700;
-          return weight * 0.2;
-        })
-        .toList(growable: false);
+        final totalSavings =
+            records.isNotEmpty ? records.last.cumulativeSavings : 0.0;
 
-    return provider_pkg.Consumer<HealthProvider>(
-      builder: (context, hp, child) {
-        final latestMass = hp.yesterdayWeight?.bodyFatMass;
-        final bodyFatMasses = latestMass != null
-            ? List<double>.filled(records.length, latestMass)
-            : placeholderMasses;
+        // Body fat mass calculation using latest available data
+        final placeholderMasses = records
+            .map((r) {
+              final weight = 70 - r.cumulativeSavings / 7700;
+              return weight * 0.2;
+            })
+            .toList(growable: false);
 
-        return StandardPageLayout(
-          children: [
+        return provider_pkg.Consumer<HealthProvider>(
+          builder: (context, hp, child) {
+            final latestMass = hp.yesterdayWeight?.bodyFatMass;
+            final bodyFatMasses = latestMass != null
+                ? List<double>.filled(records.length, latestMass)
+                : placeholderMasses;
+
+            return StandardPageLayout(
+              children: [
             HeroPiggyBankDisplay(totalSavings: totalSavings),
             const SizedBox(height: Spacing.lg),
             SizedBox(

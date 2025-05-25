@@ -4,7 +4,6 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:go_router/go_router.dart';
 import '../models/calorie_savings_record.dart';
 import '../providers/calorie_savings_provider.dart';
-import '../models/dummy_data_scenario.dart';
 import '../design_system/atoms/tonton_button.dart';
 import '../utils/icon_mapper.dart';
 import '../routes/router.dart';
@@ -52,10 +51,16 @@ class SavingsTrendScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final savingsRecords = ref.watch(calorieSavingsDataProvider);
+    final savingsRecordsAsync = ref.watch(calorieSavingsDataProvider);
     final monthlyTarget = ref.watch(monthlyCalorieGoalProvider);
-    
-    return Scaffold(
+
+    return savingsRecordsAsync.when(
+      loading: () => const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      ),
+      error: (e, _) => Scaffold(body: Center(child: Text('Error: $e'))),
+      data: (savingsRecords) {
+        return Scaffold(
       appBar: AppBar(
         title: const Text('カロリー貯金'),
         leading: IconButton(
@@ -160,45 +165,12 @@ class SavingsTrendScreen extends ConsumerWidget {
             flex: 2,
             child: SavingsDataTable(records: savingsRecords),
           ),
-          
-          // Scenario selector for demo purposes
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text('データシナリオ: '),
-                const SizedBox(width: 8),
-                DropdownButton<DummyDataScenario>(
-                  value: ref.watch(selectedScenarioProvider),
-                  onChanged: (newValue) {
-                    if (newValue != null) {
-                      ref.read(selectedScenarioProvider.notifier)
-                          .setScenario(newValue);
-                    }
-                  },
-                  items: [
-                    const DropdownMenuItem(
-                      value: DummyDataScenario.steadyGrowth,
-                      child: Text('順調に増加'),
-                    ),
-                    const DropdownMenuItem(
-                      value: DummyDataScenario.fluctuating,
-                      child: Text('上下変動'),
-                    ),
-                    const DropdownMenuItem(
-                      value: DummyDataScenario.declining,
-                      child: Text('減少傾向'),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
+
         ],
       ),
     );
-  }
+  },
+);
 }
 
 class CombinedChart extends StatelessWidget {

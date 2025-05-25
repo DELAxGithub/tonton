@@ -41,7 +41,7 @@ class LabeledProgressBar extends StatelessWidget {
     final theme = Theme.of(context);
     final color = progressColor ?? theme.colorScheme.primary;
     final bgColor = backgroundColor ??
-        theme.colorScheme.primaryContainer.withOpacity(0.3);
+        theme.colorScheme.primaryContainer.withValues(alpha: 0.3);
     
     // Calculate percentage for display
     final percentage = (value * 100).clamp(0, 100).toInt();
@@ -135,7 +135,7 @@ class LabeledCircularProgress extends StatelessWidget {
     final theme = Theme.of(context);
     final color = progressColor ?? theme.colorScheme.primary;
     final bgColor = backgroundColor ??
-        theme.colorScheme.primaryContainer.withOpacity(0.3);
+        theme.colorScheme.primaryContainer.withValues(alpha: 0.3);
     
     // Calculate percentage for display
     final percentage = (value * 100).clamp(0, 100).toInt();

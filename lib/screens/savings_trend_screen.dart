@@ -295,7 +295,7 @@ class CombinedChart extends StatelessWidget {
             dotData: const FlDotData(show: true),
             belowBarData: BarAreaData(
               show: true,
-              color: Colors.blue.withOpacity(0.2),
+              color: Colors.blue.withValues(alpha: 0.2),
             ),
           ),
         ],
@@ -326,7 +326,7 @@ class CombinedChart extends StatelessWidget {
         lineTouchData: LineTouchData(
           touchTooltipData: LineTouchTooltipData(
             tooltipBgColor:
-                Colors.blue.withOpacity(0.8),
+                Colors.blue.withValues(alpha: 0.8),
             getTooltipItems: (List<LineBarSpot> touchedSpots) {
               return touchedSpots.map((LineBarSpot touchedSpot) {
                 final index = touchedSpot.x.toInt();

@@ -38,7 +38,8 @@ void main() {
       ProviderScope(
         overrides: [
           onboardingCompletedProvider.overrideWith(
-            () => TestOnboardingCompletionNotifier(false),
+            (ref) => TestOnboardingCompletionNotifier(false)
+                as OnboardingCompletionNotifier,
           ),
           routerProvider.overrideWith((ref) => createTestRouter(ref)),
         ],
@@ -55,7 +56,8 @@ void main() {
       ProviderScope(
         overrides: [
           onboardingCompletedProvider.overrideWith(
-            () => TestOnboardingCompletionNotifier(true),
+            (ref) => TestOnboardingCompletionNotifier(true)
+                as OnboardingCompletionNotifier,
           ),
           routerProvider.overrideWith((ref) => createTestRouter(ref)),
         ],

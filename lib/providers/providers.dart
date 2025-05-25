@@ -4,6 +4,7 @@ export 'ai_advice_provider.dart';
 export 'savings_balance_provider.dart';
 export 'onboarding_start_date_provider.dart';
 export 'onboarding_providers.dart';
+export 'pfc_balance_provider.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../services/meal_data_service.dart';

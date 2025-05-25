@@ -9,16 +9,16 @@ import '../../utils/icon_mapper.dart';
 
 class DailySummarySection extends StatelessWidget {
   final double eatenCalories;
-  final double targetCalories;
   final double burnedCalories;
   final double dailySavings;
+  final double targetCalories;
 
   const DailySummarySection({
     super.key,
     required this.eatenCalories,
-    required this.targetCalories,
     required this.burnedCalories,
     required this.dailySavings,
+    this.targetCalories = 0,
   });
 
   @override

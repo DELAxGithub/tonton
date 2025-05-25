@@ -78,7 +78,7 @@ class _NutrientBar extends StatelessWidget {
         LinearProgressIndicator(
           value: progress,
           minHeight: 6,
-          backgroundColor: nutrient.color.withOpacity(0.2),
+          backgroundColor: nutrient.color.withValues(alpha: 0.2),
           color: nutrient.color,
         ),
         const SizedBox(height: Spacing.xs),

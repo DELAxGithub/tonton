@@ -22,23 +22,27 @@ class _State extends ConsumerState<AIMealLoggingStep2Analyzing> {
   @override
   void initState() {
     super.initState();
-    Future.microtask(() async {
-      ref.read(aiEstimationProvider.notifier)
+    Future.microtask(() {
+      ref
+          .read(aiEstimationProvider.notifier)
           .estimateNutritionFromImageFile(widget.imageFile);
+    });
+    ref.listen<AsyncValue<EstimatedMealNutrition?>>(aiEstimationProvider,
+        (previous, next) {
+      next.whenData((value) {
+        if (value != null && mounted) {
+          context.go(TontonRoutes.aiMealConfirm, extra: {
+            'image': widget.imageFile,
+            'nutrition': value,
+          });
+        }
+      });
     });
   }
 
   @override
   Widget build(BuildContext context) {
     final estimation = ref.watch(aiEstimationProvider);
-    estimation.whenData((value) {
-      if (value != null) {
-        context.go(TontonRoutes.aiMealConfirm, extra: {
-          'image': widget.imageFile,
-          'nutrition': value,
-        });
-      }
-    });
 
     return Scaffold(
       body: Center(

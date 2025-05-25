@@ -75,7 +75,7 @@ class HomeScreenPhase3 extends ConsumerWidget {
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                   IconButton(
-                    icon: Icon(TontonIcons.pigface),
+                    icon: Icon(TontonIcons.settings),
                     tooltip: l10n.tabSettings,
                     onPressed: () => context.push(TontonRoutes.settings),
                   ),
@@ -121,7 +121,7 @@ class HomeScreenPhase3 extends ConsumerWidget {
             TontonButton.primary(
               label: '📷 写真でパシャ！食事をきろく',
               leading: TontonIcons.camera,
-              onPressed: () => context.push(TontonRoutes.addMeal),
+              onPressed: () => context.push(TontonRoutes.aiMealCamera),
             ),
             const SizedBox(height: Spacing.lg),
             Row(
@@ -135,12 +135,18 @@ class HomeScreenPhase3 extends ConsumerWidget {
                 NavigationLinkCard(
                   icon: TontonIcons.weight,
                   label: '体重ジャーニー',
-                  onTap: () {},
+                  onTap: () =>
+                      ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('準備中です')), // TODO
+                  ),
                 ),
                 NavigationLinkCard(
                   icon: TontonIcons.ai,
                   label: 'トントンコーチ',
-                  onTap: () {},
+                  onTap: () =>
+                      ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('準備中です')), // TODO
+                  ),
                 ),
               ],
             ),

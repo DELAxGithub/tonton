@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart'; // For Image Picker
+import '../utils/color_utils.dart';
 import 'package:intl/intl.dart';
 import 'package:go_router/go_router.dart';
 
@@ -533,9 +534,12 @@ class _MealInputScreenState extends ConsumerState<MealInputScreen> {
                 margin: const EdgeInsets.only(top: 8, bottom: 16), // Adjusted margin
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.primaryContainer.withOpacity(0.3),
+                  color: theme.colorScheme.primaryContainer
+                      .withValues(alpha: (0.3 * 255).round()),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: theme.colorScheme.primary.withOpacity(0.5)),
+                  border: Border.all(
+                      color: theme.colorScheme.primary
+                          .withValues(alpha: (0.5 * 255).round())),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

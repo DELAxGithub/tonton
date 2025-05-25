@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../theme/app_theme.dart';
+import '../utils/color_utils.dart';
 
 /// A widget for displaying and editing nutrition information.
 class NutritionEditor extends StatefulWidget {
@@ -261,7 +262,8 @@ class _NutritionEditorState extends State<NutritionEditor> {
           child: SliderTheme(
             data: SliderThemeData(
               activeTrackColor: color,
-              inactiveTrackColor: color.withOpacity(0.2),
+              inactiveTrackColor:
+                  color.withValues(alpha: (0.2 * 255).round()),
               thumbColor: color,
             ),
             child: Slider(

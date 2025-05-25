@@ -1,15 +1,10 @@
-import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tonton/services/ai_service.dart';
 import 'package:flutter/foundation.dart';
 
 void main() {
   group('AIService Image Analysis Tests', () {
-    late AIService aiService;
-    
-    setUp(() {
-      aiService = AIService();
-    });
+    // AIService instance would be created in actual tests
 
     // Test helper to print test info
     void printTestInfo(String testName) {

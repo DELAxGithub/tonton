@@ -47,7 +47,7 @@ class HomeScreenPhase3 extends ConsumerWidget {
     final carbs = todayMeals.fold<double>(0, (sum, m) => sum + m.carbs);
 
     final greeting = _greetingFor(DateTime.now());
-    final userName = user?.userMetadata['full_name'] ?? user?.email ?? '';
+    final userName = user?.userMetadata?['full_name'] ?? user?.email ?? '';
 
     return dailySummaryAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),

@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:provider/provider.dart' as provider_pkg;
+import '../utils/color_utils.dart';
 import 'package:go_router/go_router.dart';
 import 'dart:developer' as developer;
 
@@ -203,7 +204,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                                   ? CupertinoIcons.cart_badge_minus
                                   : Icons.no_food,
                               size: 64,
-                              color: Theme.of(context).colorScheme.primary.withOpacity(0.5),
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .primary
+                                  .withValues(alpha: (0.5 * 255).round()),
                             ),
                             const SizedBox(height: 16),
                             Text(
@@ -216,7 +220,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                             Text(
                               AppLocalizations.of(context).tapAddMeal,
                               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                color: Theme.of(context).colorScheme.onSurfaceVariant.withOpacity(0.7),
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onSurfaceVariant
+                                    .withValues(alpha: (0.7 * 255).round()),
                               ),
                             ),
                             const SizedBox(height: 24),

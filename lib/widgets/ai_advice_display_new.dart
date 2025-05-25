@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/ai_advice_response.dart';
 import '../theme/app_theme.dart';
 import '../utils/icon_mapper.dart';
+import '../utils/color_utils.dart';
 import 'nutrition_summary_card.dart';
 
 /// A visually enhanced display for AI meal advice
@@ -28,7 +29,8 @@ class AiAdviceDisplayNew extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(TontonSpacing.md),
             decoration: BoxDecoration(
-              color: theme.colorScheme.primaryContainer.withOpacity(0.7),
+              color: theme.colorScheme.primaryContainer
+                  .withValues(alpha: (0.7 * 255).round()),
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(TontonRadius.lg),
                 topRight: Radius.circular(TontonRadius.lg),
@@ -290,9 +292,11 @@ class AiAdviceDisplayNew extends StatelessWidget {
         vertical: TontonSpacing.xs,
       ),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: (0.1 * 255).round()),
         borderRadius: BorderRadius.circular(TontonRadius.md),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(
+          color: color.withValues(alpha: (0.3 * 255).round()),
+        ),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,

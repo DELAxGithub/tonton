@@ -1,7 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter/material.dart';
 
 import 'package:tonton/main.dart';
 import 'package:tonton/features/onboarding/onboarding_screen.dart';
@@ -35,10 +34,8 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          onboardingCompletedProvider.overrideWithProvider(
-            StateNotifierProvider<TestOnboardingCompletionNotifier, bool>(
-              (ref) => TestOnboardingCompletionNotifier(false),
-            ),
+          onboardingCompletedProvider.overrideWith(
+            () => TestOnboardingCompletionNotifier(false),
           ),
           routerProvider.overrideWith((ref) => createTestRouter(ref)),
         ],
@@ -54,10 +51,8 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          onboardingCompletedProvider.overrideWithProvider(
-            StateNotifierProvider<TestOnboardingCompletionNotifier, bool>(
-              (ref) => TestOnboardingCompletionNotifier(true),
-            ),
+          onboardingCompletedProvider.overrideWith(
+            () => TestOnboardingCompletionNotifier(true),
           ),
           routerProvider.overrideWith((ref) => createTestRouter(ref)),
         ],

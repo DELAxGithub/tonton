@@ -4,14 +4,17 @@ import '../models/daily_summary.dart';
 import '../services/daily_summary_service.dart';
 import 'meal_records_provider.dart';
 import 'monthly_progress_provider.dart';
+import 'providers.dart';
 
 /// Provides an instance of [DailySummaryService].
 final dailySummaryServiceProvider = Provider<DailySummaryService>((ref) {
   final healthService = ref.watch(healthServiceProvider);
   final mealRecords = ref.read(mealRecordsProvider.notifier);
+  final dataService = ref.read(dailySummaryDataServiceProvider);
   return DailySummaryService(
     healthService: healthService,
     mealRecords: mealRecords,
+    dataService: dataService,
   );
 });
 

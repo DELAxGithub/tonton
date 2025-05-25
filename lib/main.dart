@@ -10,6 +10,7 @@ import 'package:path_provider/path_provider.dart' as path_provider;
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'models/meal_record.dart';
+import 'models/daily_summary.dart';
 import 'enums/meal_time_type.dart';
 import 'providers/health_provider.dart';
 import 'routes/router.dart'; // Import router configuration
@@ -36,11 +37,18 @@ Future<void> _initHive() async {
       Hive.registerAdapter(MealRecordAdapter());
       developer.log('MealRecordAdapter registered.', name: 'TonTon.HiveInit');
     }
+    if (!Hive.isAdapterRegistered(3)) { // DailySummaryAdapter
+      Hive.registerAdapter(DailySummaryAdapter());
+      developer.log('DailySummaryAdapter registered.', name: 'TonTon.HiveInit');
+    }
 
     // Open boxes
     // Using a distinct box name for the main app to avoid conflict with health_poc_app if it shares storage
-    await Hive.openBox<MealRecord>('tonton_meal_records'); 
+    await Hive.openBox<MealRecord>('tonton_meal_records');
     developer.log('Box "tonton_meal_records" opened.', name: 'TonTon.HiveInit');
+
+    await Hive.openBox<DailySummary>('tonton_daily_summaries');
+    developer.log('Box "tonton_daily_summaries" opened.', name: 'TonTon.HiveInit');
 
     // Initialize MealDataService after Hive is ready
     // This assumes MealDataService is a singleton or can be globally accessed/initialized.

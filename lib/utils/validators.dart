@@ -1,5 +1,3 @@
-/// A collection of validator functions for form fields
-
 /// Validates that a string is not empty
 String? validateRequired(String? value) {
   if (value == null || value.trim().isEmpty) {

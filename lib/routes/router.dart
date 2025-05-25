@@ -3,15 +3,11 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
 
 import '../providers/auth_provider.dart';
-import '../screens/home_screen_new.dart';
 import '../screens/home_screen_phase3.dart';
-import '../config/feature_flags.dart';
 import '../screens/login_screen.dart';
 import '../screens/signup_screen.dart';
-import '../screens/meal_input_screen_new.dart';
 import '../screens/savings_trend_screen.dart';
 import '../screens/use_savings_screen.dart';
-import '../screens/profile_screen.dart';
 import '../features/onboarding/onboarding_screen.dart';
 import '../screens/onboarding_set_start_date_screen.dart';
 import '../providers/onboarding_providers.dart';
@@ -133,10 +129,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: TontonRoutes.home,
             name: 'home',
-            builder: (context, state) =>
-                FeatureFlags.usePhase3Design
-                    ? const HomeScreenPhase3()
-                    : const HomeScreenNew(),
+            builder: (context, state) => const HomeScreenPhase3(),
           ),
           GoRoute(
             path: TontonRoutes.graphs,
@@ -146,20 +139,20 @@ final routerProvider = Provider<GoRouter>((ref) {
         ],
       ),
       
-      // Meal routes
-      GoRoute(
-        path: TontonRoutes.addMeal,
-        name: 'addMeal',
-        builder: (context, state) => const MealInputScreenNew(),
-      ),
-      GoRoute(
-        path: TontonRoutes.editMeal,
-        name: 'editMeal',
-        builder: (context, state) {
-          final MealRecord mealRecord = state.extra as MealRecord;
-          return MealInputScreenNew(mealRecord: mealRecord);
-        },
-      ),
+      // Meal routes (temporarily disabled)
+      // GoRoute(
+      //   path: TontonRoutes.addMeal,
+      //   name: 'addMeal',
+      //   builder: (context, state) => const MealInputScreenNew(),
+      // ),
+      // GoRoute(
+      //   path: TontonRoutes.editMeal,
+      //   name: 'editMeal',
+      //   builder: (context, state) {
+      //     final MealRecord mealRecord = state.extra as MealRecord;
+      //     return MealInputScreenNew(mealRecord: mealRecord);
+      //   },
+      // ),
       
       // Savings trend route
       GoRoute(
@@ -173,12 +166,12 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const UseSavingsScreen(),
       ),
 
-      // Profile route
-      GoRoute(
-        path: TontonRoutes.profile,
-        name: 'profile',
-        builder: (context, state) => const ProfileScreen(),
-      ),
+      // Profile route (temporarily disabled)
+      // GoRoute(
+      //   path: TontonRoutes.profile,
+      //   name: 'profile',
+      //   builder: (context, state) => const ProfileScreen(),
+      // ),
       GoRoute(
         path: TontonRoutes.settings,
         name: 'settings',

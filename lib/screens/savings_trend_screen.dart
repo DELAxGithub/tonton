@@ -247,7 +247,7 @@ class CombinedChart extends StatelessWidget {
                 return SideTitleWidget(
                   axisSide: meta.axisSide,
                   child: Text(
-                    '${records[index].dayOfMonth}',
+                    records[index].dayOfMonth.toString(),
                     style: const TextStyle(fontSize: 10),
                   ),
                 );
@@ -389,7 +389,7 @@ class DailyBalanceBars extends StatelessWidget {
                   return SideTitleWidget(
                     axisSide: meta.axisSide,
                     child: Text(
-                      '${records[index].dayOfMonth}',
+                      records[index].dayOfMonth.toString(),
                       style: const TextStyle(fontSize: 10),
                     ),
                   );
@@ -513,7 +513,7 @@ class SavingsDataTable extends StatelessWidget {
                     Expanded(
                       flex: 2,
                       child: Text(
-                        '${record.dayOfMonth}',
+                        record.dayOfMonth.toString(),
                         textAlign: TextAlign.center,
                       ),
                     ),

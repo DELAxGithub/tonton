@@ -206,7 +206,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                               color: Theme.of(context)
                                   .colorScheme
                                   .primary
-                                  .withOpacity(0.5),
+                                  .withValues(alpha: 0.5),
                             ),
                             const SizedBox(height: 16),
                             Text(
@@ -222,7 +222,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                                 color: Theme.of(context)
                                     .colorScheme
                                     .onSurfaceVariant
-                                    .withOpacity(0.7),
+                                    .withValues(alpha: 0.7),
                               ),
                             ),
                             const SizedBox(height: 24),

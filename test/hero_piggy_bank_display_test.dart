@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tonton/design_system/organisms/hero_piggy_bank_display.dart';
-import 'package:tonton/design_system/atoms/tonton_icon.dart';
 import 'package:tonton/utils/icon_mapper.dart';
 
 void main() {

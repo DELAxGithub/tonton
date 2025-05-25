@@ -63,7 +63,7 @@ class MetricCard extends StatelessWidget {
                         padding: const EdgeInsets.all(TontonSpacing.xs),
                         decoration: BoxDecoration(
                           color:
-                              cardColor.withOpacity(0.2),
+                              cardColor.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(TontonRadius.sm),
                         ),
                         child: Icon(

@@ -49,7 +49,7 @@ class MealRecordCard extends StatelessWidget {
                     child: Row(
                       children: [
                         Icon(
-                          mealTimeIcon(mealRecord.mealTimeType),
+                          TontonIcons.mealTimeIcon(mealRecord.mealTimeType),
                           size: 16,
                           color: theme.colorScheme.onPrimaryContainer,
                           semanticLabel: mealRecord.mealTimeType.displayName,
@@ -104,7 +104,7 @@ class MealRecordCard extends StatelessWidget {
                   // Calories
                   _buildNutritionInfo(
                     context,
-                    energyIcon(),
+                    TontonIcons.energy,
                     '${mealRecord.calories.toStringAsFixed(0)} kcal',
                     theme.colorScheme.primary,
                   ),

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
-import '../utils/color_utils.dart';
 
 /// A labeled linear progress bar with customizable appearance
 class LabeledProgressBar extends StatelessWidget {
@@ -42,7 +41,7 @@ class LabeledProgressBar extends StatelessWidget {
     final theme = Theme.of(context);
     final color = progressColor ?? theme.colorScheme.primary;
     final bgColor = backgroundColor ??
-        theme.colorScheme.primaryContainer.withValues(opacity: 0.3);
+        theme.colorScheme.primaryContainer.withOpacity(0.3);
     
     // Calculate percentage for display
     final percentage = (value * 100).clamp(0, 100).toInt();
@@ -136,7 +135,7 @@ class LabeledCircularProgress extends StatelessWidget {
     final theme = Theme.of(context);
     final color = progressColor ?? theme.colorScheme.primary;
     final bgColor = backgroundColor ??
-        theme.colorScheme.primaryContainer.withValues(opacity: 0.3);
+        theme.colorScheme.primaryContainer.withOpacity(0.3);
     
     // Calculate percentage for display
     final percentage = (value * 100).clamp(0, 100).toInt();

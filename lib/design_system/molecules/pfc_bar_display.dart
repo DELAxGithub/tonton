@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../atoms/tonton_card_base.dart';
 import '../atoms/tonton_text.dart';
 import '../../theme/tokens.dart';
-import '../../utils/color_utils.dart';
 
 class NutrientBarData {
   final String label;
@@ -80,7 +79,7 @@ class _NutrientBar extends StatelessWidget {
           value: progress,
           minHeight: 8,
           backgroundColor:
-              nutrient.color.withValues(opacity: 0.2),
+              nutrient.color.withOpacity(0.2),
           color: nutrient.color,
         ),
         const SizedBox(height: Spacing.xs),

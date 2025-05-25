@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-import '../utils/color_utils.dart';
 
 import '../enums/meal_time_type.dart';
 import '../models/meal_record.dart';
@@ -517,11 +516,11 @@ class _MealInputScreenNewState extends ConsumerState<MealInputScreenNew> {
             margin: const EdgeInsets.only(bottom: TontonSpacing.sm),
             decoration: BoxDecoration(
               color: theme.colorScheme.surfaceContainerHighest
-                  .withValues(opacity: 0.3),
+                  .withOpacity(0.3),
               borderRadius: BorderRadius.circular(TontonRadius.md),
               border: Border.all(
                 color: theme.colorScheme.outline
-                    .withValues(opacity: 0.5),
+                    .withOpacity(0.5),
                 style: BorderStyle.solid,
               ),
             ),
@@ -533,7 +532,7 @@ class _MealInputScreenNewState extends ConsumerState<MealInputScreenNew> {
                     Icons.add_a_photo,
                     size: 48,
                     color: theme.colorScheme.primary
-                        .withValues(opacity: 0.7),
+                        .withOpacity(0.7),
                   ),
                   const SizedBox(height: TontonSpacing.sm),
                   Text(
@@ -675,7 +674,7 @@ class _MealInputScreenNewState extends ConsumerState<MealInputScreenNew> {
         // Help text
         Card(
           color: theme.colorScheme.primaryContainer
-              .withValues(opacity: 0.3),
+              .withOpacity(0.3),
           child: Padding(
             padding: const EdgeInsets.all(TontonSpacing.md),
             child: Column(

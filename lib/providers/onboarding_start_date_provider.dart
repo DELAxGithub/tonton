@@ -1,10 +1,15 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../services/daily_summary_data_service.dart';
+import 'providers.dart';
+
 class OnboardingStartDateNotifier extends StateNotifier<DateTime?> {
-  OnboardingStartDateNotifier() : super(null) {
+  OnboardingStartDateNotifier(this._summaryService) : super(null) {
     _load();
   }
+
+  final DailySummaryDataService _summaryService;
 
   Future<void> _load() async {
     final prefs = await SharedPreferences.getInstance();
@@ -16,9 +21,15 @@ class OnboardingStartDateNotifier extends StateNotifier<DateTime?> {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('onboardingStartDate', date.toIso8601String());
     state = date;
+    // Clear cached summaries so they refresh for the new start date
+    await _summaryService.clearAll();
   }
 }
 
 final onboardingStartDateProvider =
     StateNotifierProvider<OnboardingStartDateNotifier, DateTime?>(
-        (ref) => OnboardingStartDateNotifier());
+  (ref) {
+    final dataService = ref.read(dailySummaryDataServiceProvider);
+    return OnboardingStartDateNotifier(dataService);
+  },
+);

@@ -17,6 +17,7 @@ import 'routes/router.dart'; // Import router configuration
 import 'services/onboarding_service.dart';
 import 'providers/onboarding_providers.dart';
 import 'providers/onboarding_start_date_provider.dart';
+import 'services/health_service.dart';
 import 'theme/app_theme.dart'; // Import application theme
 import 'l10n/app_localizations.dart';
 
@@ -111,7 +112,8 @@ void main() async { // Modified to be async
   await _initHive(); // Added Hive initialization call
   developer.log('TonTon App starting after initialization...', name: 'TonTon.main');
   final startDateNotifier = OnboardingStartDateNotifier();
-  final onboardingService = OnboardingService(startDateNotifier);
+  final onboardingService =
+      OnboardingService(startDateNotifier, HealthService());
   await onboardingService.ensureInitialized();
   final firstLaunch = await onboardingService.getFirstLaunch();
 

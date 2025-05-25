@@ -4,7 +4,7 @@ import 'pfc_breakdown.dart';
 class UserGoals {
   /// Default ratio used when no custom value is provided.
   static const PfcRatio defaultPfcRatio =
-      PfcRatio(protein: 0.3, fat: 0.2, carbohydrate: 0.5);
+      const PfcRatio(protein: 0.3, fat: 0.2, carbohydrate: 0.5);
 
   /// Desired PFC ratio (should sum to 1.0). Defaults to [defaultPfcRatio].
   final PfcRatio pfcRatio;

@@ -64,6 +64,12 @@ class _HeroPiggyBankDisplayState extends State<HeroPiggyBankDisplay>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    Color pigColor = theme.colorScheme.primary;
+    if (widget.totalSavings >= 1000) {
+      pigColor = theme.colorScheme.secondary;
+    } else if (widget.totalSavings >= 500) {
+      pigColor = theme.colorScheme.tertiary;
+    }
     return TontonCardBase(
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -76,7 +82,7 @@ class _HeroPiggyBankDisplayState extends State<HeroPiggyBankDisplay>
                 TontonIcon(
                   TontonIcons.piggybank,
                   size: 64,
-                  color: theme.colorScheme.primary,
+                  color: pigColor,
                 ),
                 AnimatedBuilder(
                   animation: _controller,
@@ -108,11 +114,11 @@ class _HeroPiggyBankDisplayState extends State<HeroPiggyBankDisplay>
             '+${widget.totalSavings.toStringAsFixed(0)} kcal',
             style: theme.textTheme.headlineMedium?.copyWith(
               fontWeight: FontWeight.bold,
-              color: theme.colorScheme.primary,
+              color: pigColor,
             ),
           ),
           const SizedBox(height: Spacing.sm),
-          TontonButton.secondary(
+          TontonButton.text(
             label: '貯金をつかう',
             leading: TontonIcons.present,
             onPressed: widget.onUsePressed,

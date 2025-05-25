@@ -9,6 +9,7 @@ export 'realtime_calories_provider.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../services/meal_data_service.dart';
+import '../services/daily_summary_data_service.dart';
 
 // Provider for MealDataService
 // This service should be initialized, perhaps in main.dart or via a FutureProvider if async init is complex.
@@ -25,5 +26,10 @@ final mealDataServiceProvider = Provider<MealDataService>((ref) {
   // It's better to ensure init is called. One way is to make the provider a FutureProvider
   // or ensure MealDataService handles its initialization robustly if init() isn't called before use.
   // The current MealDataService.init() tries to get an open box or open it, which is reasonable.
+  return service;
+});
+
+final dailySummaryDataServiceProvider = Provider<DailySummaryDataService>((ref) {
+  final service = DailySummaryDataService();
   return service;
 });

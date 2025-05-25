@@ -10,6 +10,7 @@ import '../../utils/icon_mapper.dart';
 class DailySummarySection extends StatelessWidget {
   final double eatenCalories;
   final double burnedCalories;
+  final double? realtimeBurnedCalories;
   final double dailySavings;
   final double targetCalories;
 
@@ -17,6 +18,7 @@ class DailySummarySection extends StatelessWidget {
     super.key,
     required this.eatenCalories,
     required this.burnedCalories,
+    this.realtimeBurnedCalories,
     required this.dailySavings,
     this.targetCalories = 0,
   });
@@ -65,6 +67,15 @@ class DailySummarySection extends StatelessWidget {
             ),
           ],
         ),
+        if (realtimeBurnedCalories != null &&
+            realtimeBurnedCalories != burnedCalories)
+          Padding(
+            padding: const EdgeInsets.only(top: Spacing.xs),
+            child: TontonText(
+              'リアルタイム: ${realtimeBurnedCalories!.toStringAsFixed(0)} kcal',
+              style: theme.textTheme.bodySmall,
+            ),
+          ),
       ],
     );
   }

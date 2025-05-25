@@ -196,6 +196,20 @@ class MonthlyProgressWidget extends ConsumerWidget {
             ),
           ],
         ),
+        if (summary.workoutCalories != summary.totalCaloriesBurned)
+          Padding(
+            padding: const EdgeInsets.only(top: 2.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('  • Workout:', style: theme.textTheme.bodySmall),
+                Text(
+                  '${summary.workoutCalories.toStringAsFixed(0)} kcal',
+                  style: theme.textTheme.bodySmall,
+                ),
+              ],
+            ),
+          ),
         const SizedBox(height: 4),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,

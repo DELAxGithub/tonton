@@ -24,12 +24,13 @@ class CalorieCalculationService {
     final meals = mealRecordsProvider.getMealRecordsForDate(normalizedDate);
     final totalCaloriesConsumed = meals.fold(0.0, (sum, meal) => sum + meal.calories);
     
-    // Get total calories burned from HealthKit
+    // Get total calories burned and workout calories from HealthKit
     final activitySummary = await healthService.getActivitySummary(normalizedDate);
     final totalCaloriesBurned = activitySummary.totalCalories;
+    final workoutCalories = activitySummary.workoutCalories;
     
     developer.log(
-      'Daily summary: consumed=$totalCaloriesConsumed, burned=$totalCaloriesBurned', 
+      'Daily summary: consumed=$totalCaloriesConsumed, totalBurned=$totalCaloriesBurned, workout=$workoutCalories',
       name: 'TonTon.CalorieCalculationService'
     );
     
@@ -37,6 +38,7 @@ class CalorieCalculationService {
       date: normalizedDate,
       totalCaloriesConsumed: totalCaloriesConsumed,
       totalCaloriesBurned: totalCaloriesBurned,
+      workoutCalories: workoutCalories,
     );
   }
   

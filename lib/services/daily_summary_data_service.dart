@@ -42,5 +42,14 @@ class DailySummaryDataService {
     if (!isInitialized) return [];
     return _box!.values.toList();
   }
+
+  /// Clears all cached summaries so they can be recomputed.
+  Future<void> clearAll() async {
+    if (!isInitialized) {
+      await init();
+    }
+    await _box!.clear();
+    await _box!.flush();
+  }
 }
 

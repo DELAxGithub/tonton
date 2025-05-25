@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -26,7 +27,7 @@ void main() {
       mockImageFile = File('test/assets/test_food_image.jpg');
       // If running on CI where file might not exist, create a dummy file
       if (!mockImageFile.existsSync()) {
-        print('Warning: Test image file does not exist. Using a dummy file instead.');
+        debugPrint('Warning: Test image file does not exist. Using a dummy file instead.');
         mockImageFile = File('test/assets/dummy.jpg');
         if (!mockImageFile.existsSync()) {
           mockImageFile.createSync(recursive: true);

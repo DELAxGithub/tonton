@@ -7,7 +7,7 @@ import '../models/daily_calorie_summary.dart';
 import '../screens/savings_trend_screen.dart';
 
 class MonthlyProgressWidget extends ConsumerWidget {
-  const MonthlyProgressWidget({Key? key}) : super(key: key);
+  const MonthlyProgressWidget({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

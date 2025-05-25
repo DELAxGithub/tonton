@@ -70,8 +70,6 @@ class _HomeScreenNewState extends ConsumerState<HomeScreenNew> implements AppPag
   
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-
     // Calorie savings data (dummy/demo from provider)
     final savingsRecords = ref.watch(calorieSavingsDataProvider);
     final totalSavings =

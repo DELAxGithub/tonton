@@ -145,7 +145,7 @@ class TrendBadge extends StatelessWidget {
     
     // Choose color based on goodness
     final Color badgeColor = isNeutral
-        ? theme.colorScheme.surfaceVariant
+        ? theme.colorScheme.surfaceContainerHighest
         : isGood
             ? TontonColors.success
             : TontonColors.error;

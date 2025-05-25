@@ -33,7 +33,6 @@ class HomeScreenPhase3 extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context);
     final user = ref.watch(currentUserProvider);
 
     final savingsRecords = ref.watch(calorieSavingsDataProvider);

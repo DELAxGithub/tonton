@@ -3,6 +3,8 @@ import 'package:go_router/go_router.dart';
 
 import '../providers/auth_provider.dart';
 import '../screens/home_screen_new.dart';
+import '../screens/home_screen_phase3.dart';
+import '../config/feature_flags.dart';
 import '../screens/activity_screen.dart';
 import '../screens/meals_screen.dart';
 import '../screens/insights_screen.dart';
@@ -134,7 +136,10 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: TontonRoutes.home,
             name: 'home',
-            builder: (context, state) => const HomeScreenNew(),
+            builder: (context, state) =>
+                FeatureFlags.usePhase3Design
+                    ? const HomeScreenPhase3()
+                    : const HomeScreenNew(),
           ),
           GoRoute(
             path: TontonRoutes.activity,

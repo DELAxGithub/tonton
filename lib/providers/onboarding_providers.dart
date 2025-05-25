@@ -24,12 +24,13 @@ final onboardingServiceProvider = Provider<OnboardingService>((ref) {
 /// If this is intended as a placeholder, that's fine. If it's supposed
 /// to actually provide a timestamp, its implementation will need to be updated
 /// (e.g., by reading from OnboardingService or SharedPreferences).
-final firstLaunchTimestampProvider = Provider<DateTime?>((ref) {
-  // Placeholder: Needs to be implemented if it should return a real value.
-  // For example, you might want to read it from the onboardingService:
-  // final onboardingService = ref.watch(onboardingServiceProvider);
-  // return onboardingService.getFirstLaunchTimestamp(); // Assuming service has such a method
-  return null; // Current implementation
+/// Provides the persisted first launch timestamp from [OnboardingService].
+///
+/// Returns `null` if the app has not persisted a timestamp yet. The value is
+/// loaded asynchronously from `SharedPreferences` via [OnboardingService].
+final firstLaunchTimestampProvider = FutureProvider<DateTime?>((ref) async {
+  final onboardingService = ref.watch(onboardingServiceProvider);
+  return onboardingService.getFirstLaunch();
 });
 
 // Any other providers or declarations for this file would follow here.

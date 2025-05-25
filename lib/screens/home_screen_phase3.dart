@@ -9,6 +9,7 @@ import '../providers/meal_records_provider.dart';
 import '../providers/ai_advice_provider.dart';
 import '../providers/calorie_savings_provider.dart';
 import '../providers/monthly_progress_provider.dart';
+import '../providers/realtime_calories_provider.dart';
 import '../design_system/templates/standard_page_layout.dart';
 import '../design_system/organisms/hero_piggy_bank_display.dart';
 import '../design_system/organisms/daily_summary_section.dart';
@@ -50,6 +51,7 @@ class HomeScreenPhase3 extends ConsumerWidget {
 
     final todayMeals = ref.watch(todaysMealRecordsProvider);
     final dailySummaryAsync = ref.watch(todayCalorieSummaryProvider);
+    final realtimeSummaryAsync = ref.watch(realtimeDailySummaryProvider);
 
     final protein = todayMeals.fold<double>(0, (sum, m) => sum + m.protein);
     final fat = todayMeals.fold<double>(0, (sum, m) => sum + m.fat);
@@ -90,6 +92,10 @@ class HomeScreenPhase3 extends ConsumerWidget {
             DailySummarySection(
               eatenCalories: summary.totalCaloriesConsumed,
               burnedCalories: summary.totalCaloriesBurned,
+              realtimeBurnedCalories: realtimeSummaryAsync.maybeWhen(
+                data: (s) => s.totalCaloriesBurned,
+                orElse: () => null,
+              ),
               dailySavings: summary.netCalories,
             ),
             const SizedBox(height: Spacing.lg),

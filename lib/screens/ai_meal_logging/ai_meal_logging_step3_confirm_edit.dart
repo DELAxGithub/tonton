@@ -117,7 +117,11 @@ class _State extends ConsumerState<AIMealLoggingStep3ConfirmEdit> {
           children: [
             SizedBox(
               height: 150,
-              child: Image.file(widget.imageFile, fit: BoxFit.cover),
+              child: Image.file(
+                widget.imageFile,
+                fit: BoxFit.cover,
+                filterQuality: FilterQuality.high,
+              ),
             ),
             const SizedBox(height: 16),
             LabeledTextField(label: '料理名', controller: _name),

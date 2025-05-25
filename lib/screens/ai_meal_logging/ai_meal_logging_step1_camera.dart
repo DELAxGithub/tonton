@@ -15,9 +15,7 @@ class AIMealLoggingStep1Camera extends ConsumerWidget {
     final picker = ImagePicker();
     final XFile? file = await picker.pickImage(
       source: source,
-      maxWidth: 1800,
-      maxHeight: 1800,
-      imageQuality: 88,
+      imageQuality: 100,
     );
     if (file != null && context.mounted) {
       context.go(TontonRoutes.aiMealAnalyzing, extra: file.path);

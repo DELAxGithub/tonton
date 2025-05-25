@@ -84,24 +84,42 @@ class _State extends ConsumerState<AIMealLoggingStep3ConfirmEdit> {
   Future<void> _save() async {
     if (_isSaving) return;
     setState(() => _isSaving = true);
-    final record = MealRecord(
-      mealName: _name.text,
-      calories: double.tryParse(_calories.text) ?? 0,
-      protein: double.tryParse(_protein.text) ?? 0,
-      fat: double.tryParse(_fat.text) ?? 0,
-      carbs: double.tryParse(_carbs.text) ?? 0,
-      mealTimeType: _mealTime,
-      consumedAt: DateTime(
-        _selectedDate.year,
-        _selectedDate.month,
-        _selectedDate.day,
-        _selectedTime.hour,
-        _selectedTime.minute,
-      ),
-    );
+
     try {
-      await ref.read(mealRecordsProvider.notifier).addMealRecord(record);
-      if (!mounted) return;
+      developer.log('=== 保存処理開始 ===', name: 'SaveDebug');
+      developer.log('料理名: ${_name.text}', name: 'SaveDebug');
+      developer.log('カロリー: ${_calories.text}', name: 'SaveDebug');
+
+      final record = MealRecord(
+        mealName: _name.text,
+        calories: double.tryParse(_calories.text) ?? 0,
+        protein: double.tryParse(_protein.text) ?? 0,
+        fat: double.tryParse(_fat.text) ?? 0,
+        carbs: double.tryParse(_carbs.text) ?? 0,
+        mealTimeType: _mealTime,
+        consumedAt: DateTime(
+          _selectedDate.year,
+          _selectedDate.month,
+          _selectedDate.day,
+          _selectedTime.hour,
+          _selectedTime.minute,
+        ),
+      );
+
+      developer.log('MealRecord作成完了', name: 'SaveDebug');
+      developer.log('Provider取得前', name: 'SaveDebug');
+      final notifier = ref.read(mealRecordsProvider.notifier);
+      developer.log('Provider取得後: $notifier', name: 'SaveDebug');
+
+      await notifier.addMealRecord(record);
+      developer.log('addMealRecord完了', name: 'SaveDebug');
+
+      if (!mounted) {
+        developer.log('Widget is not mounted!', name: 'SaveDebug');
+        return;
+      }
+
+      developer.log('SnackBar表示前', name: 'SaveDebug');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('${record.mealName}を記録しました！'),
@@ -109,26 +127,34 @@ class _State extends ConsumerState<AIMealLoggingStep3ConfirmEdit> {
           duration: const Duration(seconds: 2),
         ),
       );
-      // Debugging information for navigation issues
-      final location = GoRouterState.of(context).uri.toString();
-      developer.log('Navigator mounted: $mounted',
-          name: 'TonTon.AIMealLoggingStep3');
-      developer.log('Current route: $location',
-          name: 'TonTon.AIMealLoggingStep3');
-      // Give the snackbar a moment to appear before navigating
-      await Future.delayed(const Duration(milliseconds: 500));
+      developer.log('SnackBar表示後', name: 'SaveDebug');
+
+      await Future.delayed(const Duration(milliseconds: 800));
 
       if (!mounted) return;
+
+      developer.log('ナビゲーション前', name: 'SaveDebug');
       context.go(TontonRoutes.home);
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('保存に失敗しました: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
+      developer.log('ナビゲーション後', name: 'SaveDebug');
+    } catch (e, stack) {
+      developer.log('=== エラー発生 ===',
+          name: 'SaveError', error: e, stackTrace: stack);
+
+      if (!mounted) return;
+      setState(() => _isSaving = false);
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('エラー'),
+          content: Text('保存に失敗しました:\n$e'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
     } finally {
       if (mounted) setState(() => _isSaving = false);
     }

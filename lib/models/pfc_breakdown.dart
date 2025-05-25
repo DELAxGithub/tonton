@@ -44,7 +44,7 @@ class PfcRatio {
   final double fat;
   final double carbohydrate;
 
-  PfcRatio({
+  const PfcRatio({
     required this.protein,
     required this.fat,
     required this.carbohydrate,

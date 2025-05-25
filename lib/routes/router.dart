@@ -13,7 +13,6 @@ import '../screens/onboarding_set_start_date_screen.dart';
 import '../providers/onboarding_providers.dart';
 import '../screens/settings_screen.dart';
 import '../screens/progress_achievements_screen.dart';
-import '../screens/graphs_screen.dart';
 import '../screens/ai_meal_logging/ai_meal_logging_step1_camera.dart';
 import '../screens/ai_meal_logging/ai_meal_logging_step2_analyzing.dart';
 import '../screens/ai_meal_logging/ai_meal_logging_step3_confirm_edit.dart';
@@ -26,7 +25,6 @@ import '../models/estimated_meal_nutrition.dart';
 /// Route names for named navigation
 class TontonRoutes {
   static const String home = '/';
-  static const String graphs = '/graphs';
   static const String login = '/login';
   static const String signup = '/signup';
   static const String addMeal = '/add-meal';
@@ -129,9 +127,14 @@ final routerProvider = Provider<GoRouter>((ref) {
             builder: (context, state) => const HomeScreenPhase3(),
           ),
           GoRoute(
-            path: TontonRoutes.graphs,
-            name: 'graphs',
-            builder: (context, state) => const GraphsScreen(),
+            path: TontonRoutes.aiMealCamera,
+            name: 'aiMealCamera',
+            builder: (context, state) => const AIMealLoggingStep1Camera(),
+          ),
+          GoRoute(
+            path: TontonRoutes.savingsTrend,
+            name: 'savingsTrend',
+            builder: (context, state) => const SavingsTrendScreen(),
           ),
         ],
       ),
@@ -151,12 +154,6 @@ final routerProvider = Provider<GoRouter>((ref) {
       //   },
       // ),
       
-      // Savings trend route
-      GoRoute(
-        path: TontonRoutes.savingsTrend,
-        name: 'savingsTrend',
-        builder: (context, state) => const SavingsTrendScreen(),
-      ),
       GoRoute(
         path: TontonRoutes.useSavings,
         name: 'useSavings',
@@ -182,11 +179,6 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
 
       // AI meal logging flow
-      GoRoute(
-        path: TontonRoutes.aiMealCamera,
-        name: 'aiMealCamera',
-        builder: (context, state) => const AIMealLoggingStep1Camera(),
-      ),
       GoRoute(
         path: TontonRoutes.aiMealAnalyzing,
         name: 'aiMealAnalyzing',

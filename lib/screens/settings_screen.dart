@@ -19,12 +19,16 @@ class SettingsScreen extends ConsumerWidget {
           ListTile(
             leading: Icon(TontonIcons.profile),
             title: const Text('プロフィール編集'),
-            onTap: () {},
+            onTap: () => ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('準備中です')), // TODO
+            ),
           ),
           ListTile(
             leading: Icon(TontonIcons.info),
             title: const Text('アプリ情報'),
-            onTap: () {},
+            onTap: () => ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('準備中です')), // TODO
+            ),
           ),
           const SizedBox(height: 24),
           TontonButton.secondary(

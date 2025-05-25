@@ -142,7 +142,8 @@ class MyApp extends ConsumerWidget {
         locale: const Locale('ja'),
         debugShowCheckedModeBanner: true,
         theme: TontonTheme.light,
-        darkTheme: TontonTheme.dark,
+        // darkTheme: TontonTheme.dark,
+        themeMode: ThemeMode.light,
         localizationsDelegates: const [
           AppLocalizations.delegate,
           GlobalMaterialLocalizations.delegate,

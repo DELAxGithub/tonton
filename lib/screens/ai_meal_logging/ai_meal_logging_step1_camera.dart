@@ -43,7 +43,7 @@ class AIMealLoggingStep1Camera extends ConsumerWidget {
             left: 8,
             child: IconButton(
               icon: const Icon(Icons.close, color: Colors.white),
-              onPressed: () => context.pop(),
+              onPressed: () => context.go(TontonRoutes.home),
             ),
           ),
           Positioned(

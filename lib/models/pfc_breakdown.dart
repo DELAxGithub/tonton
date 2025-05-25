@@ -48,8 +48,10 @@ class PfcRatio {
     required this.protein,
     required this.fat,
     required this.carbohydrate,
-  }) : assert(
-            (protein + fat + carbohydrate - 1.0).abs() < 0.01,
+  })
+      : assert(
+            (protein + fat + carbohydrate) >= 0.99 &&
+                (protein + fat + carbohydrate) <= 1.01,
             'PFC ratios must sum to 1.0');
 
   Map<String, dynamic> toJson() => {

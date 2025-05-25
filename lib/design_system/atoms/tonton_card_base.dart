@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../../theme/tokens.dart';
-import '../../utils/color_utils.dart';
 
 class TontonCardBase extends StatelessWidget {
   final Widget child;
@@ -17,7 +16,7 @@ class TontonCardBase extends StatelessWidget {
     return Material(
       color: Theme.of(context).colorScheme.surface,
       elevation: elevation,
-      shadowColor: Colors.black.withValues(opacity: 0.1),
+      shadowColor: Colors.black.withOpacity(0.1),
       borderRadius: BorderRadius.circular(Radii.md.x),
       child: Padding(
         padding: const EdgeInsets.all(Spacing.md),

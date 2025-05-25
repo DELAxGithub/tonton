@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:provider/provider.dart' as provider_pkg;
-import '../utils/color_utils.dart';
 import 'package:go_router/go_router.dart';
 import 'dart:developer' as developer;
 
@@ -206,7 +206,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                               color: Theme.of(context)
                                   .colorScheme
                                   .primary
-                                  .withValues(opacity: 0.5),
+                                  .withOpacity(0.5),
                             ),
                             const SizedBox(height: 16),
                             Text(
@@ -222,7 +222,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                                 color: Theme.of(context)
                                     .colorScheme
                                     .onSurfaceVariant
-                                    .withValues(opacity: 0.7),
+                                    .withOpacity(0.7),
                               ),
                             ),
                             const SizedBox(height: 24),

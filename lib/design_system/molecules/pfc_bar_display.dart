@@ -80,7 +80,7 @@ class _NutrientBar extends StatelessWidget {
           value: progress,
           minHeight: 8,
           backgroundColor:
-              nutrient.color.withValues(alpha: (0.2 * 255).round()),
+              nutrient.color.withValues(opacity: 0.2),
           color: nutrient.color,
         ),
         const SizedBox(height: Spacing.xs),

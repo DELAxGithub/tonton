@@ -7,9 +7,12 @@ import 'package:tonton/features/onboarding/onboarding_screen.dart';
 import 'package:tonton/screens/home_screen_new.dart';
 import 'package:tonton/routes/router.dart';
 import 'package:tonton/providers/onboarding_providers.dart';
+import 'package:tonton/providers/onboarding_completion_provider.dart';
 
-class TestOnboardingCompletionNotifier extends StateNotifier<bool> {
-  TestOnboardingCompletionNotifier(bool value) : super(value);
+class TestOnboardingCompletionNotifier extends OnboardingCompletionNotifier {
+  TestOnboardingCompletionNotifier(bool value) : super() {
+    state = value;
+  }
 }
 
 void main() {

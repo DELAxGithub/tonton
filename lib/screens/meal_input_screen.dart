@@ -535,11 +535,11 @@ class _MealInputScreenState extends ConsumerState<MealInputScreen> {
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: theme.colorScheme.primaryContainer
-                      .withValues(alpha: (0.3 * 255).round()),
+                      .withValues(opacity: 0.3),
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
                       color: theme.colorScheme.primary
-                          .withValues(alpha: (0.5 * 255).round())),
+                          .withValues(opacity: 0.5)),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

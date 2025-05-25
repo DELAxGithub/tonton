@@ -17,7 +17,7 @@ class TontonCardBase extends StatelessWidget {
     return Material(
       color: Theme.of(context).colorScheme.surface,
       elevation: elevation,
-      shadowColor: Colors.black.withValues(alpha: (0.1 * 255).round()),
+      shadowColor: Colors.black.withValues(opacity: 0.1),
       borderRadius: BorderRadius.circular(Radii.md.x),
       child: Padding(
         padding: const EdgeInsets.all(Spacing.md),

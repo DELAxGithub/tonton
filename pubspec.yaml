@@ -36,9 +36,10 @@ dependencies:
   
   # Added for Charts
   fl_chart: ^0.63.0
-  
+
   # Added for routing
   go_router: ^13.2.0
+  dashbook: any
 
 dev_dependencies:
   flutter_test:
@@ -50,7 +51,6 @@ dev_dependencies:
   mockito: ^5.4.4        # Added for mocking in tests
   integration_test:      # Added for integration testing
     sdk: flutter
-  dashbook: any
 
 flutter:
   uses-material-design: true

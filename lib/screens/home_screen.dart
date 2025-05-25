@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:provider/provider.dart' as provider_pkg;
 import '../utils/color_utils.dart';
@@ -207,7 +206,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                               color: Theme.of(context)
                                   .colorScheme
                                   .primary
-                                  .withValues(alpha: (0.5 * 255).round()),
+                                  .withValues(opacity: 0.5),
                             ),
                             const SizedBox(height: 16),
                             Text(
@@ -223,7 +222,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                                 color: Theme.of(context)
                                     .colorScheme
                                     .onSurfaceVariant
-                                    .withValues(alpha: (0.7 * 255).round()),
+                                    .withValues(opacity: 0.7),
                               ),
                             ),
                             const SizedBox(height: 24),

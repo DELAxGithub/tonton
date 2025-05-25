@@ -1,12 +1,9 @@
-import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:provider/provider.dart' as provider_pkg;
 import '../widgets/dual_axis_chart.dart';
 
 import '../providers/calorie_savings_provider.dart';
-import '../models/calorie_savings_record.dart';
 import '../providers/health_provider.dart';
 import '../providers/onboarding_start_date_provider.dart';
 import '../design_system/organisms/hero_piggy_bank_display.dart';

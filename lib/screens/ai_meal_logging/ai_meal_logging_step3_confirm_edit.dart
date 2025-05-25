@@ -111,8 +111,10 @@ class _State extends ConsumerState<AIMealLoggingStep3ConfirmEdit> {
             ),
             const SizedBox(height: 8),
             OutlinedButton(
-              onPressed: () => context.go(TontonRoutes.aiMealAnalyzing,
-                  extra: widget.imageFile),
+              onPressed: () => context.go(
+                TontonRoutes.aiMealAnalyzing,
+                extra: widget.imageFile.path,
+              ),
               child: const Text('もう一度AI解析'),
             )
           ],

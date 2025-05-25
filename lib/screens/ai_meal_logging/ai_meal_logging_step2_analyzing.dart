@@ -33,7 +33,7 @@ class _State extends ConsumerState<AIMealLoggingStep2Analyzing> {
       next.whenData((value) {
         if (value != null && mounted) {
           context.go(TontonRoutes.aiMealConfirm, extra: {
-            'image': widget.imageFile,
+            'image': widget.imageFile.path,
             'nutrition': value,
           });
         }

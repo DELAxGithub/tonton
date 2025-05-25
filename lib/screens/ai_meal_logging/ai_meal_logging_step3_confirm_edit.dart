@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:developer' as developer;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -109,8 +110,11 @@ class _State extends ConsumerState<AIMealLoggingStep3ConfirmEdit> {
         ),
       );
       // Debugging information for navigation issues
-      print('Navigator mounted: $mounted');
-      print('Current route: ${GoRouter.of(context).location}');
+      final location = GoRouterState.of(context).uri.toString();
+      developer.log('Navigator mounted: $mounted',
+          name: 'TonTon.AIMealLoggingStep3');
+      developer.log('Current route: $location',
+          name: 'TonTon.AIMealLoggingStep3');
       // Give the snackbar a moment to appear before navigating
       await Future.delayed(const Duration(milliseconds: 500));
 

@@ -14,6 +14,7 @@ import '../screens/weight_input_screen.dart';
 import '../providers/onboarding_providers.dart';
 import '../screens/settings_screen.dart';
 import '../screens/progress_achievements_screen.dart';
+import '../screens/profile_screen.dart';
 import '../screens/ai_meal_logging/ai_meal_logging_step1_camera.dart';
 import '../screens/ai_meal_logging/ai_meal_logging_step2_analyzing.dart';
 import '../screens/ai_meal_logging/ai_meal_logging_step3_confirm_edit.dart';
@@ -167,12 +168,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const UseSavingsScreen(),
       ),
 
-      // Profile route (temporarily disabled)
-      // GoRoute(
-      //   path: TontonRoutes.profile,
-      //   name: 'profile',
-      //   builder: (context, state) => const ProfileScreen(),
-      // ),
+      GoRoute(
+        path: TontonRoutes.profile,
+        name: 'profile',
+        builder: (context, state) => const ProfileScreen(),
+      ),
       GoRoute(
         path: TontonRoutes.settings,
         name: 'settings',

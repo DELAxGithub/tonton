@@ -20,7 +20,7 @@ class AIMealLoggingStep1Camera extends ConsumerWidget {
       imageQuality: 88,
     );
     if (file != null && context.mounted) {
-      context.go(TontonRoutes.aiMealAnalyzing, extra: File(file.path));
+      context.go(TontonRoutes.aiMealAnalyzing, extra: file.path);
     }
   }
 

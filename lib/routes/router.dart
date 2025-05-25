@@ -191,9 +191,9 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: TontonRoutes.aiMealAnalyzing,
         name: 'aiMealAnalyzing',
         builder: (context, state) {
-          final File? image = state.extra as File?;
-          if (image == null) return const SizedBox.shrink();
-          return AIMealLoggingStep2Analyzing(imageFile: image);
+          final String? imagePath = state.extra as String?;
+          if (imagePath == null) return const SizedBox.shrink();
+          return AIMealLoggingStep2Analyzing(imageFile: File(imagePath));
         },
       ),
       GoRoute(
@@ -202,7 +202,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) {
           final Map<String, dynamic>? extra = state.extra as Map<String, dynamic>?;
           return AIMealLoggingStep3ConfirmEdit(
-            imageFile: extra?['image'] as File,
+            imageFile: File(extra?['image'] as String),
             nutrition: extra?['nutrition'] as EstimatedMealNutrition,
           );
         },

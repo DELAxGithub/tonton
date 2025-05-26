@@ -63,13 +63,13 @@ class ProfileScreen extends ConsumerWidget {
                 Text('アカウント情報',
                     style: Theme.of(context).textTheme.titleMedium),
                 const SizedBox(height: Spacing.sm),
-                  Text('メール: ${user?.email ?? "未設定"}'),
-                  Text('名前: ${userName ?? "未設定"}'),
-                  Text('体重: ${userWeightRecord?.formattedWeight ?? "データなし"}'),
-                  Text('体脂肪率: ${userWeightRecord?.formattedBodyFat ?? "データなし"}'),
-                  Text('体脂肪量: ${userWeightRecord?.formattedBodyFatMass ?? "データなし"}'),
-                  if (lastFetched != null)
-                    Text('最終更新: ${DateFormat('MM/dd HH:mm').format(lastFetched)}'),
+                Text('メール: ${user?.email ?? "未設定"}'),
+                Text('名前: ${userName ?? "未設定"}'),
+                Text('体重: ${userWeightRecord?.formattedWeight ?? "データなし"}'),
+                Text('体脂肪率: ${userWeightRecord?.formattedBodyFat ?? "データなし"}'),
+                Text('体脂肪量: ${userWeightRecord?.formattedBodyFatMass ?? "データなし"}'),
+                if (lastFetched != null)
+                  Text('最終更新: ${DateFormat('MM/dd HH:mm').format(lastFetched)}'),
               ],
             ),
           ),
@@ -184,5 +184,3 @@ class ProfileScreen extends ConsumerWidget {
     );
   }
 }
-
-

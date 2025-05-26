@@ -101,6 +101,7 @@ class HomeScreenPhase3 extends ConsumerWidget {
             HeroPiggyBankDisplay(
               totalSavings: totalSavings,
             ),
+            // Spacing after piggy bank display
             const SizedBox(height: Spacing.lg),
             DailySummarySection(
               eatenCalories: summary.totalCaloriesConsumed,
@@ -121,12 +122,14 @@ class HomeScreenPhase3 extends ConsumerWidget {
               carbs: carbs,
               onTap: () => context.push(TontonRoutes.aiMealCamera),
             ),
+            // Added spacing after chart when NavigationLinkCard was removed
             const SizedBox(height: Spacing.lg),
             TontonButton.primary(
               label: '📷 写真でパシャ！食事をきろく',
               leading: TontonIcons.camera,
               onPressed: () => context.push(TontonRoutes.aiMealCamera),
             ),
+            // Space before AI advice section
             const SizedBox(height: Spacing.lg),
             _buildAiAdviceSection(todayMeals, context, ref),
             const SizedBox(height: Spacing.xxl),

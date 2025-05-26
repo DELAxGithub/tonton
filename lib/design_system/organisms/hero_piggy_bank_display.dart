@@ -11,12 +11,10 @@ import '../../providers/monthly_progress_provider.dart';
 class HeroPiggyBankDisplay extends ConsumerStatefulWidget {
   final double totalSavings;
   final double recentChange;
-  final VoidCallback? onUsePressed;
 
   const HeroPiggyBankDisplay({
     super.key,
     required this.totalSavings,
-    this.onUsePressed,
     this.recentChange = 0,
   });
 
@@ -146,12 +144,6 @@ class _HeroPiggyBankDisplayState extends ConsumerState<HeroPiggyBankDisplay>
             error: (_, __) => const SizedBox.shrink(),
           ),
           const SizedBox(height: Spacing.sm),
-          if (widget.onUsePressed != null)
-            TontonButton.text(
-              label: '貯金をつかう',
-              leading: TontonIcons.present,
-              onPressed: widget.onUsePressed,
-            ),
         ],
       ),
     );

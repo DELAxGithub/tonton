@@ -14,7 +14,6 @@ import '../design_system/templates/standard_page_layout.dart';
 import '../design_system/organisms/hero_piggy_bank_display.dart';
 import '../design_system/organisms/daily_summary_section.dart';
 import '../design_system/molecules/pfc_bar_display.dart';
-import '../design_system/molecules/navigation_link_card.dart';
 import '../design_system/atoms/tonton_button.dart';
 import '../widgets/ai_advice_display_new.dart';
 import '../widgets/todays_meal_records_list.dart';

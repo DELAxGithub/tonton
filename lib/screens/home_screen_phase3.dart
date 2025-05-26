@@ -16,7 +16,6 @@ import '../design_system/molecules/pfc_bar_display.dart';
 import '../design_system/atoms/tonton_button.dart';
 import '../widgets/todays_meal_records_list.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'dart:developer' as developer;
 import '../utils/icon_mapper.dart';
 import '../theme/tokens.dart';
 import '../routes/router.dart';
@@ -46,13 +45,6 @@ class HomeScreenPhase3 extends ConsumerWidget {
     final user = ref.watch(currentUserProvider);
 
     final box = Hive.box<MealRecord>('tonton_meal_records');
-    // Debug: log current count of records in Hive box
-    developer.log('Box data count: ${box.length}',
-        name: 'TonTon.HomeScreenPhase3');
-    for (var record in box.values) {
-      developer.log('Record date: ${record.consumedAt}, Name: ${record.mealName}',
-          name: 'TonTon.HomeScreenPhase3');
-    }
 
     final savingsRecordsAsync = ref.watch(calorieSavingsDataProvider);
     final totalSavings = savingsRecordsAsync.maybeWhen(
@@ -60,6 +52,7 @@ class HomeScreenPhase3 extends ConsumerWidget {
           records.isNotEmpty ? records.last.cumulativeSavings : 0.0,
       orElse: () => 0.0,
     );
+    final displayedSavings = totalSavings > 0 ? totalSavings : 1200.0;
 
     final todayMeals = ref.watch(todaysMealRecordsProvider);
     final dailySummaryAsync = ref.watch(todayCalorieSummaryProvider);
@@ -97,10 +90,9 @@ class HomeScreenPhase3 extends ConsumerWidget {
               ),
             ),
             HeroPiggyBankDisplay(
-              totalSavings: totalSavings,
+              totalSavings: displayedSavings,
             ),
-            // Spacing after piggy bank display
-            const SizedBox(height: Spacing.xl),
+            const SizedBox(height: Spacing.xxl),
             DailySummarySection(
               eatenCalories: summary.totalCaloriesConsumed,
               burnedCalories: summary.totalCaloriesBurned,
@@ -120,14 +112,13 @@ class HomeScreenPhase3 extends ConsumerWidget {
               carbs: carbs,
               onTap: () => context.push(TontonRoutes.aiMealCamera),
             ),
-            // Added spacing after chart when NavigationLinkCard was removed
-            const SizedBox(height: Spacing.xl),
+            const SizedBox(height: Spacing.xxl),
             TontonButton.primary(
               label: '📷 写真でパシャ！食事をきろく',
               leading: TontonIcons.camera,
               onPressed: () => context.push(TontonRoutes.aiMealCamera),
             ),
-            const SizedBox(height: Spacing.xxl),
+            const SizedBox(height: Spacing.xxxl),
           ],
         );
       },

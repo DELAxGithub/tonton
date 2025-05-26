@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../atoms/tonton_text.dart';
-import '../molecules/daily_stat_ring.dart';
 import '../atoms/tonton_card_base.dart';
 import '../atoms/tonton_icon.dart';
 import '../../theme/tokens.dart';
@@ -26,43 +25,49 @@ class DailySummarySection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final intakeProgress = targetCalories > 0
-        ? (eatenCalories / targetCalories).clamp(0.0, 1.0)
-        : 0.0;
+    final positive = dailySavings >= 0;
+    final color = positive ? theme.colorScheme.primary : theme.colorScheme.error;
+    final prefix = positive ? '+' : '-';
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         TontonText(
-          '今日のバランス',
-          style: theme.textTheme.titleLarge,
+          '今日の貯金',
+          style: theme.textTheme.bodyMedium,
+          align: TextAlign.center,
+        ),
+        const SizedBox(height: Spacing.xs),
+        TontonIcon(
+          TontonIcons.coin,
+          size: 48,
+          color: color,
         ),
         const SizedBox(height: Spacing.sm),
+        TontonText(
+          '$prefix${dailySavings.abs().toStringAsFixed(0)} kcal',
+          style: theme.textTheme.displayMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: color,
+          ),
+          align: TextAlign.center,
+        ),
+        const SizedBox(height: Spacing.lg),
         Row(
           children: [
             Expanded(
-              child: DailyStatRing(
+              child: _StatCard(
                 icon: TontonIcons.food,
-                label: '食べたキロカロリー',
-                currentValue: eatenCalories.toStringAsFixed(0),
-                targetValue: '/ ${targetCalories.toStringAsFixed(0)} kcal',
-                progress: intakeProgress,
+                label: '食べた',
+                value: '${eatenCalories.toStringAsFixed(0)} kcal',
               ),
             ),
             const SizedBox(width: Spacing.md),
             Expanded(
-              child: DailyStatRing(
+              child: _StatCard(
                 icon: TontonIcons.workout,
-                label: '活動したキロカロリー',
-                currentValue: '${burnedCalories.toStringAsFixed(0)} kcal',
-                progress: 1.0,
-                color: Colors.orange,
-              ),
-            ),
-            const SizedBox(width: Spacing.md),
-            Expanded(
-              child: _SavingsCard(
-                savings: dailySavings,
+                label: '活動した',
+                value: '${burnedCalories.toStringAsFixed(0)} kcal',
               ),
             ),
           ],
@@ -81,40 +86,40 @@ class DailySummarySection extends StatelessWidget {
   }
 }
 
-class _SavingsCard extends StatelessWidget {
-  final double savings;
+class _StatCard extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final String value;
 
-  const _SavingsCard({required this.savings});
+  const _StatCard({
+    required this.icon,
+    required this.label,
+    required this.value,
+  });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final positive = savings >= 0;
-    final color = positive ? theme.colorScheme.success : theme.colorScheme.error;
-    final prefix = positive ? '+' : '-';
+    final color = theme.colorScheme.primary;
 
     return TontonCardBase(
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          TontonText(
-            '今日の成果',
-            style: theme.textTheme.bodyMedium,
-            align: TextAlign.center,
-          ),
-          const SizedBox(height: Spacing.xs),
-          TontonIcon(
-            TontonIcons.coin,
-            size: 24,
-            color: color,
-          ),
+          TontonIcon(icon, size: 32, color: color),
           const SizedBox(height: Spacing.sm),
           TontonText(
-            '$prefix${savings.abs().toStringAsFixed(0)} kcal',
+            value,
             style: theme.textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.bold,
               color: color,
             ),
+            align: TextAlign.center,
+          ),
+          const SizedBox(height: Spacing.xs),
+          TontonText(
+            label,
+            style: theme.textTheme.bodyMedium,
             align: TextAlign.center,
           ),
         ],

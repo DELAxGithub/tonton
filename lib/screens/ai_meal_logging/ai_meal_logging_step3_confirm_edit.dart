@@ -128,6 +128,13 @@ class _State extends ConsumerState<AIMealLoggingStep3ConfirmEdit> {
         '[HIVE_BOX][afterSave] count:${box.length}',
         name: 'HiveDebug',
       );
+      final boxRecords = box.values.toList();
+      developer.log('[HIVE_BOX][records] ${boxRecords.length}', name: 'HiveDebug');
+      final allRecordsAsync = ref.read(mealRecordsProvider);
+      developer.log(
+        'Provider経由取得: ${allRecordsAsync.value?.records.length ?? 'null'} 件',
+        name: 'HiveDebug',
+      );
       ref.invalidate(mealRecordsProvider);
       ref.invalidate(todaysMealRecordsProvider);
 

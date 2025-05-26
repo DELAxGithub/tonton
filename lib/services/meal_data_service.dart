@@ -3,6 +3,9 @@ import 'dart:developer' as developer;
 
 import '../models/meal_record.dart';
 
+/// Shared instance of [MealDataService] for the whole app.
+final mealDataService = MealDataService();
+
 class MealDataService {
   static const String _boxName = 'tonton_meal_records'; // Must match the box opened in main.dart
   Box<MealRecord>? _mealRecordsBox;

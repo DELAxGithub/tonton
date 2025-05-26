@@ -10,6 +10,8 @@ import '../providers/user_weight_provider.dart';
 import '../providers/auth_provider.dart';
 import '../providers/user_profile_provider.dart';
 import '../providers/pfc_balance_provider.dart';
+import '../providers/weight_record_provider.dart';
+import '../providers/last_health_fetch_provider.dart';
 import 'package:go_router/go_router.dart';
 import '../routes/router.dart';
 import '../services/health_service.dart';
@@ -25,7 +27,8 @@ class ProfileScreen extends ConsumerWidget {
     final startDate = ref.watch(onboardingStartDateProvider);
     final savingsRecordsAsync = ref.watch(calorieSavingsDataProvider);
     final monthlyGoal = ref.watch(monthlyCalorieGoalProvider);
-    final userWeight = ref.watch(userWeightProvider);
+    final userWeightRecord = ref.watch(latestWeightRecordProvider);
+    final lastFetched = ref.watch(lastHealthFetchProvider);
 
     // 計算の詳細
     final totalDays = startDate != null
@@ -62,7 +65,11 @@ class ProfileScreen extends ConsumerWidget {
                 const SizedBox(height: Spacing.sm),
                 Text('メール: ${user?.email ?? "未設定"}'),
                 Text('名前: ${userName ?? "未設定"}'),
-                Text('体重: ${userWeight?.toStringAsFixed(1) ?? "未設定"} kg'),
+                Text('体重: ${userWeightRecord?.formattedWeight ?? "データなし"}'),
+                Text('体脂肪率: ${userWeightRecord?.formattedBodyFat ?? "データなし"}'),
+                Text('体脂肪量: ${userWeightRecord?.formattedBodyFatMass ?? "データなし"}'),
+                if (lastFetched != null)
+                  Text('最終更新: ${DateFormat('MM/dd HH:mm').format(lastFetched)}'),
               ],
             ),
           ),
@@ -168,12 +175,12 @@ class ProfileScreen extends ConsumerWidget {
         await ref
             .read(userGoalsProvider.notifier)
             .setBodyWeight(record.weight);
+        await ref.read(latestWeightRecordProvider.notifier).setRecord(record);
       }
+      await ref.read(lastHealthFetchProvider.notifier).setTime(DateTime.now());
     });
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('データを再計算しています...')),
     );
   }
 }
-
-

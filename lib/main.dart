@@ -159,17 +159,16 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
           name: '[HIVE_LIFECYCLE]');
       await _flushAllBoxes();
     } else if (state == AppLifecycleState.resumed) {
-      developer.log('App resumed - refreshing providers',
-          name: '[HIVE_LIFECYCLE]');
-      ref.invalidate(mealRecordsProvider);
-      ref.invalidate(todaysMealRecordsProvider);
+      developer.log('App resumed', name: '[HIVE_LIFECYCLE]');
+      // No provider refresh needed on resume
     }
   }
 
   Future<void> _flushAllBoxes() async {
-    for (final box in Hive.boxes.values) {
-      await box.flush();
-    }
+    final mealBox = Hive.box<MealRecord>('tonton_meal_records');
+    await mealBox.flush();
+    final summaryBox = Hive.box<DailySummary>('tonton_daily_summaries');
+    await summaryBox.flush();
   }
 
   @override

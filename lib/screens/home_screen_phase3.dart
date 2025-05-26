@@ -151,8 +151,8 @@ class HomeScreenPhase3 extends ConsumerWidget {
             child: Center(child: CircularProgressIndicator()),
           )
         else
-          ElevatedButton.icon(
-            icon: const Icon(TontonIcons.ai),
+            ElevatedButton.icon(
+              icon: Icon(TontonIcons.ai),
             label: Text(l10n.aiAdviceShort),
             onPressed: todayMeals.length < 2
                 ? null

@@ -6,7 +6,7 @@ import 'design_system/atoms/tonton_text.dart';
 import 'design_system/atoms/tonton_button.dart';
 import 'design_system/atoms/tonton_card_base.dart';
 import 'design_system/molecules/daily_stat_ring.dart';
-import 'design_system/molecules/pfc_bar_display.dart';
+import 'design_system/molecules/pfc_pie_chart.dart';
 import 'design_system/molecules/navigation_link_card.dart';
 import 'design_system/organisms/hero_piggy_bank_display.dart';
 import 'design_system/organisms/daily_summary_section.dart';
@@ -110,16 +110,10 @@ Dashbook createDashbook() {
             color: Colors.orange,
           ),
         ))
-    ..add('PfcBarDisplay', (_) => PfcBarDisplay(
-          title: '今日の栄養バランス',
-          nutrients: const [
-            NutrientBarData(
-                label: 'タンパク質', current: 40, target: 60, color: Colors.red),
-            NutrientBarData(
-                label: '脂質', current: 20, target: 40, color: Colors.orange),
-            NutrientBarData(
-                label: '炭水化物', current: 150, target: 250, color: Colors.blue),
-          ],
+    ..add('PfcPieChart', (_) => const PfcPieChart(
+          protein: 40,
+          fat: 20,
+          carbs: 150,
         ))
     ..add('NavigationLinkCard', (_) => Row(
           mainAxisAlignment: MainAxisAlignment.center,

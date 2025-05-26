@@ -17,6 +17,20 @@ class UserGoals {
     this.bodyWeightKg,
   });
 
+  Map<String, dynamic> toJson() => {
+        'pfcRatio': pfcRatio.toJson(),
+        'bodyWeightKg': bodyWeightKg,
+      };
+
+  factory UserGoals.fromJson(Map<String, dynamic> json) {
+    return UserGoals(
+      pfcRatio: json['pfcRatio'] != null
+          ? PfcRatio.fromJson(json['pfcRatio'] as Map<String, dynamic>)
+          : defaultPfcRatio,
+      bodyWeightKg: (json['bodyWeightKg'] as num?)?.toDouble(),
+    );
+  }
+
   /// Daily protein goal in grams based on [bodyWeightKg].
   double? get proteinGoalGrams =>
       bodyWeightKg != null ? bodyWeightKg! * 2.0 : null;

@@ -150,7 +150,6 @@ Dashbook createDashbook() {
           child: HeroPiggyBankDisplay(
             totalSavings: 3500,
             recentChange: 250,
-            onUsePressed: () {},
           ),
         ))
     ..add('DailySummarySection', (_) => DailySummarySection(

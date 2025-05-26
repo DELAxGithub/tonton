@@ -18,6 +18,7 @@ import 'services/onboarding_service.dart';
 import 'providers/onboarding_providers.dart';
 import 'providers/onboarding_start_date_provider.dart';
 import 'services/daily_summary_data_service.dart';
+import 'services/meal_data_service.dart';
 import 'services/health_service.dart';
 import 'theme/app_theme.dart'; // Import application theme
 import 'l10n/app_localizations.dart';
@@ -52,18 +53,10 @@ Future<void> _initHive() async {
     await Hive.openBox<DailySummary>('tonton_daily_summaries');
     developer.log('Box "tonton_daily_summaries" opened.', name: 'TonTon.HiveInit');
 
-    // Initialize MealDataService after Hive is ready
-    // This assumes MealDataService is a singleton or can be globally accessed/initialized.
-    // If using Riverpod, the provider for MealDataService will handle its creation,
-    // and its init method will be called when first read if designed that way (as in MealRecords provider).
-    // For explicit early initialization:
-    // final mealDataService = MealDataService(); // Or however it's accessed/created
-    // await mealDataService.init();
-    // developer.log('MealDataService initialized after Hive.', name: 'TonTon.HiveInit');
-    // Note: The current MealRecords provider already calls mealDataService.init() if not initialized.
-    // So, explicit call here might be redundant if MealDataService is only used via that provider.
-    // However, if other parts of the app might access MealDataService directly, initializing it here is safer.
-    // For now, we'll rely on the provider's init call.
+    // Initialize MealDataService after Hive is ready so that the box is reused
+    // consistently across the app.
+    await mealDataService.init();
+    developer.log('MealDataService initialized after Hive.', name: 'TonTon.HiveInit');
 
   } catch (e, stack) {
     developer.log('Error initializing Hive: $e', name: 'TonTon.HiveInit.Error', error: e, stackTrace: stack);

@@ -1,92 +1,108 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fl_chart/fl_chart.dart';
+import 'package:go_router/go_router.dart';
 import '../atoms/tonton_card_base.dart';
 import '../atoms/tonton_text.dart';
 import '../../theme/tokens.dart';
+import '../../providers/pfc_balance_provider.dart';
+import '../../routes/router.dart';
 
-class NutrientBarData {
-  final String label;
-  final double current;
-  final double target;
-  final Color color;
-
-  const NutrientBarData({
-    required this.label,
-    required this.current,
-    required this.target,
-    required this.color,
-  });
-}
-
-class PfcBarDisplay extends StatelessWidget {
+class PfcBarDisplay extends ConsumerWidget {
+  final double protein;
+  final double fat;
+  final double carbs;
   final String title;
-  final List<NutrientBarData> nutrients;
+  final VoidCallback? onTap;
 
   const PfcBarDisplay({
     super.key,
     required this.title,
-    required this.nutrients,
+    required this.protein,
+    required this.fat,
+    required this.carbs,
+    this.onTap,
   });
 
   @override
-  Widget build(BuildContext context) {
-    return TontonCardBase(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          TontonText(
-            title,
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-          const SizedBox(height: Spacing.sm),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              for (final nutrient in nutrients)
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: Spacing.xs),
-                    child: _NutrientBar(nutrient: nutrient),
-                  ),
-                ),
-            ],
-          ),
-        ],
+  Widget build(BuildContext context, WidgetRef ref) {
+    final goals = ref.watch(userGoalsProvider);
+
+    final proteinTarget = goals.proteinGoalGrams ?? 60;
+    final base = proteinTarget / goals.pfcRatio.protein;
+    final fatTarget = base * goals.pfcRatio.fat;
+    final carbTarget = base * goals.pfcRatio.carbohydrate;
+
+    final sections = [
+      PieChartSectionData(
+        value: protein,
+        color: Theme.of(context).colorScheme.primary,
+        title: 'P',
+        radius: 30,
+        titleStyle: Theme.of(context).textTheme.labelSmall,
       ),
-    );
-  }
-}
+      PieChartSectionData(
+        value: fat,
+        color: Theme.of(context).colorScheme.secondary,
+        title: 'F',
+        radius: 30,
+        titleStyle: Theme.of(context).textTheme.labelSmall,
+      ),
+      PieChartSectionData(
+        value: carbs,
+        color: Theme.of(context).colorScheme.tertiary,
+        title: 'C',
+        radius: 30,
+        titleStyle: Theme.of(context).textTheme.labelSmall,
+      ),
+    ];
 
-class _NutrientBar extends StatelessWidget {
-  final NutrientBarData nutrient;
-
-  const _NutrientBar({required this.nutrient});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final progress = nutrient.target > 0
-        ? (nutrient.current / nutrient.target).clamp(0.0, 1.0)
-        : 0.0;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        TontonText(
-          nutrient.label,
-          style: theme.textTheme.bodySmall,
+    return InkWell(
+      onTap: onTap ?? () => context.push(TontonRoutes.aiMealCamera),
+      borderRadius: BorderRadius.circular(Radii.md.x),
+      child: TontonCardBase(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            TontonText(
+              title,
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: Spacing.sm),
+            Row(
+              children: [
+                PieChart(
+                  PieChartData(
+                    sections: sections,
+                    centerSpaceRadius: 18,
+                  ),
+                  swapAnimationDuration: Duration(milliseconds: 300),
+                ),
+                const SizedBox(width: Spacing.md),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      TontonText(
+                        'P ${protein.toStringAsFixed(0)} / ${proteinTarget.toStringAsFixed(0)} g',
+                        style: Theme.of(context).textTheme.labelSmall,
+                      ),
+                      TontonText(
+                        'F ${fat.toStringAsFixed(0)} / ${fatTarget.toStringAsFixed(0)} g',
+                        style: Theme.of(context).textTheme.labelSmall,
+                      ),
+                      TontonText(
+                        'C ${carbs.toStringAsFixed(0)} / ${carbTarget.toStringAsFixed(0)} g',
+                        style: Theme.of(context).textTheme.labelSmall,
+                      ),
+                    ],
+                  ),
+                )
+              ],
+            ),
+          ],
         ),
-        const SizedBox(height: Spacing.xs),
-        LinearProgressIndicator(
-          value: progress,
-          minHeight: 6,
-          backgroundColor: nutrient.color.withValues(alpha: 0.2),
-          color: nutrient.color,
-        ),
-        const SizedBox(height: Spacing.xs),
-        TontonText(
-          '${nutrient.current.toStringAsFixed(0)} / ${nutrient.target.toStringAsFixed(0)}g',
-          style: theme.textTheme.labelSmall,
-        ),
-      ],
+      ),
     );
   }
 }

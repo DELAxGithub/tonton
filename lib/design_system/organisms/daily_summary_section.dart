@@ -97,6 +97,12 @@ class _SavingsCard extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
+          TontonText(
+            '今日の成果',
+            style: theme.textTheme.bodyMedium,
+            align: TextAlign.center,
+          ),
+          const SizedBox(height: Spacing.xs),
           TontonIcon(
             TontonIcons.coin,
             size: 24,
@@ -109,12 +115,6 @@ class _SavingsCard extends StatelessWidget {
               fontWeight: FontWeight.bold,
               color: color,
             ),
-            align: TextAlign.center,
-          ),
-          const SizedBox(height: Spacing.xs),
-          TontonText(
-            '今日の貯金',
-            style: theme.textTheme.bodyMedium,
             align: TextAlign.center,
           ),
         ],

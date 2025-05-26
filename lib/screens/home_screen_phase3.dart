@@ -101,7 +101,6 @@ class HomeScreenPhase3 extends ConsumerWidget {
             ),
             HeroPiggyBankDisplay(
               totalSavings: totalSavings,
-              onUsePressed: () {},
             ),
             const SizedBox(height: Spacing.lg),
             DailySummarySection(
@@ -118,53 +117,16 @@ class HomeScreenPhase3 extends ConsumerWidget {
             const SizedBox(height: Spacing.lg),
             PfcBarDisplay(
               title: '今日の栄養バランス (PFC)',
-              nutrients: [
-                NutrientBarData(
-                  label: 'タンパク質',
-                  current: protein,
-                  target: 60,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-                NutrientBarData(
-                  label: '脂質',
-                  current: fat,
-                  target: 70,
-                  color: Theme.of(context).colorScheme.secondary,
-                ),
-                NutrientBarData(
-                  label: '炭水化物',
-                  current: carbs,
-                  target: 250,
-                  color: Theme.of(context).colorScheme.tertiary,
-                ),
-              ],
+              protein: protein,
+              fat: fat,
+              carbs: carbs,
+              onTap: () => context.push(TontonRoutes.aiMealCamera),
             ),
             const SizedBox(height: Spacing.lg),
             TontonButton.primary(
               label: '📷 写真でパシャ！食事をきろく',
               leading: TontonIcons.camera,
               onPressed: () => context.push(TontonRoutes.aiMealCamera),
-            ),
-            const SizedBox(height: Spacing.lg),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                NavigationLinkCard(
-                  icon: TontonIcons.trend,
-                  label: '貯金ダイアリー',
-                  onTap: () => context.push(TontonRoutes.savingsTrend),
-                ),
-                NavigationLinkCard(
-                  icon: TontonIcons.weight,
-                  label: '体重ジャーニー',
-                  onTap: () => context.push(TontonRoutes.progressAchievements),
-                ),
-                NavigationLinkCard(
-                  icon: TontonIcons.ai,
-                  label: 'トントンコーチ',
-                  onTap: () => context.push(TontonRoutes.tontonCoach),
-                ),
-              ],
             ),
             const SizedBox(height: Spacing.lg),
             _buildAiAdviceSection(todayMeals, context, ref),
@@ -184,47 +146,20 @@ class HomeScreenPhase3 extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            Icon(
-              TontonIcons.ai,
-              color: theme.colorScheme.primary,
-              size: 20,
-            ),
-            const SizedBox(width: Spacing.sm),
-            Text(
-              l10n.aiAdviceShort,
-              style: theme.textTheme.titleLarge,
-            ),
-          ],
-        ),
-        const SizedBox(height: Spacing.sm),
         if (aiAdviceState.isLoading)
           const Padding(
             padding: EdgeInsets.symmetric(vertical: Spacing.md),
             child: Center(child: CircularProgressIndicator()),
           )
         else
-          Tooltip(
-            message: l10n.aiAdviceRequest,
-            child: ElevatedButton.icon(
-              icon: Icon(TontonIcons.ai),
-              label: Text(l10n.aiAdviceShort),
-              onPressed: todayMeals.length < 2
-                  ? null
-                  : () => ref
-                      .read(aiAdviceProvider.notifier)
-                      .fetchAdvice(todayMeals, context),
-            ),
-          ),
-        if (todayMeals.length < 2)
-          Padding(
-            padding: const EdgeInsets.only(top: Spacing.sm),
-            child: Text(
-              l10n.aiAdviceDisabled,
-              style: TextStyle(color: theme.colorScheme.error),
-              textAlign: TextAlign.center,
-            ),
+          ElevatedButton.icon(
+            icon: const Icon(TontonIcons.ai),
+            label: Text(l10n.aiAdviceShort),
+            onPressed: todayMeals.length < 2
+                ? null
+                : () => ref
+                    .read(aiAdviceProvider.notifier)
+                    .fetchAdvice(todayMeals, context),
           ),
         aiAdviceState.when(
           data: (advice) => advice != null

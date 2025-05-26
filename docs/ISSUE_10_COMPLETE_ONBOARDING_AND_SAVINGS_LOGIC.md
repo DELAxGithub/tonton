@@ -1,5 +1,8 @@
 # Issue #10: Persist Start Date and Implement Savings Logic
 
+## Status
+Completed
+
 ## Overview
 Two screens added in Phase 2 still contain TODOs:
 - `OnboardingSetStartDateScreen` does not save the selected start date.

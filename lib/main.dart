@@ -132,18 +132,52 @@ void main() async { // Modified to be async
   );
 }
 
-class MyApp extends ConsumerWidget {
+class MyApp extends ConsumerStatefulWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) async {
+    if (state == AppLifecycleState.paused) {
+      developer.log('App paused - flushing Hive boxes',
+          name: '[HIVE_LIFECYCLE]');
+      await _flushAllBoxes();
+    } else if (state == AppLifecycleState.resumed) {
+      developer.log('App resumed - refreshing providers',
+          name: '[HIVE_LIFECYCLE]');
+      ref.invalidate(mealRecordsProvider);
+      ref.invalidate(todaysMealRecordsProvider);
+    }
+  }
+
+  Future<void> _flushAllBoxes() async {
+    for (final box in Hive.boxes.values) {
+      await box.flush();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     developer.log('Building MyApp widget', name: 'TonTon.MyApp.build');
-    
-    // Get the router instance from the provider
+
     final router = ref.watch(routerProvider);
 
-    // Provide HealthProvider using the legacy provider package
-    // This will eventually be migrated to Riverpod
     return provider_pkg.ChangeNotifierProvider<HealthProvider>(
       create: (context) {
         developer.log('Creating HealthProvider', name: 'TonTon.Provider.create');
@@ -163,15 +197,8 @@ class MyApp extends ConsumerWidget {
           GlobalCupertinoLocalizations.delegate,
         ],
         supportedLocales: AppLocalizations.supportedLocales,
-        // Use go_router for routing
         routerConfig: router,
       ),
     );
   }
 }
-
-// _MyAppState and its lifecycle methods (initState, dispose, didChangeAppLifecycleState, _flushAllBoxes, _ensureBoxesOpen)
-// are removed because MyApp is now a ConsumerWidget.
-// If app lifecycle observation is still needed, it can be handled differently,
-// perhaps by a dedicated Riverpod provider that uses WidgetsBindingObserver.
-// For now, focusing on the auth flow.

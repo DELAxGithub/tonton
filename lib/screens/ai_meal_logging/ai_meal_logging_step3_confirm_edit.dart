@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 import '../../models/estimated_meal_nutrition.dart';
 import '../../models/meal_record.dart';
@@ -47,6 +48,11 @@ class _State extends ConsumerState<AIMealLoggingStep3ConfirmEdit> {
     _fat = TextEditingController(text: widget.nutrition.nutrients.fat.toString());
     _carbs =
         TextEditingController(text: widget.nutrition.nutrients.carbs.toString());
+    final box = Hive.box<MealRecord>('tonton_meal_records');
+    developer.log(
+      '[HIVE_BOX][initState] open:${box.isOpen} count:${box.length}',
+      name: 'HiveDebug',
+    );
   }
 
   @override
@@ -86,6 +92,11 @@ class _State extends ConsumerState<AIMealLoggingStep3ConfirmEdit> {
     setState(() => _isSaving = true);
 
     try {
+      final box = Hive.box<MealRecord>('tonton_meal_records');
+      developer.log(
+        '[HIVE_BOX][beforeSave] open:${box.isOpen} count:${box.length}',
+        name: 'HiveDebug',
+      );
       developer.log('=== 保存処理開始 ===', name: 'SaveDebug');
       developer.log('料理名: ${_name.text}', name: 'SaveDebug');
       developer.log('カロリー: ${_calories.text}', name: 'SaveDebug');
@@ -113,6 +124,12 @@ class _State extends ConsumerState<AIMealLoggingStep3ConfirmEdit> {
 
       await notifier.addMealRecord(record);
       developer.log('addMealRecord完了', name: 'SaveDebug');
+      developer.log(
+        '[HIVE_BOX][afterSave] count:${box.length}',
+        name: 'HiveDebug',
+      );
+      ref.invalidate(mealRecordsProvider);
+      ref.invalidate(todaysMealRecordsProvider);
 
       if (!mounted) {
         developer.log('Widget is not mounted!', name: 'SaveDebug');

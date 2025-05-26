@@ -19,6 +19,7 @@ import '../design_system/atoms/tonton_button.dart';
 import '../widgets/ai_advice_display_new.dart';
 import '../widgets/todays_meal_records_list.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'dart:developer' as developer;
 import '../utils/icon_mapper.dart';
 import '../theme/tokens.dart';
 import '../routes/router.dart';
@@ -48,10 +49,12 @@ class HomeScreenPhase3 extends ConsumerWidget {
     final user = ref.watch(currentUserProvider);
 
     final box = Hive.box<MealRecord>('tonton_meal_records');
-    // Debug: print current count of records in Hive box
-    print('Box data count: ${box.length}');
+    // Debug: log current count of records in Hive box
+    developer.log('Box data count: ${box.length}',
+        name: 'TonTon.HomeScreenPhase3');
     for (var record in box.values) {
-      print('Record date: ${record.consumedAt}, Name: ${record.mealName}');
+      developer.log('Record date: ${record.consumedAt}, Name: ${record.mealName}',
+          name: 'TonTon.HomeScreenPhase3');
     }
 
     final savingsRecordsAsync = ref.watch(calorieSavingsDataProvider);

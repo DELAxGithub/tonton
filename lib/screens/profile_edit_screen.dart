@@ -8,6 +8,7 @@ import '../providers/user_profile_provider.dart';
 import '../providers/user_weight_provider.dart';
 import '../providers/calorie_savings_provider.dart';
 import '../providers/pfc_balance_provider.dart';
+import '../models/pfc_breakdown.dart';
 
 class ProfileEditScreen extends ConsumerStatefulWidget {
   const ProfileEditScreen({super.key});
@@ -77,7 +78,7 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
     if (name != null && _nameController.text.isEmpty) {
       _nameController.text = name;
     }
-    if (monthlyGoal != null && _goalController.text.isEmpty) {
+    if (_goalController.text.isEmpty) {
       _goalController.text = monthlyGoal.toStringAsFixed(0);
     }
     if (weight != null && _weightController.text.isEmpty) {

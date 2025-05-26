@@ -50,6 +50,9 @@ class HomeScreenPhase3 extends ConsumerWidget {
     final box = Hive.box<MealRecord>('tonton_meal_records');
     // Debug: print current count of records in Hive box
     print('Box data count: ${box.length}');
+    for (var record in box.values) {
+      print('Record date: ${record.consumedAt}, Name: ${record.mealName}');
+    }
 
     final savingsRecordsAsync = ref.watch(calorieSavingsDataProvider);
     final totalSavings = savingsRecordsAsync.maybeWhen(

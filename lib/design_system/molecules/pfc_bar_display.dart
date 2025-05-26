@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:fl_chart/fl_chart.dart';
 import 'package:go_router/go_router.dart';
 import '../atoms/tonton_card_base.dart';
 import '../atoms/tonton_text.dart';
 import '../../theme/tokens.dart';
-import '../../providers/pfc_balance_provider.dart';
 import '../../routes/router.dart';
 
 class PfcBarDisplay extends ConsumerWidget {
@@ -26,36 +24,23 @@ class PfcBarDisplay extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final goals = ref.watch(userGoalsProvider);
+    const proteinTarget = 60.0;
+    const fatTarget = 70.0;
+    const carbTarget = 250.0;
 
-    final proteinTarget = goals.proteinGoalGrams ?? 60;
-    final base = proteinTarget / goals.pfcRatio.protein;
-    final fatTarget = base * goals.pfcRatio.fat;
-    final carbTarget = base * goals.pfcRatio.carbohydrate;
+    final proteinProgress = (protein / proteinTarget).clamp(0.0, 1.0);
+    final fatProgress = (fat / fatTarget).clamp(0.0, 1.0);
+    final carbProgress = (carbs / carbTarget).clamp(0.0, 1.0);
 
-    final sections = [
-      PieChartSectionData(
-        value: protein,
-        color: Theme.of(context).colorScheme.primary,
-        title: 'P',
-        radius: 30,
-        titleStyle: Theme.of(context).textTheme.labelSmall,
-      ),
-      PieChartSectionData(
-        value: fat,
-        color: Theme.of(context).colorScheme.secondary,
-        title: 'F',
-        radius: 30,
-        titleStyle: Theme.of(context).textTheme.labelSmall,
-      ),
-      PieChartSectionData(
-        value: carbs,
-        color: Theme.of(context).colorScheme.tertiary,
-        title: 'C',
-        radius: 30,
-        titleStyle: Theme.of(context).textTheme.labelSmall,
-      ),
-    ];
+    if (protein == 0 && fat == 0 && carbs == 0) {
+      return TontonCardBase(
+        child: TontonText(
+          'データがありません',
+          style: Theme.of(context).textTheme.bodyMedium,
+          align: TextAlign.center,
+        ),
+      );
+    }
 
     return InkWell(
       onTap: onTap ?? () => context.push(TontonRoutes.aiMealCamera),
@@ -69,40 +54,72 @@ class PfcBarDisplay extends ConsumerWidget {
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: Spacing.sm),
-            Row(
-              children: [
-                PieChart(
-                  PieChartData(
-                    sections: sections,
-                    centerSpaceRadius: 18,
-                  ),
-                  swapAnimationDuration: Duration(milliseconds: 300),
-                ),
-                const SizedBox(width: Spacing.md),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      TontonText(
-                        'P ${protein.toStringAsFixed(0)} / ${proteinTarget.toStringAsFixed(0)} g',
-                        style: Theme.of(context).textTheme.labelSmall,
-                      ),
-                      TontonText(
-                        'F ${fat.toStringAsFixed(0)} / ${fatTarget.toStringAsFixed(0)} g',
-                        style: Theme.of(context).textTheme.labelSmall,
-                      ),
-                      TontonText(
-                        'C ${carbs.toStringAsFixed(0)} / ${carbTarget.toStringAsFixed(0)} g',
-                        style: Theme.of(context).textTheme.labelSmall,
-                      ),
-                    ],
-                  ),
-                )
-              ],
+            _BarWithLabel(
+              label: 'P',
+              value: protein,
+              target: proteinTarget,
+              progress: proteinProgress,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+            const SizedBox(height: Spacing.sm),
+            _BarWithLabel(
+              label: 'F',
+              value: fat,
+              target: fatTarget,
+              progress: fatProgress,
+              color: Theme.of(context).colorScheme.secondary,
+            ),
+            const SizedBox(height: Spacing.sm),
+            _BarWithLabel(
+              label: 'C',
+              value: carbs,
+              target: carbTarget,
+              progress: carbProgress,
+              color: Theme.of(context).colorScheme.tertiary,
             ),
           ],
         ),
       ),
+    );
+  }
+}
+
+class _BarWithLabel extends StatelessWidget {
+  final String label;
+  final double value;
+  final double target;
+  final double progress;
+  final Color color;
+
+  const _BarWithLabel({
+    required this.label,
+    required this.value,
+    required this.target,
+    required this.progress,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        TontonText(
+          '$label ${value.toStringAsFixed(0)} / ${target.toStringAsFixed(0)} g',
+          style: theme.textTheme.labelSmall?.copyWith(
+            fontSize: 11,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 4),
+        LinearProgressIndicator(
+          value: progress,
+          minHeight: 8,
+          color: color,
+          backgroundColor: color.withOpacity(0.3),
+        ),
+      ],
     );
   }
 }

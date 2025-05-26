@@ -49,10 +49,6 @@ class _State extends ConsumerState<AIMealLoggingStep3ConfirmEdit> {
     _carbs =
         TextEditingController(text: widget.nutrition.nutrients.carbs.toString());
     final box = Hive.box<MealRecord>('tonton_meal_records');
-    developer.log(
-      '[HIVE_BOX][initState] open:${box.isOpen} count:${box.length}',
-      name: 'HiveDebug',
-    );
   }
 
   @override
@@ -93,13 +89,6 @@ class _State extends ConsumerState<AIMealLoggingStep3ConfirmEdit> {
 
     try {
       final box = Hive.box<MealRecord>('tonton_meal_records');
-      developer.log(
-        '[HIVE_BOX][beforeSave] open:${box.isOpen} count:${box.length}',
-        name: 'HiveDebug',
-      );
-      developer.log('=== 保存処理開始 ===', name: 'SaveDebug');
-      developer.log('料理名: ${_name.text}', name: 'SaveDebug');
-      developer.log('カロリー: ${_calories.text}', name: 'SaveDebug');
 
       final record = MealRecord(
         mealName: _name.text,
@@ -117,33 +106,17 @@ class _State extends ConsumerState<AIMealLoggingStep3ConfirmEdit> {
         ),
       );
 
-      developer.log('MealRecord作成完了', name: 'SaveDebug');
-      developer.log('Provider取得前', name: 'SaveDebug');
       final notifier = ref.read(mealRecordsProvider.notifier);
-      developer.log('Provider取得後: $notifier', name: 'SaveDebug');
-
       await notifier.addMealRecord(record);
-      developer.log('addMealRecord完了', name: 'SaveDebug');
-      developer.log(
-        '[HIVE_BOX][afterSave] count:${box.length}',
-        name: 'HiveDebug',
-      );
       final boxRecords = box.values.toList();
-      developer.log('[HIVE_BOX][records] ${boxRecords.length}', name: 'HiveDebug');
       final allRecordsAsync = ref.read(mealRecordsProvider);
-      developer.log(
-        'Provider経由取得: ${allRecordsAsync.value?.records.length ?? 'null'} 件',
-        name: 'HiveDebug',
-      );
       ref.invalidate(mealRecordsProvider);
       ref.invalidate(todaysMealRecordsProvider);
 
       if (!mounted) {
-        developer.log('Widget is not mounted!', name: 'SaveDebug');
         return;
       }
 
-      developer.log('SnackBar表示前', name: 'SaveDebug');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('${record.mealName}を記録しました！'),
@@ -151,18 +124,13 @@ class _State extends ConsumerState<AIMealLoggingStep3ConfirmEdit> {
           duration: const Duration(seconds: 2),
         ),
       );
-      developer.log('SnackBar表示後', name: 'SaveDebug');
 
       await Future.delayed(const Duration(milliseconds: 800));
 
       if (!mounted) return;
 
-      developer.log('ナビゲーション前', name: 'SaveDebug');
       context.go(TontonRoutes.home);
-      developer.log('ナビゲーション後', name: 'SaveDebug');
     } catch (e, stack) {
-      developer.log('=== エラー発生 ===',
-          name: 'SaveError', error: e, stackTrace: stack);
 
       if (!mounted) return;
       setState(() => _isSaving = false);

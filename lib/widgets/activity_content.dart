@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart' as provider_pkg;
-import 'dart:developer' as developer;
 
 import '../providers/health_provider.dart';
 
@@ -12,15 +11,11 @@ class ActivityContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    developer.log('Building activity content', name: 'TonTon.HomeScreen');
+    
 
     return provider_pkg.Consumer<HealthProvider>(
       builder: (context, provider, child) {
-        developer.log('Consumer builder with provider: ${provider.toString()}',
-            name: 'TonTon.HomeScreen');
-        developer.log(
-            'Provider state - isLoading: ${provider.isLoading}, hasData: ${provider.hasData}',
-            name: 'TonTon.HomeScreen');
+
 
         return Padding(
           padding: const EdgeInsets.all(16.0),
@@ -74,8 +69,7 @@ class ActivityContent extends StatelessWidget {
   }
 
   Widget _buildFetchButton(HealthProvider provider) {
-    developer.log('Building fetch button, isLoading: ${provider.isLoading}',
-        name: 'TonTon.HomeScreen');
+
 
     return ElevatedButton.icon(
       icon: Icon(
@@ -88,7 +82,6 @@ class ActivityContent extends StatelessWidget {
       onPressed: provider.isLoading
           ? null
           : () {
-              developer.log('Fetch button pressed', name: 'TonTon.HomeScreen');
               provider.fetchAllData();
             },
       style: ElevatedButton.styleFrom(
@@ -99,9 +92,7 @@ class ActivityContent extends StatelessWidget {
 
   Widget _buildTodayCard(BuildContext context, HealthProvider provider) {
     final activitySummary = provider.todayActivity;
-    developer.log(
-        'Building today card, activitySummary: ${activitySummary?.toString() ?? "null"}',
-        name: 'TonTon.HomeScreen');
+
 
     if (activitySummary == null) {
       return const Card(
@@ -137,9 +128,7 @@ class ActivityContent extends StatelessWidget {
   Widget _buildYesterdayCard(BuildContext context, HealthProvider provider) {
     final activitySummary = provider.yesterdayActivity;
     final weightRecord = provider.yesterdayWeight;
-    developer.log(
-        'Building yesterday card, activitySummary: ${activitySummary?.toString() ?? "null"}, weightRecord: ${weightRecord?.toString() ?? "null"}',
-        name: 'TonTon.HomeScreen');
+
 
     if (activitySummary == null && weightRecord == null) {
       return const Card(

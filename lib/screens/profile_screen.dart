@@ -8,6 +8,11 @@ import '../providers/onboarding_start_date_provider.dart';
 import '../providers/calorie_savings_provider.dart';
 import '../providers/user_weight_provider.dart';
 import '../providers/auth_provider.dart';
+import '../providers/user_profile_provider.dart';
+import '../providers/pfc_balance_provider.dart';
+import 'package:go_router/go_router.dart';
+import '../routes/router.dart';
+import '../services/health_service.dart';
 import '../theme/tokens.dart';
 
 class ProfileScreen extends ConsumerWidget {
@@ -16,6 +21,7 @@ class ProfileScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(currentUserProvider);
+    final userName = ref.watch(userNameProvider);
     final startDate = ref.watch(onboardingStartDateProvider);
     final savingsRecordsAsync = ref.watch(calorieSavingsDataProvider);
     final monthlyGoal = ref.watch(monthlyCalorieGoalProvider);
@@ -35,7 +41,15 @@ class ProfileScreen extends ConsumerWidget {
     );
 
     return Scaffold(
-      appBar: AppBar(title: const Text('プロフィール')),
+      appBar: AppBar(
+        title: const Text('プロフィール'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.edit),
+            onPressed: () => context.push(TontonRoutes.profileEdit),
+          ),
+        ],
+      ),
       body: StandardPageLayout(
         children: [
           // ユーザー情報
@@ -47,6 +61,7 @@ class ProfileScreen extends ConsumerWidget {
                     style: Theme.of(context).textTheme.titleMedium),
                 const SizedBox(height: Spacing.sm),
                 Text('メール: ${user?.email ?? "未設定"}'),
+                Text('名前: ${userName ?? "未設定"}'),
                 Text('体重: ${userWeight?.toStringAsFixed(1) ?? "未設定"} kg'),
               ],
             ),
@@ -145,10 +160,20 @@ class ProfileScreen extends ConsumerWidget {
   }
 
   void _recalculateData(BuildContext context, WidgetRef ref) {
-    // データの再計算をトリガー
     ref.invalidate(calorieSavingsDataProvider);
+    final service = HealthService();
+    service.getLatestWeight(DateTime.now()).then((record) async {
+      if (record != null) {
+        await ref.read(userWeightProvider.notifier).setWeight(record.weight);
+        await ref
+            .read(userGoalsProvider.notifier)
+            .setBodyWeight(record.weight);
+      }
+    });
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('データを再計算しています...')),
     );
   }
 }
+
+

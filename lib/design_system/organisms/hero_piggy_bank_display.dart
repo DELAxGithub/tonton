@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../atoms/tonton_button.dart';
 import '../atoms/tonton_icon.dart';
 import '../atoms/tonton_text.dart';
 import '../atoms/tonton_card_base.dart';
 import '../../theme/tokens.dart';
 import '../../utils/icon_mapper.dart';
+import '../../providers/monthly_progress_provider.dart';
 
-class HeroPiggyBankDisplay extends StatefulWidget {
+class HeroPiggyBankDisplay extends ConsumerStatefulWidget {
   final double totalSavings;
   final double recentChange;
   final VoidCallback? onUsePressed;
@@ -19,10 +21,11 @@ class HeroPiggyBankDisplay extends StatefulWidget {
   });
 
   @override
-  State<HeroPiggyBankDisplay> createState() => _HeroPiggyBankDisplayState();
+  @override
+  ConsumerState<HeroPiggyBankDisplay> createState() => _HeroPiggyBankDisplayState();
 }
 
-class _HeroPiggyBankDisplayState extends State<HeroPiggyBankDisplay>
+class _HeroPiggyBankDisplayState extends ConsumerState<HeroPiggyBankDisplay>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
   late final Animation<double> _offset;
@@ -64,6 +67,7 @@ class _HeroPiggyBankDisplayState extends State<HeroPiggyBankDisplay>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final summaryAsync = ref.watch(monthlyProgressSummaryProvider);
     Color pigColor = theme.colorScheme.primary;
     if (widget.totalSavings >= 1000) {
       pigColor = theme.colorScheme.secondary;
@@ -110,19 +114,44 @@ class _HeroPiggyBankDisplayState extends State<HeroPiggyBankDisplay>
             style: theme.textTheme.bodyMedium,
           ),
           const SizedBox(height: Spacing.xs),
-          TontonText(
-            '+${widget.totalSavings.toStringAsFixed(0)} kcal',
-            style: theme.textTheme.headlineMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: pigColor,
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              TontonIcon(TontonIcons.piggybank, size: 24, color: pigColor),
+              const SizedBox(width: Spacing.xs),
+              TontonText(
+                '+${widget.totalSavings.toStringAsFixed(0)} kcal',
+                style: theme.textTheme.displayLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: pigColor,
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: Spacing.sm),
-          TontonButton.text(
-            label: '貯金をつかう',
-            leading: TontonIcons.present,
-            onPressed: widget.onUsePressed,
+          summaryAsync.when(
+            data: (summary) => Column(
+              children: [
+                TontonText(
+                  '今月の目標進捗: ${summary.completionPercentage.toStringAsFixed(0)}%',
+                  style: theme.textTheme.bodyMedium,
+                ),
+                TontonText(
+                  '残り${summary.remainingDaysInMonth}日',
+                  style: theme.textTheme.bodySmall,
+                ),
+              ],
+            ),
+            loading: () => const CircularProgressIndicator(),
+            error: (_, __) => const SizedBox.shrink(),
           ),
+          const SizedBox(height: Spacing.sm),
+          if (widget.onUsePressed != null)
+            TontonButton.text(
+              label: '貯金をつかう',
+              leading: TontonIcons.present,
+              onPressed: widget.onUsePressed,
+            ),
         ],
       ),
     );

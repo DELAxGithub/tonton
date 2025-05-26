@@ -3,7 +3,6 @@ import '../atoms/tonton_text.dart';
 import '../atoms/tonton_card_base.dart';
 import '../atoms/tonton_icon.dart';
 import '../../theme/tokens.dart';
-import '../../theme/theme.dart';
 import '../../utils/icon_mapper.dart';
 
 class DailySummarySection extends StatelessWidget {

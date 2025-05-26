@@ -117,7 +117,7 @@ class _BarWithLabel extends StatelessWidget {
           value: progress,
           minHeight: 8,
           color: color,
-          backgroundColor: color.withOpacity(0.3),
+          backgroundColor: color.withValues(alpha: 0.2),
         ),
       ],
     );

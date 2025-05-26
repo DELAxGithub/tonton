@@ -129,15 +129,17 @@ class _HeroPiggyBankDisplayState extends ConsumerState<HeroPiggyBankDisplay>
           summaryAsync.when(
             data: (summary) => Column(
               children: [
-                TontonText(
-                  '今月の目標進捗: ${summary.completionPercentage.toStringAsFixed(0)}%',
-                  style: theme.textTheme.bodySmall,
-                  textAlign: TextAlign.center,
+                Center(
+                  child: TontonText(
+                    '今月の目標進捗: ${summary.completionPercentage.toStringAsFixed(0)}%',
+                    style: theme.textTheme.bodySmall,
+                  ),
                 ),
-                TontonText(
-                  '残り${summary.remainingDaysInMonth}日',
-                  style: theme.textTheme.labelSmall,
-                  textAlign: TextAlign.center,
+                Center(
+                  child: TontonText(
+                    '残り${summary.remainingDaysInMonth}日',
+                    style: theme.textTheme.labelSmall,
+                  ),
                 ),
               ],
             ),

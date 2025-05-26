@@ -7,6 +7,9 @@ class DailyCalorieSummary {
   
   /// Total calories burned (from HealthKit)
   final double totalCaloriesBurned;
+
+  /// Calories burned from workouts only
+  final double workoutCalories;
   
   /// Net calorie balance (burned - consumed)
   double get netCalories => totalCaloriesBurned - totalCaloriesConsumed;
@@ -18,12 +21,13 @@ class DailyCalorieSummary {
     required this.date,
     required this.totalCaloriesConsumed,
     required this.totalCaloriesBurned,
+    required this.workoutCalories,
   });
 
   @override
   String toString() {
     return 'DailyCalorieSummary(date: ${date.toIso8601String().split('T')[0]}, '
         'consumed: $totalCaloriesConsumed, burned: $totalCaloriesBurned, '
-        'net: $netCalories)';
+        'workout: $workoutCalories, net: $netCalories)';
   }
 }

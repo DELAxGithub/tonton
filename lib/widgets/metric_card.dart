@@ -62,7 +62,8 @@ class MetricCard extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.all(TontonSpacing.xs),
                         decoration: BoxDecoration(
-                          color: cardColor.withOpacity(0.2),
+                          color:
+                              cardColor.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(TontonRadius.sm),
                         ),
                         child: Icon(
@@ -145,7 +146,7 @@ class TrendBadge extends StatelessWidget {
     
     // Choose color based on goodness
     final Color badgeColor = isNeutral
-        ? theme.colorScheme.surfaceVariant
+        ? theme.colorScheme.surfaceContainerHighest
         : isGood
             ? TontonColors.success
             : TontonColors.error;

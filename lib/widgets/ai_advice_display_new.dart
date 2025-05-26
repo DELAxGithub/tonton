@@ -28,7 +28,8 @@ class AiAdviceDisplayNew extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(TontonSpacing.md),
             decoration: BoxDecoration(
-              color: theme.colorScheme.primaryContainer.withOpacity(0.7),
+              color: theme.colorScheme.primaryContainer
+                  .withValues(alpha: 0.7),
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(TontonRadius.lg),
                 topRight: Radius.circular(TontonRadius.lg),
@@ -236,9 +237,9 @@ class AiAdviceDisplayNew extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(TontonSpacing.xs),
           decoration: BoxDecoration(
-            color: isHighlighted 
+            color: isHighlighted
                 ? theme.colorScheme.primary
-                : theme.colorScheme.surfaceVariant,
+                : theme.colorScheme.surfaceContainerHighest,
             borderRadius: BorderRadius.circular(TontonRadius.sm),
           ),
           child: Icon(
@@ -290,9 +291,11 @@ class AiAdviceDisplayNew extends StatelessWidget {
         vertical: TontonSpacing.xs,
       ),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(TontonRadius.md),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(
+          color: color.withValues(alpha: 0.3),
+        ),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,

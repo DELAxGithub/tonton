@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:tonton/services/ai_service.dart';
-import 'package:tonton/models/estimated_meal_nutrition.dart';
 
 /// Test script for manually testing the image analysis functionality
 /// This can be run independently to verify the Supabase Edge Function

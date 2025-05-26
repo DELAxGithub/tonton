@@ -7,7 +7,7 @@ import '../models/daily_calorie_summary.dart';
 import '../screens/savings_trend_screen.dart';
 
 class MonthlyProgressWidget extends ConsumerWidget {
-  const MonthlyProgressWidget({Key? key}) : super(key: key);
+  const MonthlyProgressWidget({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -196,6 +196,20 @@ class MonthlyProgressWidget extends ConsumerWidget {
             ),
           ],
         ),
+        if (summary.workoutCalories != summary.totalCaloriesBurned)
+          Padding(
+            padding: const EdgeInsets.only(top: 2.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('  • Workout:', style: theme.textTheme.bodySmall),
+                Text(
+                  '${summary.workoutCalories.toStringAsFixed(0)} kcal',
+                  style: theme.textTheme.bodySmall,
+                ),
+              ],
+            ),
+          ),
         const SizedBox(height: 4),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,

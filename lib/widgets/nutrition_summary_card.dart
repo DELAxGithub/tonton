@@ -108,7 +108,7 @@ class NutritionSummaryCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  '${calories.toStringAsFixed(0)}',
+                  calories.toStringAsFixed(0),
                   style: theme.textTheme.headlineMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: theme.colorScheme.primary,

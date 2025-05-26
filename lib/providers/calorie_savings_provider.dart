@@ -1,18 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/calorie_savings_record.dart';
-import '../models/dummy_data_scenario.dart';
-import '../services/calorie_savings_service.dart';
-
-/// Notifier for managing the selected dummy data scenario.
-class ScenarioNotifier extends StateNotifier<DummyDataScenario> {
-  ScenarioNotifier() : super(DummyDataScenario.steadyGrowth);
-
-  void setScenario(DummyDataScenario scenario) => state = scenario;
-}
-
-final selectedScenarioProvider =
-    StateNotifierProvider<ScenarioNotifier, DummyDataScenario>(
-        (ref) => ScenarioNotifier());
+import '../providers/onboarding_start_date_provider.dart';
+import 'realtime_calories_provider.dart';
+import 'meal_records_provider.dart';
 
 // Provider for monthly target
 final monthlySavingsTargetProvider = Provider<double>((ref) {
@@ -31,11 +21,30 @@ final monthlyCalorieGoalProvider =
         (ref) => MonthlyCalorieGoalNotifier());
 
 // Provider for calorie savings data
-final calorieSavingsServiceProvider =
-    Provider<CalorieSavingsService>((ref) => CalorieSavingsService());
+final calorieSavingsDataProvider =
+    FutureProvider<List<CalorieSavingsRecord>>((ref) async {
+  // Watch meal records so savings data updates when meals change.
+  ref.watch(mealRecordsProvider);
+  final startDate = ref.watch(onboardingStartDateProvider);
+  if (startDate == null) return [];
 
-final calorieSavingsDataProvider = Provider<List<CalorieSavingsRecord>>((ref) {
-  final scenario = ref.watch(selectedScenarioProvider);
-  final service = ref.watch(calorieSavingsServiceProvider);
-  return service.generateData(scenario);
+  final service = ref.watch(dailySummaryServiceProvider);
+  final endDate = DateTime.now().subtract(const Duration(days: 1));
+  final records = <CalorieSavingsRecord>[];
+  var current = DateTime(startDate.year, startDate.month, startDate.day);
+
+  while (!current.isAfter(endDate)) {
+    final summary = await service.getDailySummary(current);
+    final previous =
+        records.isNotEmpty ? records.last.cumulativeSavings : 0.0;
+    records.add(CalorieSavingsRecord.fromRaw(
+      date: summary.date,
+      caloriesConsumed: summary.caloriesConsumed,
+      caloriesBurned: summary.caloriesBurned,
+      previousCumulativeSavings: previous,
+    ));
+    current = current.add(const Duration(days: 1));
+  }
+
+  return records;
 });

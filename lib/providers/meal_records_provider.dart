@@ -52,11 +52,14 @@ class MealRecords extends _$MealRecords {
 
   /// Adds a new meal record to the state and persists it
   Future<void> addMealRecord(MealRecord record) async { // Modified to be async
-    state = AsyncValue.data(state.value!.copyWith(isLoading: true)); // Show loading
+    state = AsyncValue.data(state.value!.copyWith(isLoading: true));
     try {
       await _mealDataService.saveMealRecord(record);
-      final updatedRecords = await _mealDataService.getAllMealRecords();
-      state = AsyncValue.data(MealRecordsState(records: updatedRecords, isLoading: false));
+      final newRecords = List<MealRecord>.from(state.value!.records)..add(record);
+      state = AsyncValue.data(
+        MealRecordsState(records: newRecords, isLoading: false),
+      );
+      ref.invalidateSelf();
     } catch (e, stack) {
       state = AsyncValue.error(e, stack);
     }
@@ -94,11 +97,11 @@ class MealRecords extends _$MealRecords {
   /// Gets all meal records for a specific date from the current state
   List<MealRecord> getMealRecordsForDate(DateTime date) {
     if (state.hasValue) {
-      final startOfDay = DateTime(date.year, date.month, date.day);
-      final endOfDay = DateTime(date.year, date.month, date.day, 23, 59, 59);
       return state.value!.records.where((record) {
-        return record.consumedAt.isAfter(startOfDay) && 
-               record.consumedAt.isBefore(endOfDay);
+        final consumed = record.consumedAt.toLocal();
+        return consumed.year == date.year &&
+            consumed.month == date.month &&
+            consumed.day == date.day;
       }).toList();
     }
     return [];

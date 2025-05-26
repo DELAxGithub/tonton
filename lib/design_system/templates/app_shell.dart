@@ -13,6 +13,7 @@ class AppShell extends StatelessWidget {
 
   /// Optional floating action button.
   final Widget? floatingActionButton;
+  final FloatingActionButtonLocation? floatingActionButtonLocation;
 
   /// Background color for the scaffold.
   final Color? backgroundColor;
@@ -24,6 +25,7 @@ class AppShell extends StatelessWidget {
     this.bottomNavigationBar,
     this.floatingActionButton,
     this.backgroundColor,
+    this.floatingActionButtonLocation,
   });
 
   @override
@@ -34,6 +36,7 @@ class AppShell extends StatelessWidget {
       body: SafeArea(child: body),
       bottomNavigationBar: bottomNavigationBar,
       floatingActionButton: floatingActionButton,
+      floatingActionButtonLocation: floatingActionButtonLocation,
     );
   }
 }

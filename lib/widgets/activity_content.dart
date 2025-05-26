@@ -169,6 +169,7 @@ class ActivityContent extends StatelessWidget {
             if (weightRecord != null) ...[
               _buildDataRow('体重:', weightRecord.formattedWeight),
               _buildDataRow('体脂肪率:', weightRecord.formattedBodyFat),
+              _buildDataRow('体脂肪量:', weightRecord.formattedBodyFatMass),
             ],
           ],
         ),

@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -15,12 +13,10 @@ class AIMealLoggingStep1Camera extends ConsumerWidget {
     final picker = ImagePicker();
     final XFile? file = await picker.pickImage(
       source: source,
-      maxWidth: 1800,
-      maxHeight: 1800,
-      imageQuality: 88,
+      imageQuality: 100,
     );
     if (file != null && context.mounted) {
-      context.go(TontonRoutes.aiMealAnalyzing, extra: File(file.path));
+      context.go(TontonRoutes.aiMealAnalyzing, extra: file.path);
     }
   }
 
@@ -43,7 +39,7 @@ class AIMealLoggingStep1Camera extends ConsumerWidget {
             left: 8,
             child: IconButton(
               icon: const Icon(Icons.close, color: Colors.white),
-              onPressed: () => context.pop(),
+              onPressed: () => context.go(TontonRoutes.home),
             ),
           ),
           Positioned(

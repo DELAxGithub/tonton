@@ -3,15 +3,23 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:provider/provider.dart' as provider_pkg;
 import 'dart:developer' as developer;
-import 'dart:io' show Platform; // For accessing environment variables
+import 'dart:io' show Platform;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'models/meal_record.dart';
+import 'models/daily_summary.dart';
 import 'enums/meal_time_type.dart';
 import 'providers/health_provider.dart';
 import 'routes/router.dart'; // Import router configuration
+import 'services/onboarding_service.dart';
+import 'providers/onboarding_providers.dart';
+import 'providers/onboarding_start_date_provider.dart';
+import 'services/daily_summary_data_service.dart';
+import 'services/meal_data_service.dart';
+import 'services/health_service.dart';
 import 'theme/app_theme.dart'; // Import application theme
 import 'l10n/app_localizations.dart';
 
@@ -32,24 +40,23 @@ Future<void> _initHive() async {
       Hive.registerAdapter(MealRecordAdapter());
       developer.log('MealRecordAdapter registered.', name: 'TonTon.HiveInit');
     }
+    if (!Hive.isAdapterRegistered(3)) { // DailySummaryAdapter
+      Hive.registerAdapter(DailySummaryAdapter());
+      developer.log('DailySummaryAdapter registered.', name: 'TonTon.HiveInit');
+    }
 
     // Open boxes
     // Using a distinct box name for the main app to avoid conflict with health_poc_app if it shares storage
-    await Hive.openBox<MealRecord>('tonton_meal_records'); 
+    await Hive.openBox<MealRecord>('tonton_meal_records');
     developer.log('Box "tonton_meal_records" opened.', name: 'TonTon.HiveInit');
 
-    // Initialize MealDataService after Hive is ready
-    // This assumes MealDataService is a singleton or can be globally accessed/initialized.
-    // If using Riverpod, the provider for MealDataService will handle its creation,
-    // and its init method will be called when first read if designed that way (as in MealRecords provider).
-    // For explicit early initialization:
-    // final mealDataService = MealDataService(); // Or however it's accessed/created
-    // await mealDataService.init();
-    // developer.log('MealDataService initialized after Hive.', name: 'TonTon.HiveInit');
-    // Note: The current MealRecords provider already calls mealDataService.init() if not initialized.
-    // So, explicit call here might be redundant if MealDataService is only used via that provider.
-    // However, if other parts of the app might access MealDataService directly, initializing it here is safer.
-    // For now, we'll rely on the provider's init call.
+    await Hive.openBox<DailySummary>('tonton_daily_summaries');
+    developer.log('Box "tonton_daily_summaries" opened.', name: 'TonTon.HiveInit');
+
+    // Initialize MealDataService after Hive is ready so that the box is reused
+    // consistently across the app.
+    await mealDataService.init();
+    developer.log('MealDataService initialized after Hive.', name: 'TonTon.HiveInit');
 
   } catch (e, stack) {
     developer.log('Error initializing Hive: $e', name: 'TonTon.HiveInit.Error', error: e, stackTrace: stack);
@@ -59,57 +66,110 @@ Future<void> _initHive() async {
 
 void main() async { // Modified to be async
   WidgetsFlutterBinding.ensureInitialized();
-  
-  // // Initialize Firebase // Removed
-  // try { // Removed
-  //   await Firebase.initializeApp( // Removed
-  //     options: DefaultFirebaseOptions.currentPlatform, // Removed
-  //   ); // Removed
-  //   developer.log('Firebase initialized successfully', name: 'TonTon.FirebaseInit'); // Removed
-  // } catch (e, stack) { // Removed
-  //   developer.log('Error initializing Firebase: $e', name: 'TonTon.FirebaseInit.Error', error: e, stackTrace: stack); // Removed
-  //   // Continue app initialization even if Firebase fails // Removed
-  // } // Removed
+
+  try {
+    await dotenv.load(fileName: ".env");
+    developer.log('.env file loaded successfully', name: 'TonTon.EnvLoad');
+  } catch (e) {
+    developer.log('Could not load .env file. Using compile-time variables if available. Error: $e', 
+      name: 'TonTon.EnvLoad.Error');
+    // エラーが発生しても継続できるように、デフォルト値を設定
+    dotenv.testLoad(fileInput: '''
+      SUPABASE_URL=default_url
+      SUPABASE_ANON_KEY=default_key
+    ''');
+  }
 
   // Initialize Supabase using environment variables
   try {
-    final supabaseUrl =
-        Platform.environment['SUPABASE_URL'] ?? const String.fromEnvironment('SUPABASE_URL');
-    final supabaseAnonKey = Platform.environment['SUPABASE_ANON_KEY'] ??
-        const String.fromEnvironment('SUPABASE_ANON_KEY');
+    final supabaseUrl = dotenv.env['SUPABASE_URL'] ??
+                      Platform.environment['SUPABASE_URL'] ??
+                      const String.fromEnvironment('SUPABASE_URL');
+    final supabaseAnonKey = dotenv.env['SUPABASE_ANON_KEY'] ??
+                          Platform.environment['SUPABASE_ANON_KEY'] ??
+                          const String.fromEnvironment('SUPABASE_ANON_KEY');
+
+    if (supabaseUrl.isEmpty || supabaseAnonKey.isEmpty) {
+      throw Exception('Supabase URL or Anon Key is missing. Ensure .env file is set up or variables are passed via --dart-define.');
+    }
 
     await Supabase.initialize(
       url: supabaseUrl,
       anonKey: supabaseAnonKey,
     );
-    developer.log('Supabase initialized successfully', name: 'TonTon.SupabaseInit');
+    developer.log('Supabase initialized successfully with URL: $supabaseUrl', name: 'TonTon.SupabaseInit');
   } catch (e, stack) {
     developer.log('Error initializing Supabase: $e', name: 'TonTon.SupabaseInit.Error', error: e, stackTrace: stack);
-    // Decide how to handle Supabase init failure, e.g., show an error and exit, or continue with limited functionality.
+    rethrow;
   }
   
   await _initHive(); // Added Hive initialization call
   developer.log('TonTon App starting after initialization...', name: 'TonTon.main');
+  final dailySummaryService = DailySummaryDataService();
+  final startDateNotifier = OnboardingStartDateNotifier(dailySummaryService);
+  final onboardingService =
+      OnboardingService(startDateNotifier, HealthService());
+  await onboardingService.ensureInitialized();
+  final firstLaunch = await onboardingService.getFirstLaunch();
+
   runApp(
-    // Wrap the app with ProviderScope for Riverpod
-    const ProviderScope(
-      child: MyApp(),
+    ProviderScope(
+      overrides: [
+        onboardingStartDateProvider.overrideWith((ref) => startDateNotifier),
+        firstLaunchTimestampProvider.overrideWith(
+          (ref) async => firstLaunch,
+        ),
+      ],
+      child: const MyApp(),
     ),
   );
 }
 
-class MyApp extends ConsumerWidget {
+class MyApp extends ConsumerStatefulWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) async {
+    if (state == AppLifecycleState.paused) {
+      developer.log('App paused - flushing Hive boxes',
+          name: '[HIVE_LIFECYCLE]');
+      await _flushAllBoxes();
+    } else if (state == AppLifecycleState.resumed) {
+      developer.log('App resumed', name: '[HIVE_LIFECYCLE]');
+      // No provider refresh needed on resume
+    }
+  }
+
+  Future<void> _flushAllBoxes() async {
+    final mealBox = Hive.box<MealRecord>('tonton_meal_records');
+    await mealBox.flush();
+    final summaryBox = Hive.box<DailySummary>('tonton_daily_summaries');
+    await summaryBox.flush();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     developer.log('Building MyApp widget', name: 'TonTon.MyApp.build');
-    
-    // Get the router instance from the provider
+
     final router = ref.watch(routerProvider);
 
-    // Provide HealthProvider using the legacy provider package
-    // This will eventually be migrated to Riverpod
     return provider_pkg.ChangeNotifierProvider<HealthProvider>(
       create: (context) {
         developer.log('Creating HealthProvider', name: 'TonTon.Provider.create');
@@ -120,7 +180,8 @@ class MyApp extends ConsumerWidget {
         locale: const Locale('ja'),
         debugShowCheckedModeBanner: true,
         theme: TontonTheme.light,
-        darkTheme: TontonTheme.dark,
+        // darkTheme: TontonTheme.dark,
+        themeMode: ThemeMode.light,
         localizationsDelegates: const [
           AppLocalizations.delegate,
           GlobalMaterialLocalizations.delegate,
@@ -128,15 +189,8 @@ class MyApp extends ConsumerWidget {
           GlobalCupertinoLocalizations.delegate,
         ],
         supportedLocales: AppLocalizations.supportedLocales,
-        // Use go_router for routing
         routerConfig: router,
       ),
     );
   }
 }
-
-// _MyAppState and its lifecycle methods (initState, dispose, didChangeAppLifecycleState, _flushAllBoxes, _ensureBoxesOpen)
-// are removed because MyApp is now a ConsumerWidget.
-// If app lifecycle observation is still needed, it can be handled differently,
-// perhaps by a dedicated Riverpod provider that uses WidgetsBindingObserver.
-// For now, focusing on the auth flow.

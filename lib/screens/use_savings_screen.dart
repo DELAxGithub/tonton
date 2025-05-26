@@ -6,7 +6,7 @@ import 'package:go_router/go_router.dart';
 import '../design_system/templates/standard_page_layout.dart';
 import '../design_system/atoms/tonton_button.dart';
 import '../utils/icon_mapper.dart';
-import '../routes/router.dart';
+import '../providers/savings_balance_provider.dart';
 
 class UseSavingsScreen extends ConsumerStatefulWidget {
   const UseSavingsScreen({super.key});
@@ -31,8 +31,14 @@ class _UseSavingsScreenState extends ConsumerState<UseSavingsScreen> {
     }
   }
 
-  void _confirm() {
-    // TODO: connect to savings logic
+  Future<void> _confirm() async {
+    await ref
+        .read(savingsBalanceProvider.notifier)
+        .deduct(_amountToUse.roundToDouble());
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('${_amountToUse.round()} kcal を使いました')),
+    );
     context.pop();
   }
 
@@ -42,9 +48,14 @@ class _UseSavingsScreenState extends ConsumerState<UseSavingsScreen> {
       appBar: AppBar(title: const Text('ご褒美設定')),
       body: StandardPageLayout(
         children: [
-          Text(
-            '使える貯金: 0 kcal',
-            style: Theme.of(context).textTheme.titleMedium,
+          Consumer(
+            builder: (context, ref, _) {
+              final balance = ref.watch(savingsBalanceProvider).round();
+              return Text(
+                '使える貯金: $balance kcal',
+                style: Theme.of(context).textTheme.titleMedium,
+              );
+            },
           ),
           const SizedBox(height: 16),
           ListTile(

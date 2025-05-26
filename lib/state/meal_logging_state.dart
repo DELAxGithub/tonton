@@ -1,15 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-/// Simple state notifier to track whether a meal logging flow is active.
-class MealLoggingState extends StateNotifier<bool> {
-  MealLoggingState() : super(false);
+/// Represents the current step in the AI meal logging flow.
+enum MealLoggingStep { camera, analyzing, confirm }
 
-  void start() => state = true;
-  void stop() => state = false;
-}
-
-/// Provider for the [MealLoggingState].
-final mealLoggingStateProvider =
-    StateNotifierProvider<MealLoggingState, bool>((ref) {
-  return MealLoggingState();
+/// Simple provider storing the current [MealLoggingStep].
+final mealLoggingStepProvider = StateProvider<MealLoggingStep>((ref) {
+  return MealLoggingStep.camera;
 });

@@ -130,7 +130,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Health PoC',
       theme: ThemeData(
-        primarySwatch: Colors.teal, // テーマカラーを少し変更
+        primarySwatch: Colors.pink, // テーマカラーをピンク系に変更
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: HealthDataScreen(),

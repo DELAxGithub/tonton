@@ -44,7 +44,6 @@ class HomeScreenPhase3 extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(currentUserProvider);
 
-    final box = Hive.box<MealRecord>('tonton_meal_records');
 
     final savingsRecordsAsync = ref.watch(calorieSavingsDataProvider);
     final totalSavings = savingsRecordsAsync.maybeWhen(
@@ -118,7 +117,7 @@ class HomeScreenPhase3 extends ConsumerWidget {
               leading: TontonIcons.camera,
               onPressed: () => context.push(TontonRoutes.aiMealCamera),
             ),
-            const SizedBox(height: Spacing.xxxl),
+            SizedBox(height: Spacing.xxl),
           ],
         );
       },

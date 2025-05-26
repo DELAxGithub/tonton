@@ -1,11 +1,9 @@
 import 'dart:io';
-import 'dart:developer' as developer;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 
 import '../../models/estimated_meal_nutrition.dart';
 import '../../models/meal_record.dart';
@@ -48,7 +46,6 @@ class _State extends ConsumerState<AIMealLoggingStep3ConfirmEdit> {
     _fat = TextEditingController(text: widget.nutrition.nutrients.fat.toString());
     _carbs =
         TextEditingController(text: widget.nutrition.nutrients.carbs.toString());
-    final box = Hive.box<MealRecord>('tonton_meal_records');
   }
 
   @override
@@ -88,8 +85,6 @@ class _State extends ConsumerState<AIMealLoggingStep3ConfirmEdit> {
     setState(() => _isSaving = true);
 
     try {
-      final box = Hive.box<MealRecord>('tonton_meal_records');
-
       final record = MealRecord(
         mealName: _name.text,
         calories: double.tryParse(_calories.text) ?? 0,
@@ -108,8 +103,6 @@ class _State extends ConsumerState<AIMealLoggingStep3ConfirmEdit> {
 
       final notifier = ref.read(mealRecordsProvider.notifier);
       await notifier.addMealRecord(record);
-      final boxRecords = box.values.toList();
-      final allRecordsAsync = ref.read(mealRecordsProvider);
       ref.invalidate(mealRecordsProvider);
       ref.invalidate(todaysMealRecordsProvider);
 
@@ -130,7 +123,7 @@ class _State extends ConsumerState<AIMealLoggingStep3ConfirmEdit> {
       if (!mounted) return;
 
       context.go(TontonRoutes.home);
-    } catch (e, stack) {
+    } catch (e, _) {
 
       if (!mounted) return;
       setState(() => _isSaving = false);

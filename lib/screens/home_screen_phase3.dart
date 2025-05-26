@@ -18,6 +18,7 @@ import '../design_system/molecules/navigation_link_card.dart';
 import '../design_system/atoms/tonton_button.dart';
 import '../widgets/ai_advice_display_new.dart';
 import '../widgets/todays_meal_records_list.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import '../utils/icon_mapper.dart';
 import '../theme/tokens.dart';
 import '../routes/router.dart';
@@ -45,6 +46,10 @@ class HomeScreenPhase3 extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(currentUserProvider);
+
+    final box = Hive.box<MealRecord>('tonton_meal_records');
+    // Debug: print current count of records in Hive box
+    print('Box data count: ${box.length}');
 
     final savingsRecordsAsync = ref.watch(calorieSavingsDataProvider);
     final totalSavings = savingsRecordsAsync.maybeWhen(

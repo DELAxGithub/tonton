@@ -97,11 +97,11 @@ class MealRecords extends _$MealRecords {
   /// Gets all meal records for a specific date from the current state
   List<MealRecord> getMealRecordsForDate(DateTime date) {
     if (state.hasValue) {
-      final startOfDay = DateTime(date.year, date.month, date.day);
-      final nextDay = startOfDay.add(const Duration(days: 1));
       return state.value!.records.where((record) {
         final consumed = record.consumedAt.toLocal();
-        return !consumed.isBefore(startOfDay) && consumed.isBefore(nextDay);
+        return consumed.year == date.year &&
+            consumed.month == date.month &&
+            consumed.day == date.day;
       }).toList();
     }
     return [];

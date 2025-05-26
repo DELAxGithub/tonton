@@ -105,7 +105,7 @@ class _HeroPiggyBankDisplayState extends ConsumerState<HeroPiggyBankDisplay>
               ],
             ),
           ),
-          const SizedBox(height: Spacing.sm),
+          const SizedBox(height: Spacing.md),
           TontonText(
             'わたしのトントン貯金',
             style: theme.textTheme.bodyMedium,
@@ -125,24 +125,26 @@ class _HeroPiggyBankDisplayState extends ConsumerState<HeroPiggyBankDisplay>
               ),
             ],
           ),
-          const SizedBox(height: Spacing.sm),
+          const SizedBox(height: Spacing.md),
           summaryAsync.when(
             data: (summary) => Column(
               children: [
                 TontonText(
                   '今月の目標進捗: ${summary.completionPercentage.toStringAsFixed(0)}%',
-                  style: theme.textTheme.bodyMedium,
+                  style: theme.textTheme.bodySmall,
+                  textAlign: TextAlign.center,
                 ),
                 TontonText(
                   '残り${summary.remainingDaysInMonth}日',
-                  style: theme.textTheme.bodySmall,
+                  style: theme.textTheme.labelSmall,
+                  textAlign: TextAlign.center,
                 ),
               ],
             ),
             loading: () => const CircularProgressIndicator(),
             error: (_, __) => const SizedBox.shrink(),
           ),
-          const SizedBox(height: Spacing.sm),
+          const SizedBox(height: Spacing.md),
         ],
       ),
     );

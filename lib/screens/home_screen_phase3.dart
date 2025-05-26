@@ -6,7 +6,6 @@ import '../l10n/app_localizations.dart';
 import '../providers/auth_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../providers/meal_records_provider.dart';
-import '../providers/ai_advice_provider.dart';
 import '../providers/calorie_savings_provider.dart';
 import '../providers/monthly_progress_provider.dart';
 import '../providers/realtime_calories_provider.dart';
@@ -15,7 +14,6 @@ import '../design_system/organisms/hero_piggy_bank_display.dart';
 import '../design_system/organisms/daily_summary_section.dart';
 import '../design_system/molecules/pfc_bar_display.dart';
 import '../design_system/atoms/tonton_button.dart';
-import '../widgets/ai_advice_display_new.dart';
 import '../widgets/todays_meal_records_list.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'dart:developer' as developer;
@@ -102,7 +100,7 @@ class HomeScreenPhase3 extends ConsumerWidget {
               totalSavings: totalSavings,
             ),
             // Spacing after piggy bank display
-            const SizedBox(height: Spacing.lg),
+            const SizedBox(height: Spacing.xl),
             DailySummarySection(
               eatenCalories: summary.totalCaloriesConsumed,
               burnedCalories: summary.totalCaloriesBurned,
@@ -112,9 +110,9 @@ class HomeScreenPhase3 extends ConsumerWidget {
               ),
               dailySavings: summary.netCalories,
             ),
-            const SizedBox(height: Spacing.lg),
+            const SizedBox(height: Spacing.xl),
             const TodaysMealRecordsList(),
-            const SizedBox(height: Spacing.lg),
+            const SizedBox(height: Spacing.xl),
             PfcBarDisplay(
               title: '今日の栄養バランス (PFC)',
               protein: protein,
@@ -123,15 +121,12 @@ class HomeScreenPhase3 extends ConsumerWidget {
               onTap: () => context.push(TontonRoutes.aiMealCamera),
             ),
             // Added spacing after chart when NavigationLinkCard was removed
-            const SizedBox(height: Spacing.lg),
+            const SizedBox(height: Spacing.xl),
             TontonButton.primary(
               label: '📷 写真でパシャ！食事をきろく',
               leading: TontonIcons.camera,
               onPressed: () => context.push(TontonRoutes.aiMealCamera),
             ),
-            // Space before AI advice section
-            const SizedBox(height: Spacing.lg),
-            _buildAiAdviceSection(todayMeals, context, ref),
             const SizedBox(height: Spacing.xxl),
           ],
         );
@@ -139,47 +134,4 @@ class HomeScreenPhase3 extends ConsumerWidget {
     );
   }
 
-  Widget _buildAiAdviceSection(
-      List<MealRecord> todayMeals, BuildContext context, WidgetRef ref) {
-    final aiAdviceState = ref.watch(aiAdviceProvider);
-    final l10n = AppLocalizations.of(context);
-    final theme = Theme.of(context);
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if (aiAdviceState.isLoading)
-          const Padding(
-            padding: EdgeInsets.symmetric(vertical: Spacing.md),
-            child: Center(child: CircularProgressIndicator()),
-          )
-        else
-            ElevatedButton.icon(
-              icon: Icon(TontonIcons.ai),
-            label: Text(l10n.aiAdviceShort),
-            onPressed: todayMeals.length < 2
-                ? null
-                : () => ref
-                    .read(aiAdviceProvider.notifier)
-                    .fetchAdvice(todayMeals, context),
-          ),
-        aiAdviceState.when(
-          data: (advice) => advice != null
-              ? Padding(
-                  padding: const EdgeInsets.only(top: Spacing.md),
-                  child: AiAdviceDisplayNew(advice: advice),
-                )
-              : const SizedBox.shrink(),
-          loading: () => const SizedBox.shrink(),
-          error: (e, _) => Padding(
-            padding: const EdgeInsets.only(top: Spacing.sm),
-            child: Text(
-              l10n.aiAdviceError(e.toString()),
-              style: TextStyle(color: theme.colorScheme.error),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
 }

@@ -24,8 +24,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   double _proteinRatio = 0.3;
   double _fatRatio = 0.2;
 
-  double get _carbRatio => 1 - _proteinRatio - _fatRatio;
-
   @override
   void initState() {
     super.initState();
@@ -46,7 +44,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   Widget build(BuildContext context) {
     final userName = ref.watch(userNameProvider);
     ref.watch(onboardingStartDateProvider);
-    final savingsRecordsAsync = ref.watch(calorieSavingsDataProvider);
     final monthlyGoal = ref.watch(monthlyCalorieGoalProvider);
     final userWeightRecord = ref.watch(latestWeightRecordProvider);
     ref.watch(lastHealthFetchProvider);
@@ -78,7 +75,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           ),
         ],
       ),
-    ),
-  );
+    );
   }
 }

@@ -1,94 +1,303 @@
-import 'dart:convert';
+import 'dart:async';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:intl/intl.dart' as intl;
 
-/// Simple localization class that loads messages from ARB files at runtime.
-class AppLocalizations {
-  AppLocalizations(this.locale);
+import 'app_localizations_en.dart';
+import 'app_localizations_ja.dart';
 
-  /// The locale that was selected.
-  final Locale locale;
+// ignore_for_file: type=lint
 
-  /// The delegate that allows Flutter to load the localizations.
-  static const LocalizationsDelegate<AppLocalizations> delegate =
-      _AppLocalizationsDelegate();
+/// Callers can lookup localized strings with an instance of AppLocalizations
+/// returned by `AppLocalizations.of(context)`.
+///
+/// Applications need to include `AppLocalizations.delegate()` in their app's
+/// `localizationDelegates` list, and the locales they support in the app's
+/// `supportedLocales` list. For example:
+///
+/// ```dart
+/// import 'l10n/app_localizations.dart';
+///
+/// return MaterialApp(
+///   localizationsDelegates: AppLocalizations.localizationsDelegates,
+///   supportedLocales: AppLocalizations.supportedLocales,
+///   home: MyApplicationHome(),
+/// );
+/// ```
+///
+/// ## Update pubspec.yaml
+///
+/// Please make sure to update your pubspec.yaml to include the following
+/// packages:
+///
+/// ```yaml
+/// dependencies:
+///   # Internationalization support.
+///   flutter_localizations:
+///     sdk: flutter
+///   intl: any # Use the pinned version from flutter_localizations
+///
+///   # Rest of dependencies
+/// ```
+///
+/// ## iOS Applications
+///
+/// iOS applications define key application metadata, including supported
+/// locales, in an Info.plist file that is built into the application bundle.
+/// To configure the locales supported by your app, you’ll need to edit this
+/// file.
+///
+/// First, open your project’s ios/Runner.xcworkspace Xcode workspace file.
+/// Then, in the Project Navigator, open the Info.plist file under the Runner
+/// project’s Runner folder.
+///
+/// Next, select the Information Property List item, select Add Item from the
+/// Editor menu, then select Localizations from the pop-up menu.
+///
+/// Select and expand the newly-created Localizations item then, for each
+/// locale your application supports, add a new item and select the locale
+/// you wish to add from the pop-up menu in the Value field. This list should
+/// be consistent with the languages listed in the AppLocalizations.supportedLocales
+/// property.
+abstract class AppLocalizations {
+  AppLocalizations(String locale) : localeName = intl.Intl.canonicalizedLocale(locale.toString());
 
-  /// Supported locales for the app.
-  static const List<Locale> supportedLocales = [
-    Locale('en'),
-    Locale('ja'),
+  final String localeName;
+
+  static AppLocalizations? of(BuildContext context) {
+    return Localizations.of<AppLocalizations>(context, AppLocalizations);
+  }
+
+  static const LocalizationsDelegate<AppLocalizations> delegate = _AppLocalizationsDelegate();
+
+  /// A list of this localizations delegate along with the default localizations
+  /// delegates.
+  ///
+  /// Returns a list of localizations delegates containing this delegate along with
+  /// GlobalMaterialLocalizations.delegate, GlobalCupertinoLocalizations.delegate,
+  /// and GlobalWidgetsLocalizations.delegate.
+  ///
+  /// Additional delegates can be added by appending to this list in
+  /// MaterialApp. This list does not have to be used at all if a custom list
+  /// of delegates is preferred or required.
+  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates = <LocalizationsDelegate<dynamic>>[
+    delegate,
+    GlobalMaterialLocalizations.delegate,
+    GlobalCupertinoLocalizations.delegate,
+    GlobalWidgetsLocalizations.delegate,
   ];
 
-  /// Helper method to keep the code terse.
-  static AppLocalizations of(BuildContext context) {
-    final instance = Localizations.of<AppLocalizations>(context, AppLocalizations);
-    if (instance == null) {
-      throw FlutterError(
-        'AppLocalizations.of() called with a context that does not contain an AppLocalizations instance.',
-      );
-    }
-    return instance;
-  }
+  /// A list of this localizations delegate's supported locales.
+  static const List<Locale> supportedLocales = <Locale>[
+    Locale('en'),
+    Locale('ja')
+  ];
 
-  late Map<String, String> _localizedStrings;
+  /// No description provided for @appTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'TonTon Health Pro'**
+  String get appTitle;
 
-  /// Load the ARB file for the current locale.
-  Future<bool> load() async {
-    final jsonString =
-        await rootBundle.loadString('lib/l10n/app_${locale.languageCode}.arb');
-    final Map<String, dynamic> jsonMap = json.decode(jsonString);
-    _localizedStrings =
-        jsonMap.map((key, value) => MapEntry(key, value.toString()));
-    return true;
-  }
+  /// No description provided for @hello.
+  ///
+  /// In en, this message translates to:
+  /// **'Hello'**
+  String get hello;
 
-  String? _getString(String key) => _localizedStrings[key];
+  /// No description provided for @tabActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'Activity'**
+  String get tabActivity;
 
-  /// Exposed getters for each localized string.
-  String get appTitle => _getString('appTitle') ?? '';
-  String get hello => _getString('hello') ?? '';
-  String get tabActivity => _getString('tabActivity') ?? '';
-  String get tabMeals => _getString('tabMeals') ?? '';
-  String get tabHome => _getString('tabHome') ?? '';
-  String get tabInsights => _getString('tabInsights') ?? '';
-  String get tabRecord => _getString('tabRecord') ?? '';
-  String get tabSettings => _getString('tabSettings') ?? '';
-  String get todaysMeals => _getString('todaysMeals') ?? '';
-  String get todaysCalories => _getString('todaysCalories') ?? '';
-  String get consumed => _getString('consumed') ?? '';
-  String get burned => _getString('burned') ?? '';
-  String get balance => _getString('balance') ?? '';
-  String get yourProgress => _getString('yourProgress') ?? '';
-  String get monthlyGoal => _getString('monthlyGoal') ?? '';
-  String get noMealsRecorded => _getString('noMealsRecorded') ?? '';
-  String get tapAddMeal => _getString('tapAddMeal') ?? '';
-  String get calorieSavingsGraph => _getString('calorieSavingsGraph') ?? '';
-  String get aiAdviceRequest => _getString('aiAdviceRequest') ?? '';
-  String get aiAdviceShort => _getString('aiAdviceShort') ?? '';
-  String get aiAdviceDisabled => _getString('aiAdviceDisabled') ?? '';
-  String get addMeal => _getString('addMeal') ?? '';
-  String get debugPanel => _getString('debugPanel') ?? '';
-  String get testProvider => _getString('testProvider') ?? '';
-  String aiAdviceError(String error) =>
-      (_getString('aiAdviceError') ?? '').replaceFirst('{error}', error);
+  /// No description provided for @tabMeals.
+  ///
+  /// In en, this message translates to:
+  /// **'Meals'**
+  String get tabMeals;
+
+  /// No description provided for @tabHome.
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get tabHome;
+
+  /// No description provided for @tabInsights.
+  ///
+  /// In en, this message translates to:
+  /// **'Insights'**
+  String get tabInsights;
+
+  /// No description provided for @tabRecord.
+  ///
+  /// In en, this message translates to:
+  /// **'Record'**
+  String get tabRecord;
+
+  /// No description provided for @tabHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'History'**
+  String get tabHistory;
+
+  /// No description provided for @tabSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get tabSettings;
+
+  /// No description provided for @todaysCalories.
+  ///
+  /// In en, this message translates to:
+  /// **'Today\'s Calories'**
+  String get todaysCalories;
+
+  /// No description provided for @yourProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Progress'**
+  String get yourProgress;
+
+  /// No description provided for @activitySummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Activity Summary'**
+  String get activitySummary;
+
+  /// No description provided for @todaysMeals.
+  ///
+  /// In en, this message translates to:
+  /// **'Today\'s Meals'**
+  String get todaysMeals;
+
+  /// No description provided for @lastSevenDays.
+  ///
+  /// In en, this message translates to:
+  /// **'Last 7 Days'**
+  String get lastSevenDays;
+
+  /// No description provided for @monthlyGoal.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly Goal'**
+  String get monthlyGoal;
+
+  /// No description provided for @targetCalories.
+  ///
+  /// In en, this message translates to:
+  /// **'Target Calories'**
+  String get targetCalories;
+
+  /// No description provided for @consumed.
+  ///
+  /// In en, this message translates to:
+  /// **'Consumed'**
+  String get consumed;
+
+  /// No description provided for @burned.
+  ///
+  /// In en, this message translates to:
+  /// **'Burned'**
+  String get burned;
+
+  /// No description provided for @balance.
+  ///
+  /// In en, this message translates to:
+  /// **'Balance'**
+  String get balance;
+
+  /// No description provided for @noMealsRecorded.
+  ///
+  /// In en, this message translates to:
+  /// **'No meals recorded today'**
+  String get noMealsRecorded;
+
+  /// No description provided for @tapAddMeal.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap the + button to add your meals'**
+  String get tapAddMeal;
+
+  /// No description provided for @calorieSavingsGraph.
+  ///
+  /// In en, this message translates to:
+  /// **'Calorie Savings'**
+  String get calorieSavingsGraph;
+
+  /// No description provided for @aiAdviceRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Get AI meal advice'**
+  String get aiAdviceRequest;
+
+  /// No description provided for @aiAdviceShort.
+  ///
+  /// In en, this message translates to:
+  /// **'AI Suggest'**
+  String get aiAdviceShort;
+
+  /// No description provided for @aiAdviceDisabled.
+  ///
+  /// In en, this message translates to:
+  /// **'AI advice requires at least two meals'**
+  String get aiAdviceDisabled;
+
+  /// No description provided for @aiAdviceError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to fetch AI advice: {error}'**
+  String aiAdviceError(Object error);
+
+  /// No description provided for @addMeal.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Meal'**
+  String get addMeal;
+
+  /// No description provided for @debugPanel.
+  ///
+  /// In en, this message translates to:
+  /// **'Debug Panel'**
+  String get debugPanel;
+
+  /// No description provided for @testProvider.
+  ///
+  /// In en, this message translates to:
+  /// **'Test Provider'**
+  String get testProvider;
 }
 
-class _AppLocalizationsDelegate
-    extends LocalizationsDelegate<AppLocalizations> {
+class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
   const _AppLocalizationsDelegate();
 
   @override
-  bool isSupported(Locale locale) =>
-      ['en', 'ja'].contains(locale.languageCode);
-
-  @override
-  Future<AppLocalizations> load(Locale locale) async {
-    final localizations = AppLocalizations(locale);
-    await localizations.load();
-    return localizations;
+  Future<AppLocalizations> load(Locale locale) {
+    return SynchronousFuture<AppLocalizations>(lookupAppLocalizations(locale));
   }
 
   @override
-  bool shouldReload(covariant LocalizationsDelegate<AppLocalizations> old) =>
-      false;
+  bool isSupported(Locale locale) => <String>['en', 'ja'].contains(locale.languageCode);
+
+  @override
+  bool shouldReload(_AppLocalizationsDelegate old) => false;
+}
+
+AppLocalizations lookupAppLocalizations(Locale locale) {
+
+
+  // Lookup logic when only language code is specified.
+  switch (locale.languageCode) {
+    case 'en': return AppLocalizationsEn();
+    case 'ja': return AppLocalizationsJa();
+  }
+
+  throw FlutterError(
+    'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
+    'an issue with the localizations generation tool. Please file an issue '
+    'on GitHub with a reproducible sample app and the gen-l10n configuration '
+    'that was used.'
+  );
 }

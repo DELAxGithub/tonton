@@ -14,6 +14,7 @@ import '../providers/weight_record_provider.dart';
 import '../providers/last_health_fetch_provider.dart';
 import '../services/health_service.dart';
 import '../theme/tokens.dart';
+import '../theme/app_theme.dart';
 import '../models/pfc_breakdown.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
@@ -222,17 +223,17 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     Icon(
                       lastFetched != null ? Icons.check_circle : Icons.cancel,
                       size: 16,
-                      color: lastFetched != null
-                          ? Theme.of(context).colorScheme.success
-                          : Theme.of(context).colorScheme.warning,
+                        color: lastFetched != null
+                            ? TontonColors.success
+                            : TontonColors.warning,
                     ),
                     const SizedBox(width: 4),
                     Text(
                       lastFetched != null ? 'HealthKit連携済み' : 'HealthKit未連携',
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: lastFetched != null
-                                ? Theme.of(context).colorScheme.success
-                                : Theme.of(context).colorScheme.warning,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: lastFetched != null
+                                  ? TontonColors.success
+                                  : TontonColors.warning,
                           ),
                     ),
                   ],

@@ -80,7 +80,7 @@ class HomeScreenPhase3 extends ConsumerWidget {
                   ),
                   IconButton(
                     icon: Icon(TontonIcons.settings),
-                    tooltip: l10n.tabSettings,
+                    tooltip: l10n?.tabSettings ?? 'Settings',
                     onPressed: () => context.push(TontonRoutes.settings),
                   ),
                 ],

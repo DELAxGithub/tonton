@@ -10,6 +10,7 @@ class MainNavigationBar extends StatelessWidget {
 
   int _locationToIndex(String loc) {
     if (loc.startsWith(TontonRoutes.savingsTrend)) return 2;
+    if (loc.startsWith(TontonRoutes.progress) || loc.startsWith(TontonRoutes.progressAchievements)) return 3;
     if (loc.startsWith(TontonRoutes.aiMealCamera)) return 1;
     return 0;
   }
@@ -24,6 +25,9 @@ class MainNavigationBar extends StatelessWidget {
         break;
       case 2:
         context.go(TontonRoutes.savingsTrend);
+        break;
+      case 3:
+        context.go(TontonRoutes.progress);
         break;
     }
   }
@@ -52,6 +56,10 @@ class MainNavigationBar extends StatelessWidget {
           BottomNavigationBarItem(
             icon: Icon(TontonIcons.graph),
             label: 'グラフ',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(TontonIcons.progress),
+            label: l10n.tabHistory,
           ),
         ],
       ),

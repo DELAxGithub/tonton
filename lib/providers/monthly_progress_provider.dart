@@ -8,6 +8,7 @@ import '../services/calorie_calculation_service.dart';
 import '../repositories/user_settings_repository.dart';
 import '../services/health_service.dart';
 import 'meal_records_provider.dart';
+import 'calorie_savings_provider.dart';
 
 part 'monthly_progress_provider.g.dart';
 
@@ -67,11 +68,26 @@ Future<MonthlyProgressSummary> monthlyProgressSummary(Ref ref) async {
   developer.log('monthlyProgressSummaryProvider called', name: 'TonTon.MonthlyProgressProvider');
   final service = ref.watch(calorieCalculationServiceProvider);
   final target = await ref.watch(monthlyTargetProvider.future);
-  
+
   return service.calculateMonthlyProgressSummary(
     targetMonthlyNetBurn: target,
   );
 }
+
+/// Average daily calorie savings over the past 7 days.
+final weeklyAverageSavingsProvider = Provider<double>((ref) {
+  final recordsAsync = ref.watch(calorieSavingsDataProvider);
+  return recordsAsync.maybeWhen(
+    data: (records) {
+      if (records.isEmpty) return 0.0;
+      final recent = records.reversed.take(7).toList();
+      final total = recent.fold<double>(
+          0, (sum, r) => sum + r.dailyBalance);
+      return total / recent.length;
+    },
+    orElse: () => 0.0,
+  );
+});
 
 // Provider to update the monthly calorie target
 @riverpod

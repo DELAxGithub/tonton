@@ -75,8 +75,8 @@ class ProgressAchievementsScreen extends ConsumerWidget implements AppPage {
               children: [
             HeroPiggyBankDisplay(totalSavings: totalSavings),
             const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+            Wrap(
+              spacing: Spacing.sm,
               children: [
                 FilterChip(
                   label: const Text('7日'),
@@ -84,21 +84,18 @@ class ProgressAchievementsScreen extends ConsumerWidget implements AppPage {
                   onSelected: (_) =>
                       ref.read(selectedPeriodProvider.notifier).state = SelectedPeriod.week,
                 ),
-                const SizedBox(width: Spacing.sm),
                 FilterChip(
                   label: const Text('30日'),
                   selected: period == SelectedPeriod.month,
                   onSelected: (_) =>
                       ref.read(selectedPeriodProvider.notifier).state = SelectedPeriod.month,
                 ),
-                const SizedBox(width: Spacing.sm),
                 FilterChip(
                   label: const Text('90日'),
                   selected: period == SelectedPeriod.quarter,
                   onSelected: (_) =>
                       ref.read(selectedPeriodProvider.notifier).state = SelectedPeriod.quarter,
                 ),
-                const SizedBox(width: Spacing.sm),
                 FilterChip(
                   label: const Text('全期間'),
                   selected: period == SelectedPeriod.all,

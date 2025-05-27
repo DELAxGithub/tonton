@@ -176,7 +176,8 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
         return HealthProvider();
       },
       child: MaterialApp.router(
-        onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
+        onGenerateTitle: (context) =>
+            AppLocalizations.of(context)?.appTitle ?? 'Tonton',
         locale: const Locale('ja'),
         debugShowCheckedModeBanner: true,
         theme: TontonTheme.light,

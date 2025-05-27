@@ -1,8 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/calorie_savings_record.dart';
+import '../models/daily_summary.dart';
 import '../providers/onboarding_start_date_provider.dart';
 import 'realtime_calories_provider.dart';
 import 'meal_records_provider.dart';
+import 'selected_period_provider.dart';
 
 // Provider for monthly target
 final monthlySavingsTargetProvider = Provider<double>((ref) {
@@ -30,21 +32,46 @@ final calorieSavingsDataProvider =
 
   final service = ref.watch(dailySummaryServiceProvider);
   final endDate = DateTime.now().subtract(const Duration(days: 1));
-  final records = <CalorieSavingsRecord>[];
+  final summaries = <DailySummary>[];
   var current = DateTime(startDate.year, startDate.month, startDate.day);
 
   while (!current.isAfter(endDate)) {
-    final summary = await service.getDailySummary(current);
-    final previous =
-        records.isNotEmpty ? records.last.cumulativeSavings : 0.0;
-    records.add(CalorieSavingsRecord.fromRaw(
-      date: summary.date,
-      caloriesConsumed: summary.caloriesConsumed,
-      caloriesBurned: summary.caloriesBurned,
-      previousCumulativeSavings: previous,
-    ));
+    summaries.add(await service.getDailySummary(current));
     current = current.add(const Duration(days: 1));
   }
 
-  return records;
+  double runningTotal = 0;
+  return summaries.map((summary) {
+    final daily = summary.caloriesBurned - summary.caloriesConsumed;
+    runningTotal += daily;
+    return CalorieSavingsRecord(
+      date: summary.date,
+      caloriesConsumed: summary.caloriesConsumed,
+      caloriesBurned: summary.caloriesBurned,
+      dailyBalance: daily,
+      cumulativeSavings: runningTotal,
+    );
+  }).toList();
 });
+
+/// Filtered calorie savings records based on the selected period.
+final filteredCalorieSavingsProvider = Provider<List<CalorieSavingsRecord>>((ref) {
+  final period = ref.watch(selectedPeriodProvider);
+  final recordsAsync = ref.watch(calorieSavingsDataProvider);
+
+  return recordsAsync.maybeWhen(
+    data: (records) {
+      if (period == SelectedPeriod.all) return records;
+      final days = switch (period) {
+        SelectedPeriod.week => 7,
+        SelectedPeriod.month => 30,
+        SelectedPeriod.quarter => 90,
+        SelectedPeriod.all => records.length,
+      };
+      final cutoff = DateTime.now().subtract(Duration(days: days));
+      return records.where((r) => !r.date.isBefore(cutoff)).toList();
+    },
+    orElse: () => [],
+  );
+});
+

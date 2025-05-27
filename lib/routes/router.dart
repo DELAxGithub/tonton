@@ -33,6 +33,7 @@ class TontonRoutes {
   static const String addMeal = '/add-meal';
   static const String editMeal = '/edit-meal';
   static const String savingsTrend = '/savings-trend';
+  static const String progress = '/progress';
   static const String useSavings = '/use-savings';
   static const String onboardingIntro = '/onboarding';
   static const String onboardingStartDate = '/onboarding/start-date';
@@ -189,6 +190,11 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: TontonRoutes.progressAchievements,
         name: 'progressAchievements',
+        builder: (context, state) => const ProgressAchievementsScreen(),
+      ),
+      GoRoute(
+        path: TontonRoutes.progress,
+        name: 'progress',
         builder: (context, state) => const ProgressAchievementsScreen(),
       ),
 

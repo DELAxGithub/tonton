@@ -14,6 +14,7 @@ import '../providers/weight_record_provider.dart';
 import '../providers/last_health_fetch_provider.dart';
 import '../services/health_service.dart';
 import '../theme/tokens.dart';
+import '../models/pfc_breakdown.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
@@ -130,13 +131,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     }
 
     // 計算の詳細
-    final totalDays = startDate != null
-        ? DateTime.now().difference(startDate).inDays + 1
-        : 0;
-    final firstRecord = savingsRecordsAsync.maybeWhen(
-      data: (records) => records.isNotEmpty ? records.first : null,
-      orElse: () => null,
-    );
     final lastRecord = savingsRecordsAsync.maybeWhen(
       data: (records) => records.isNotEmpty ? records.last : null,
       orElse: () => null,

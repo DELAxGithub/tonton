@@ -46,8 +46,6 @@ class UserGoalsNotifier extends StateNotifier<UserGoals> {
   }
 }
 
-final userGoalsProvider =
-    StateNotifierProvider<UserGoalsNotifier, UserGoals>(
-        (ref) => UserGoalsNotifier());
-
-
+final userGoalsProvider = StateNotifierProvider<UserGoalsNotifier, UserGoals>(
+  (ref) => UserGoalsNotifier(),
+);

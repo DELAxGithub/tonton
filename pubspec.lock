@@ -263,7 +263,7 @@ packages:
     source: hosted
     version: "2.3.8"
   dashbook:
-    dependency: "direct dev"
+    dependency: "direct main"
     description:
       name: dashbook
       sha256: "3e85ec63a81915c2924d033bb21fbf3ffbacd4e956d463fb6ad8608517472168"

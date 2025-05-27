@@ -20,10 +20,7 @@ class AiAdviceNotifier extends StateNotifier<AsyncValue<AiAdviceResponse?>> {
 
   AiAdviceNotifier(this._service) : super(const AsyncValue.data(null));
 
-  Future<void> fetchAdvice(
-    List<MealRecord> meals,
-    BuildContext context,
-  ) async {
+  Future<void> fetchAdvice(List<MealRecord> meals, BuildContext context) async {
     state = const AsyncValue.loading();
     try {
       const targetCalories = 2000.0;
@@ -53,7 +50,10 @@ class AiAdviceNotifier extends StateNotifier<AsyncValue<AiAdviceResponse?>> {
       );
 
       double activeCalories = 0;
-      final hp = provider_pkg.Provider.of<HealthProvider>(context, listen: false);
+      final hp = provider_pkg.Provider.of<HealthProvider>(
+        context,
+        listen: false,
+      );
       if (hp.todayActivity != null) {
         activeCalories = hp.todayActivity!.workoutCalories;
       }
@@ -81,7 +81,9 @@ class AiAdviceNotifier extends StateNotifier<AsyncValue<AiAdviceResponse?>> {
 }
 
 final aiAdviceProvider =
-    StateNotifierProvider<AiAdviceNotifier, AsyncValue<AiAdviceResponse?>>((ref) {
-  final service = ref.watch(aiAdviceServiceProvider);
-  return AiAdviceNotifier(service);
-});
+    StateNotifierProvider<AiAdviceNotifier, AsyncValue<AiAdviceResponse?>>((
+      ref,
+    ) {
+      final service = ref.watch(aiAdviceServiceProvider);
+      return AiAdviceNotifier(service);
+    });

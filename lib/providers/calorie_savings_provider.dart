@@ -4,6 +4,7 @@ import '../models/daily_summary.dart';
 import '../providers/onboarding_start_date_provider.dart';
 import 'realtime_calories_provider.dart';
 import 'meal_records_provider.dart';
+import 'selected_period_provider.dart';
 
 // Provider for monthly target
 final monthlySavingsTargetProvider = Provider<double>((ref) {
@@ -52,8 +53,6 @@ final calorieSavingsDataProvider =
     );
   }).toList();
 });
-
-import 'selected_period_provider.dart';
 
 /// Filtered calorie savings records based on the selected period.
 final filteredCalorieSavingsProvider = Provider<List<CalorieSavingsRecord>>((ref) {

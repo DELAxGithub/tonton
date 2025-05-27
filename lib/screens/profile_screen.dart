@@ -17,7 +17,7 @@ class ProfileScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(currentUserProvider);
     final startDate = ref.watch(onboardingStartDateProvider);
-    final savingsRecords = ref.watch(calorieSavingsDataProvider);
+    final savingsRecordsAsync = ref.watch(calorieSavingsDataProvider);
     final monthlyGoal = ref.watch(monthlyCalorieGoalProvider);
     final userWeight = ref.watch(userWeightProvider);
 
@@ -25,8 +25,14 @@ class ProfileScreen extends ConsumerWidget {
     final totalDays = startDate != null
         ? DateTime.now().difference(startDate).inDays + 1
         : 0;
-    final firstRecord = savingsRecords.isNotEmpty ? savingsRecords.first : null;
-    final lastRecord = savingsRecords.isNotEmpty ? savingsRecords.last : null;
+    final firstRecord = savingsRecordsAsync.maybeWhen(
+      data: (records) => records.isNotEmpty ? records.first : null,
+      orElse: () => null,
+    );
+    final lastRecord = savingsRecordsAsync.maybeWhen(
+      data: (records) => records.isNotEmpty ? records.last : null,
+      orElse: () => null,
+    );
 
     return Scaffold(
       appBar: AppBar(title: const Text('プロフィール')),
@@ -80,7 +86,7 @@ class ProfileScreen extends ConsumerWidget {
                 const SizedBox(height: Spacing.sm),
                 if (firstRecord != null && lastRecord != null) ...[
                   Text('データ取得期間: ${DateFormat('MM/dd').format(firstRecord.date)} 〜 ${DateFormat('MM/dd').format(lastRecord.date)}'),
-                  Text('記録日数: ${savingsRecords.length} 日'),
+                  Text('記録日数: ${savingsRecordsAsync.maybeWhen(data: (r) => r.length, orElse: () => 0)} 日'),
                   const Divider(),
                   Text('累積貯金額: ${lastRecord.cumulativeSavings.toStringAsFixed(0)} kcal',
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
@@ -119,20 +125,20 @@ class ProfileScreen extends ConsumerWidget {
     );
   }
 
-  void _showStartDateEditDialog(BuildContext context, WidgetRef ref) {
-    showDatePicker(
+  Future<void> _showStartDateEditDialog(BuildContext context, WidgetRef ref) async {
+    final picked = await showDatePicker(
       context: context,
       initialDate: ref.read(onboardingStartDateProvider) ?? DateTime.now(),
       firstDate: DateTime.now().subtract(const Duration(days: 365)),
       lastDate: DateTime.now(),
-    ).then((picked) {
-      if (picked != null) {
-        ref.read(onboardingStartDateProvider.notifier).setDate(picked);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('開始日を更新しました。データを再計算してください。')),
-        );
-      }
-    });
+    );
+    if (!context.mounted) return;
+    if (picked != null) {
+      ref.read(onboardingStartDateProvider.notifier).setDate(picked);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('開始日を更新しました。データを再計算してください。')),
+      );
+    }
   }
 
   void _recalculateData(BuildContext context, WidgetRef ref) {

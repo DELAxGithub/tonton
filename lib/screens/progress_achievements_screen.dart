@@ -64,6 +64,12 @@ class ProgressAchievementsScreen extends ConsumerWidget implements AppPage {
                 : placeholderMasses;
 
             final weeklyAvg = ref.watch(weeklyAverageSavingsProvider);
+            final periodText = switch (period) {
+              SelectedPeriod.week => '過去7日間',
+              SelectedPeriod.month => '過去30日間',
+              SelectedPeriod.quarter => '過去90日間',
+              SelectedPeriod.all => '全期間',
+            };
             return StandardPageLayout(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
               children: [
@@ -72,28 +78,28 @@ class ProgressAchievementsScreen extends ConsumerWidget implements AppPage {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                ChoiceChip(
+                FilterChip(
                   label: const Text('7日'),
                   selected: period == SelectedPeriod.week,
                   onSelected: (_) =>
                       ref.read(selectedPeriodProvider.notifier).state = SelectedPeriod.week,
                 ),
                 const SizedBox(width: Spacing.sm),
-                ChoiceChip(
+                FilterChip(
                   label: const Text('30日'),
                   selected: period == SelectedPeriod.month,
                   onSelected: (_) =>
                       ref.read(selectedPeriodProvider.notifier).state = SelectedPeriod.month,
                 ),
                 const SizedBox(width: Spacing.sm),
-                ChoiceChip(
+                FilterChip(
                   label: const Text('90日'),
                   selected: period == SelectedPeriod.quarter,
                   onSelected: (_) =>
                       ref.read(selectedPeriodProvider.notifier).state = SelectedPeriod.quarter,
                 ),
                 const SizedBox(width: Spacing.sm),
-                ChoiceChip(
+                FilterChip(
                   label: const Text('全期間'),
                   selected: period == SelectedPeriod.all,
                   onSelected: (_) =>
@@ -116,7 +122,7 @@ class ProgressAchievementsScreen extends ConsumerWidget implements AppPage {
                     const Icon(Icons.trending_up),
                     const SizedBox(width: 12),
                     Expanded(
-                      child: Text('過去7日間で平均 +${weeklyAvg.toStringAsFixed(0)} kcal/日 のカロリー貯金ができました！'),
+                      child: Text('$periodTextで平均 +${weeklyAvg.toStringAsFixed(0)} kcal/日 のカロリー貯金ができました！'),
                     ),
                   ],
                 ),

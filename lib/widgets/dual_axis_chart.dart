@@ -21,9 +21,9 @@ class DualAxisChart extends StatelessWidget {
 
     final minFatMass = bodyFatMasses.reduce(math.min);
     final maxFatMass = bodyFatMasses.reduce(math.max);
-    final maxSavings =
-        records.map((r) => r.cumulativeSavings).reduce(math.max);
+    final maxSavings = records.map((r) => r.cumulativeSavings).reduce(math.max);
 
+    // Scale factor to overlay cumulative savings on the weight axis
     final scale = (maxFatMass - minFatMass) / (maxSavings == 0 ? 1 : maxSavings);
 
     return LineChart(
@@ -32,7 +32,15 @@ class DualAxisChart extends StatelessWidget {
         maxX: (records.length - 1).toDouble(),
         minY: minFatMass,
         maxY: maxFatMass,
-        gridData: const FlGridData(show: true, drawVerticalLine: false),
+        gridData: FlGridData(
+          show: true,
+          drawVerticalLine: false,
+          horizontalInterval: (maxFatMass - minFatMass) / 4,
+          getDrawingHorizontalLine: (value) => FlLine(
+            color: Colors.grey.shade300,
+            strokeWidth: 1,
+          ),
+        ),
         titlesData: FlTitlesData(
           bottomTitles: AxisTitles(
             sideTitles: SideTitles(
@@ -47,17 +55,25 @@ class DualAxisChart extends StatelessWidget {
               },
             ),
           ),
-          leftTitles: const AxisTitles(
-            sideTitles: SideTitles(showTitles: true, reservedSize: 40),
-          ),
-          rightTitles: AxisTitles(
+          leftTitles: AxisTitles(
+            axisNameWidget: const Text('累積貯金(kcal)'),
+            axisNameSize: 28,
             sideTitles: SideTitles(
               showTitles: true,
-              reservedSize: 40,
+              reservedSize: 48,
               getTitlesWidget: (value, meta) {
                 final savings = ((value - minFatMass) / scale).round();
                 return Text('$savings');
               },
+            ),
+          ),
+          rightTitles: AxisTitles(
+            axisNameWidget: const Text('体重(kg)'),
+            axisNameSize: 28,
+            sideTitles: SideTitles(
+              showTitles: true,
+              reservedSize: 48,
+              getTitlesWidget: (value, meta) => Text(value.toStringAsFixed(1)),
             ),
           ),
           topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
@@ -71,7 +87,7 @@ class DualAxisChart extends StatelessWidget {
             isCurved: true,
             color: Colors.orange,
             barWidth: 3,
-            dotData: const FlDotData(show: false),
+            dotData: const FlDotData(show: true),
           ),
           LineChartBarData(
             spots: [
@@ -81,7 +97,7 @@ class DualAxisChart extends StatelessWidget {
             isCurved: true,
             color: Colors.blue,
             barWidth: 3,
-            dotData: const FlDotData(show: false),
+            dotData: const FlDotData(show: true),
           ),
         ],
       ),

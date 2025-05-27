@@ -6,10 +6,12 @@ import '../widgets/dual_axis_chart.dart';
 import '../providers/calorie_savings_provider.dart';
 import '../providers/health_provider.dart';
 import '../providers/onboarding_start_date_provider.dart';
+import '../providers/selected_period_provider.dart';
+import '../providers/monthly_progress_provider.dart';
+import '../models/calorie_savings_record.dart';
 import '../design_system/organisms/hero_piggy_bank_display.dart';
 import '../design_system/templates/standard_page_layout.dart';
 import '../design_system/atoms/tonton_text.dart';
-import '../design_system/atoms/tonton_card_base.dart';
 import '../theme/tokens.dart';
 import '../routes/app_page.dart';
 
@@ -27,21 +29,22 @@ class ProgressAchievementsScreen extends ConsumerWidget implements AppPage {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final allRecordsAsync = ref.watch(calorieSavingsDataProvider);
+    final period = ref.watch(selectedPeriodProvider);
+    final filteredRecords = ref.watch(filteredCalorieSavingsProvider);
 
     return allRecordsAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (e, _) => Center(child: Text('Error: $e')),
-      data: (allRecords) {
+      data: (_) {
         final startDate = ref.watch(onboardingStartDateProvider);
 
-        // Filter records from start date up to yesterday
-        final today = DateTime.now();
-        final yesterday = DateTime(today.year, today.month, today.day - 1);
-        final records = allRecords.where((r) {
-          if (r.date.isAfter(yesterday)) return false;
-          if (startDate != null && r.date.isBefore(startDate)) return false;
-          return true;
-        }).toList();
+        // Copy records so we can mutate when applying start date filter
+        final records = List<CalorieSavingsRecord>.from(filteredRecords);
+
+        if (startDate != null && records.isNotEmpty) {
+          final firstAllowed = DateTime(startDate.year, startDate.month, startDate.day);
+          records.removeWhere((r) => r.date.isBefore(firstAllowed));
+        }
 
         final totalSavings =
             records.isNotEmpty ? records.last.cumulativeSavings : 0.0;
@@ -61,28 +64,63 @@ class ProgressAchievementsScreen extends ConsumerWidget implements AppPage {
                 ? List<double>.filled(records.length, latestMass)
                 : placeholderMasses;
 
+            final weeklyAvg = ref.watch(weeklyAverageSavingsProvider);
             return StandardPageLayout(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
               children: [
             HeroPiggyBankDisplay(totalSavings: totalSavings),
-            const SizedBox(height: Spacing.lg),
+            const SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ChoiceChip(
+                  label: const Text('7日'),
+                  selected: period == SelectedPeriod.week,
+                  onSelected: (_) =>
+                      ref.read(selectedPeriodProvider.notifier).state = SelectedPeriod.week,
+                ),
+                const SizedBox(width: Spacing.sm),
+                ChoiceChip(
+                  label: const Text('30日'),
+                  selected: period == SelectedPeriod.month,
+                  onSelected: (_) =>
+                      ref.read(selectedPeriodProvider.notifier).state = SelectedPeriod.month,
+                ),
+                const SizedBox(width: Spacing.sm),
+                ChoiceChip(
+                  label: const Text('90日'),
+                  selected: period == SelectedPeriod.quarter,
+                  onSelected: (_) =>
+                      ref.read(selectedPeriodProvider.notifier).state = SelectedPeriod.quarter,
+                ),
+                const SizedBox(width: Spacing.sm),
+                ChoiceChip(
+                  label: const Text('全期間'),
+                  selected: period == SelectedPeriod.all,
+                  onSelected: (_) =>
+                      ref.read(selectedPeriodProvider.notifier).state = SelectedPeriod.all,
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
             SizedBox(
-              height: 200,
+              height: 280,
               child: DualAxisChart(records: records, bodyFatMasses: bodyFatMasses),
             ),
-            const SizedBox(height: Spacing.lg),
-            const TontonCardBase(
-              child: TontonText('Weekly feedback coming soon.'),
-            ),
-            const SizedBox(height: Spacing.lg),
-            const TontonCardBase(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  TontonText('Achievements'),
-                  SizedBox(height: Spacing.sm),
-                  TontonText('• Achievement 1'),
-                  TontonText('• Achievement 2'),
-                ],
+            const SizedBox(height: 24),
+            Card(
+              color: Theme.of(context).colorScheme.primaryContainer,
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  children: [
+                    const Icon(Icons.trending_up),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text('過去7日間で平均 +${weeklyAvg.toStringAsFixed(0)} kcal/日 のカロリー貯金ができました！'),
+                    ),
+                  ],
+                ),
               ),
             ),
           ],

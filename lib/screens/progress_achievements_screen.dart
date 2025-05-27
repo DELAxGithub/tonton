@@ -11,7 +11,6 @@ import '../providers/monthly_progress_provider.dart';
 import '../models/calorie_savings_record.dart';
 import '../design_system/organisms/hero_piggy_bank_display.dart';
 import '../design_system/templates/standard_page_layout.dart';
-import '../design_system/atoms/tonton_text.dart';
 import '../theme/tokens.dart';
 import '../routes/app_page.dart';
 

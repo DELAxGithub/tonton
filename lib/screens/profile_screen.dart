@@ -239,7 +239,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 ),
                 const SizedBox(height: Spacing.sm),
                 Text('PFCバランス',
-                    style: Theme.of(context).textTheme.bodyMedium),
+                    style: Theme.of(context).textTheme.titleMedium),
                 Slider(
                   value: _proteinRatio,
                   min: 0.1,
@@ -272,6 +272,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     style: Theme.of(context).textTheme.titleMedium),
                 const SizedBox(height: Spacing.sm),
                 if (lastRecord != null) ...[
+                  Text(
+                    '累積貯金額',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
                   Text(
                     '${lastRecord.cumulativeSavings.toStringAsFixed(0)} kcal',
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(

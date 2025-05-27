@@ -202,6 +202,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   controller: _weightController,
                   keyboardType: TextInputType.number,
                   decoration: InputDecoration(
+                    labelText: '体重',
                     suffixText: 'kg',
                     border: InputBorder.none,
                     contentPadding: EdgeInsets.zero,
@@ -215,6 +216,26 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         : const Icon(Icons.edit, size: 16),
                   ),
                   onChanged: _saveWeight,
+                ),
+                Row(
+                  children: [
+                    Icon(
+                      lastFetched != null ? Icons.check_circle : Icons.cancel,
+                      size: 16,
+                      color: lastFetched != null
+                          ? Theme.of(context).colorScheme.success
+                          : Theme.of(context).colorScheme.warning,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      lastFetched != null ? 'HealthKit連携済み' : 'HealthKit未連携',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: lastFetched != null
+                                ? Theme.of(context).colorScheme.success
+                                : Theme.of(context).colorScheme.warning,
+                          ),
+                    ),
+                  ],
                 ),
                 if (lastFetched != null) ...[
                   const SizedBox(height: Spacing.md),
@@ -266,6 +287,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 const SizedBox(height: Spacing.md),
                 Text('PFCバランス',
                     style: Theme.of(context).textTheme.titleMedium),
+                const SizedBox(height: Spacing.sm),
+                Text(
+                  '推奨: たんぱく質30% 脂質20% 炭水化物50%',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color:
+                            Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                ),
                 const SizedBox(height: Spacing.sm),
                 Slider(
                   value: _proteinRatio,

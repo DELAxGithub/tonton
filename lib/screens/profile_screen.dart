@@ -4,13 +4,10 @@ import '../design_system/templates/standard_page_layout.dart';
 import '../design_system/atoms/tonton_card_base.dart';
 import '../providers/onboarding_start_date_provider.dart';
 import '../providers/calorie_savings_provider.dart';
-import '../providers/user_weight_provider.dart';
-import '../providers/auth_provider.dart';
 import '../providers/user_profile_provider.dart';
 import '../providers/pfc_balance_provider.dart';
 import '../providers/weight_record_provider.dart';
 import '../providers/last_health_fetch_provider.dart';
-import '../models/pfc_breakdown.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});

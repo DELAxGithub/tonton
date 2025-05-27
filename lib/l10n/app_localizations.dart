@@ -113,7 +113,6 @@ abstract class AppLocalizations {
   /// **'Activity'**
   String get tabActivity;
 
-<<<<<<< HEAD
   /// No description provided for @tabMeals.
   ///
   /// In en, this message translates to:
@@ -269,36 +268,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Test Provider'**
   String get testProvider;
-=======
-  /// Exposed getters for each localized string.
-  String get appTitle => _getString('appTitle') ?? '';
-  String get hello => _getString('hello') ?? '';
-  String get tabActivity => _getString('tabActivity') ?? '';
-  String get tabMeals => _getString('tabMeals') ?? '';
-  String get tabHome => _getString('tabHome') ?? '';
-  String get tabInsights => _getString('tabInsights') ?? '';
-  String get tabRecord => _getString('tabRecord') ?? '';
-  String get tabHistory => _getString('tabHistory') ?? '';
-  String get tabSettings => _getString('tabSettings') ?? '';
-  String get todaysMeals => _getString('todaysMeals') ?? '';
-  String get todaysCalories => _getString('todaysCalories') ?? '';
-  String get consumed => _getString('consumed') ?? '';
-  String get burned => _getString('burned') ?? '';
-  String get balance => _getString('balance') ?? '';
-  String get yourProgress => _getString('yourProgress') ?? '';
-  String get monthlyGoal => _getString('monthlyGoal') ?? '';
-  String get noMealsRecorded => _getString('noMealsRecorded') ?? '';
-  String get tapAddMeal => _getString('tapAddMeal') ?? '';
-  String get calorieSavingsGraph => _getString('calorieSavingsGraph') ?? '';
-  String get aiAdviceRequest => _getString('aiAdviceRequest') ?? '';
-  String get aiAdviceShort => _getString('aiAdviceShort') ?? '';
-  String get aiAdviceDisabled => _getString('aiAdviceDisabled') ?? '';
-  String get addMeal => _getString('addMeal') ?? '';
-  String get debugPanel => _getString('debugPanel') ?? '';
-  String get testProvider => _getString('testProvider') ?? '';
-  String aiAdviceError(String error) =>
-      (_getString('aiAdviceError') ?? '').replaceFirst('{error}', error);
->>>>>>> 7ec50bac755a7bbd7c34d389dae20c06564b673a
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

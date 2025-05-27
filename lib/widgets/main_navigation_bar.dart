@@ -47,11 +47,11 @@ class MainNavigationBar extends StatelessWidget {
         items: [
           BottomNavigationBarItem(
             icon: Icon(TontonIcons.home),
-            label: l10n.tabHome,
+            label: l10n?.tabHome ?? 'Home',
           ),
           BottomNavigationBarItem(
             icon: Icon(TontonIcons.camera),
-            label: l10n.tabRecord,
+            label: l10n?.tabRecord ?? 'Record',
           ),
           BottomNavigationBarItem(
             icon: Icon(TontonIcons.graph),
@@ -59,7 +59,7 @@ class MainNavigationBar extends StatelessWidget {
           ),
           BottomNavigationBarItem(
             icon: Icon(TontonIcons.progress),
-            label: l10n.tabHistory,
+            label: l10n?.tabHistory ?? 'History',
           ),
         ],
       ),

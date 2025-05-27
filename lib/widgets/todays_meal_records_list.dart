@@ -20,13 +20,13 @@ class TodaysMealRecordsList extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          l10n.todaysMeals,
+          l10n?.todaysMeals ?? "Today's Meals",
           style: theme.textTheme.titleLarge,
         ),
         const SizedBox(height: Spacing.sm),
         if (meals.isEmpty)
           Text(
-            l10n.noMealsRecorded,
+            l10n?.noMealsRecorded ?? 'No meals recorded',
             style: theme.textTheme.bodyMedium,
           )
         else

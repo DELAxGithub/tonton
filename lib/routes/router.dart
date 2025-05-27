@@ -15,7 +15,6 @@ import '../providers/onboarding_providers.dart';
 import '../screens/settings_screen.dart';
 import '../screens/progress_achievements_screen.dart';
 import '../screens/profile_screen.dart';
-import '../screens/profile_edit_screen.dart';
 import '../screens/tonton_coach_screen.dart';
 import '../screens/ai_meal_logging/ai_meal_logging_step1_camera.dart';
 import '../screens/ai_meal_logging/ai_meal_logging_step2_analyzing.dart';
@@ -39,7 +38,6 @@ class TontonRoutes {
   static const String onboardingStartDate = '/onboarding/start-date';
   static const String onboardingWeight = '/onboarding/weight';
   static const String profile = '/profile';
-  static const String profileEdit = '/profile/edit';
   static const String settings = '/settings';
   static const String progressAchievements = '/progress-achievements';
   static const String tontonCoach = '/tonton-coach';
@@ -181,11 +179,6 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: TontonRoutes.profile,
         name: 'profile',
         builder: (context, state) => const ProfileScreen(),
-      ),
-      GoRoute(
-        path: TontonRoutes.profileEdit,
-        name: 'profileEdit',
-        builder: (context, state) => const ProfileEditScreen(),
       ),
       GoRoute(
         path: TontonRoutes.settings,

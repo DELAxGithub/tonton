@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../providers/ai_estimation_provider.dart';
-import '../../routes/router.dart';
+import '../../../providers/ai_estimation_provider.dart';
+import '../../../routes/router.dart';
 
 /// Step 2: Screen showing analysis progress.
 class AIMealLoggingStep2Analyzing extends ConsumerStatefulWidget {

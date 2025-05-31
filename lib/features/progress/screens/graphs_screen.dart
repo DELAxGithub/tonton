@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../routes/router.dart';
-import '../utils/icon_mapper.dart';
+import '../../../routes/router.dart';
+import '../../../utils/icon_mapper.dart';
 
 class GraphsScreen extends StatelessWidget {
   const GraphsScreen({super.key});

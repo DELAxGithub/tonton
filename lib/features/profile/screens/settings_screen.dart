@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../design_system/templates/standard_page_layout.dart';
-import '../design_system/atoms/tonton_button.dart';
-import '../providers/auth_provider.dart';
-import '../utils/icon_mapper.dart';
+import '../../../design_system/templates/standard_page_layout.dart';
+import '../../../design_system/atoms/tonton_button.dart';
+import '../../../providers/auth_provider.dart';
+import '../../../utils/icon_mapper.dart';
 import 'package:go_router/go_router.dart';
-import '../routes/router.dart';
+import '../../../routes/router.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});

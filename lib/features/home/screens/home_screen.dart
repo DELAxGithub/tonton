@@ -2,22 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../l10n/app_localizations.dart';
-import '../providers/auth_provider.dart';
+import '../../../l10n/app_localizations.dart';
+import '../../../providers/auth_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../providers/meal_records_provider.dart';
-import '../providers/calorie_savings_provider.dart';
-import '../providers/monthly_progress_provider.dart';
-import '../providers/realtime_calories_provider.dart';
-import '../design_system/templates/standard_page_layout.dart';
-import '../design_system/organisms/hero_piggy_bank_display.dart';
-import '../design_system/organisms/daily_summary_section.dart';
-import '../design_system/molecules/pfc_bar_display.dart';
-import '../design_system/atoms/tonton_button.dart';
-import '../widgets/todays_meal_records_list.dart';
-import '../utils/icon_mapper.dart';
-import '../theme/tokens.dart';
-import '../routes/router.dart';
+import '../../../providers/meal_records_provider.dart';
+import '../../../providers/calorie_savings_provider.dart';
+import '../../../providers/monthly_progress_provider.dart';
+import '../../../providers/realtime_calories_provider.dart';
+import '../../../design_system/templates/standard_page_layout.dart';
+import '../../../design_system/organisms/hero_piggy_bank_display.dart';
+import '../../../design_system/organisms/daily_summary_section.dart';
+import '../../../design_system/molecules/pfc_bar_display.dart';
+import '../../../design_system/atoms/tonton_button.dart';
+import '../../../widgets/todays_meal_records_list.dart';
+import '../../../utils/icon_mapper.dart';
+import '../../../theme/tokens.dart';
+import '../../../routes/router.dart';
 
 /// Main home screen of the app
 class HomeScreen extends ConsumerWidget {

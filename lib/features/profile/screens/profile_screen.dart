@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import '../design_system/templates/standard_page_layout.dart';
-import '../design_system/atoms/tonton_card_base.dart';
-import '../design_system/atoms/tonton_button.dart';
-import '../providers/onboarding_start_date_provider.dart';
-import '../providers/calorie_savings_provider.dart';
-import '../providers/user_weight_provider.dart';
-import '../providers/auth_provider.dart';
-import '../providers/user_profile_provider.dart';
-import '../providers/pfc_balance_provider.dart';
-import '../providers/weight_record_provider.dart';
-import '../providers/last_health_fetch_provider.dart';
-import '../services/health_service.dart';
-import '../theme/tokens.dart';
-import '../theme/app_theme.dart';
-import '../models/pfc_breakdown.dart';
+import '../../../design_system/templates/standard_page_layout.dart';
+import '../../../design_system/atoms/tonton_card_base.dart';
+import '../../../design_system/atoms/tonton_button.dart';
+import '../../../providers/onboarding_start_date_provider.dart';
+import '../../../providers/calorie_savings_provider.dart';
+import '../../../providers/user_weight_provider.dart';
+import '../../../providers/auth_provider.dart';
+import '../../../providers/user_profile_provider.dart';
+import '../../../providers/pfc_balance_provider.dart';
+import '../../../providers/weight_record_provider.dart';
+import '../../../providers/last_health_fetch_provider.dart';
+import '../../../services/health_service.dart';
+import '../../../theme/tokens.dart';
+import '../../../theme/app_theme.dart';
+import '../../../models/pfc_breakdown.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});

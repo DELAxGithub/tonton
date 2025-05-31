@@ -4,7 +4,7 @@ import 'package:intl/intl.dart';
 import '../providers/monthly_progress_provider.dart';
 import '../models/monthly_progress_summary.dart';
 import '../models/daily_calorie_summary.dart';
-import '../screens/savings_trend_screen.dart';
+import '../features/savings/screens/savings_trend_screen.dart';
 
 class MonthlyProgressWidget extends ConsumerWidget {
   const MonthlyProgressWidget({super.key});

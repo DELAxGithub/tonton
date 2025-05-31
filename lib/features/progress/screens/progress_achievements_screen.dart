@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:provider/provider.dart' as provider_pkg;
-import '../widgets/dual_axis_chart.dart';
+import '../../../widgets/dual_axis_chart.dart';
 
-import '../providers/calorie_savings_provider.dart';
-import '../providers/health_provider.dart';
-import '../providers/onboarding_start_date_provider.dart';
-import '../providers/selected_period_provider.dart';
-import '../providers/monthly_progress_provider.dart';
-import '../models/calorie_savings_record.dart';
-import '../design_system/organisms/hero_piggy_bank_display.dart';
-import '../design_system/templates/standard_page_layout.dart';
-import '../theme/tokens.dart';
-import '../routes/app_page.dart';
+import '../../../providers/calorie_savings_provider.dart';
+import '../../../providers/health_provider.dart';
+import '../../../providers/onboarding_start_date_provider.dart';
+import '../../../providers/selected_period_provider.dart';
+import '../../../providers/monthly_progress_provider.dart';
+import '../../../models/calorie_savings_record.dart';
+import '../../../design_system/organisms/hero_piggy_bank_display.dart';
+import '../../../design_system/templates/standard_page_layout.dart';
+import '../../../theme/tokens.dart';
+import '../../../routes/app_page.dart';
 
 class ProgressAchievementsScreen extends ConsumerWidget implements AppPage {
   const ProgressAchievementsScreen({super.key});

@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:tonton/main.dart';
-import 'package:tonton/features/onboarding/onboarding_screen.dart';
-import 'package:tonton/screens/home_screen.dart';
+import 'package:tonton/features/onboarding/screens/onboarding_screen.dart';
+import 'package:tonton/features/home/screens/home_screen.dart';
 import 'package:tonton/routes/router.dart';
 import 'package:tonton/providers/onboarding_completion_provider.dart';
 

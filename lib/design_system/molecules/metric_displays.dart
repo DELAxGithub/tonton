@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../theme/app_theme.dart';
+import '../../theme/app_theme.dart';
 
 /// A card for displaying a health or nutrition metric
 class MetricCard extends StatelessWidget {
@@ -174,14 +174,14 @@ class TrendBadge extends StatelessWidget {
         children: [
           Icon(
             trendIcon,
-            color: Colors.white,
+            color: Theme.of(context).colorScheme.onPrimary,
             size: 12,
           ),
           const SizedBox(width: 2),
           Text(
             '${percentChange.abs().toStringAsFixed(1)}%',
             style: theme.textTheme.labelSmall?.copyWith(
-              color: Colors.white,
+              color: Theme.of(context).colorScheme.onPrimary,
               fontWeight: FontWeight.bold,
             ),
           ),

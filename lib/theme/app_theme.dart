@@ -28,6 +28,17 @@ class TontonColors {
   static const Color warning = Color(0xFFFFC107);
   static const Color error = Color(0xFFDC3545);
   static const Color info = Color(0xFF17A2B8);
+
+  // Nutrition colors palette
+  static const Color proteinColor = Color(0xFFD32F2F);    // Colors.red.shade700 equivalent
+  static const Color carbsColor = Color(0xFF1976D2);      // Colors.blue.shade700 equivalent
+  static const Color fatColor = Color(0xFFF57C00);        // Colors.amber.shade700 equivalent
+
+  // Semantic colors
+  static const Color textPrimary = Color(0xFF212529);     // darkBrown alternative
+  static const Color textSecondary = Color(0xFF6C757D);   // warmGray alternative
+  static const Color surfaceGrey = Color(0xFFF5F5F5);    // Colors.grey.shade100 equivalent
+  static const Color borderGrey = Color(0xFFE0E0E0);     // Colors.grey.shade300 equivalent
 }
 
 /// The TonTon app's typography

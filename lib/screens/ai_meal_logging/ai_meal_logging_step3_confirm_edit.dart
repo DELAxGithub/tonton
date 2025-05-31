@@ -10,7 +10,7 @@ import '../../models/meal_record.dart';
 import '../../enums/meal_time_type.dart';
 import '../../providers/meal_records_provider.dart';
 import '../../routes/router.dart';
-import '../../widgets/labeled_text_field.dart';
+import '../../design_system/atoms/tonton_labeled_text_field.dart';
 
 class AIMealLoggingStep3ConfirmEdit extends ConsumerStatefulWidget {
   final File imageFile;

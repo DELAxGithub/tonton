@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../theme/app_theme.dart';
+import '../../theme/app_theme.dart';
 
 /// A consistent section header with optional action button
 class SectionHeader extends StatelessWidget {

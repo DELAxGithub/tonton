@@ -138,17 +138,17 @@ class NutritionSummaryCard extends StatelessWidget {
                   // Protein (red)
                   Expanded(
                     flex: proteinPercentage.round(),
-                    child: Container(color: Colors.red.shade700),
+                    child: Container(color: TontonColors.proteinColor),
                   ),
                   // Carbs (blue)
                   Expanded(
                     flex: carbsPercentage.round(),
-                    child: Container(color: Colors.blue.shade700),
+                    child: Container(color: TontonColors.carbsColor),
                   ),
                   // Fat (yellow)
                   Expanded(
                     flex: fatPercentage.round(),
-                    child: Container(color: Colors.amber.shade700),
+                    child: Container(color: TontonColors.fatColor),
                   ),
                 ],
               ),
@@ -166,7 +166,7 @@ class NutritionSummaryCard extends StatelessWidget {
                   label: 'Protein',
                   value: protein,
                   percentage: showPercentages ? proteinPercentage : null,
-                  color: Colors.red.shade700,
+                  color: TontonColors.proteinColor,
                 ),
                 
                 // Carbs
@@ -175,7 +175,7 @@ class NutritionSummaryCard extends StatelessWidget {
                   label: 'Carbs',
                   value: carbs,
                   percentage: showPercentages ? carbsPercentage : null,
-                  color: Colors.blue.shade700,
+                  color: TontonColors.carbsColor,
                 ),
                 
                 // Fat
@@ -184,7 +184,7 @@ class NutritionSummaryCard extends StatelessWidget {
                   label: 'Fat',
                   value: fat,
                   percentage: showPercentages ? fatPercentage : null,
-                  color: Colors.amber.shade700,
+                  color: TontonColors.fatColor,
                 ),
               ],
             ),

@@ -177,7 +177,7 @@ class _NutritionEditorState extends State<NutritionEditor> {
             value: _protein,
             maxValue: maxProtein,
             controller: _proteinController,
-            color: Colors.red.shade700,
+            color: TontonColors.proteinColor,
             onChanged: (value) {
               if (value != null) {
                 _updateProtein(value);
@@ -196,7 +196,7 @@ class _NutritionEditorState extends State<NutritionEditor> {
             value: _fat,
             maxValue: maxFat,
             controller: _fatController,
-            color: Colors.amber.shade700,
+            color: TontonColors.fatColor,
             onChanged: (value) {
               if (value != null) {
                 _updateFat(value);
@@ -215,7 +215,7 @@ class _NutritionEditorState extends State<NutritionEditor> {
             value: _carbs,
             maxValue: maxCarbs,
             controller: _carbsController,
-            color: Colors.blue.shade700,
+            color: TontonColors.carbsColor,
             onChanged: (value) {
               if (value != null) {
                 _updateCarbs(value);

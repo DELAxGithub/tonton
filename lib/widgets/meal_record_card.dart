@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../utils/icon_mapper.dart';
+import '../theme/app_theme.dart';
 
 import '../models/meal_record.dart';
 
@@ -113,7 +114,7 @@ class MealRecordCard extends StatelessWidget {
                     context,
                     Icons.fitness_center,
                     '${mealRecord.protein.toStringAsFixed(1)} g',
-                    Colors.red.shade700,
+                    TontonColors.proteinColor,
                     label: 'Protein',
                   ),
                   // Fat
@@ -121,7 +122,7 @@ class MealRecordCard extends StatelessWidget {
                     context,
                     Icons.water_drop,
                     '${mealRecord.fat.toStringAsFixed(1)} g',
-                    Colors.amber.shade700,
+                    TontonColors.fatColor,
                     label: 'Fat',
                   ),
                   // Carbs
@@ -129,7 +130,7 @@ class MealRecordCard extends StatelessWidget {
                     context,
                     Icons.grain,
                     '${mealRecord.carbs.toStringAsFixed(1)} g',
-                    Colors.green.shade700,
+                    TontonColors.carbsColor,
                     label: 'Carbs',
                   ),
                 ],

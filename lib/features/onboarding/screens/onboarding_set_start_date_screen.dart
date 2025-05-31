@@ -7,7 +7,7 @@ import '../../../design_system/templates/standard_page_layout.dart';
 import '../../../design_system/atoms/tonton_button.dart';
 import '../../../utils/icon_mapper.dart';
 import '../../../routes/router.dart';
-import '../../../providers/onboarding_start_date_provider.dart';
+import '../../../providers/providers.dart';
 
 class OnboardingSetStartDateScreen extends ConsumerStatefulWidget {
   const OnboardingSetStartDateScreen({super.key});

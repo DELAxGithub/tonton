@@ -6,7 +6,7 @@ import 'package:go_router/go_router.dart';
 import '../../../design_system/templates/standard_page_layout.dart';
 import '../../../design_system/atoms/tonton_button.dart';
 import '../../../utils/icon_mapper.dart';
-import '../../../providers/savings_balance_provider.dart';
+import '../../../providers/providers.dart';
 
 class UseSavingsScreen extends ConsumerStatefulWidget {
   const UseSavingsScreen({super.key});

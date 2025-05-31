@@ -5,7 +5,7 @@ import '../atoms/tonton_text.dart';
 import '../atoms/tonton_card_base.dart';
 import '../../theme/tokens.dart';
 import '../../utils/icon_mapper.dart';
-import '../../providers/monthly_progress_provider.dart';
+import '../../providers/providers.dart';
 
 class HeroPiggyBankDisplay extends ConsumerStatefulWidget {
   final double totalSavings;

@@ -3,12 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../l10n/app_localizations.dart';
-import '../../../providers/auth_provider.dart';
+import '../../../providers/providers.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../../providers/meal_records_provider.dart';
-import '../../../providers/calorie_savings_provider.dart';
-import '../../../providers/monthly_progress_provider.dart';
-import '../../../providers/realtime_calories_provider.dart';
 import '../../../design_system/templates/standard_page_layout.dart';
 import '../../../design_system/organisms/hero_piggy_bank_display.dart';
 import '../../../design_system/organisms/daily_summary_section.dart';

@@ -1,6 +1,6 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../providers/onboarding_start_date_provider.dart';
+import '../providers/providers.dart';
 import 'health_service.dart';
 
 /// Handles persistence of onboarding status and first launch timestamp.

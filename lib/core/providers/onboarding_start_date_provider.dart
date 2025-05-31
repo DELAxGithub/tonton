@@ -1,8 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../services/daily_summary_data_service.dart';
-import 'providers.dart';
+import '../../services/daily_summary_data_service.dart';
+import '../../providers/providers.dart';
 
 class OnboardingStartDateNotifier extends StateNotifier<DateTime?> {
   OnboardingStartDateNotifier(this._summaryService) : super(null) {

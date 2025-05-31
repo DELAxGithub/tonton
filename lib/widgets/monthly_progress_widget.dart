@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import '../providers/monthly_progress_provider.dart';
+import '../providers/providers.dart';
 import '../models/monthly_progress_summary.dart';
 import '../models/daily_calorie_summary.dart';
 import '../features/savings/screens/savings_trend_screen.dart';

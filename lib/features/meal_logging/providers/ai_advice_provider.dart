@@ -3,12 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:provider/provider.dart' as provider_pkg;
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../models/meal_record.dart';
-import '../models/pfc_breakdown.dart';
-import '../models/ai_advice_request.dart';
-import '../models/ai_advice_response.dart';
-import '../providers/health_provider.dart';
-import '../services/ai_advice_service.dart';
+import '../../../models/meal_record.dart';
+import '../../../models/pfc_breakdown.dart';
+import '../../../models/ai_advice_request.dart';
+import '../../../models/ai_advice_response.dart';
+import '../../../core/providers/health_provider.dart';
+import '../../../services/ai_advice_service.dart';
 
 final aiAdviceServiceProvider = Provider<AiAdviceService>((ref) {
   final client = Supabase.instance.client;

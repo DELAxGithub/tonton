@@ -1,8 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'dart:developer' as developer;
-import '../models/activity_summary.dart';
-import '../models/weight_record.dart';
-import '../services/health_service.dart';
+import '../../models/activity_summary.dart';
+import '../../models/weight_record.dart';
+import '../../services/health_service.dart';
 
 class HealthProvider with ChangeNotifier {
   final HealthService _healthService = HealthService();

@@ -1,7 +1,7 @@
 import 'dart:io'; // For File type
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../models/estimated_meal_nutrition.dart';
-import '../services/ai_service.dart';
+import '../../../models/estimated_meal_nutrition.dart';
+import '../../../services/ai_service.dart';
 
 final aiServiceProvider = Provider<AIService>((ref) {
   return AIService();

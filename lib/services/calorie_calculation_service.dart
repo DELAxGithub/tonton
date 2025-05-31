@@ -2,7 +2,7 @@ import 'dart:developer' as developer;
 import '../models/daily_calorie_summary.dart';
 import '../models/monthly_progress_summary.dart';
 import '../services/health_service.dart';
-import '../providers/meal_records_provider.dart';
+import '../providers/providers.dart';
 
 class CalorieCalculationService {
   final HealthService healthService;

@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../repositories/user_weight_repository.dart';
+import '../../repositories/user_weight_repository.dart';
 
 final userWeightRepositoryProvider = Provider<UserWeightRepository>((ref) {
   return UserWeightRepository();

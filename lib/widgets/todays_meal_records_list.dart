@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../l10n/app_localizations.dart';
-import '../providers/meal_records_provider.dart';
+import '../providers/providers.dart';
 import 'meal_record_card.dart';
 import '../theme/tokens.dart';
 

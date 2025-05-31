@@ -1,10 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../models/calorie_savings_record.dart';
-import '../models/daily_summary.dart';
-import '../providers/onboarding_start_date_provider.dart';
+import '../../models/calorie_savings_record.dart';
+import '../../models/daily_summary.dart';
+import 'onboarding_start_date_provider.dart';
 import 'realtime_calories_provider.dart';
-import 'meal_records_provider.dart';
-import 'selected_period_provider.dart';
+import '../../features/meal_logging/providers/meal_records_provider.dart';
+import '../../features/progress/providers/selected_period_provider.dart';
 
 // Provider for monthly target
 final monthlySavingsTargetProvider = Provider<double>((ref) {

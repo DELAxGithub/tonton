@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../design_system/templates/standard_page_layout.dart';
 import '../../../design_system/atoms/tonton_button.dart';
-import '../../../providers/user_weight_provider.dart';
+import '../../../providers/providers.dart';
 import '../../../routes/app_page.dart';
 import '../../../routes/router.dart';
 import 'package:go_router/go_router.dart';

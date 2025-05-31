@@ -1,10 +1,10 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../models/meal_record.dart';
-import '../enums/meal_time_type.dart';
-import '../services/meal_data_service.dart'; // Added
-import 'providers.dart'; // Added to access mealDataServiceProvider
+import '../../../models/meal_record.dart';
+import '../../../enums/meal_time_type.dart';
+import '../../../services/meal_data_service.dart'; // Added
+import '../../../providers/providers.dart'; // Added to access mealDataServiceProvider
 
 part 'meal_records_provider.g.dart';
 

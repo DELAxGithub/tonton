@@ -2,7 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
 
-import '../providers/auth_provider.dart';
+import '../providers/providers.dart';
 import '../features/home/screens/home_screen.dart';
 import '../features/onboarding/screens/login_screen.dart';
 import '../features/onboarding/screens/signup_screen.dart';
@@ -11,7 +11,7 @@ import '../features/savings/screens/use_savings_screen.dart';
 import '../features/onboarding/screens/onboarding_screen.dart';
 import '../features/onboarding/screens/onboarding_set_start_date_screen.dart';
 import '../features/health/screens/weight_input_screen.dart';
-import '../providers/onboarding_providers.dart';
+import '../features/onboarding/providers/onboarding_providers.dart';
 import '../features/profile/screens/settings_screen.dart';
 import '../features/progress/screens/progress_achievements_screen.dart';
 import '../features/profile/screens/profile_screen.dart';

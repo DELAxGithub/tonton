@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../providers/ai_estimation_provider.dart';
+import '../../../providers/providers.dart';
 import '../../../routes/router.dart';
 
 /// Step 2: Screen showing analysis progress.

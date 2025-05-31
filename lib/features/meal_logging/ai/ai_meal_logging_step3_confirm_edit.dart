@@ -8,7 +8,7 @@ import 'package:intl/intl.dart';
 import '../../../models/estimated_meal_nutrition.dart';
 import '../../../models/meal_record.dart';
 import '../../../enums/meal_time_type.dart';
-import '../../../providers/meal_records_provider.dart';
+import '../../../providers/providers.dart';
 import '../../../routes/router.dart';
 import '../../../design_system/atoms/tonton_labeled_text_field.dart';
 

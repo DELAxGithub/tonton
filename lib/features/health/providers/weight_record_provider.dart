@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../models/weight_record.dart';
+import '../../../models/weight_record.dart';
 
 class LatestWeightRecordNotifier extends StateNotifier<WeightRecord?> {
   LatestWeightRecordNotifier() : super(null) {

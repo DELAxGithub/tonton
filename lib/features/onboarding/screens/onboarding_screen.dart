@@ -6,9 +6,8 @@ import 'package:image_picker/image_picker.dart';
 
 import '../../../design_system/templates/standard_page_layout.dart';
 import '../../../design_system/atoms/tonton_button.dart';
-import '../../../providers/onboarding_start_date_provider.dart';
-import '../../../providers/onboarding_providers.dart';
-import '../../../providers/health_provider.dart';
+import '../../../providers/providers.dart';
+import '../providers/onboarding_providers.dart';
 import '../../../routes/router.dart';
 
 /// Simple onboarding screen requesting permissions on first launch.

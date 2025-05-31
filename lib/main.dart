@@ -12,11 +12,10 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'models/meal_record.dart';
 import 'models/daily_summary.dart';
 import 'enums/meal_time_type.dart';
-import 'providers/health_provider.dart';
+import 'providers/providers.dart';
 import 'routes/router.dart'; // Import router configuration
 import 'services/onboarding_service.dart';
-import 'providers/onboarding_providers.dart';
-import 'providers/onboarding_start_date_provider.dart';
+import 'features/onboarding/providers/onboarding_providers.dart';
 import 'services/daily_summary_data_service.dart';
 import 'services/meal_data_service.dart';
 import 'services/health_service.dart';

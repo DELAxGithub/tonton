@@ -1,9 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../models/daily_summary.dart';
-import '../services/daily_summary_service.dart';
+import '../../models/daily_summary.dart';
+import '../../services/daily_summary_service.dart';
 import 'monthly_progress_provider.dart';
-import 'providers.dart';
+import '../../providers/providers.dart';
 
 /// Provides an instance of [DailySummaryService].
 final dailySummaryServiceProvider = Provider<DailySummaryService>((ref) {

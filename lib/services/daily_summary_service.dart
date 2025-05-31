@@ -1,5 +1,5 @@
 import '../models/daily_summary.dart';
-import '../providers/meal_records_provider.dart';
+import '../providers/providers.dart';
 import 'health_service.dart';
 import 'daily_summary_data_service.dart';
 

@@ -1,8 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../models/pfc_breakdown.dart';
-import '../models/user_goals.dart';
-import 'meal_records_provider.dart';
+import '../../../models/pfc_breakdown.dart';
+import '../../../models/user_goals.dart';
+import '../../meal_logging/providers/meal_records_provider.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 

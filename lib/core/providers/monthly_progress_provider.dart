@@ -2,12 +2,12 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:developer' as developer;
 
-import '../models/monthly_progress_summary.dart';
-import '../models/daily_calorie_summary.dart';
-import '../services/calorie_calculation_service.dart';
-import '../repositories/user_settings_repository.dart';
-import '../services/health_service.dart';
-import 'meal_records_provider.dart';
+import '../../models/monthly_progress_summary.dart';
+import '../../models/daily_calorie_summary.dart';
+import '../../services/calorie_calculation_service.dart';
+import '../../repositories/user_settings_repository.dart';
+import '../../services/health_service.dart';
+import '../../features/meal_logging/providers/meal_records_provider.dart';
 import 'calorie_savings_provider.dart';
 
 part 'monthly_progress_provider.g.dart';

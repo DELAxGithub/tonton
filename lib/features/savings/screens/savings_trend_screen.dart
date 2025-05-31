@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../providers/calorie_savings_provider.dart';
+import '../../../providers/providers.dart';
 
 class SavingsTrendScreen extends ConsumerWidget {
   const SavingsTrendScreen({super.key});

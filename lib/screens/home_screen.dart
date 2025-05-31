@@ -19,9 +19,9 @@ import '../utils/icon_mapper.dart';
 import '../theme/tokens.dart';
 import '../routes/router.dart';
 
-/// Experimental home screen used when [FeatureFlags.usePhase3Design] is enabled.
-class HomeScreenPhase3 extends ConsumerWidget {
-  const HomeScreenPhase3({super.key});
+/// Main home screen of the app
+class HomeScreen extends ConsumerWidget {
+  const HomeScreen({super.key});
 
   String _greetingFor(DateTime now) {
     final hour = now.hour;

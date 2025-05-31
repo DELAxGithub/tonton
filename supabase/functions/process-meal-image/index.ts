@@ -24,23 +24,28 @@ const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
 // The prompt below is simplified to get core nutrients first, can be expanded.
 
 const FOOD_ANALYSIS_PROMPT_SYSTEM_MESSAGE = `
-You are an expert nutritionist. Analyze the provided food image and return its estimated nutritional content.
-You MUST respond in JSON format. The JSON object should strictly follow this structure:
+あなたは栄養士の専門家です。提供された食事画像を分析し、その推定栄養成分を返してください。
+必ず日本語で回答し、以下の厳密なJSON形式で応答する必要があります：
+
 {
-  "dishName": "string (name of the dish in Japanese)",
-  "calories": "number (estimated calories in kcal)",
+  "dishName": "文字列（必ず日本語で料理名を記入）",
+  "calories": "数値（推定カロリー、kcal単位）",
   "nutrients": {
-    "protein": "number (estimated protein in grams)",
-    "fat": "number (estimated fat in grams)",
-    "carbs": "number (estimated carbohydrates in grams)"
+    "protein": "数値（タンパク質、グラム単位）",
+    "fat": "数値（脂質、グラム単位）",
+    "carbs": "数値（炭水化物、グラム単位）"
   },
-  "notes": "string[] (any relevant notes, e.g., if multiple items are present, specify which one was analyzed, or if the image is unclear. Keep notes concise.)"
+  "notes": "文字列配列（関連するメモ、例：複数の食品がある場合はどれを分析したか、または画像が不明確な場合など。メモは簡潔に。すべて日本語で記述。）"
 }
-Ensure all numerical values are indeed numbers, not strings containing numbers.
-If the image is not a food item or is too unclear to analyze, return an error structure:
+
+すべての数値は必ず数値型であり、数値を含む文字列ではないことを確認してください。
+画像が食品でない、または分析するには不明確すぎる場合は、以下のエラー構造を返してください：
+
 {
-  "error": "string (description of the error, e.g., 'Image is not a food item' or 'Image too unclear')"
+  "error": "文字列（エラーの説明、例：「画像に食品が写っていません」または「画像が不明瞭です」など。必ず日本語で記述。）"
 }
+
+すべての文字列フィールド（料理名、説明、メモ、エラーメッセージなど）は必ず日本語で記述してください。英語での回答は不可です。
 `;
 
 serve(async (req) => {
@@ -67,7 +72,7 @@ serve(async (req) => {
     const imageUrl = body.imageUrl;
 
     if (!imageUrl) {
-      return new Response(JSON.stringify({ error: "imageUrl is required in the request body" }), {
+      return new Response(JSON.stringify({ error: "画像URLが必要です。リクエストに画像URLを含めてください。" }), {
         status: 400,
         headers: { "Content-Type": "application/json", ...corsHeaders },
       });
@@ -75,7 +80,7 @@ serve(async (req) => {
 
     if (!OPENAI_API_KEY) {
       console.error("OpenAI API key is not configured in environment variables.");
-      return new Response(JSON.stringify({ error: "AI service is not configured correctly." }), {
+      return new Response(JSON.stringify({ error: "AIサービスが正しく設定されていません。管理者にお問い合わせください。" }), {
         status: 500, // Internal Server Error
         headers: { "Content-Type": "application/json", ...corsHeaders },
       });
@@ -95,7 +100,7 @@ serve(async (req) => {
           content: [
             { 
               type: "text", 
-              text: "Please analyze this food image." 
+              text: "この食事画像を分析して、必ず日本語で回答してください。料理名も説明も全て日本語で記述してください。" 
             },
             {
               type: "image_url",
@@ -115,7 +120,7 @@ serve(async (req) => {
     const messageContent = gptResponse.choices[0].message.content;
     if (!messageContent) {
       console.error("OpenAI API response content is null or empty.");
-      return new Response(JSON.stringify({ error: "AI service returned an empty response." }), {
+      return new Response(JSON.stringify({ error: "AIサービスが空の応答を返しました。もう一度お試しください。" }), {
         status: 500,
         headers: { "Content-Type": "application/json", ...corsHeaders },
       });
@@ -129,7 +134,7 @@ serve(async (req) => {
       parsedNutritionInfo = JSON.parse(messageContent);
     } catch (parseError) {
       console.error("Failed to parse OpenAI response JSON:", parseError, "Raw content:", messageContent);
-      return new Response(JSON.stringify({ error: "AI service returned malformed data." , details: messageContent }), {
+      return new Response(JSON.stringify({ error: "AIサービスが正しい形式のデータを返しませんでした。もう一度お試しください。", details: messageContent }), {
         status: 500,
         headers: { "Content-Type": "application/json", ...corsHeaders },
       });
@@ -138,10 +143,50 @@ serve(async (req) => {
     // If the parsed data contains our defined error field (e.g. "Image is not food")
     if (parsedNutritionInfo.error) {
         console.warn("AI analysis reported an error:", parsedNutritionInfo.error);
+        
+        // Check if error message is in English and provide Japanese fallback
+        if (parsedNutritionInfo.error && 
+            /^[a-zA-Z\s\-',.()]+$/.test(parsedNutritionInfo.error) && 
+            !/[ぁ-んァ-ン一-龯]/.test(parsedNutritionInfo.error)) {
+          console.warn("Error response is in English instead of Japanese:", parsedNutritionInfo.error);
+          // Replace with generic Japanese error message
+          parsedNutritionInfo.error = "画像の解析ができませんでした。別の画像を試してください。";
+        }
+        
         return new Response(JSON.stringify(parsedNutritionInfo), { // Forward the AI's error structure
             status: 400, // Bad request (e.g. bad image)
             headers: { "Content-Type": "application/json", ...corsHeaders },
         });
+    }
+    
+    // Check if any string fields are in English instead of Japanese
+    if (parsedNutritionInfo.dishName && 
+        /^[a-zA-Z\s\-',.()]+$/.test(parsedNutritionInfo.dishName) && 
+        !/[ぁ-んァ-ン一-龯]/.test(parsedNutritionInfo.dishName)) {
+      console.warn("Response contains English dish name instead of Japanese:", parsedNutritionInfo.dishName);
+      // Add a note about the English response
+      parsedNutritionInfo.notes = parsedNutritionInfo.notes || [];
+      parsedNutritionInfo.notes.push("料理名が英語で返されました。アプリで修正してください。");
+    }
+
+    // Check for English descriptions
+    if (parsedNutritionInfo.description && 
+        /^[a-zA-Z\s\-',.()]+$/.test(parsedNutritionInfo.description) && 
+        !/[ぁ-んァ-ン一-龯]/.test(parsedNutritionInfo.description)) {
+      console.warn("Response contains English description instead of Japanese");
+      // Add Japanese fallback description
+      parsedNutritionInfo.description = "AIが英語で説明を返しました。写真の食事の内容をご確認ください。";
+    }
+    
+    // Check for English notes
+    if (Array.isArray(parsedNutritionInfo.notes)) {
+      parsedNutritionInfo.notes = parsedNutritionInfo.notes.map(note => {
+        if (/^[a-zA-Z\s\-',.()]+$/.test(note) && !/[ぁ-んァ-ン一-龯]/.test(note)) {
+          console.warn("Response contains English note instead of Japanese:", note);
+          return "AIが英語でメモを返しました。";
+        }
+        return note;
+      });
     }
 
 
@@ -161,7 +206,8 @@ serve(async (req) => {
     } else if (error.message) {
         errorMessage = error.message;
     }
-    return new Response(JSON.stringify({ error: errorMessage }), {
+    // Provide a generic Japanese error message for the user
+    return new Response(JSON.stringify({ error: "画像処理中にエラーが発生しました。もう一度お試しください。", details: errorMessage }), {
       status: 500,
       headers: { "Content-Type": "application/json", ...corsHeaders },
     });

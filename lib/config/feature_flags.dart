@@ -1,3 +1,4 @@
+/// Feature flags for the application
 class FeatureFlags {
-  static const bool usePhase3Design = true;
+  // Feature flags will be added here as needed
 }

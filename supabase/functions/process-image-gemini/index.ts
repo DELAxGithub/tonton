@@ -31,14 +31,14 @@ serve(async (req) => {
     } catch (e) {
       console.error('Failed to parse request body:', e);
       return new Response(
-        JSON.stringify({ error: 'Invalid JSON request body' }),
+        JSON.stringify({ error: 'リクエストの形式が正しくありません。正しいJSON形式で送信してください。' }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
       );
     }
     
     if (!imageData || !mimeType) {
       return new Response(
-        JSON.stringify({ error: 'Image data and MIME type are required' }),
+        JSON.stringify({ error: '画像データとMIMEタイプが必要です。両方をリクエストに含めてください。' }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
       );
     }
@@ -57,7 +57,7 @@ serve(async (req) => {
             {
               parts: [
                 {
-                  text: "Analyze this food image and provide the following information in valid JSON format. For a Japanese dish, use both Japanese and English names. Include: 1) food_name: Name of the dish or food item, 2) description: Brief description of what it is, 3) calories: Estimated calories per serving (number only), 4) protein_g: Protein in grams (number only), 5) fat_g: Fat in grams (number only), 6) carbs_g: Carbohydrates in grams (number only)"
+                  text: "この食事画像を分析し、以下の情報を有効なJSON形式で提供してください。日本食の場合は、日本語の名前を使用してください。以下を含めてください：1) food_name: 料理や食品の名前（日本語で）, 2) description: その料理の簡単な説明（日本語で）, 3) calories: 1食分の推定カロリー（数値のみ）, 4) protein_g: タンパク質（グラム単位、数値のみ）, 5) fat_g: 脂質（グラム単位、数値のみ）, 6) carbs_g: 炭水化物（グラム単位、数値のみ）。必ず日本語で回答してください。"
                 },
                 {
                   inline_data: {
@@ -71,6 +71,13 @@ serve(async (req) => {
           generation_config: {
             temperature: 0.4, // As per PoC FINDINGS.md
             response_mime_type: "application/json"
+          },
+          systemInstruction: {
+            parts: [
+              {
+                text: "あなたは料理の専門家です。必ず日本語で回答してください。料理名や説明文も必ず日本語で記述してください。提供する情報は正確なJSON形式にする必要がありますが、すべての文字列値は日本語で提供してください。"
+              }
+            ]
           }
         })
       }
@@ -80,7 +87,7 @@ serve(async (req) => {
       const errorBody = await geminiResponse.text();
       console.error(`Gemini API error: ${geminiResponse.status}`, errorBody);
       return new Response(
-        JSON.stringify({ error: `Gemini API request failed with status ${geminiResponse.status}`, details: errorBody }),
+        JSON.stringify({ error: `画像の解析に失敗しました。後ほど再度お試しください。`, details: errorBody }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: geminiResponse.status }
       );
     }
@@ -100,12 +107,32 @@ serve(async (req) => {
       // For simplicity here, direct parsing is used. If issues arise, implement advanced parsing.
       let parsedResult;
       try {
-        parsedResult = JSON.parse(textContent);
+        // Remove any markdown formatting if present
+        const jsonText = textContent.replace(/```json\n?|\n?```/g, '').trim();
+        parsedResult = JSON.parse(jsonText);
       } catch (jsonParseError) {
          console.error('Failed to parse textContent as JSON:', textContent, jsonParseError);
          // Fallback parsing strategies from FINDINGS.md could be implemented here if needed.
          // For now, re-throw or return error indicating parsing failure.
-         throw new Error(`Failed to parse AI's text response as JSON. Raw text: ${textContent}`);
+         throw new Error(`AIの応答をJSONとして解析できませんでした。`);
+      }
+      
+      // Check if any string fields in the response are in English when they should be in Japanese
+      if (parsedResult.food_name && 
+          /^[a-zA-Z\s\-',.()]+$/.test(parsedResult.food_name) && 
+          !/[ぁ-んァ-ン一-龯]/.test(parsedResult.food_name)) {
+        console.warn("Response contains English food name instead of Japanese:", parsedResult.food_name);
+        // Add a note about the English response
+        parsedResult.notes = parsedResult.notes || [];
+        parsedResult.notes.push("料理名が英語で返されました。アプリで修正してください。");
+      }
+
+      if (parsedResult.description && 
+          /^[a-zA-Z\s\-',.()]+$/.test(parsedResult.description) && 
+          !/[ぁ-んァ-ン一-龯]/.test(parsedResult.description)) {
+        console.warn("Response contains English description instead of Japanese");
+        // Add Japanese fallback description
+        parsedResult.description = "AIが英語で説明を返しました。写真の食事の内容をご確認ください。";
       }
 
       return new Response(
@@ -116,7 +143,7 @@ serve(async (req) => {
       console.error('Failed to parse or process Gemini response:', error.message, result);
       return new Response(
         JSON.stringify({ 
-          error: `Failed to parse or process AI response: ${error.message}`, 
+          error: `画像の解析結果を処理できませんでした。もう一度お試しください。`, 
           raw_gemini_response: result // Include raw Gemini response for debugging
         }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
@@ -124,11 +151,24 @@ serve(async (req) => {
     }
   } catch (error) {
     console.error('Critical edge function error:', error.message, error.stack);
+    
+    // Determine if we should attempt to include CORS headers
+    let headers = { 'Content-Type': 'application/json' };
+    try {
+      if (corsHeaders) {
+        headers = { ...corsHeaders, 'Content-Type': 'application/json' };
+      }
+    } catch (e) {
+      // Ignore error and use default headers
+    }
+    
     return new Response(
       // Avoid exposing detailed internal error messages like stack traces to the client
-      JSON.stringify({ error: 'An unexpected error occurred in the edge function.' }),
-      // CORS headers might be missing here if error happens before they are set.
-      { headers: { 'Content-Type': 'application/json' }, status: 500 }
+      JSON.stringify({ 
+        error: '予期せぬエラーが発生しました。後ほど再度お試しください。',
+        details: error.message 
+      }),
+      { headers, status: 500 }
     );
   }
 })

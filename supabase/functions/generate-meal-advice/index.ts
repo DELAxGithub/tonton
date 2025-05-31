@@ -30,8 +30,12 @@ serve(async (req)=>{
     // --- Input Validation (Basic) ---
     if (!targetCalories || !targetPfcRatio || !consumedMealsPfc || activeCalories === undefined // Can be 0
     ) {
+      const errorMessage = language === 'ja'
+        ? "必要なパラメータが不足しています。"
+        : "Missing required input parameters.";
+        
       return new Response(JSON.stringify({
-        error: "Missing required input parameters."
+        error: errorMessage
       }), {
         headers: {
           ...corsHeaders,
@@ -42,8 +46,12 @@ serve(async (req)=>{
     }
     if (typeof targetPfcRatio.protein !== 'number' || typeof targetPfcRatio.fat !== 'number' || typeof targetPfcRatio.carbohydrate !== 'number' || Math.abs(targetPfcRatio.protein + targetPfcRatio.fat + targetPfcRatio.carbohydrate - 1.0) > 0.01 // Allow for small floating point inaccuracies
     ) {
+      const errorMessage = language === 'ja'
+        ? "PFC比率が無効です。値は数値でなければならず、合計が1.0になる必要があります。"
+        : "Invalid PFC ratio. Values must be numbers and sum to 1.0.";
+        
       return new Response(JSON.stringify({
-        error: "Invalid PFC ratio. Values must be numbers and sum to 1.0."
+        error: errorMessage
       }), {
         headers: {
           ...corsHeaders,
@@ -124,15 +132,17 @@ Suggest a common, generally healthy meal. Avoid overly complex or niche suggesti
 - 炭水化物目標: ${remainingCarbohydrateGrams.toFixed(1)} g
 
 次の項目を英語のキー名でJSON形式にまとめてください。
-1. menuName  - メニュー名
-2. description - 簡単な説明
+1. menuName  - メニュー名（日本語で書いてください）
+2. description - 簡単な説明（日本語で書いてください）
 3. estimatedNutrition - 推定栄養情報オブジェクト（calories, protein, fat, carbohydrates）
-4. recommendationReason - おすすめ理由
+4. recommendationReason - おすすめ理由（日本語で書いてください）
 
 推定カロリーは上記の「最大カロリー」を超えないようにしてください。
 タンパク質、炭水化物、脂質の順に目標値に近づけつつ、カロリー内に収めてください。
 正確な数値が難しい場合は、できる限りバランスの取れた一般的で健康的なメニューを提案してください。
 複雑すぎる料理やニッチな食材は避けてください。
+
+JSONの文字列フィールドは必ず日本語で記述してください。英語での回答は不可です。
 `;
 
     const prompt = language === 'ja' ? promptJa : promptEn;
@@ -143,8 +153,12 @@ Suggest a common, generally healthy meal. Avoid overly complex or niche suggesti
     //    - Ensure GEMINI_API_KEY is set in Supabase Edge Function environment variables.
     const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
     if (!GEMINI_API_KEY) {
+      const errorMessage = language === 'ja'
+        ? "GEMINI_API_KEYが設定されていません。管理者にお問い合わせください。"
+        : "GEMINI_API_KEY is not set.";
+        
       return new Response(JSON.stringify({
-        error: "GEMINI_API_KEY is not set."
+        error: errorMessage
       }), {
         headers: {
           ...corsHeaders,
@@ -157,6 +171,7 @@ Suggest a common, generally healthy meal. Avoid overly complex or niche suggesti
     const requestBody = {
       contents: [
         {
+          role: "user",
           parts: [
             {
               text: prompt
@@ -169,6 +184,15 @@ Suggest a common, generally healthy meal. Avoid overly complex or niche suggesti
         // responseMimeType: "application/json", // This might not be supported by gemini-pro directly for text prompts
         temperature: 0.7,
         maxOutputTokens: 500
+      },
+      systemInstruction: {
+        parts: [
+          {
+            text: language === 'ja' 
+              ? "あなたは料理の専門家です。必ず日本語で回答してください。JSONフォーマットで返答する際も、すべてのテキスト値は日本語で記述してください。" 
+              : "You are a culinary expert who provides advice in English."
+          }
+        ]
       }
     };
     const geminiResponse = await fetch(geminiUrl, {
@@ -181,8 +205,12 @@ Suggest a common, generally healthy meal. Avoid overly complex or niche suggesti
     if (!geminiResponse.ok) {
       const errorBody = await geminiResponse.text();
       console.error("Gemini API Error:", errorBody);
+      const errorMessage = language === 'ja'
+        ? "Gemini APIからの応答の取得に失敗しました。"
+        : "Failed to get a response from Gemini API.";
+        
       return new Response(JSON.stringify({
-        error: "Failed to get a response from Gemini API.",
+        error: errorMessage,
         details: errorBody
       }), {
         headers: {
@@ -203,8 +231,12 @@ Suggest a common, generally healthy meal. Avoid overly complex or niche suggesti
     } catch (parseError) {
       console.error("Failed to parse Gemini response:", parseError);
       console.error("Raw Gemini response text:", geminiResult.candidates[0].content.parts[0].text);
+      const errorMessage = language === 'ja'
+        ? "AIからの食事提案の解析に失敗しました。"
+        : "Failed to parse meal suggestion from AI.";
+        
       return new Response(JSON.stringify({
-        error: "Failed to parse meal suggestion from AI.",
+        error: errorMessage,
         details: parseError.message,
         rawResponse: geminiResult.candidates[0].content.parts[0].text
       }), {
@@ -236,8 +268,25 @@ Suggest a common, generally healthy meal. Avoid overly complex or niche suggesti
     });
   } catch (error) {
     console.error("Error in Edge Function:", error);
+    
+    // Since we're in the catch block, language might not be defined
+    // Try to extract it from the request if possible, otherwise default to Japanese
+    let lang = 'ja';
+    try {
+      if (req.headers.get('Accept-Language')?.startsWith('en')) {
+        lang = 'en';
+      }
+    } catch (e) {
+      // Ignore error and use default language
+    }
+    
+    const errorMessage = lang === 'en' 
+      ? "Error in Edge Function."
+      : "エッジ関数でエラーが発生しました。";
+      
     return new Response(JSON.stringify({
-      error: error.message
+      error: errorMessage,
+      details: error.message
     }), {
       headers: {
         ...corsHeaders,

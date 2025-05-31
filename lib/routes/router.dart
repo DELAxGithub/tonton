@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
 
 import '../providers/auth_provider.dart';
-import '../screens/home_screen_phase3.dart';
+import '../screens/home_screen.dart';
 import '../screens/login_screen.dart';
 import '../screens/signup_screen.dart';
 import '../screens/savings_trend_screen.dart';
@@ -135,7 +135,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: TontonRoutes.home,
             name: 'home',
-            builder: (context, state) => const HomeScreenPhase3(),
+            builder: (context, state) => const HomeScreen(),
           ),
           GoRoute(
             path: TontonRoutes.aiMealCamera,

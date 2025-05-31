@@ -26,8 +26,8 @@ dependencies:
   image: ^4.1.7        # Image processing (resize/compress)
   mime: ^1.0.4         # Added for MIME type detection
   path: ^1.8.3         # Added for path handling
-  args: ^2.4.2         # Added for command-line arguments
-  yaml: ^3.1.2         # Added for YAML parsing
+  args: ^2.4.2         # Required for build tools
+  yaml: ^3.1.2         # Required for configuration tools
   
   # Added for Hive
   hive: ^2.2.3
@@ -39,7 +39,6 @@ dependencies:
 
   # Added for routing
   go_router: ^13.2.0
-  dashbook: any
 
 dev_dependencies:
   flutter_test:

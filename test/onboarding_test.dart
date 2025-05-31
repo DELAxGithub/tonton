@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import 'package:tonton/main.dart';
 import 'package:tonton/features/onboarding/onboarding_screen.dart';
-import 'package:tonton/screens/home_screen_phase3.dart';
+import 'package:tonton/screens/home_screen.dart';
 import 'package:tonton/routes/router.dart';
 import 'package:tonton/providers/onboarding_completion_provider.dart';
 
@@ -22,7 +22,7 @@ void main() {
       routes: [
         GoRoute(
           path: TontonRoutes.home,
-          builder: (_, __) => const HomeScreenPhase3(),
+          builder: (_, __) => const HomeScreen(),
         ),
         GoRoute(
           path: TontonRoutes.onboardingIntro,
@@ -65,6 +65,6 @@ void main() {
     );
 
     await tester.pumpAndSettle();
-    expect(find.byType(HomeScreenPhase3), findsOneWidget);
+    expect(find.byType(HomeScreen), findsOneWidget);
   });
 }

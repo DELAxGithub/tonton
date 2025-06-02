@@ -2,16 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../l10n/app_localizations.dart';
 import '../../../providers/providers.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../design_system/templates/standard_page_layout.dart';
 import '../../../design_system/organisms/hero_piggy_bank_display.dart';
-import '../../../design_system/organisms/daily_summary_section.dart';
-import '../../../design_system/molecules/pfc_bar_display.dart';
-import '../../../design_system/atoms/tonton_button.dart';
+import '../../../design_system/organisms/calorie_summary_row.dart';
+import '../../../design_system/organisms/pfc_balance_card.dart';
 import '../../../widgets/todays_meal_records_list.dart';
-import '../../../utils/icon_mapper.dart';
+import '../../../widgets/ai_advice_card_compact.dart';
 import '../../../theme/tokens.dart';
 import '../../../routes/router.dart';
 
@@ -39,21 +37,7 @@ class HomeScreen extends ConsumerWidget {
     final user = ref.watch(currentUserProvider);
 
 
-    final savingsRecordsAsync = ref.watch(calorieSavingsDataProvider);
-    final totalSavings = savingsRecordsAsync.maybeWhen(
-      data: (records) =>
-          records.isNotEmpty ? records.last.cumulativeSavings : 0.0,
-      orElse: () => 0.0,
-    );
-    final displayedSavings = totalSavings > 0 ? totalSavings : 1200.0;
-
-    final todayMeals = ref.watch(todaysMealRecordsProvider);
     final dailySummaryAsync = ref.watch(todayCalorieSummaryProvider);
-    final realtimeSummaryAsync = ref.watch(realtimeDailySummaryProvider);
-
-    final protein = todayMeals.fold<double>(0, (sum, m) => sum + m.protein);
-    final fat = todayMeals.fold<double>(0, (sum, m) => sum + m.fat);
-    final carbs = todayMeals.fold<double>(0, (sum, m) => sum + m.carbs);
 
     final greeting = _greetingFor(DateTime.now());
     final userName = _displayName(user);
@@ -62,57 +46,37 @@ class HomeScreen extends ConsumerWidget {
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (e, _) => Center(child: Text('Error: $e')),
       data: (summary) {
-        final l10n = AppLocalizations.of(context);
-        return StandardPageLayout(
-          children: [
+        return Scaffold(
+          body: StandardPageLayout(
+            children: [
             Padding(
               padding: const EdgeInsets.only(bottom: Spacing.md),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    '$greeting、$userName',
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                  IconButton(
-                    icon: Icon(TontonIcons.settings),
-                    tooltip: l10n?.tabSettings ?? 'Settings',
-                    onPressed: () => context.push(TontonRoutes.settings),
-                  ),
-                ],
+              child: Text(
+                '$greeting、$userName',
+                style: Theme.of(context).textTheme.titleLarge,
               ),
             ),
-            HeroPiggyBankDisplay(
-              totalSavings: displayedSavings,
-            ),
-            const SizedBox(height: Spacing.xxl),
-            DailySummarySection(
-              eatenCalories: summary.totalCaloriesConsumed,
-              burnedCalories: summary.totalCaloriesBurned,
-              realtimeBurnedCalories: realtimeSummaryAsync.maybeWhen(
-                data: (s) => s.caloriesBurned,
-                orElse: () => null,
-              ),
-              dailySavings: summary.netCalories,
-            ),
+            const HeroPiggyBankDisplay(),
+            const SizedBox(height: Spacing.xl),
+            const CalorieSummaryRow(),
+            const SizedBox(height: Spacing.md),
+            const PfcBalanceCard(),
+            const SizedBox(height: Spacing.xl),
+            const AiAdviceCardCompact(),
             const SizedBox(height: Spacing.xl),
             const TodaysMealRecordsList(),
-            const SizedBox(height: Spacing.xl),
-            PfcBarDisplay(
-              title: '今日の栄養バランス (PFC)',
-              protein: protein,
-              fat: fat,
-              carbs: carbs,
-              onTap: () => context.push(TontonRoutes.aiMealCamera),
-            ),
             const SizedBox(height: Spacing.xxl),
-            TontonButton.primary(
-              label: '📷 写真でパシャ！食事をきろく',
-              leading: TontonIcons.camera,
-              onPressed: () => context.push(TontonRoutes.aiMealCamera),
-            ),
-            SizedBox(height: Spacing.xxl),
           ],
+          ),
+          floatingActionButton: FloatingActionButton.large(
+            onPressed: () => context.push(TontonRoutes.aiMealCamera),
+            backgroundColor: Theme.of(context).colorScheme.primary,
+            child: const Icon(
+              Icons.add,
+              size: 36,
+            ),
+          ),
+          floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
         );
       },
     );

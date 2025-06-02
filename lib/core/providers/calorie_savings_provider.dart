@@ -31,7 +31,7 @@ final calorieSavingsDataProvider =
   if (startDate == null) return [];
 
   final service = ref.watch(dailySummaryServiceProvider);
-  final endDate = DateTime.now().subtract(const Duration(days: 1));
+  final endDate = DateTime.now();
   final summaries = <DailySummary>[];
   var current = DateTime(startDate.year, startDate.month, startDate.day);
 

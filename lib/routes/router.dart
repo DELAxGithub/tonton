@@ -9,13 +9,16 @@ import '../features/onboarding/screens/signup_screen.dart';
 import '../features/savings/screens/savings_trend_screen.dart';
 import '../features/savings/screens/use_savings_screen.dart';
 import '../features/onboarding/screens/onboarding_screen.dart';
+import '../features/onboarding/screens/basic_info_screen.dart';
+// import '../features/onboarding/screens/health_kit_screen.dart';
 import '../features/onboarding/screens/onboarding_set_start_date_screen.dart';
 import '../features/health/screens/weight_input_screen.dart';
 import '../features/onboarding/providers/onboarding_providers.dart';
 import '../features/profile/screens/settings_screen.dart';
 import '../features/progress/screens/progress_achievements_screen.dart';
+import '../features/progress/screens/daily_meals_detail_screen.dart';
 import '../features/profile/screens/profile_screen.dart';
-import '../features/home/screens/tonton_coach_screen.dart';
+// import '../features/home/screens/tonton_coach_screen.dart'; // DEPRECATED: Using modal instead
 import '../features/meal_logging/ai/ai_meal_logging_step1_camera.dart';
 import '../features/meal_logging/ai/ai_meal_logging_step2_analyzing.dart';
 import '../features/meal_logging/ai/ai_meal_logging_step3_confirm_edit.dart';
@@ -24,6 +27,7 @@ import 'app_page.dart';
 import '../design_system/templates/app_shell.dart';
 import 'dart:io';
 import '../models/estimated_meal_nutrition.dart';
+import '../models/calorie_savings_record.dart';
 
 /// Route names for named navigation
 class TontonRoutes {
@@ -35,16 +39,19 @@ class TontonRoutes {
   static const String savingsTrend = '/savings-trend';
   static const String progress = '/progress';
   static const String useSavings = '/use-savings';
+  static const String onboardingBasicInfo = '/onboarding/basic-info';
+  static const String onboardingHealthKit = '/onboarding/health-kit';
   static const String onboardingIntro = '/onboarding';
   static const String onboardingStartDate = '/onboarding/start-date';
   static const String onboardingWeight = '/onboarding/weight';
   static const String profile = '/profile';
   static const String settings = '/settings';
   static const String progressAchievements = '/progress-achievements';
-  static const String tontonCoach = '/tonton-coach';
+  // static const String tontonCoach = '/tonton-coach'; // DEPRECATED: Using modal instead
   static const String aiMealCamera = '/ai-meal/camera';
   static const String aiMealAnalyzing = '/ai-meal/analyzing';
   static const String aiMealConfirm = '/ai-meal/confirm';
+  static const String dailyMealsDetail = '/daily-meals-detail';
 }
 
 /// Provider for the router configuration
@@ -63,33 +70,48 @@ final routerProvider = Provider<GoRouter>((ref) {
         error: (_, __) => false,
       );
       
+      // Debug logging
+      print('=== Router Redirect Debug ===');
+      print('Current path: ${state.matchedLocation}');
+      print('Is logged in: $isLoggedIn');
+      print('Onboarding completed: $onboardingCompleted');
+      
       // Determine if the user is going to an auth or onboarding page
       final isAuthRoute = state.matchedLocation == TontonRoutes.login ||
                           state.matchedLocation == TontonRoutes.signup;
-      final isOnboardingRoute = state.matchedLocation == TontonRoutes.onboardingIntro ||
-                                state.matchedLocation == TontonRoutes.onboardingStartDate;
+      final isOnboardingRoute = state.matchedLocation == TontonRoutes.onboardingBasicInfo ||
+                                // state.matchedLocation == TontonRoutes.onboardingHealthKit ||
+                                state.matchedLocation == TontonRoutes.onboardingIntro ||
+                                state.matchedLocation == TontonRoutes.onboardingStartDate ||
+                                state.matchedLocation == TontonRoutes.onboardingWeight;
       
       // If the user is not logged in and trying to access a protected page
       if (!isLoggedIn && !isAuthRoute) {
+        print('Redirecting to login (not logged in)');
         return TontonRoutes.login;
       }
 
       // If onboarding is incomplete, force onboarding flow
       if (isLoggedIn && !onboardingCompleted && !isOnboardingRoute) {
-        return TontonRoutes.onboardingIntro;
+        print('Redirecting to onboarding basic info (onboarding incomplete)');
+        return TontonRoutes.onboardingBasicInfo;
       }
 
       // Prevent accessing onboarding again once completed
       if (isLoggedIn && onboardingCompleted && isOnboardingRoute) {
+        print('Redirecting to home (onboarding already completed)');
         return TontonRoutes.home;
       }
 
       // If the user is logged in and trying to access an auth page
       if (isLoggedIn && isAuthRoute) {
-        return onboardingCompleted ? TontonRoutes.home : TontonRoutes.onboardingIntro;
+        final redirectTo = onboardingCompleted ? TontonRoutes.home : TontonRoutes.onboardingBasicInfo;
+        print('Redirecting from auth to: $redirectTo');
+        return redirectTo;
       }
 
       // No redirect needed
+      print('No redirect needed');
       return null;
     },
     routes: [
@@ -104,6 +126,16 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: 'signup',
         builder: (context, state) => const SignupScreen(),
       ),
+      GoRoute(
+        path: TontonRoutes.onboardingBasicInfo,
+        name: 'onboardingBasicInfo',
+        builder: (context, state) => const BasicInfoScreen(),
+      ),
+      // GoRoute(
+      //   path: TontonRoutes.onboardingHealthKit,
+      //   name: 'onboardingHealthKit',
+      //   builder: (context, state) => const HealthKitScreen(),
+      // ),
       GoRoute(
         path: TontonRoutes.onboardingIntro,
         name: 'onboardingIntro',
@@ -147,10 +179,30 @@ final routerProvider = Provider<GoRouter>((ref) {
             name: 'savingsTrend',
             builder: (context, state) => const SavingsTrendScreen(),
           ),
+          // GoRoute(
+          //   path: TontonRoutes.tontonCoach,
+          //   name: 'tontonCoach',
+          //   builder: (context, state) => const TontonCoachScreen(),
+          // ), // DEPRECATED: Using modal instead
           GoRoute(
-            path: TontonRoutes.tontonCoach,
-            name: 'tontonCoach',
-            builder: (context, state) => const TontonCoachScreen(),
+            path: TontonRoutes.progressAchievements,
+            name: 'progressAchievements',
+            builder: (context, state) => const ProgressAchievementsScreen(),
+          ),
+          GoRoute(
+            path: TontonRoutes.progress,
+            name: 'progress',
+            builder: (context, state) => const ProgressAchievementsScreen(),
+          ),
+          GoRoute(
+            path: TontonRoutes.settings,
+            name: 'settings',
+            builder: (context, state) => const SettingsScreen(),
+          ),
+          GoRoute(
+            path: TontonRoutes.profile,
+            name: 'profile',
+            builder: (context, state) => const ProfileScreen(),
           ),
         ],
       ),
@@ -175,28 +227,23 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: 'useSavings',
         builder: (context, state) => const UseSavingsScreen(),
       ),
+      
+      // Daily meals detail
+      GoRoute(
+        path: TontonRoutes.dailyMealsDetail,
+        name: 'dailyMealsDetail',
+        builder: (context, state) {
+          final Map<String, dynamic>? extra = state.extra as Map<String, dynamic>?;
+          final date = extra?['date'] as DateTime? ?? DateTime.now();
+          final savingsRecord = extra?['savingsRecord'] as CalorieSavingsRecord?;
+          return DailyMealsDetailScreen(
+            date: date,
+            savingsRecord: savingsRecord,
+          );
+        },
+      ),
 
-      GoRoute(
-        path: TontonRoutes.profile,
-        name: 'profile',
-        builder: (context, state) => const ProfileScreen(),
-      ),
-      GoRoute(
-        path: TontonRoutes.settings,
-        name: 'settings',
-        builder: (context, state) => const SettingsScreen(),
-      ),
 
-      GoRoute(
-        path: TontonRoutes.progressAchievements,
-        name: 'progressAchievements',
-        builder: (context, state) => const ProgressAchievementsScreen(),
-      ),
-      GoRoute(
-        path: TontonRoutes.progress,
-        name: 'progress',
-        builder: (context, state) => const ProgressAchievementsScreen(),
-      ),
 
       // AI meal logging flow
       GoRoute(

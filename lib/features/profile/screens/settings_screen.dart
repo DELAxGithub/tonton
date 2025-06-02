@@ -20,13 +20,13 @@ class SettingsScreen extends ConsumerWidget {
         children: [
           ListTile(
             leading: Icon(TontonIcons.profile),
-            title: const Text('プロフィール編集'),
+            title: const Text('プロフィール'),
             onTap: () => context.push(TontonRoutes.profile),
           ),
           const SizedBox(height: 24),
           TontonButton.secondary(
             label: 'ログアウト',
-            leading: TontonIcons.arrow,
+            icon: TontonIcons.arrow,
             onPressed: () async {
               await authService.signOut();
             },

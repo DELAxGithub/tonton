@@ -45,6 +45,40 @@ class MenuSuggestion {
       recommendationReason: json['recommendationReason'] as String,
     );
   }
+  
+  Map<String, dynamic> toJson() {
+    return {
+      'menuName': menuName,
+      'description': description,
+      'estimatedNutrition': {
+        'calories': estimatedNutrition.calories,
+        'protein': estimatedNutrition.protein,
+        'fat': estimatedNutrition.fat,
+        'carbohydrates': estimatedNutrition.carbohydrates,
+      },
+      'recommendationReason': recommendationReason,
+    };
+  }
+}
+
+class TodaysSummary {
+  final double consumedCalories;
+  final double targetCalories;
+  final Map<String, String> balanceStatus;
+
+  TodaysSummary({
+    required this.consumedCalories,
+    required this.targetCalories,
+    required this.balanceStatus,
+  });
+
+  factory TodaysSummary.fromJson(Map<String, dynamic> json) {
+    return TodaysSummary(
+      consumedCalories: (json['consumedCalories'] as num).toDouble(),
+      targetCalories: (json['targetCalories'] as num).toDouble(),
+      balanceStatus: Map<String, String>.from(json['balanceStatus'] as Map),
+    );
+  }
 }
 
 class AiAdviceResponse {
@@ -53,6 +87,20 @@ class AiAdviceResponse {
   final PfcBreakdown? calculatedTargetPfcForLastMeal; // Nullable
   final MenuSuggestion? menuSuggestion; // A single suggestion
   final bool calorieGoalMetOrExceeded;
+  
+  // 拡張プロパティ（新しいAI機能用）
+  final List<String>? suggestions;
+  final String? warning;
+  final TodaysSummary? todaysSummary;
+  final String? rationaleExplanation;
+  final String? tontonAdvice;
+  final String? specialDayTheme;
+  final bool? isHaruMode;
+  final String? currentSavings;
+  final String? savingsStatus;
+  
+  // adviceMessageのエイリアス
+  String get advice => adviceMessage;
 
   AiAdviceResponse({
     required this.adviceMessage,
@@ -60,6 +108,15 @@ class AiAdviceResponse {
     this.calculatedTargetPfcForLastMeal,
     this.menuSuggestion,
     this.calorieGoalMetOrExceeded = false,
+    this.suggestions,
+    this.warning,
+    this.todaysSummary,
+    this.rationaleExplanation,
+    this.tontonAdvice,
+    this.specialDayTheme,
+    this.isHaruMode,
+    this.currentSavings,
+    this.savingsStatus,
   });
 
   factory AiAdviceResponse.fromJson(Map<String, dynamic> json) {
@@ -87,6 +144,33 @@ class AiAdviceResponse {
       menuSuggestion: json['menuSuggestion'] != null
           ? MenuSuggestion.fromJson(json['menuSuggestion'] as Map<String, dynamic>)
           : null,
+      suggestions: json['suggestions'] != null 
+          ? List<String>.from(json['suggestions'])
+          : null,
+      warning: json['warning'] as String?,
+      todaysSummary: json['todaysSummary'] != null
+          ? TodaysSummary.fromJson(json['todaysSummary'] as Map<String, dynamic>)
+          : null,
+      rationaleExplanation: json['rationaleExplanation'] as String?,
+      tontonAdvice: json['tontonAdvice'] as String?,
+      specialDayTheme: json['specialDayTheme'] as String?,
+      isHaruMode: json['isHaruMode'] as bool?,
+      currentSavings: json['currentSavings'] as String?,
+      savingsStatus: json['savingsStatus'] as String?,
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'advice': adviceMessage,
+      'adviceMessage': adviceMessage, // for compatibility
+      'remainingCaloriesForLastMeal': remainingCaloriesForLastMeal,
+      'calculatedTargetPfcForLastMeal': calculatedTargetPfcForLastMeal?.toJson(),
+      'menuSuggestion': menuSuggestion?.toJson(),
+      'calorieGoalMetOrExceeded': calorieGoalMetOrExceeded,
+      // 新しいプロパティ（拡張版）
+      'suggestions': menuSuggestion != null ? [menuSuggestion!.menuName] : [],
+      'warning': null,
+    };
   }
 }

@@ -76,7 +76,7 @@ class _UseSavingsScreenState extends ConsumerState<UseSavingsScreen> {
           const SizedBox(height: 24),
           TontonButton.primary(
             label: 'この内容でご褒美を設定！',
-            leading: TontonIcons.present,
+            icon: TontonIcons.present,
             onPressed: _amountToUse > 0 ? _confirm : null,
           ),
         ],

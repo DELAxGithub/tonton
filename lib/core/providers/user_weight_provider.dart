@@ -14,7 +14,7 @@ class UserWeightNotifier extends StateNotifier<double?> {
   final UserWeightRepository _repository;
 
   Future<void> _load() async {
-    state = await _repository.getWeight();
+    state = await _repository.getWeight() ?? 60.0;
   }
 
   Future<void> setWeight(double weight) async {

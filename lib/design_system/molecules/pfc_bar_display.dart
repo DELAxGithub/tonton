@@ -4,7 +4,10 @@ import 'package:go_router/go_router.dart';
 import '../atoms/tonton_card_base.dart';
 import '../atoms/tonton_text.dart';
 import '../../theme/tokens.dart';
+import '../../theme/colors.dart';
+import '../../theme/typography.dart';
 import '../../routes/router.dart';
+import '../../features/progress/providers/auto_pfc_provider.dart';
 
 class PfcBarDisplay extends ConsumerWidget {
   final double protein;
@@ -24,9 +27,13 @@ class PfcBarDisplay extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    const proteinTarget = 60.0;
-    const fatTarget = 70.0;
-    const carbTarget = 250.0;
+    // 自動計算されたPFC目標値を取得
+    final autoPfc = ref.watch(autoPfcTargetProvider);
+    
+    // デフォルト値（プロフィール未設定時）
+    final proteinTarget = autoPfc?.protein ?? 60.0;
+    final fatTarget = autoPfc?.fat ?? 70.0;
+    final carbTarget = autoPfc?.carbohydrate ?? 250.0;
 
     final proteinProgress = (protein / proteinTarget).clamp(0.0, 1.0);
     final fatProgress = (fat / fatTarget).clamp(0.0, 1.0);
@@ -44,14 +51,14 @@ class PfcBarDisplay extends ConsumerWidget {
 
     return InkWell(
       onTap: onTap ?? () => context.push(TontonRoutes.aiMealCamera),
-      borderRadius: BorderRadius.circular(Radii.md.x),
+      borderRadius: Radii.mediumBorderRadius,
       child: TontonCardBase(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             TontonText(
               title,
-              style: Theme.of(context).textTheme.titleMedium,
+              style: TontonTypography.headline,
             ),
             const SizedBox(height: Spacing.sm),
             _BarWithLabel(
@@ -59,7 +66,7 @@ class PfcBarDisplay extends ConsumerWidget {
               value: protein,
               target: proteinTarget,
               progress: proteinProgress,
-              color: Theme.of(context).colorScheme.primary,
+              color: TontonColors.proteinColor,
             ),
             const SizedBox(height: Spacing.sm),
             _BarWithLabel(
@@ -67,7 +74,7 @@ class PfcBarDisplay extends ConsumerWidget {
               value: fat,
               target: fatTarget,
               progress: fatProgress,
-              color: Theme.of(context).colorScheme.secondary,
+              color: TontonColors.fatColor,
             ),
             const SizedBox(height: Spacing.sm),
             _BarWithLabel(
@@ -75,7 +82,7 @@ class PfcBarDisplay extends ConsumerWidget {
               value: carbs,
               target: carbTarget,
               progress: carbProgress,
-              color: Theme.of(context).colorScheme.tertiary,
+              color: TontonColors.carbsColor,
             ),
           ],
         ),

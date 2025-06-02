@@ -21,4 +21,22 @@ class DateFormatter {
   static String formatWeekday(DateTime date) {
     return DateFormat.EEEE().format(date);
   }
+
+  /// Formats a date as month/day in Japanese format like '12/31'
+  static String formatMonthDay(DateTime date) {
+    return DateFormat('M/d').format(date);
+  }
+
+  /// Formats a date as Japanese weekday like '月曜日'
+  static String formatWeekdayJa(DateTime date) {
+    final weekdays = ['日', '月', '火', '水', '木', '金', '土'];
+    return '${weekdays[date.weekday % 7]}曜日';
+  }
+  
+  /// Formats a date in long format like '2023年12月31日 (土)'
+  static String formatLongDate(DateTime date) {
+    final weekdays = ['日', '月', '火', '水', '木', '金', '土'];
+    final weekday = weekdays[date.weekday % 7];
+    return DateFormat('yyyy年M月d日').format(date) + ' ($weekday)';
+  }
 }

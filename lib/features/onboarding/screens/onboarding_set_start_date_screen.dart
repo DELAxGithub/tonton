@@ -8,6 +8,7 @@ import '../../../design_system/atoms/tonton_button.dart';
 import '../../../utils/icon_mapper.dart';
 import '../../../routes/router.dart';
 import '../../../providers/providers.dart';
+import '../providers/onboarding_providers.dart';
 
 class OnboardingSetStartDateScreen extends ConsumerStatefulWidget {
   const OnboardingSetStartDateScreen({super.key});
@@ -50,8 +51,14 @@ class _OnboardingSetStartDateScreenState
     final startDate =
         _option == _StartDateOption.specific ? _selectedDate : DateTime.now();
     await ref.read(onboardingStartDateProvider.notifier).setDate(startDate);
+    
+    // オンボーディングを完了させる
+    final service = ref.read(onboardingServiceProvider);
+    await service.completeOnboarding();
+    await ref.read(onboardingCompletedProvider.notifier).complete();
+    
     if (!mounted) return;
-    context.go(TontonRoutes.onboardingWeight);
+    context.go(TontonRoutes.home);
   }
 
   @override
@@ -84,7 +91,7 @@ class _OnboardingSetStartDateScreenState
           TontonButton.primary(
             label: 'これでOK！',
             onPressed: _next,
-            leading: TontonIcons.arrow,
+            icon: TontonIcons.arrow,
           ),
         ],
       ),

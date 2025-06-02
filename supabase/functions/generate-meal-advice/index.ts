@@ -1,85 +1,26 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-// CORS headers
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type"
 };
-// Initialize Supabase client if needed for other operations (e.g., fetching user preferences)
-// const supabaseClient = createClient(
-//   Deno.env.get("SUPABASE_URL") ?? "",
-//   Deno.env.get("SUPABASE_ANON_KEY") ?? "",
-//   { global: { headers: { Authorization: `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")}` } } }
-// );
 serve(async (req)=>{
-  // Handle OPTIONS request for CORS preflight
   if (req.method === "OPTIONS") {
     return new Response("ok", {
       headers: corsHeaders
     });
   }
   try {
-    // 1. Parse incoming request data
-    // Expected data:
-    // - targetCalories: number (e.g., 2000)
-    // - targetPfcRatio: { protein: number, fat: number, carbohydrate: number } (e.g., { protein: 0.3, fat: 0.2, carbohydrate: 0.5 })
-    // - consumedMealsPfc: { protein: number, fat: number, carbohydrate: number, calories: number } (sum of at least 2 meals)
-    // - activeCalories: number (calories burned through activity)
-    // - lang: 'ja' or 'en'
     const { targetCalories, targetPfcRatio, consumedMealsPfc, activeCalories, lang } = await req.json();
-    const language = lang === 'ja' ? 'ja' : 'en';
-    // --- Input Validation (Basic) ---
-    if (!targetCalories || !targetPfcRatio || !consumedMealsPfc || activeCalories === undefined // Can be 0
-    ) {
-      const errorMessage = language === 'ja'
-        ? "必要なパラメータが不足しています。"
-        : "Missing required input parameters.";
-        
-      return new Response(JSON.stringify({
-        error: errorMessage
-      }), {
-        headers: {
-          ...corsHeaders,
-          "Content-Type": "application/json"
-        },
-        status: 400
-      });
+    const OPENAI_API_KEY = Deno.env.get("OPENAI_API_KEY");
+    if (!OPENAI_API_KEY) {
+      throw new Error("OPENAI_API_KEY is not set");
     }
-    if (typeof targetPfcRatio.protein !== 'number' || typeof targetPfcRatio.fat !== 'number' || typeof targetPfcRatio.carbohydrate !== 'number' || Math.abs(targetPfcRatio.protein + targetPfcRatio.fat + targetPfcRatio.carbohydrate - 1.0) > 0.01 // Allow for small floating point inaccuracies
-    ) {
-      const errorMessage = language === 'ja'
-        ? "PFC比率が無効です。値は数値でなければならず、合計が1.0になる必要があります。"
-        : "Invalid PFC ratio. Values must be numbers and sum to 1.0.";
-        
+    const totalDailyCalories = targetCalories + activeCalories;
+    const remainingCalories = totalDailyCalories - consumedMealsPfc.calories;
+    if (remainingCalories <= 0) {
       return new Response(JSON.stringify({
-        error: errorMessage
-      }), {
-        headers: {
-          ...corsHeaders,
-          "Content-Type": "application/json"
-        },
-        status: 400
-      });
-    }
-    // 2. Calculate remaining calories and PFC for the "last meal"
-    //    - Calculate total daily calorie allowance: targetCalories + activeCalories
-    //    - Calculate remaining calories: totalDailyCalorieAllowance - consumedMealsPfc.calories
-    //    - Calculate target PFC grams for the day based on totalDailyCalorieAllowance and targetPfcRatio
-    //        - Protein (g) = (totalDailyCalorieAllowance * targetPfcRatio.protein) / 4
-    //        - Fat (g) = (totalDailyCalorieAllowance * targetPfcRatio.fat) / 9
-    //        - Carbohydrate (g) = (totalDailyCalorieAllowance * targetPfcRatio.carbohydrate) / 4
-    //    - Calculate remaining PFC grams for the "last meal"
-    //        - Remaining Protein (g) = Target Protein (g) - consumedMealsPfc.protein
-    //        - Remaining Fat (g) = Target Fat (g) - consumedMealsPfc.fat
-    //        - Remaining Carbohydrate (g) = Target Carbohydrate (g) - consumedMealsPfc.carbohydrate
-    const totalDailyCalorieAllowance = targetCalories + activeCalories;
-    const remainingCaloriesForLastMeal = totalDailyCalorieAllowance - consumedMealsPfc.calories;
-    // Ensure remaining calories are not negative or too low for a meaningful meal
-    if (remainingCaloriesForLastMeal <= 0) {
-      return new Response(JSON.stringify({
-        advice: language === 'ja'
-          ? "すでに1日のカロリー目標を達成または超過しています！"
-          : "You have already met or exceeded your calorie goal for the day!",
-        remainingCalories: remainingCaloriesForLastMeal,
+        advice: `今日はカロリーオーバー！貯金を${Math.abs(remainingCalories).toFixed(0)}kcal使っちゃいました。明日はまた貯金を増やしましょう！`,
+        remainingCalories: remainingCalories,
         menuSuggestions: []
       }), {
         headers: {
@@ -89,176 +30,142 @@ serve(async (req)=>{
         status: 200
       });
     }
-    const targetProteinGrams = totalDailyCalorieAllowance * targetPfcRatio.protein / 4;
-    const targetFatGrams = totalDailyCalorieAllowance * targetPfcRatio.fat / 9;
-    const targetCarbohydrateGrams = totalDailyCalorieAllowance * targetPfcRatio.carbohydrate / 4;
-    const remainingProteinGrams = targetProteinGrams - consumedMealsPfc.protein;
-    const remainingFatGrams = targetFatGrams - consumedMealsPfc.fat;
-    const remainingCarbohydrateGrams = targetCarbohydrateGrams - consumedMealsPfc.carbohydrate;
-    // 3. Construct prompt for AI (Gemini Pro)
-    //    - Include: remainingCaloriesForLastMeal, remainingProteinGrams, remainingFatGrams, remainingCarbohydrateGrams
-    //    - Ask for: menu name, simple description, estimated calories & PFC (g) for the menu, and recommendation reason.
-    const promptEn = `
-Based on the following nutritional targets for a single meal:
-- Maximum Calories: ${remainingCaloriesForLastMeal.toFixed(0)} kcal
-- Target Protein: ${remainingProteinGrams.toFixed(1)} g
-- Target Fat: ${remainingFatGrams.toFixed(1)} g
-- Target Carbohydrates: ${remainingCarbohydrateGrams.toFixed(1)} g
+    const remainingProtein = totalDailyCalories * targetPfcRatio.protein / 4 - consumedMealsPfc.protein;
+    const remainingFat = totalDailyCalories * targetPfcRatio.fat / 9 - consumedMealsPfc.fat;
+    const remainingCarbs = totalDailyCalories * targetPfcRatio.carbohydrate / 4 - consumedMealsPfc.carbohydrate;
+    const systemPrompt = `あなたは「トントン」アプリのフレンドリーで賢い栄養アドバイザー『トントン先生』です。ユーザーが「カロリー貯金」（一日の総消費カロリー - 総摂取カロリー = 貯金額）を楽しく続けられるよう、実践的で、ポジティブかつ親しみやすい言葉でアドバイスをします。
 
-Please suggest one specific meal menu.
-For the suggested menu, provide:
-1. Menu Name (e.g., "Grilled Chicken Salad with Quinoa")
-2. Simple Description (e.g., "A light and protein-rich salad with grilled chicken breast, mixed greens, quinoa, and a lemon vinaigrette.")
-3. Estimated Nutritional Information for the suggested menu:
-    - Calories (kcal)
-    - Protein (g)
-    - Fat (g)
-    - Carbohydrates (g)
-4. Recommendation Reason (e.g., "This meal is high in protein, helping you meet your protein target, while staying within the calorie limit. The complex carbohydrates from quinoa provide sustained energy.")
+**重要なアドバイス方針：**
+- **カロリー貯金を応援する:** ユーザーの「貯金」状況（黒字/赤字）を意識し、黒字なら称賛し、赤字なら優しく励まし、次への具体的な行動を促します。
+- **PFCバランスとタンパク質目標の達成をサポートする:** 単にカロリーを合わせるだけでなく、設定されたPFCバランスと体重ベースのタンパク質目標（例: 体重x2g）を考慮した食事を提案します。
+- **現実的な提案:**
+    - **すでに目標値を超過している栄養素は、無理に目標値に戻そうとする提案はしないでください。** 例えば「残りの脂質が-10g」の場合、脂質をさらに減らすような極端な提案ではなく、「他の栄養素でバランスを取りましょう」「この栄養素は明日調整しましょう」といった現実的なアドバイスをしてください。
+    - **調理法と栄養価の整合性を守ってください。** 例えば「揚げ物」を提案するなら、脂質はある程度（例: 最低15-20g程度）含むものとしてください。「脂質ゼロのフライドチキン」のような非現実的な提案はしないでください。
+- **「特化デー」提案の導入:** もし、残りのカロリーや栄養目標の制約が厳しすぎて、バランスの取れた現実的な食事が提案できない場合（例えば、脂質や炭水化物が既に大幅に超過しているなど）は、無理にバランスを取ろうとせず、特定の栄養素に特化した「今日のテーマ」を提案しても良いです。例：「今日はタンパク質をしっかり摂る『マッチョデー』にしましょう！」「今日は思い切って『カーボ（炭水化物）チャージデー』にして、明日の活動に備えましょう！」など、ポジティブな提案をしてください。
+- **日本の食生活に寄り添う:** 日本の家庭で作りやすい料理、コンビニや外食でも実現可能な選択肢を優先します。
+- **手軽さ重視:** 調理時間15分以内、または手軽に準備できる市販品・外食メニューを中心に提案します。
+- **食材の入手しやすさ:** 一般的なスーパーで手に入りやすい食材を基本とします。
+- **ポジティブな言葉遣い:** ユーザーを否定したり、厳しく制限したりするのではなく、常に前向きな気持ちになれるような言葉を選びます。
+- **簡潔さ:** アドバイスは短く、分かりやすく、具体的な行動に繋がりやすいようにします。
+- **究極のフォールバックキャラクター『ハルちゃん』:** もし、上記の方針でもどうしても適切で役立つアドバイスが生成できない、あるいは矛盾した指示になりそうな場合は、あなたは『ハルちゃん』という少しおとぼけなキャラクターになりきり、「うーん、今日のメニュー、ちょっと悩ましいなぁ…ハル、いいアイデア浮かばなかったから、代わりに今日のラッキー食材は『豆腐』ってことにしとくね！えへへ♪」のように、ごまかしつつもユーザーを不快にさせない返答をしてください。決してエラーを出したり、黙り込んだりはしないでください。`;
+    // PFCバランスの評価
+    const totalTargetProtein = totalDailyCalories * targetPfcRatio.protein / 4;
+    const totalTargetFat = totalDailyCalories * targetPfcRatio.fat / 9;
+    const totalTargetCarbs = totalDailyCalories * targetPfcRatio.carbohydrate / 4;
+    
+    const proteinStatus = consumedMealsPfc.protein < totalTargetProtein * 0.8 ? '不足' : 
+                         consumedMealsPfc.protein > totalTargetProtein * 1.2 ? '過剰' : '適正';
+    const fatStatus = consumedMealsPfc.fat < totalTargetFat * 0.8 ? '不足' : 
+                     consumedMealsPfc.fat > totalTargetFat * 1.2 ? '過剰' : '適正';
+    const carbStatus = consumedMealsPfc.carbohydrate < totalTargetCarbs * 0.8 ? '不足' : 
+                      consumedMealsPfc.carbohydrate > totalTargetCarbs * 1.2 ? '過剰' : '適正';
+    
+    // カロリー貯金の計算
+    const currentSavings = activeCalories - consumedMealsPfc.calories + targetCalories;
+    const savingsStatus = currentSavings >= 0 ? '黒字' : '赤字';
+    
+    const userPrompt = `今日の状況：
+【カロリー貯金】${currentSavings.toFixed(0)} kcal (${savingsStatus})
+- 摂取: ${consumedMealsPfc.calories.toFixed(0)} kcal
+- 消費: ${(targetCalories + activeCalories).toFixed(0)} kcal (基礎代謝 + 活動)
 
-Format the output as a JSON object with the following keys: "menuName", "description", "estimatedNutrition", "recommendationReason".
-The "estimatedNutrition" should be an object with keys: "calories", "protein", "fat", "carbohydrates".
-Ensure the suggested meal's estimated calories are less than or equal to the 'Maximum Calories' provided above.
-Prioritize meeting the protein target, then carbohydrate, then fat, while staying within the calorie limit.
-If the targets are difficult to meet precisely, aim for a balanced meal that is as close as possible to the targets and within the calorie limit.
-Suggest a common, generally healthy meal. Avoid overly complex or niche suggestions.
-`;
+【PFC摂取状況】
+たんぱく質: ${consumedMealsPfc.protein.toFixed(1)} g / ${totalTargetProtein.toFixed(1)} g (${proteinStatus})
+脂質: ${consumedMealsPfc.fat.toFixed(1)} g / ${totalTargetFat.toFixed(1)} g (${fatStatus})
+炭水化物: ${consumedMealsPfc.carbohydrate.toFixed(1)} g / ${totalTargetCarbs.toFixed(1)} g (${carbStatus})
 
-    const promptJa = `
-以下の栄養目標を参考に、1食分の具体的なメニューを1つ提案してください。
-- 最大カロリー: ${remainingCaloriesForLastMeal.toFixed(0)} kcal
-- タンパク質目標: ${remainingProteinGrams.toFixed(1)} g
-- 脂質目標: ${remainingFatGrams.toFixed(1)} g
-- 炭水化物目標: ${remainingCarbohydrateGrams.toFixed(1)} g
+【残りの栄養目標】
+カロリー: ${remainingCalories.toFixed(0)} kcal
+たんぱく質: ${remainingProtein.toFixed(1)} g ${remainingProtein < 0 ? '(超過)' : ''}
+脂質: ${remainingFat.toFixed(1)} g ${remainingFat < 0 ? '(超過)' : ''}
+炭水化物: ${remainingCarbs.toFixed(1)} g ${remainingCarbs < 0 ? '(超過)' : ''}
 
-次の項目を英語のキー名でJSON形式にまとめてください。
-1. menuName  - メニュー名（日本語で書いてください）
-2. description - 簡単な説明（日本語で書いてください）
-3. estimatedNutrition - 推定栄養情報オブジェクト（calories, protein, fat, carbohydrates）
-4. recommendationReason - おすすめ理由（日本語で書いてください）
-
-推定カロリーは上記の「最大カロリー」を超えないようにしてください。
-タンパク質、炭水化物、脂質の順に目標値に近づけつつ、カロリー内に収めてください。
-正確な数値が難しい場合は、できる限りバランスの取れた一般的で健康的なメニューを提案してください。
-複雑すぎる料理やニッチな食材は避けてください。
-
-JSONの文字列フィールドは必ず日本語で記述してください。英語での回答は不可です。
-`;
-
-    const prompt = language === 'ja' ? promptJa : promptEn;
-    // 4. Call Gemini Pro API
-    //    - This part requires setting up the API call to Google's Gemini Pro.
-    //    - You'll need an API key and the correct endpoint.
-    //    - For now, we'll return a mock response.
-    //    - Ensure GEMINI_API_KEY is set in Supabase Edge Function environment variables.
-    const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
-    if (!GEMINI_API_KEY) {
-      const errorMessage = language === 'ja'
-        ? "GEMINI_API_KEYが設定されていません。管理者にお問い合わせください。"
-        : "GEMINI_API_KEY is not set.";
-        
-      return new Response(JSON.stringify({
-        error: errorMessage
-      }), {
-        headers: {
-          ...corsHeaders,
-          "Content-Type": "application/json"
-        },
-        status: 500
-      });
+上記の状況を踏まえて、1つの具体的な食事メニューをJSON形式で提案してください。
+超過している栄養素がある場合は、無理に目標値に戻そうとせず、現実的な提案をしてください：
+{
+  "todaysSummary": {
+    "consumedCalories": ${consumedMealsPfc.calories.toFixed(0)},
+    "targetCalories": ${totalDailyCalories.toFixed(0)},
+    "balanceStatus": {
+      "protein": "${proteinStatus}",
+      "fat": "${fatStatus}",
+      "carbohydrate": "${carbStatus}"
     }
-    const geminiUrl = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-pro:generateContent?key=${GEMINI_API_KEY}`;
-    const requestBody = {
-      contents: [
-        {
-          role: "user",
-          parts: [
-            {
-              text: prompt
-            }
-          ]
-        }
-      ],
-      generationConfig: {
-        // Ensure JSON output if model supports it directly, or parse carefully
-        // responseMimeType: "application/json", // This might not be supported by gemini-pro directly for text prompts
-        temperature: 0.7,
-        maxOutputTokens: 500
-      },
-      systemInstruction: {
-        parts: [
-          {
-            text: language === 'ja' 
-              ? "あなたは料理の専門家です。必ず日本語で回答してください。JSONフォーマットで返答する際も、すべてのテキスト値は日本語で記述してください。" 
-              : "You are a culinary expert who provides advice in English."
-          }
-        ]
-      }
-    };
-    const geminiResponse = await fetch(geminiUrl, {
+  },
+  "menuSuggestion": {
+    "menuName": "メニュー名",
+    "description": "30文字以内の簡潔な説明",
+    "estimatedNutrition": {
+      "calories": 数値,
+      "protein": 数値,
+      "fat": 数値,
+      "carbohydrates": 数値
+    },
+    "recommendationReason": "このメニューがおすすめの理由（50文字以内）"
+  },
+  "rationaleExplanation": "なぜこのメニューを提案したか（PFCバランスの観点から100文字以内）",
+  "tontonAdvice": "トントン先生からの励ましメッセージ（貯金状況に応じて100文字以内）",
+  "specialDayTheme": "特化デーの場合のテーマ名（例: マッチョデー、カーボチャージデー）※通常はnull",
+  "isHaruMode": false // ハルちゃんモードかどうか
+}`;
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
+        "Authorization": `Bearer ${OPENAI_API_KEY}`,
         "Content-Type": "application/json"
       },
-      body: JSON.stringify(requestBody)
+      body: JSON.stringify({
+        model: "gpt-4o",
+        messages: [
+          {
+            role: "system",
+            content: systemPrompt
+          },
+          {
+            role: "user",
+            content: userPrompt
+          }
+        ],
+        response_format: {
+          type: "json_object"
+        },
+        temperature: 0.7,
+        max_tokens: 300
+      })
     });
-    if (!geminiResponse.ok) {
-      const errorBody = await geminiResponse.text();
-      console.error("Gemini API Error:", errorBody);
-      const errorMessage = language === 'ja'
-        ? "Gemini APIからの応答の取得に失敗しました。"
-        : "Failed to get a response from Gemini API.";
-        
-      return new Response(JSON.stringify({
-        error: errorMessage,
-        details: errorBody
-      }), {
-        headers: {
-          ...corsHeaders,
-          "Content-Type": "application/json"
-        },
-        status: geminiResponse.status
-      });
+    if (!response.ok) {
+      const error = await response.text();
+      throw new Error(`OpenAI API error: ${response.status} - ${error}`);
     }
-    const geminiResult = await geminiResponse.json();
-    // Extract the text content and parse it as JSON
-    // Gemini's response structure can be nested.
-    // Example path: result.candidates[0].content.parts[0].text
-    let mealSuggestionJson;
-    try {
-      const rawJsonText = geminiResult.candidates[0].content.parts[0].text.replace(/```json\n?|\n?```/g, '').trim();
-      mealSuggestionJson = JSON.parse(rawJsonText);
-    } catch (parseError) {
-      console.error("Failed to parse Gemini response:", parseError);
-      console.error("Raw Gemini response text:", geminiResult.candidates[0].content.parts[0].text);
-      const errorMessage = language === 'ja'
-        ? "AIからの食事提案の解析に失敗しました。"
-        : "Failed to parse meal suggestion from AI.";
-        
-      return new Response(JSON.stringify({
-        error: errorMessage,
-        details: parseError.message,
-        rawResponse: geminiResult.candidates[0].content.parts[0].text
-      }), {
-        headers: {
-          ...corsHeaders,
-          "Content-Type": "application/json"
-        },
-        status: 500
-      });
+    const result = await response.json();
+    const aiResponse = JSON.parse(result.choices[0].message.content);
+    
+    // 動的なアドバイスメッセージを生成
+    let adviceMessage = "あと1食、こんなメニューはいかがですか？";
+    if (proteinStatus === '不足') {
+      adviceMessage = "タンパク質が不足気味です。高タンパクなメニューをご提案します！";
+    } else if (fatStatus === '過剰') {
+      adviceMessage = "脂質が多めになっています。さっぱりしたメニューはいかがですか？";
+    } else if (carbStatus === '不足') {
+      adviceMessage = "炭水化物が不足しています。エネルギー補給できるメニューをどうぞ！";
     }
-    // 5. Format and return the response
+    
     return new Response(JSON.stringify({
-      advice: language === 'ja'
-        ? 'こちらが次の食事の提案です:'
-        : "Here's a suggestion for your next meal:",
-      remainingCaloriesForLastMeal: remainingCaloriesForLastMeal.toFixed(0),
+      advice: adviceMessage,
+      remainingCaloriesForLastMeal: remainingCalories.toFixed(0),
       calculatedTargetPfcForLastMeal: {
-        protein: remainingProteinGrams.toFixed(1),
-        fat: remainingFatGrams.toFixed(1),
-        carbohydrate: remainingCarbohydrateGrams.toFixed(1)
+        protein: remainingProtein.toFixed(1),
+        fat: remainingFat.toFixed(1),
+        carbohydrate: remainingCarbs.toFixed(1)
       },
-      menuSuggestion: mealSuggestionJson
+      todaysSummary: aiResponse.todaysSummary,
+      menuSuggestion: aiResponse.menuSuggestion,
+      rationaleExplanation: aiResponse.rationaleExplanation,
+      tontonAdvice: aiResponse.tontonAdvice,
+      specialDayTheme: aiResponse.specialDayTheme,
+      isHaruMode: aiResponse.isHaruMode,
+      currentSavings: currentSavings.toFixed(0),
+      savingsStatus: savingsStatus
     }), {
       headers: {
         ...corsHeaders,
@@ -267,26 +174,9 @@ JSONの文字列フィールドは必ず日本語で記述してください。�
       status: 200
     });
   } catch (error) {
-    console.error("Error in Edge Function:", error);
-    
-    // Since we're in the catch block, language might not be defined
-    // Try to extract it from the request if possible, otherwise default to Japanese
-    let lang = 'ja';
-    try {
-      if (req.headers.get('Accept-Language')?.startsWith('en')) {
-        lang = 'en';
-      }
-    } catch (e) {
-      // Ignore error and use default language
-    }
-    
-    const errorMessage = lang === 'en' 
-      ? "Error in Edge Function."
-      : "エッジ関数でエラーが発生しました。";
-      
+    console.error("Error:", error);
     return new Response(JSON.stringify({
-      error: errorMessage,
-      details: error.message
+      error: error.message
     }), {
       headers: {
         ...corsHeaders,

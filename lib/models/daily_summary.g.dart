@@ -2,6 +2,10 @@
 
 part of 'daily_summary.dart';
 
+// **************************************************************************
+// TypeAdapterGenerator
+// **************************************************************************
+
 class DailySummaryAdapter extends TypeAdapter<DailySummary> {
   @override
   final int typeId = 3;
@@ -47,4 +51,3 @@ class DailySummaryAdapter extends TypeAdapter<DailySummary> {
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }
-

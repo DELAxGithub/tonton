@@ -1,6 +1,10 @@
+// DEPRECATED: This screen is no longer used. AI advice is now displayed in a modal.
+// See: lib/widgets/ai_advice_modal.dart
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+@Deprecated('Use showAIAdviceModal() instead')
 class TontonCoachScreen extends StatelessWidget {
   const TontonCoachScreen({super.key});
 

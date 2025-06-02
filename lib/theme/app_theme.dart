@@ -1,329 +1,295 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/cupertino.dart';
+import 'colors.dart' as new_colors;
+import 'typography.dart' as new_typography;
+import 'tokens.dart' as new_tokens;
 
-/// TonTon app's color palette
+/// TonTon app's color palette - Legacy support
+/// @deprecated Use colors.dart instead
 class TontonColors {
-  // Primary brand colors
-  static const Color primary = Color(0xFFF7B6B9);  // Pink
-  static const Color secondary = Color(0xFF57CC99); // Green
-  static const Color tertiary = Color(0xFF80ED99); // Light Green
+  // Map to new color system for backward compatibility
+  static const Color primary = new_colors.TontonColors.pigPink;
+  static const Color secondary = new_colors.TontonColors.systemGreen;
+  static const Color tertiary = new_colors.TontonColors.systemMint;
 
   // Accent colors
-  static const Color accent1 = Color(0xFFC7F9CC); // Pale Green
-  static const Color accent2 = Color(0xFF22577A); // Deep Blue
+  static const Color accent1 = Color(0xFFC7F9CC);
+  static const Color accent2 = new_colors.TontonColors.systemIndigo;
 
-  // Neutral colors
-  static const Color neutral100 = Color(0xFFF8F9FA); // Almost White
-  static const Color neutral200 = Color(0xFFE9ECEF);
-  static const Color neutral300 = Color(0xFFDEE2E6);
-  static const Color neutral400 = Color(0xFFCED4DA);
-  static const Color neutral500 = Color(0xFFADB5BD);
-  static const Color neutral600 = Color(0xFF6C757D);
+  // Neutral colors mapped to system grays
+  static const Color neutral100 = new_colors.TontonColors.systemGray6;
+  static const Color neutral200 = new_colors.TontonColors.systemGray5;
+  static const Color neutral300 = new_colors.TontonColors.systemGray4;
+  static const Color neutral400 = new_colors.TontonColors.systemGray3;
+  static const Color neutral500 = new_colors.TontonColors.systemGray2;
+  static const Color neutral600 = new_colors.TontonColors.systemGray;
   static const Color neutral700 = Color(0xFF495057);
   static const Color neutral800 = Color(0xFF343A40);
-  static const Color neutral900 = Color(0xFF212529); // Almost Black
+  static const Color neutral900 = Color(0xFF212529);
 
   // Feedback colors
-  static const Color success = Color(0xFF28A745);
-  static const Color warning = Color(0xFFFFC107);
-  static const Color error = Color(0xFFDC3545);
-  static const Color info = Color(0xFF17A2B8);
+  static const Color success = new_colors.TontonColors.systemGreen;
+  static const Color warning = new_colors.TontonColors.systemOrange;
+  static const Color error = new_colors.TontonColors.systemRed;
+  static const Color info = new_colors.TontonColors.systemBlue;
 
-  // Nutrition colors palette
-  static const Color proteinColor = Color(0xFFD32F2F);    // Colors.red.shade700 equivalent
-  static const Color carbsColor = Color(0xFF1976D2);      // Colors.blue.shade700 equivalent
-  static const Color fatColor = Color(0xFFF57C00);        // Colors.amber.shade700 equivalent
+  // Nutrition colors
+  static const Color proteinColor = new_colors.TontonColors.proteinColor;
+  static const Color carbsColor = new_colors.TontonColors.carbsColor;
+  static const Color fatColor = new_colors.TontonColors.fatColor;
 
   // Semantic colors
-  static const Color textPrimary = Color(0xFF212529);     // darkBrown alternative
-  static const Color textSecondary = Color(0xFF6C757D);   // warmGray alternative
-  static const Color surfaceGrey = Color(0xFFF5F5F5);    // Colors.grey.shade100 equivalent
-  static const Color borderGrey = Color(0xFFE0E0E0);     // Colors.grey.shade300 equivalent
+  static const Color textPrimary = new_colors.TontonColors.label;
+  static const Color textSecondary = new_colors.TontonColors.secondaryLabel;
+  static const Color surfaceGrey = new_colors.TontonColors.systemGray6;
+  static const Color borderGrey = new_colors.TontonColors.systemGray4;
 }
 
-/// The TonTon app's typography
+/// The TonTon app's typography - Legacy support
+/// @deprecated Use typography.dart instead
 class TontonTypography {
-  // Font family names
   static const String primaryFontFamily = 'Noto Sans JP';
   static const String secondaryFontFamily = 'Roboto';
 
-  // Main text styles
-  static const TextStyle displayLarge = TextStyle(
-    fontFamily: primaryFontFamily,
-    fontSize: 32,
-    fontWeight: FontWeight.w700,
-    letterSpacing: -0.5,
-  );
-
-  static const TextStyle displayMedium = TextStyle(
-    fontFamily: primaryFontFamily,
-    fontSize: 28,
-    fontWeight: FontWeight.w700,
-    letterSpacing: -0.5,
-  );
-
-  static const TextStyle displaySmall = TextStyle(
-    fontFamily: primaryFontFamily,
-    fontSize: 24,
-    fontWeight: FontWeight.w700,
-  );
-
-  static const TextStyle headlineLarge = TextStyle(
-    fontFamily: primaryFontFamily,
-    fontSize: 22,
-    fontWeight: FontWeight.w700,
-  );
-
-  static const TextStyle headlineMedium = TextStyle(
-    fontFamily: primaryFontFamily,
-    fontSize: 20,
-    fontWeight: FontWeight.w600,
-  );
-
-  static const TextStyle headlineSmall = TextStyle(
-    fontFamily: primaryFontFamily,
-    fontSize: 18,
-    fontWeight: FontWeight.w600,
-  );
-
-  static const TextStyle titleLarge = TextStyle(
-    fontFamily: primaryFontFamily,
-    fontSize: 18,
-    fontWeight: FontWeight.w600,
-  );
-
-  static const TextStyle titleMedium = TextStyle(
-    fontFamily: primaryFontFamily,
-    fontSize: 16,
-    fontWeight: FontWeight.w600,
-  );
-
-  static const TextStyle titleSmall = TextStyle(
-    fontFamily: primaryFontFamily,
-    fontSize: 14,
-    fontWeight: FontWeight.w600,
-  );
-
-  static const TextStyle bodyLarge = TextStyle(
-    fontFamily: primaryFontFamily,
-    fontSize: 16,
-    fontWeight: FontWeight.w400,
-  );
-
-  static const TextStyle bodyMedium = TextStyle(
-    fontFamily: primaryFontFamily,
-    fontSize: 14,
-    fontWeight: FontWeight.w400,
-  );
-
-  static const TextStyle bodySmall = TextStyle(
-    fontFamily: primaryFontFamily,
-    fontSize: 12,
-    fontWeight: FontWeight.w400,
-  );
-
-  static const TextStyle labelLarge = TextStyle(
-    fontFamily: primaryFontFamily,
-    fontSize: 14,
-    fontWeight: FontWeight.w600,
-  );
-
-  static const TextStyle labelMedium = TextStyle(
-    fontFamily: primaryFontFamily,
-    fontSize: 12,
-    fontWeight: FontWeight.w600,
-  );
-
-  static const TextStyle labelSmall = TextStyle(
-    fontFamily: primaryFontFamily,
-    fontSize: 10,
-    fontWeight: FontWeight.w600,
-    letterSpacing: 0.5,
-  );
+  // Map to new typography system
+  static TextStyle get displayLarge => new_typography.TontonTypography.largeTitle;
+  static TextStyle get displayMedium => new_typography.TontonTypography.title1;
+  static TextStyle get displaySmall => new_typography.TontonTypography.title2;
+  static TextStyle get headlineLarge => new_typography.TontonTypography.title2;
+  static TextStyle get headlineMedium => new_typography.TontonTypography.title3;
+  static TextStyle get headlineSmall => new_typography.TontonTypography.headline;
+  static TextStyle get titleLarge => new_typography.TontonTypography.headline;
+  static TextStyle get titleMedium => new_typography.TontonTypography.subheadline;
+  static TextStyle get titleSmall => new_typography.TontonTypography.footnote;
+  static TextStyle get bodyLarge => new_typography.TontonTypography.body;
+  static TextStyle get bodyMedium => new_typography.TontonTypography.callout;
+  static TextStyle get bodySmall => new_typography.TontonTypography.footnote;
+  static TextStyle get labelLarge => new_typography.TontonTypography.footnote.copyWith(fontWeight: FontWeight.w600);
+  static TextStyle get labelMedium => new_typography.TontonTypography.caption1;
+  static TextStyle get labelSmall => new_typography.TontonTypography.caption2;
 }
 
-/// Visual density for UI components
+/// Visual density for UI components - Legacy support
+/// @deprecated Use tokens.dart instead
 class TontonSpacing {
-  static const double xs = 4.0;
-  static const double sm = 8.0;
-  static const double md = 16.0;
-  static const double lg = 24.0;
-  static const double xl = 32.0;
-  static const double xxl = 48.0;
+  static const double xs = new_tokens.Spacing.xxs;
+  static const double sm = new_tokens.Spacing.xs;
+  static const double md = new_tokens.Spacing.md;
+  static const double lg = new_tokens.Spacing.xl;
+  static const double xl = new_tokens.Spacing.xxl;
+  static const double xxl = new_tokens.Spacing.xxxl;
 }
 
-/// Border radius sizes
+/// Border radius sizes - Legacy support
+/// @deprecated Use tokens.dart instead
 class TontonRadius {
   static const double none = 0.0;
   static const double xs = 2.0;
   static const double sm = 4.0;
-  static const double md = 8.0;
-  static const double lg = 12.0;
+  static const double md = 10.0;
+  static const double lg = 13.0;
   static const double xl = 16.0;
-  static const double xxl = 24.0;
+  static const double xxl = 20.0;
   static const double full = 9999.0;
 }
 
-/// Shadow definitions
+/// Shadow definitions - Legacy support
+/// @deprecated Use tokens.dart instead
 class TontonShadows {
-  static List<BoxShadow> get small => [
-    BoxShadow(
-        color: Colors.black.withAlpha((0.1 * 255).round()),
-      blurRadius: 4,
-      offset: const Offset(0, 1),
-    ),
-  ];
-
-  static List<BoxShadow> get medium => [
-    BoxShadow(
-        color: Colors.black.withAlpha((0.1 * 255).round()),
-      blurRadius: 8,
-      offset: const Offset(0, 4),
-    ),
-  ];
-
-  static List<BoxShadow> get large => [
-    BoxShadow(
-        color: Colors.black.withAlpha((0.1 * 255).round()),
-      blurRadius: 16,
-      offset: const Offset(0, 8),
-    ),
-  ];
+  static List<BoxShadow> get small => new_tokens.Elevation.shadowLevel1;
+  static List<BoxShadow> get medium => new_tokens.Elevation.shadowLevel2;
+  static List<BoxShadow> get large => new_tokens.Elevation.shadowLevel3;
 }
 
-/// TonTon app theme
+/// TonTon app theme using new Apple HIG design system
 class TontonTheme {
   /// Light theme for the app
   static ThemeData get light => ThemeData(
     useMaterial3: true,
     brightness: Brightness.light,
-    colorScheme: ColorScheme.fromSeed(
-      seedColor: TontonColors.primary,
-      brightness: Brightness.light,
-      primary: TontonColors.primary,
-      onPrimary: Colors.white,
-      secondary: TontonColors.secondary,
-      onSecondary: Colors.white,
-      tertiary: TontonColors.tertiary,
-      onTertiary: TontonColors.neutral800,
-      error: TontonColors.error,
-      onError: Colors.white,
-    ),
-    fontFamily: TontonTypography.primaryFontFamily,
-    textTheme: TextTheme(
-      displayLarge: TontonTypography.displayLarge,
-      displayMedium: TontonTypography.displayMedium,
-      displaySmall: TontonTypography.displaySmall,
-      headlineLarge: TontonTypography.headlineLarge,
-      headlineMedium: TontonTypography.headlineMedium,
-      headlineSmall: TontonTypography.headlineSmall,
-      titleLarge: TontonTypography.titleLarge,
-      titleMedium: TontonTypography.titleMedium,
-      titleSmall: TontonTypography.titleSmall,
-      bodyLarge: TontonTypography.bodyLarge,
-      bodyMedium: TontonTypography.bodyMedium,
-      bodySmall: TontonTypography.bodySmall,
-      labelLarge: TontonTypography.labelLarge,
-      labelMedium: TontonTypography.labelMedium,
-      labelSmall: TontonTypography.labelSmall,
-    ),
+    colorScheme: new_colors.TontonColors.lightColorScheme(),
+    textTheme: new_typography.TontonTypography.textTheme(),
     appBarTheme: AppBarTheme(
-      backgroundColor: TontonColors.primary,
-      foregroundColor: Colors.white,
+      backgroundColor: new_colors.TontonColors.systemBackground,
+      foregroundColor: new_colors.TontonColors.label,
       elevation: 0,
-      systemOverlayStyle: SystemUiOverlayStyle.light,
-      centerTitle: false,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          bottom: Radius.circular(TontonRadius.md),
-        ),
+      scrolledUnderElevation: 0,
+      systemOverlayStyle: SystemUiOverlayStyle.dark,
+      centerTitle: true,
+      titleTextStyle: new_typography.TontonTypography.navigationTitle.copyWith(
+        color: new_colors.TontonColors.label,
+      ),
+      iconTheme: const IconThemeData(
+        color: new_colors.TontonColors.label,
       ),
     ),
+    scaffoldBackgroundColor: new_colors.TontonColors.systemGroupedBackground,
     cardTheme: CardThemeData(
-      elevation: 2,
+      elevation: 0,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(TontonRadius.md),
+        borderRadius: new_tokens.Radii.largeBorderRadius,
       ),
+      color: new_colors.TontonColors.secondarySystemGroupedBackground,
       clipBehavior: Clip.antiAlias,
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        backgroundColor: TontonColors.primary,
+        backgroundColor: new_colors.TontonColors.pigPink,
         foregroundColor: Colors.white,
-        elevation: 2,
+        elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(TontonRadius.md),
+          borderRadius: new_tokens.Radii.mediumBorderRadius,
         ),
-        padding: const EdgeInsets.symmetric(
-          horizontal: TontonSpacing.md,
-          vertical: TontonSpacing.sm,
+        padding: EdgeInsets.symmetric(
+          horizontal: new_tokens.Spacing.md,
+          vertical: new_tokens.Spacing.sm,
         ),
+        minimumSize: Size(0, new_tokens.MinSize.button),
+      ),
+    ),
+    filledButtonTheme: FilledButtonThemeData(
+      style: FilledButton.styleFrom(
+        backgroundColor: new_colors.TontonColors.pigPink,
+        foregroundColor: Colors.white,
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: new_tokens.Radii.mediumBorderRadius,
+        ),
+        padding: EdgeInsets.symmetric(
+          horizontal: new_tokens.Spacing.md,
+          vertical: new_tokens.Spacing.sm,
+        ),
+        minimumSize: Size(0, new_tokens.MinSize.button),
+      ),
+    ),
+    textButtonTheme: TextButtonThemeData(
+      style: TextButton.styleFrom(
+        foregroundColor: new_colors.TontonColors.pigPink,
+        padding: EdgeInsets.symmetric(
+          horizontal: new_tokens.Spacing.md,
+          vertical: new_tokens.Spacing.sm,
+        ),
+        minimumSize: Size(0, new_tokens.MinSize.button),
       ),
     ),
     floatingActionButtonTheme: FloatingActionButtonThemeData(
-      backgroundColor: TontonColors.secondary,
+      backgroundColor: new_colors.TontonColors.pigPink,
       foregroundColor: Colors.white,
+      elevation: new_tokens.Elevation.level3,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(TontonRadius.full),
+        borderRadius: new_tokens.Radii.fullBorderRadius,
       ),
     ),
-    tabBarTheme: TabBarThemeData(
-      labelColor: TontonColors.primary,
-      unselectedLabelColor: TontonColors.neutral600,
-      indicatorColor: TontonColors.primary,
-      dividerColor: Colors.transparent,
-    ),
-    bottomNavigationBarTheme: BottomNavigationBarThemeData(
-      backgroundColor: Colors.white,
-      selectedItemColor: TontonColors.primary,
-      unselectedItemColor: TontonColors.neutral600,
+    bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+      backgroundColor: new_colors.TontonColors.secondarySystemBackground,
+      selectedItemColor: new_colors.TontonColors.pigPink,
+      unselectedItemColor: new_colors.TontonColors.systemGray,
       type: BottomNavigationBarType.fixed,
-      elevation: 8,
+      elevation: 0,
+      showSelectedLabels: true,
+      showUnselectedLabels: true,
+    ),
+    navigationBarTheme: NavigationBarThemeData(
+      backgroundColor: new_colors.TontonColors.secondarySystemBackground,
+      indicatorColor: new_colors.TontonColors.pigPink.withValues(alpha: 0.2),
+      labelTextStyle: WidgetStateProperty.all(
+        new_typography.TontonTypography.tabLabel,
+      ),
+      iconTheme: WidgetStateProperty.all(
+        const IconThemeData(size: new_tokens.IconSize.medium),
+      ),
+    ),
+    tabBarTheme: const TabBarThemeData(
+      labelColor: new_colors.TontonColors.pigPink,
+      unselectedLabelColor: new_colors.TontonColors.systemGray,
+      indicatorColor: new_colors.TontonColors.pigPink,
+      dividerColor: Colors.transparent,
     ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      fillColor: TontonColors.neutral100,
+      fillColor: new_colors.TontonColors.tertiarySystemBackground,
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(TontonRadius.md),
-        borderSide: BorderSide(color: TontonColors.neutral400),
+        borderRadius: new_tokens.Radii.mediumBorderRadius,
+        borderSide: const BorderSide(color: new_colors.TontonColors.separator),
       ),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(TontonRadius.md),
-        borderSide: BorderSide(color: TontonColors.neutral400),
+        borderRadius: new_tokens.Radii.mediumBorderRadius,
+        borderSide: const BorderSide(color: new_colors.TontonColors.separator),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(TontonRadius.md),
-        borderSide: BorderSide(color: TontonColors.primary, width: 2),
+        borderRadius: new_tokens.Radii.mediumBorderRadius,
+        borderSide: const BorderSide(color: new_colors.TontonColors.pigPink, width: 2),
       ),
-      contentPadding: const EdgeInsets.symmetric(
-        horizontal: TontonSpacing.md,
-        vertical: TontonSpacing.sm,
+      errorBorder: OutlineInputBorder(
+        borderRadius: new_tokens.Radii.mediumBorderRadius,
+        borderSide: const BorderSide(color: new_colors.TontonColors.systemRed),
+      ),
+      focusedErrorBorder: OutlineInputBorder(
+        borderRadius: new_tokens.Radii.mediumBorderRadius,
+        borderSide: const BorderSide(color: new_colors.TontonColors.systemRed, width: 2),
+      ),
+      contentPadding: EdgeInsets.symmetric(
+        horizontal: new_tokens.Spacing.md,
+        vertical: new_tokens.Spacing.sm,
+      ),
+      hintStyle: new_typography.TontonTypography.body.copyWith(
+        color: new_colors.TontonColors.tertiaryLabel,
       ),
     ),
-    dividerTheme: DividerThemeData(
-      color: TontonColors.neutral300,
-      thickness: 1,
-      space: TontonSpacing.md,
+    dividerTheme: const DividerThemeData(
+      color: new_colors.TontonColors.separator,
+      thickness: 0.5,
+      space: 0,
     ),
     snackBarTheme: SnackBarThemeData(
-      backgroundColor: TontonColors.neutral800,
-      contentTextStyle: TontonTypography.bodyMedium.copyWith(color: Colors.white),
+      backgroundColor: new_colors.TontonColors.systemGray,
+      contentTextStyle: new_typography.TontonTypography.footnote.copyWith(
+        color: Colors.white,
+      ),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(TontonRadius.md),
+        borderRadius: new_tokens.Radii.mediumBorderRadius,
       ),
       behavior: SnackBarBehavior.floating,
     ),
     chipTheme: ChipThemeData(
-      backgroundColor: TontonColors.neutral200,
-        selectedColor: TontonColors.primary.withAlpha((0.2 * 255).round()),
-      labelStyle: TontonTypography.bodySmall,
-      padding: const EdgeInsets.symmetric(
-        horizontal: TontonSpacing.sm,
-        vertical: TontonSpacing.xs,
+      backgroundColor: new_colors.TontonColors.systemGray5,
+      selectedColor: new_colors.TontonColors.pigPink.withValues(alpha: 0.2),
+      labelStyle: new_typography.TontonTypography.footnote,
+      padding: EdgeInsets.symmetric(
+        horizontal: new_tokens.Spacing.sm,
+        vertical: new_tokens.Spacing.xxs,
       ),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(TontonRadius.full),
+        borderRadius: new_tokens.Radii.fullBorderRadius,
       ),
+    ),
+    segmentedButtonTheme: SegmentedButtonThemeData(
+      style: ButtonStyle(
+        backgroundColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return new_colors.TontonColors.pigPink;
+          }
+          return new_colors.TontonColors.systemGray5;
+        }),
+        foregroundColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return Colors.white;
+          }
+          return new_colors.TontonColors.label;
+        }),
+        shape: WidgetStateProperty.all(
+          RoundedRectangleBorder(
+            borderRadius: new_tokens.Radii.mediumBorderRadius,
+          ),
+        ),
+      ),
+    ),
+    cupertinoOverrideTheme: const CupertinoThemeData(
+      brightness: Brightness.light,
+      primaryColor: new_colors.TontonColors.pigPink,
+      primaryContrastingColor: Colors.white,
+      scaffoldBackgroundColor: new_colors.TontonColors.systemGroupedBackground,
     ),
   );
 
@@ -331,133 +297,191 @@ class TontonTheme {
   static ThemeData get dark => ThemeData(
     useMaterial3: true,
     brightness: Brightness.dark,
-    colorScheme: ColorScheme.fromSeed(
-      seedColor: TontonColors.primary,
-      brightness: Brightness.dark,
-      primary: TontonColors.primary,
-      onPrimary: Colors.white,
-      secondary: TontonColors.secondary,
-      onSecondary: Colors.white,
-      tertiary: TontonColors.tertiary,
-      onTertiary: TontonColors.neutral800,
-      error: TontonColors.error,
-      onError: Colors.white,
-    ),
-    fontFamily: TontonTypography.primaryFontFamily,
-    textTheme: TextTheme(
-      displayLarge: TontonTypography.displayLarge,
-      displayMedium: TontonTypography.displayMedium,
-      displaySmall: TontonTypography.displaySmall,
-      headlineLarge: TontonTypography.headlineLarge,
-      headlineMedium: TontonTypography.headlineMedium,
-      headlineSmall: TontonTypography.headlineSmall,
-      titleLarge: TontonTypography.titleLarge,
-      titleMedium: TontonTypography.titleMedium,
-      titleSmall: TontonTypography.titleSmall,
-      bodyLarge: TontonTypography.bodyLarge,
-      bodyMedium: TontonTypography.bodyMedium,
-      bodySmall: TontonTypography.bodySmall,
-      labelLarge: TontonTypography.labelLarge,
-      labelMedium: TontonTypography.labelMedium,
-      labelSmall: TontonTypography.labelSmall,
+    colorScheme: new_colors.TontonColors.darkColorScheme(),
+    textTheme: new_typography.TontonTypography.textTheme().apply(
+      bodyColor: new_colors.TontonColors.labelDark,
+      displayColor: new_colors.TontonColors.labelDark,
     ),
     appBarTheme: AppBarTheme(
-      backgroundColor: TontonColors.neutral900,
-      foregroundColor: Colors.white,
+      backgroundColor: new_colors.TontonColors.systemBackgroundDark,
+      foregroundColor: new_colors.TontonColors.labelDark,
       elevation: 0,
+      scrolledUnderElevation: 0,
       systemOverlayStyle: SystemUiOverlayStyle.light,
-      centerTitle: false,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          bottom: Radius.circular(TontonRadius.md),
-        ),
+      centerTitle: true,
+      titleTextStyle: new_typography.TontonTypography.navigationTitle.copyWith(
+        color: new_colors.TontonColors.labelDark,
+      ),
+      iconTheme: const IconThemeData(
+        color: new_colors.TontonColors.labelDark,
       ),
     ),
+    scaffoldBackgroundColor: new_colors.TontonColors.systemGroupedBackgroundDark,
     cardTheme: CardThemeData(
-      elevation: 2,
+      elevation: 0,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(TontonRadius.md),
+        borderRadius: new_tokens.Radii.largeBorderRadius,
       ),
+      color: new_colors.TontonColors.secondarySystemGroupedBackgroundDark,
       clipBehavior: Clip.antiAlias,
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        backgroundColor: TontonColors.primary,
-        foregroundColor: Colors.white,
-        elevation: 2,
+        backgroundColor: new_colors.TontonColors.pigPink,
+        foregroundColor: Colors.black,
+        elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(TontonRadius.md),
+          borderRadius: new_tokens.Radii.mediumBorderRadius,
         ),
-        padding: const EdgeInsets.symmetric(
-          horizontal: TontonSpacing.md,
-          vertical: TontonSpacing.sm,
+        padding: EdgeInsets.symmetric(
+          horizontal: new_tokens.Spacing.md,
+          vertical: new_tokens.Spacing.sm,
         ),
+        minimumSize: Size(0, new_tokens.MinSize.button),
+      ),
+    ),
+    filledButtonTheme: FilledButtonThemeData(
+      style: FilledButton.styleFrom(
+        backgroundColor: new_colors.TontonColors.pigPink,
+        foregroundColor: Colors.black,
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: new_tokens.Radii.mediumBorderRadius,
+        ),
+        padding: EdgeInsets.symmetric(
+          horizontal: new_tokens.Spacing.md,
+          vertical: new_tokens.Spacing.sm,
+        ),
+        minimumSize: Size(0, new_tokens.MinSize.button),
+      ),
+    ),
+    textButtonTheme: TextButtonThemeData(
+      style: TextButton.styleFrom(
+        foregroundColor: new_colors.TontonColors.pigPink,
+        padding: EdgeInsets.symmetric(
+          horizontal: new_tokens.Spacing.md,
+          vertical: new_tokens.Spacing.sm,
+        ),
+        minimumSize: Size(0, new_tokens.MinSize.button),
       ),
     ),
     floatingActionButtonTheme: FloatingActionButtonThemeData(
-      backgroundColor: TontonColors.secondary,
-      foregroundColor: Colors.white,
+      backgroundColor: new_colors.TontonColors.pigPink,
+      foregroundColor: Colors.black,
+      elevation: new_tokens.Elevation.level3,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(TontonRadius.full),
+        borderRadius: new_tokens.Radii.fullBorderRadius,
       ),
     ),
-    tabBarTheme: TabBarThemeData(
-      labelColor: TontonColors.primary,
-      unselectedLabelColor: TontonColors.neutral400,
-      indicatorColor: TontonColors.primary,
-      dividerColor: Colors.transparent,
-    ),
-    bottomNavigationBarTheme: BottomNavigationBarThemeData(
-      backgroundColor: TontonColors.neutral900,
-      selectedItemColor: TontonColors.primary,
-      unselectedItemColor: TontonColors.neutral400,
+    bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+      backgroundColor: new_colors.TontonColors.secondarySystemBackgroundDark,
+      selectedItemColor: new_colors.TontonColors.pigPink,
+      unselectedItemColor: new_colors.TontonColors.systemGray,
       type: BottomNavigationBarType.fixed,
-      elevation: 8,
+      elevation: 0,
+      showSelectedLabels: true,
+      showUnselectedLabels: true,
+    ),
+    navigationBarTheme: NavigationBarThemeData(
+      backgroundColor: new_colors.TontonColors.secondarySystemBackgroundDark,
+      indicatorColor: new_colors.TontonColors.pigPink.withValues(alpha: 0.3),
+      labelTextStyle: WidgetStateProperty.all(
+        new_typography.TontonTypography.tabLabel,
+      ),
+      iconTheme: WidgetStateProperty.all(
+        const IconThemeData(size: new_tokens.IconSize.medium),
+      ),
+    ),
+    tabBarTheme: const TabBarThemeData(
+      labelColor: new_colors.TontonColors.pigPink,
+      unselectedLabelColor: new_colors.TontonColors.systemGray,
+      indicatorColor: new_colors.TontonColors.pigPink,
+      dividerColor: Colors.transparent,
     ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      fillColor: TontonColors.neutral800,
+      fillColor: new_colors.TontonColors.tertiarySystemBackgroundDark,
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(TontonRadius.md),
-        borderSide: BorderSide(color: TontonColors.neutral600),
+        borderRadius: new_tokens.Radii.mediumBorderRadius,
+        borderSide: const BorderSide(color: new_colors.TontonColors.separatorDark),
       ),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(TontonRadius.md),
-        borderSide: BorderSide(color: TontonColors.neutral600),
+        borderRadius: new_tokens.Radii.mediumBorderRadius,
+        borderSide: const BorderSide(color: new_colors.TontonColors.separatorDark),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(TontonRadius.md),
-        borderSide: BorderSide(color: TontonColors.primary, width: 2),
+        borderRadius: new_tokens.Radii.mediumBorderRadius,
+        borderSide: const BorderSide(color: new_colors.TontonColors.pigPink, width: 2),
       ),
-      contentPadding: const EdgeInsets.symmetric(
-        horizontal: TontonSpacing.md,
-        vertical: TontonSpacing.sm,
+      errorBorder: OutlineInputBorder(
+        borderRadius: new_tokens.Radii.mediumBorderRadius,
+        borderSide: const BorderSide(color: new_colors.TontonColors.systemPink),
+      ),
+      focusedErrorBorder: OutlineInputBorder(
+        borderRadius: new_tokens.Radii.mediumBorderRadius,
+        borderSide: const BorderSide(color: new_colors.TontonColors.systemPink, width: 2),
+      ),
+      contentPadding: EdgeInsets.symmetric(
+        horizontal: new_tokens.Spacing.md,
+        vertical: new_tokens.Spacing.sm,
+      ),
+      hintStyle: new_typography.TontonTypography.body.copyWith(
+        color: new_colors.TontonColors.tertiaryLabelDark,
       ),
     ),
-    dividerTheme: DividerThemeData(
-      color: TontonColors.neutral700,
-      thickness: 1,
-      space: TontonSpacing.md,
+    dividerTheme: const DividerThemeData(
+      color: new_colors.TontonColors.separatorDark,
+      thickness: 0.5,
+      space: 0,
     ),
     snackBarTheme: SnackBarThemeData(
-      backgroundColor: TontonColors.neutral800,
-      contentTextStyle: TontonTypography.bodyMedium.copyWith(color: Colors.white),
+      backgroundColor: new_colors.TontonColors.systemGray,
+      contentTextStyle: new_typography.TontonTypography.footnote.copyWith(
+        color: Colors.white,
+      ),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(TontonRadius.md),
+        borderRadius: new_tokens.Radii.mediumBorderRadius,
       ),
       behavior: SnackBarBehavior.floating,
     ),
     chipTheme: ChipThemeData(
-      backgroundColor: TontonColors.neutral700,
-        selectedColor: TontonColors.primary.withAlpha((0.3 * 255).round()),
-      labelStyle: TontonTypography.bodySmall,
-      padding: const EdgeInsets.symmetric(
-        horizontal: TontonSpacing.sm,
-        vertical: TontonSpacing.xs,
+      backgroundColor: new_colors.TontonColors.systemGray.withValues(alpha: 0.24),
+      selectedColor: new_colors.TontonColors.pigPink.withValues(alpha: 0.3),
+      labelStyle: new_typography.TontonTypography.footnote,
+      padding: EdgeInsets.symmetric(
+        horizontal: new_tokens.Spacing.sm,
+        vertical: new_tokens.Spacing.xxs,
       ),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(TontonRadius.full),
+        borderRadius: new_tokens.Radii.fullBorderRadius,
       ),
+    ),
+    segmentedButtonTheme: SegmentedButtonThemeData(
+      style: ButtonStyle(
+        backgroundColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return new_colors.TontonColors.pigPink;
+          }
+          return new_colors.TontonColors.systemGray.withValues(alpha: 0.24);
+        }),
+        foregroundColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return Colors.black;
+          }
+          return new_colors.TontonColors.labelDark;
+        }),
+        shape: WidgetStateProperty.all(
+          RoundedRectangleBorder(
+            borderRadius: new_tokens.Radii.mediumBorderRadius,
+          ),
+        ),
+      ),
+    ),
+    cupertinoOverrideTheme: const CupertinoThemeData(
+      brightness: Brightness.dark,
+      primaryColor: new_colors.TontonColors.pigPink,
+      primaryContrastingColor: Colors.black,
+      scaffoldBackgroundColor: new_colors.TontonColors.systemGroupedBackgroundDark,
     ),
   );
 }

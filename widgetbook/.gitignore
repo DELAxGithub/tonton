@@ -1,0 +1,11 @@
+# Generated files
+*.g.dart
+*.freezed.dart
+
+# Build output
+build/
+.dart_tool/
+
+# Platform specific
+.DS_Store
+*.iml

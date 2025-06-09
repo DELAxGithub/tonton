@@ -50,6 +50,8 @@ dev_dependencies:
   mockito: ^5.4.4        # Added for mocking in tests
   integration_test:      # Added for integration testing
     sdk: flutter
+  widgetbook: ^3.9.0     # Component catalog
+  widgetbook_annotation: ^3.2.0  # Annotations for widgetbook
 
 flutter:
   uses-material-design: true

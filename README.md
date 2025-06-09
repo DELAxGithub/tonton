@@ -34,15 +34,17 @@ A few resources to get you started if this is your first Flutter project:
 
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.\nSee [docs/ICON_FONT.md](docs/ICON_FONT.md) for instructions on generating the custom icon font.
+samples, guidance on mobile development, and a full API reference.
 
-### UI Catalog (Dashbook)
+See [docs/ICON_FONT.md](docs/ICON_FONT.md) for instructions on generating the custom icon font.
+
+### UI Component Catalog (Widgetbook)
 
 ```bash
-flutter run -d chrome lib/dashbook.dart
+flutter run -t widgetbook/main.dart -d chrome
 ```
 
-ブラウザが自動起動し、Theme / Icons / Atoms を確認できます。
+Browse all UI components, test different states, and preview themes. See [Widgetbook Guide](docs/design_system/widgetbook_guide.md) for details.
 
 ### Environment Variables
 
@@ -72,4 +74,43 @@ The following milestones summarize the main features implemented so far:
 - Progress and achievements screen to track user goals.
 
 These features establish the core architecture and primary screens of the TonTon application, providing a solid foundation for further development.
+
+## Build & Deployment
+
+### iOS Deployment with Fastlane
+
+Automated iOS builds and TestFlight deployment:
+
+```bash
+cd ios
+bundle exec fastlane beta
+```
+
+See [Fastlane Setup Guide](docs/deployment/fastlane_setup.md) for configuration details.
+
+### Component Documentation
+
+View the live component catalog at: [Coming Soon - GitHub Pages]
+
+Or run locally:
+```bash
+flutter run -t widgetbook/main.dart -d chrome
+```
+
+## Documentation
+
+### Development
+- [Environment Setup](docs/env_setup_guide.md)
+- [Engineering Handover](docs/handover/v1.0.0_engineering_handover.md)
+
+### Design System
+- [Widgetbook Component Catalog](https://YOUR_ORG.github.io/codex2-master-widgetbook/) *(Live URL coming soon)*
+- [Widgetbook Guide](docs/design_system/widgetbook_guide.md)
+- [Widgetbook for Designers](docs/design/widgetbook_for_designers.md)
+- [Illustrator Brief](docs/release_notes/v1.0.0_illustrator_brief.md)
+
+### Deployment
+- [Fastlane Setup](docs/deployment/fastlane_setup.md)
+- [Fastlane Troubleshooting](docs/deployment/fastlane_troubleshooting.md)
+- [Screenshot Guidelines](docs/deployment/screenshot_guidelines.md)
 

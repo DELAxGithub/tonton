@@ -1,0 +1,182 @@
+# Fastfile for TonTon iOS app
+
+default_platform(:ios)
+
+platform :ios do
+  desc "Build and upload to TestFlight"
+  lane :beta do
+    # Ensure we're on a clean git status
+    ensure_git_status_clean
+    
+    # Increment build number
+    increment_build_number(xcodeproj: "Runner.xcodeproj")
+    
+    # Get the current version and build number
+    version = get_version_number(xcodeproj: "Runner.xcodeproj")
+    build = get_build_number(xcodeproj: "Runner.xcodeproj")
+    
+    # Sync certificates and profiles
+    match(
+      type: "appstore",
+      readonly: true
+    )
+    
+    # Build the app
+    build_app(
+      workspace: "Runner.xcworkspace",
+      scheme: "Runner",
+      export_method: "app-store",
+      export_options: {
+        uploadBitcode: false,
+        uploadSymbols: true,
+        compileBitcode: false
+      }
+    )
+    
+    # Upload to TestFlight
+    upload_to_testflight(
+      skip_waiting_for_build_processing: true,
+      changelog: "Build #{version} (#{build})"
+    )
+    
+    # Commit the version bump
+    commit_version_bump(
+      message: "chore: Bump version to #{version} (#{build}) [skip ci]",
+      xcodeproj: "Runner.xcodeproj"
+    )
+    
+    # Add a git tag
+    add_git_tag(
+      tag: "v#{version}-build-#{build}"
+    )
+    
+    # Push to remote
+    push_to_git_remote
+    
+    # Send notification
+    slack(
+      message: "Successfully uploaded TonTon #{version} (#{build}) to TestFlight! 🚀",
+      success: true
+    ) if ENV["SLACK_URL"]
+  end
+
+  desc "Create screenshots"
+  lane :screenshots do
+    # Clear previous screenshots
+    clear_derived_data
+    
+    # Build app for UI testing
+    build_app_for_testing(
+      workspace: "Runner.xcworkspace",
+      scheme: "Runner",
+      configuration: "Debug",
+      sdk: "iphonesimulator",
+      derived_data_path: "./DerivedData"
+    )
+    
+    # Capture screenshots using Snapfile configuration
+    capture_screenshots(
+      workspace: "Runner.xcworkspace",
+      scheme: "Runner",
+      clear_previous_screenshots: true,
+      test_without_building: true,
+      derived_data_path: "./DerivedData"
+    )
+    
+    # Load overlay configuration
+    overlay_config = JSON.parse(File.read("../fastlane/screenshot_overlays.json"), symbolize_names: true)
+    
+    # Add localized text overlays to screenshots
+    add_text_overlay(
+      screenshots_path: "./fastlane/screenshots",
+      output_path: "./fastlane/screenshots/overlayed",
+      overlays: overlay_config,
+      watermark: overlay_config[:watermark]
+    )
+    
+    # Frame screenshots with device frames and marketing text
+    frameit(
+      path: "./fastlane/screenshots/overlayed",
+      output_path: "./fastlane/screenshots/framed"
+    )
+  end
+
+  desc "Create localized App Store screenshots"
+  lane :create_app_store_screenshots do
+    # First create screenshots
+    screenshots
+    
+    # Then upload to App Store Connect
+    deliver(
+      skip_binary_upload: true,
+      skip_metadata: true,
+      skip_app_version_update: true,
+      screenshots_path: "./fastlane/screenshots/framed",
+      overwrite_screenshots: true
+    )
+  end
+
+  desc "Build, screenshot, and deploy to TestFlight"
+  lane :beta_with_screenshots do
+    # Create fresh screenshots
+    screenshots
+    
+    # Then do normal beta deployment
+    beta
+  end
+
+  desc "Run tests"
+  lane :test do
+    run_tests(
+      workspace: "Runner.xcworkspace",
+      scheme: "Runner",
+      devices: ["iPhone 14"],
+      reinstall_app: true,
+      app_identifier: "com.example.tonton"
+    )
+  end
+
+  desc "Download certificates and profiles"
+  lane :certificates do
+    match(
+      type: "development",
+      readonly: true
+    )
+    match(
+      type: "appstore", 
+      readonly: true
+    )
+  end
+
+  desc "Create new certificates and profiles"
+  lane :create_certificates do
+    match(
+      type: "development",
+      readonly: false
+    )
+    match(
+      type: "appstore",
+      readonly: false
+    )
+  end
+
+  desc "Increment version number"
+  lane :bump_version do |options|
+    if options[:type]
+      increment_version_number(
+        bump_type: options[:type],
+        xcodeproj: "Runner.xcodeproj"
+      )
+    else
+      increment_version_number(xcodeproj: "Runner.xcodeproj")
+    end
+  end
+
+  # Error handling
+  error do |lane, exception|
+    slack(
+      message: "Error in lane #{lane}: #{exception.message}",
+      success: false
+    ) if ENV["SLACK_URL"]
+  end
+end

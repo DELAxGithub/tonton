@@ -1,0 +1,58 @@
+# Snapfile for TonTon screenshots
+
+# A list of devices you want to take the screenshots from
+devices([
+  "iPhone 8",
+  "iPhone 14",
+  "iPhone 14 Pro",
+  "iPhone 14 Pro Max",
+  "iPad Pro (12.9-inch) (6th generation)"
+])
+
+# Languages to capture
+languages([
+  "ja",      # Japanese
+  "en-US"    # English
+])
+
+# The name of the scheme which contains the UI Tests
+scheme("Runner")
+
+# Where should the resulting screenshots be stored?
+output_directory("./fastlane/screenshots")
+
+# Clear previous screenshots before creating new ones
+clear_previous_screenshots(true)
+
+# Stop after first error
+stop_after_first_error(false)
+
+# Don't open HTML summary after running
+skip_open_summary(true)
+
+# Number of retries
+number_of_retries(1)
+
+# Concurrent simulators (set to 1 for stability)
+concurrent_simulators(1)
+
+# Disable slide to type
+disable_slide_to_type(true)
+
+# Override status bar
+override_status_bar(true)
+
+# Add custom launch arguments
+launch_arguments([
+  "-UITest",
+  "-DisableAnimations"
+])
+
+# Test without building (faster for iterative development)
+test_without_building(false)
+
+# Configuration name to use
+configuration("Debug")
+
+# Reinstall app before running tests
+reinstall_app(true)

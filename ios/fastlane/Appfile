@@ -1,0 +1,20 @@
+# Appfile for TonTon iOS app
+
+# The bundle identifier of your app
+app_identifier("com.example.tonton")
+
+# Your Apple Developer Portal username
+apple_id(ENV["APPLE_ID"] || "your-apple-id@example.com")
+
+# Your App Store Connect Team ID
+itc_team_id(ENV["ITC_TEAM_ID"])
+
+# Your Developer Portal Team ID
+team_id(ENV["TEAM_ID"])
+
+# You can use environment variables for sensitive data
+# Example:
+# apple_id(ENV["FASTLANE_APPLE_ID"])
+
+# For more information about the Appfile, see:
+#     https://docs.fastlane.tools/advanced/#appfile

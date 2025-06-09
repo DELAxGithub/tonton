@@ -31,3 +31,32 @@ macos/flutter/ephemeral/
 
 # Local secrets
 .env
+
+# Fastlane
+ios/fastlane/report.xml
+ios/fastlane/Preview.html
+ios/fastlane/screenshots/**/*.png
+ios/fastlane/test_output
+ios/fastlane/.env
+ios/vendor/bundle/
+ios/.bundle/
+ios/Gemfile.lock
+
+# Fastlane temporary files
+*.dSYM.zip
+*.ipa
+
+# Match temporary files
+ios/fastlane/match_temp/
+
+# Fastlane screenshots
+ios/fastlane/screenshots/**/*.png
+ios/fastlane/screenshots/**/*.jpg
+ios/fastlane/screenshots/**/*.jpeg
+ios/fastlane/screenshots/**/Framefile.json
+ios/fastlane/screenshots/**/screenshots.html
+!ios/fastlane/screenshots/.gitkeep
+
+# UI Test outputs
+ios/DerivedData/
+ios/test_output/

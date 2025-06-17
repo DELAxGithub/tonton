@@ -26,6 +26,7 @@ dependencies:
   image: ^4.1.7        # Image processing (resize/compress)
   mime: ^1.0.4         # Added for MIME type detection
   path: ^1.8.3         # Added for path handling
+  google_generative_ai: ^0.4.6  # Direct Gemini API access
   args: ^2.4.2         # Required for build tools
   yaml: ^3.1.2         # Required for configuration tools
   
@@ -39,9 +40,6 @@ dependencies:
 
   # Added for routing
   go_router: ^13.2.0
-
-  # Added for external links
-  url_launcher: ^6.2.4
 
 dev_dependencies:
   flutter_test:
@@ -61,8 +59,14 @@ flutter:
   generate: true # For localization
   assets:
     - .env
+    - assets/images/
     - lib/l10n/ # For localization
+    - assets/images/ # Assuming you have images here
     - assets/icons/svg/ # For your SVG icons
+    - assets/fonts/ # Generated icon font
+    # If your font files are in assets/fonts/, you don't strictly need 'assets/fonts/' here
+    # AS LONG AS they are declared under the 'fonts:' section below.
+    # However, some people like to declare the top-level folder here too for clarity.
 
   fonts:
     - family: Noto Sans JP

@@ -29,7 +29,7 @@ class PfcBarDisplay extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     // 自動計算されたPFC目標値を取得
     final autoPfc = ref.watch(autoPfcTargetProvider);
-    
+
     // デフォルト値（プロフィール未設定時）
     final proteinTarget = autoPfc?.protein ?? 60.0;
     final fatTarget = autoPfc?.fat ?? 70.0;
@@ -56,10 +56,7 @@ class PfcBarDisplay extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            TontonText(
-              title,
-              style: TontonTypography.headline,
-            ),
+            TontonText(title, style: TontonTypography.headline),
             const SizedBox(height: Spacing.sm),
             _BarWithLabel(
               label: 'P',

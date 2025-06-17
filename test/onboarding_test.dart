@@ -18,7 +18,8 @@ void main() {
   GoRouter createTestRouter(Ref ref) {
     final completed = ref.watch(onboardingCompletedProvider);
     return GoRouter(
-      initialLocation: completed ? TontonRoutes.home : TontonRoutes.onboardingIntro,
+      initialLocation:
+          completed ? TontonRoutes.home : TontonRoutes.onboardingIntro,
       routes: [
         GoRoute(
           path: TontonRoutes.home,
@@ -37,8 +38,9 @@ void main() {
       ProviderScope(
         overrides: [
           onboardingCompletedProvider.overrideWith(
-            (ref) => TestOnboardingCompletionNotifier(false)
-                as OnboardingCompletionNotifier,
+            (ref) =>
+                TestOnboardingCompletionNotifier(false)
+                    as OnboardingCompletionNotifier,
           ),
           routerProvider.overrideWith((ref) => createTestRouter(ref)),
         ],
@@ -55,8 +57,9 @@ void main() {
       ProviderScope(
         overrides: [
           onboardingCompletedProvider.overrideWith(
-            (ref) => TestOnboardingCompletionNotifier(true)
-                as OnboardingCompletionNotifier,
+            (ref) =>
+                TestOnboardingCompletionNotifier(true)
+                    as OnboardingCompletionNotifier,
           ),
           routerProvider.overrideWith((ref) => createTestRouter(ref)),
         ],

@@ -27,10 +27,5 @@
   "aiAdviceError": "Failed to fetch AI advice: {error}",
   "addMeal": "Add Meal",
   "debugPanel": "Debug Panel",
-  "testProvider": "Test Provider",
-  "privacyPolicy": "Privacy Policy",
-  "deleteAccount": "Delete Account",
-  "deleteAccountConfirm": "Are you sure you want to delete your account? This action cannot be undone.",
-  "permissionDeniedHealthKit": "HealthKit access denied. Manual input only available.",
-  "permissionDeniedCamera": "Camera access denied. AI meal analysis not available."
+  "testProvider": "Test Provider"
 }

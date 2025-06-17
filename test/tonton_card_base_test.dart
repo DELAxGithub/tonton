@@ -7,11 +7,7 @@ void main() {
   testWidgets('default elevation', (tester) async {
     await tester.pumpWidget(
       const MaterialApp(
-        home: Scaffold(
-          body: TontonCardBase(
-            child: Text('card'),
-          ),
-        ),
+        home: Scaffold(body: TontonCardBase(child: Text('card'))),
       ),
     );
 

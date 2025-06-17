@@ -7,15 +7,16 @@ import '../../../design_system/templates/standard_page_layout.dart';
 import '../../../routes/router.dart';
 import '../../../providers/providers.dart';
 
-
-class LoginScreen extends ConsumerStatefulWidget { // Changed to ConsumerStatefulWidget
+class LoginScreen extends ConsumerStatefulWidget {
+  // Changed to ConsumerStatefulWidget
   const LoginScreen({super.key});
 
   @override
   ConsumerState<LoginScreen> createState() => _LoginScreenState(); // Changed to ConsumerState
 }
 
-class _LoginScreenState extends ConsumerState<LoginScreen> { // Changed to ConsumerState
+class _LoginScreenState extends ConsumerState<LoginScreen> {
+  // Changed to ConsumerState
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -40,15 +41,27 @@ class _LoginScreenState extends ConsumerState<LoginScreen> { // Changed to Consu
           email: _emailController.text.trim(),
           password: _passwordController.text.trim(),
         );
-        if (mounted) {
-          // The router will automatically redirect to home based on auth state
-          // This is mostly for UI feedback to the user
-          context.go(TontonRoutes.home);
-        }
+        if (!mounted) return;
+
+        // Immediately complete onboarding after successful login
+        await ref.read(onboardingCompletedProvider.notifier).complete();
+        if (!mounted) return;
+
+        await ref.read(userProfileProvider.notifier).completeOnboarding();
+        if (!mounted) return;
+
+        final service = ref.read(onboardingServiceProvider);
+        await service.completeOnboarding();
+        if (!mounted) return;
+        context.go(TontonRoutes.home);
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Login failed: ${e.toString().replaceFirst("Exception: ", "")}')),
+            SnackBar(
+              content: Text(
+                'Login failed: ${e.toString().replaceFirst("Exception: ", "")}',
+              ),
+            ),
           );
         }
       } finally {
@@ -64,9 +77,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> { // Changed to Consu
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Login'),
-      ),
+      appBar: AppBar(title: const Text('Login')),
       body: StandardPageLayout(
         children: [
           Form(
@@ -117,10 +128,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> { // Changed to Consu
                 const SizedBox(height: 24.0),
                 _isLoading
                     ? const Center(child: CircularProgressIndicator())
-                    : TontonButton.primary(
-                        label: 'Login',
-                        onPressed: _login,
-                      ),
+                    : TontonButton.primary(label: 'Login', onPressed: _login),
                 const SizedBox(height: 16.0),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,

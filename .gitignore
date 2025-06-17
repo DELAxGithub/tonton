@@ -29,13 +29,9 @@ macos/flutter/ephemeral/
 *.sln.docstates
 *.DS_Store
 
-# Local secrets and environment files
+# Local secrets
 .env
-.env.*
 .env.production
-.env.development
-.env.local
-
 # Fastlane
 ios/fastlane/report.xml
 ios/fastlane/Preview.html

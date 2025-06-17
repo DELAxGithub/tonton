@@ -40,12 +40,13 @@ class MenuSuggestion {
     return MenuSuggestion(
       menuName: json['menuName'] as String,
       description: json['description'] as String,
-      estimatedNutrition:
-          EstimatedNutrition.fromJson(json['estimatedNutrition'] as Map<String, dynamic>),
+      estimatedNutrition: EstimatedNutrition.fromJson(
+        json['estimatedNutrition'] as Map<String, dynamic>,
+      ),
       recommendationReason: json['recommendationReason'] as String,
     );
   }
-  
+
   Map<String, dynamic> toJson() {
     return {
       'menuName': menuName,
@@ -87,7 +88,7 @@ class AiAdviceResponse {
   final PfcBreakdown? calculatedTargetPfcForLastMeal; // Nullable
   final MenuSuggestion? menuSuggestion; // A single suggestion
   final bool calorieGoalMetOrExceeded;
-  
+
   // 拡張プロパティ（新しいAI機能用）
   final List<String>? suggestions;
   final String? warning;
@@ -98,7 +99,7 @@ class AiAdviceResponse {
   final bool? isHaruMode;
   final String? currentSavings;
   final String? savingsStatus;
-  
+
   // adviceMessageのエイリアス
   String get advice => adviceMessage;
 
@@ -121,36 +122,51 @@ class AiAdviceResponse {
 
   factory AiAdviceResponse.fromJson(Map<String, dynamic> json) {
     // Handle the case where calorie goal is met
-    if (json['menuSuggestions'] != null && (json['menuSuggestions'] as List).isEmpty) {
+    if (json['menuSuggestions'] != null &&
+        (json['menuSuggestions'] as List).isEmpty) {
       return AiAdviceResponse(
         adviceMessage: json['advice'] as String,
-        remainingCaloriesForLastMeal: (json['remainingCalories'] as num?)?.toDouble(),
+        remainingCaloriesForLastMeal:
+            (json['remainingCalories'] as num?)?.toDouble(),
         calorieGoalMetOrExceeded: true,
       );
     }
-    
+
     // Handle the regular advice case
     return AiAdviceResponse(
       adviceMessage: json['advice'] as String,
-      remainingCaloriesForLastMeal: double.tryParse(json['remainingCaloriesForLastMeal']?.toString() ?? ''),
-      calculatedTargetPfcForLastMeal: json['calculatedTargetPfcForLastMeal'] != null
-          ? PfcBreakdown.fromJson(
-              // The edge function sends PFC as strings, convert them
-              Map<String, dynamic>.from(json['calculatedTargetPfcForLastMeal'] as Map).map(
-                (key, value) => MapEntry(key, double.tryParse(value.toString()) ?? 0.0),
-              ),
-            )
-          : null,
-      menuSuggestion: json['menuSuggestion'] != null
-          ? MenuSuggestion.fromJson(json['menuSuggestion'] as Map<String, dynamic>)
-          : null,
-      suggestions: json['suggestions'] != null 
-          ? List<String>.from(json['suggestions'])
-          : null,
+      remainingCaloriesForLastMeal: double.tryParse(
+        json['remainingCaloriesForLastMeal']?.toString() ?? '',
+      ),
+      calculatedTargetPfcForLastMeal:
+          json['calculatedTargetPfcForLastMeal'] != null
+              ? PfcBreakdown.fromJson(
+                // The edge function sends PFC as strings, convert them
+                Map<String, dynamic>.from(
+                  json['calculatedTargetPfcForLastMeal'] as Map,
+                ).map(
+                  (key, value) =>
+                      MapEntry(key, double.tryParse(value.toString()) ?? 0.0),
+                ),
+              )
+              : null,
+      menuSuggestion:
+          json['menuSuggestion'] != null
+              ? MenuSuggestion.fromJson(
+                json['menuSuggestion'] as Map<String, dynamic>,
+              )
+              : null,
+      suggestions:
+          json['suggestions'] != null
+              ? List<String>.from(json['suggestions'])
+              : null,
       warning: json['warning'] as String?,
-      todaysSummary: json['todaysSummary'] != null
-          ? TodaysSummary.fromJson(json['todaysSummary'] as Map<String, dynamic>)
-          : null,
+      todaysSummary:
+          json['todaysSummary'] != null
+              ? TodaysSummary.fromJson(
+                json['todaysSummary'] as Map<String, dynamic>,
+              )
+              : null,
       rationaleExplanation: json['rationaleExplanation'] as String?,
       tontonAdvice: json['tontonAdvice'] as String?,
       specialDayTheme: json['specialDayTheme'] as String?,
@@ -165,7 +181,8 @@ class AiAdviceResponse {
       'advice': adviceMessage,
       'adviceMessage': adviceMessage, // for compatibility
       'remainingCaloriesForLastMeal': remainingCaloriesForLastMeal,
-      'calculatedTargetPfcForLastMeal': calculatedTargetPfcForLastMeal?.toJson(),
+      'calculatedTargetPfcForLastMeal':
+          calculatedTargetPfcForLastMeal?.toJson(),
       'menuSuggestion': menuSuggestion?.toJson(),
       'calorieGoalMetOrExceeded': calorieGoalMetOrExceeded,
       // 新しいプロパティ（拡張版）

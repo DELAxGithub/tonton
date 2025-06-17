@@ -6,9 +6,7 @@ void main() {
   testWidgets('primary button disabled', (tester) async {
     await tester.pumpWidget(
       const MaterialApp(
-        home: Scaffold(
-          body: TontonButton.primary(label: 'X', onPressed: null),
-        ),
+        home: Scaffold(body: TontonButton.primary(label: 'X', onPressed: null)),
       ),
     );
     final button = find.byType(ElevatedButton);

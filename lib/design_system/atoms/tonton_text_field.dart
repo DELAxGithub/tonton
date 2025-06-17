@@ -9,91 +9,91 @@ import '../../theme/typography.dart';
 enum TontonTextFieldStyle {
   /// Default bordered style
   bordered,
-  
+
   /// Plain style without borders (for inline editing)
   plain,
-  
+
   /// Rounded style with pill-shaped border
   rounded,
 }
 
 /// Apple HIG-compliant text field component
-/// 
+///
 /// A text input field that follows Apple's design guidelines with proper
 /// styling, interaction feedback, and accessibility.
 class TontonTextField extends StatefulWidget {
   /// Text field controller
   final TextEditingController? controller;
-  
+
   /// Focus node
   final FocusNode? focusNode;
-  
+
   /// Placeholder text
   final String? placeholder;
-  
+
   /// Helper text shown below the field
   final String? helperText;
-  
+
   /// Error text (replaces helper text when set)
   final String? errorText;
-  
+
   /// Leading widget (icon or text)
   final Widget? leading;
-  
+
   /// Trailing widget (icon or button)
   final Widget? trailing;
-  
+
   /// Text field style
   final TontonTextFieldStyle style;
-  
+
   /// Whether the field is enabled
   final bool enabled;
-  
+
   /// Whether to obscure text (for passwords)
   final bool obscureText;
-  
+
   /// Whether to enable autocorrect
   final bool autocorrect;
-  
+
   /// Keyboard type
   final TextInputType? keyboardType;
-  
+
   /// Text input action
   final TextInputAction? textInputAction;
-  
+
   /// Input formatters
   final List<TextInputFormatter>? inputFormatters;
-  
+
   /// Maximum lines
   final int? maxLines;
-  
+
   /// Minimum lines
   final int? minLines;
-  
+
   /// Maximum length
   final int? maxLength;
-  
+
   /// Whether to show character counter
   final bool showCounter;
-  
+
   /// Callback when text changes
   final ValueChanged<String>? onChanged;
-  
+
   /// Callback when editing is complete
   final VoidCallback? onEditingComplete;
-  
+
   /// Callback when field is submitted
   final ValueChanged<String>? onSubmitted;
-  
+
   /// Callback when field is tapped
   final VoidCallback? onTap;
-  
+
   /// Text alignment
   final TextAlign textAlign;
-  
+
   /// Text capitalization
   final TextCapitalization textCapitalization;
-  
+
   /// Whether the field should autofocus
   final bool autofocus;
 
@@ -165,13 +165,13 @@ class _TontonTextFieldState extends State<TontonTextField> {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final hasError = widget.errorText != null;
-    
+
     // Determine colors
     Color borderColor;
     Color backgroundColor;
     Color textColor;
     Color placeholderColor;
-    
+
     if (!widget.enabled) {
       borderColor = TontonColors.separatorColor(context);
       backgroundColor = TontonColors.fillColor(context);
@@ -179,39 +179,40 @@ class _TontonTextFieldState extends State<TontonTextField> {
       placeholderColor = TontonColors.quaternaryLabelColor(context);
     } else if (hasError) {
       borderColor = TontonColors.systemRed;
-      backgroundColor = isDark 
-          ? TontonColors.tertiarySystemBackgroundDark
-          : TontonColors.tertiarySystemBackground;
+      backgroundColor =
+          isDark
+              ? TontonColors.tertiarySystemBackgroundDark
+              : TontonColors.tertiarySystemBackground;
       textColor = TontonColors.labelColor(context);
       placeholderColor = TontonColors.tertiaryLabelColor(context);
     } else if (_isFocused) {
       borderColor = theme.colorScheme.primary;
-      backgroundColor = isDark 
-          ? TontonColors.tertiarySystemBackgroundDark
-          : TontonColors.tertiarySystemBackground;
+      backgroundColor =
+          isDark
+              ? TontonColors.tertiarySystemBackgroundDark
+              : TontonColors.tertiarySystemBackground;
       textColor = TontonColors.labelColor(context);
       placeholderColor = TontonColors.tertiaryLabelColor(context);
     } else {
       borderColor = TontonColors.separatorColor(context);
-      backgroundColor = isDark 
-          ? TontonColors.tertiarySystemBackgroundDark
-          : TontonColors.tertiarySystemBackground;
+      backgroundColor =
+          isDark
+              ? TontonColors.tertiarySystemBackgroundDark
+              : TontonColors.tertiarySystemBackground;
       textColor = TontonColors.labelColor(context);
       placeholderColor = TontonColors.tertiaryLabelColor(context);
     }
-    
+
     // Build input decoration based on style
     InputDecoration? decoration;
     BorderRadius? borderRadius;
-    
+
     switch (widget.style) {
       case TontonTextFieldStyle.bordered:
         borderRadius = Radii.mediumBorderRadius;
         decoration = InputDecoration(
           hintText: widget.placeholder,
-          hintStyle: TontonTypography.body.copyWith(
-            color: placeholderColor,
-          ),
+          hintStyle: TontonTypography.body.copyWith(color: placeholderColor),
           contentPadding: EdgeInsets.symmetric(
             horizontal: widget.leading != null ? 0 : Spacing.md,
             vertical: Spacing.sm,
@@ -247,13 +248,11 @@ class _TontonTextFieldState extends State<TontonTextField> {
           counterText: widget.showCounter ? null : '',
         );
         break;
-        
+
       case TontonTextFieldStyle.plain:
         decoration = InputDecoration(
           hintText: widget.placeholder,
-          hintStyle: TontonTypography.body.copyWith(
-            color: placeholderColor,
-          ),
+          hintStyle: TontonTypography.body.copyWith(color: placeholderColor),
           contentPadding: EdgeInsets.zero,
           border: InputBorder.none,
           enabledBorder: InputBorder.none,
@@ -266,14 +265,12 @@ class _TontonTextFieldState extends State<TontonTextField> {
           counterText: widget.showCounter ? null : '',
         );
         break;
-        
+
       case TontonTextFieldStyle.rounded:
         borderRadius = Radii.fullBorderRadius;
         decoration = InputDecoration(
           hintText: widget.placeholder,
-          hintStyle: TontonTypography.body.copyWith(
-            color: placeholderColor,
-          ),
+          hintStyle: TontonTypography.body.copyWith(color: placeholderColor),
           contentPadding: EdgeInsets.symmetric(
             horizontal: widget.leading != null ? 0 : Spacing.lg,
             vertical: Spacing.sm,
@@ -310,15 +307,13 @@ class _TontonTextFieldState extends State<TontonTextField> {
         );
         break;
     }
-    
+
     // Build text field
     Widget textField = TextField(
       controller: _controller,
       focusNode: _focusNode,
       decoration: decoration,
-      style: TontonTypography.body.copyWith(
-        color: textColor,
-      ),
+      style: TontonTypography.body.copyWith(color: textColor),
       enabled: widget.enabled,
       obscureText: widget.obscureText,
       autocorrect: widget.autocorrect,
@@ -336,7 +331,7 @@ class _TontonTextFieldState extends State<TontonTextField> {
       textCapitalization: widget.textCapitalization,
       autofocus: widget.autofocus,
     );
-    
+
     // Add helper/error text if needed
     if (widget.helperText != null || widget.errorText != null) {
       return Column(
@@ -350,16 +345,17 @@ class _TontonTextFieldState extends State<TontonTextField> {
             child: Text(
               widget.errorText ?? widget.helperText!,
               style: TontonTypography.caption1.copyWith(
-                color: hasError 
-                    ? TontonColors.systemRed 
-                    : TontonColors.secondaryLabelColor(context),
+                color:
+                    hasError
+                        ? TontonColors.systemRed
+                        : TontonColors.secondaryLabelColor(context),
               ),
             ),
           ),
         ],
       );
     }
-    
+
     return textField;
   }
 }
@@ -368,22 +364,22 @@ class _TontonTextFieldState extends State<TontonTextField> {
 class TontonSearchField extends StatelessWidget {
   /// Search controller
   final TextEditingController? controller;
-  
+
   /// Placeholder text
   final String placeholder;
-  
+
   /// Callback when search text changes
   final ValueChanged<String>? onChanged;
-  
+
   /// Callback when search is submitted
   final ValueChanged<String>? onSubmitted;
-  
+
   /// Callback when clear button is pressed
   final VoidCallback? onClear;
-  
+
   /// Whether to show clear button
   final bool showClearButton;
-  
+
   /// Whether the field is enabled
   final bool enabled;
 
@@ -410,20 +406,21 @@ class TontonSearchField extends StatelessWidget {
         size: IconSize.medium,
         color: TontonColors.tertiaryLabelColor(context),
       ),
-      trailing: showClearButton && controller?.text.isNotEmpty == true
-          ? IconButton(
-              icon: Icon(
-                CupertinoIcons.clear_circled_solid,
-                size: IconSize.medium,
-                color: TontonColors.tertiaryLabelColor(context),
-              ),
-              onPressed: () {
-                controller?.clear();
-                onClear?.call();
-                onChanged?.call('');
-              },
-            )
-          : null,
+      trailing:
+          showClearButton && controller?.text.isNotEmpty == true
+              ? IconButton(
+                icon: Icon(
+                  CupertinoIcons.clear_circled_solid,
+                  size: IconSize.medium,
+                  color: TontonColors.tertiaryLabelColor(context),
+                ),
+                onPressed: () {
+                  controller?.clear();
+                  onClear?.call();
+                  onChanged?.call('');
+                },
+              )
+              : null,
       onChanged: onChanged,
       onSubmitted: onSubmitted,
       textInputAction: TextInputAction.search,

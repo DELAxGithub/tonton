@@ -31,10 +31,10 @@ class _State extends ConsumerState<AIMealLoggingStep2Analyzing> {
             .estimateNutritionFromImageFile(widget.imageFile)
             .timeout(const Duration(seconds: 20));
         if (result != null && mounted) {
-          context.go(TontonRoutes.aiMealConfirm, extra: {
-            'image': widget.imageFile.path,
-            'nutrition': result,
-          });
+          context.go(
+            TontonRoutes.aiMealConfirm,
+            extra: {'image': widget.imageFile.path, 'nutrition': result},
+          );
         }
       } on TimeoutException {
         if (mounted) {
@@ -80,22 +80,21 @@ class _State extends ConsumerState<AIMealLoggingStep2Analyzing> {
             ],
           );
         },
-        error: (e, st) => Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text('解析に失敗しました'),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () => context.go(TontonRoutes.aiMealCamera),
-              child: const Text('戻る'),
+        error:
+            (e, st) => Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text('解析に失敗しました'),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () => context.go(TontonRoutes.aiMealCamera),
+                  child: const Text('戻る'),
+                ),
+              ],
             ),
-          ],
-        ),
       );
     }
 
-    return Scaffold(
-      body: Center(child: content),
-    );
+    return Scaffold(body: Center(child: content));
   }
 }

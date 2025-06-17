@@ -94,20 +94,11 @@ final tontonButtonUseCases = WidgetbookComponent(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                TontonButton.small(
-                  label: 'Small Button',
-                  onPressed: () {},
-                ),
+                TontonButton.small(label: 'Small Button', onPressed: () {}),
                 const SizedBox(height: 16),
-                TontonButton(
-                  label: 'Medium Button',
-                  onPressed: () {},
-                ),
+                TontonButton(label: 'Medium Button', onPressed: () {}),
                 const SizedBox(height: 16),
-                TontonButton.large(
-                  label: 'Large Button',
-                  onPressed: () {},
-                ),
+                TontonButton.large(label: 'Large Button', onPressed: () {}),
               ],
             ),
           ),
@@ -124,14 +115,8 @@ final tontonButtonUseCases = WidgetbookComponent(
               mainAxisSize: MainAxisSize.min,
               children: [
                 _buildSection('Primary', [
-                  TontonButton(
-                    label: 'Enabled',
-                    onPressed: () {},
-                  ),
-                  TontonButton(
-                    label: 'Disabled',
-                    onPressed: null,
-                  ),
+                  TontonButton(label: 'Enabled', onPressed: () {}),
+                  TontonButton(label: 'Disabled', onPressed: null),
                   TontonButton(
                     label: 'Loading',
                     onPressed: () {},
@@ -145,14 +130,8 @@ final tontonButtonUseCases = WidgetbookComponent(
                 ]),
                 const SizedBox(height: 24),
                 _buildSection('Secondary', [
-                  TontonButton.secondary(
-                    label: 'Enabled',
-                    onPressed: () {},
-                  ),
-                  TontonButton.secondary(
-                    label: 'Disabled',
-                    onPressed: null,
-                  ),
+                  TontonButton.secondary(label: 'Enabled', onPressed: () {}),
+                  TontonButton.secondary(label: 'Disabled', onPressed: null),
                   TontonButton.secondary(
                     label: 'With Icon',
                     icon: TontonIcons.add,
@@ -161,14 +140,8 @@ final tontonButtonUseCases = WidgetbookComponent(
                 ]),
                 const SizedBox(height: 24),
                 _buildSection('Text', [
-                  TontonButton.text(
-                    label: 'Enabled',
-                    onPressed: () {},
-                  ),
-                  TontonButton.text(
-                    label: 'Disabled',
-                    onPressed: null,
-                  ),
+                  TontonButton.text(label: 'Enabled', onPressed: () {}),
+                  TontonButton.text(label: 'Disabled', onPressed: null),
                 ]),
               ],
             ),
@@ -185,16 +158,13 @@ Widget _buildSection(String title, List<Widget> buttons) {
     children: [
       Text(
         title,
-        style: const TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.bold,
-        ),
+        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
       ),
       const SizedBox(height: 12),
-      ...buttons.map((button) => Padding(
-            padding: const EdgeInsets.only(bottom: 8),
-            child: button,
-          )),
+      ...buttons.map(
+        (button) =>
+            Padding(padding: const EdgeInsets.only(bottom: 8), child: button),
+      ),
     ],
   );
 }

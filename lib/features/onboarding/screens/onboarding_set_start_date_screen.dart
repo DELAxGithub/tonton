@@ -51,12 +51,12 @@ class _OnboardingSetStartDateScreenState
     final startDate =
         _option == _StartDateOption.specific ? _selectedDate : DateTime.now();
     await ref.read(onboardingStartDateProvider.notifier).setDate(startDate);
-    
+
     // オンボーディングを完了させる
     final service = ref.read(onboardingServiceProvider);
     await service.completeOnboarding();
     await ref.read(onboardingCompletedProvider.notifier).complete();
-    
+
     if (!mounted) return;
     context.go(TontonRoutes.home);
   }

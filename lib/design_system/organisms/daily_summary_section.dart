@@ -25,7 +25,8 @@ class DailySummarySection extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final positive = dailySavings >= 0;
-    final color = positive ? theme.colorScheme.primary : theme.colorScheme.error;
+    final color =
+        positive ? theme.colorScheme.primary : theme.colorScheme.error;
     final prefix = positive ? '+' : '-';
 
     return Column(
@@ -37,11 +38,7 @@ class DailySummarySection extends StatelessWidget {
           align: TextAlign.center,
         ),
         const SizedBox(height: Spacing.xs),
-        TontonIcon(
-          TontonIcons.coin,
-          size: 48,
-          color: color,
-        ),
+        TontonIcon(TontonIcons.coin, size: 48, color: color),
         const SizedBox(height: Spacing.sm),
         TontonText(
           '$prefix${dailySavings.abs().toStringAsFixed(0)} kcal',

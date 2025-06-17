@@ -23,7 +23,8 @@ class UserWeightNotifier extends StateNotifier<double?> {
   }
 }
 
-final userWeightProvider =
-    StateNotifierProvider<UserWeightNotifier, double?>((ref) {
+final userWeightProvider = StateNotifierProvider<UserWeightNotifier, double?>((
+  ref,
+) {
   return UserWeightNotifier(ref.read(userWeightRepositoryProvider));
 });

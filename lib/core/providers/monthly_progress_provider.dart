@@ -29,7 +29,7 @@ UserSettingsRepository userSettingsRepository(Ref ref) {
 CalorieCalculationService calorieCalculationService(Ref ref) {
   final healthService = ref.watch(healthServiceProvider);
   final mealRecords = ref.read(mealRecordsProvider.notifier);
-  
+
   return CalorieCalculationService(
     healthService: healthService,
     mealRecordsProvider: mealRecords,
@@ -45,11 +45,11 @@ Future<double> monthlyTarget(Ref ref) async {
 
 // Provider for daily calorie summary (can be used for any date)
 @riverpod
-Future<DailyCalorieSummary> dailyCalorieSummary(
-  Ref ref,
-  DateTime date,
-) async {
-  developer.log('dailyCalorieSummaryProvider called for date: $date', name: 'TonTon.MonthlyProgressProvider');
+Future<DailyCalorieSummary> dailyCalorieSummary(Ref ref, DateTime date) async {
+  developer.log(
+    'dailyCalorieSummaryProvider called for date: $date',
+    name: 'TonTon.MonthlyProgressProvider',
+  );
   final service = ref.watch(calorieCalculationServiceProvider);
   return service.calculateDailyCalorieSummary(date);
 }
@@ -57,7 +57,10 @@ Future<DailyCalorieSummary> dailyCalorieSummary(
 // Provider for today's calorie summary (convenience)
 @riverpod
 Future<DailyCalorieSummary> todayCalorieSummary(Ref ref) async {
-  developer.log('todayCalorieSummaryProvider called', name: 'TonTon.MonthlyProgressProvider');
+  developer.log(
+    'todayCalorieSummaryProvider called',
+    name: 'TonTon.MonthlyProgressProvider',
+  );
   final date = DateTime.now();
   return ref.watch(dailyCalorieSummaryProvider(date).future);
 }
@@ -65,13 +68,14 @@ Future<DailyCalorieSummary> todayCalorieSummary(Ref ref) async {
 // Provider for monthly progress summary
 @riverpod
 Future<MonthlyProgressSummary> monthlyProgressSummary(Ref ref) async {
-  developer.log('monthlyProgressSummaryProvider called', name: 'TonTon.MonthlyProgressProvider');
+  developer.log(
+    'monthlyProgressSummaryProvider called',
+    name: 'TonTon.MonthlyProgressProvider',
+  );
   final service = ref.watch(calorieCalculationServiceProvider);
   final target = await ref.watch(monthlyTargetProvider.future);
 
-  return service.calculateMonthlyProgressSummary(
-    targetMonthlyNetBurn: target,
-  );
+  return service.calculateMonthlyProgressSummary(targetMonthlyNetBurn: target);
 }
 
 /// Average daily calorie savings over the past 7 days.
@@ -81,8 +85,7 @@ final weeklyAverageSavingsProvider = Provider<double>((ref) {
     data: (records) {
       if (records.isEmpty) return 0.0;
       final recent = records.reversed.take(7).toList();
-      final total = recent.fold<double>(
-          0, (sum, r) => sum + r.dailyBalance);
+      final total = recent.fold<double>(0, (sum, r) => sum + r.dailyBalance);
       return total / recent.length;
     },
     orElse: () => 0.0,
@@ -97,37 +100,43 @@ class MonthlyTargetNotifier extends _$MonthlyTargetNotifier {
     final repository = ref.watch(userSettingsRepositoryProvider);
     return repository.getMonthlyTargetNetBurn();
   }
-  
+
   Future<bool> updateTarget(double newTarget) async {
-    developer.log('Updating monthly target to $newTarget', name: 'TonTon.MonthlyProgressProvider');
+    developer.log(
+      'Updating monthly target to $newTarget',
+      name: 'TonTon.MonthlyProgressProvider',
+    );
     final repository = ref.read(userSettingsRepositoryProvider);
     final success = await repository.setMonthlyTargetNetBurn(newTarget);
-    
+
     if (success) {
       // Refresh the state with the new value
       state = AsyncValue.data(newTarget);
-      
+
       // Invalidate the monthlyProgressSummary provider to recalculate with new target
       ref.invalidate(monthlyProgressSummaryProvider);
     }
-    
+
     return success;
   }
-  
+
   Future<bool> resetToDefault() async {
-    developer.log('Resetting monthly target to default', name: 'TonTon.MonthlyProgressProvider');
+    developer.log(
+      'Resetting monthly target to default',
+      name: 'TonTon.MonthlyProgressProvider',
+    );
     final repository = ref.read(userSettingsRepositoryProvider);
     final success = await repository.resetMonthlyTargetNetBurn();
-    
+
     if (success) {
       // Refresh the state with the new default value
       final defaultValue = await repository.getMonthlyTargetNetBurn();
       state = AsyncValue.data(defaultValue);
-      
+
       // Invalidate the monthlyProgressSummary provider to recalculate with new target
       ref.invalidate(monthlyProgressSummaryProvider);
     }
-    
+
     return success;
   }
 }

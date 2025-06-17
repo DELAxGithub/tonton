@@ -13,9 +13,10 @@ import 'ai_advice_modal.dart';
 /// コンパクトなAIアドバイス表示カード
 class AiAdviceCardCompact extends ConsumerStatefulWidget {
   const AiAdviceCardCompact({super.key});
-  
+
   @override
-  ConsumerState<AiAdviceCardCompact> createState() => _AiAdviceCardCompactState();
+  ConsumerState<AiAdviceCardCompact> createState() =>
+      _AiAdviceCardCompactState();
 }
 
 class _AiAdviceCardCompactState extends ConsumerState<AiAdviceCardCompact> {
@@ -27,11 +28,11 @@ class _AiAdviceCardCompactState extends ConsumerState<AiAdviceCardCompact> {
       _fetchAdviceIfNeeded();
     });
   }
-  
+
   void _fetchAdviceIfNeeded() {
     final adviceState = ref.read(aiAdviceProvider);
     final todayMeals = ref.read(todaysMealRecordsProvider);
-    
+
     // アドバイスがまだ取得されていない、またはエラーの場合にフェッチ
     if (!adviceState.hasValue || adviceState.hasError) {
       final locale = Localizations.localeOf(context).languageCode;
@@ -45,27 +46,28 @@ class _AiAdviceCardCompactState extends ConsumerState<AiAdviceCardCompact> {
     final adviceAsync = ref.watch(cachedAiAdviceProvider);
 
     return adviceAsync.when(
-      loading: () => TontonCardBase(
-        child: Container(
-          padding: const EdgeInsets.all(TontonSpacing.md),
-          child: Row(
-            children: [
-              Icon(
-                TontonIcons.ai,
-                size: 24,
-                color: theme.colorScheme.primary,
+      loading:
+          () => TontonCardBase(
+            child: Container(
+              padding: const EdgeInsets.all(TontonSpacing.md),
+              child: Row(
+                children: [
+                  Icon(
+                    TontonIcons.ai,
+                    size: 24,
+                    color: theme.colorScheme.primary,
+                  ),
+                  const SizedBox(width: TontonSpacing.md),
+                  const Expanded(
+                    child: LoadingIndicator(
+                      size: 16,
+                      message: 'AIアドバイスを生成中...',
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(width: TontonSpacing.md),
-              const Expanded(
-                child: LoadingIndicator(
-                  size: 16,
-                  message: 'AIアドバイスを生成中...',
-                ),
-              ),
-            ],
+            ),
           ),
-        ),
-      ),
       error: (_, __) => const SizedBox.shrink(),
       data: (advice) {
         if (advice == null || advice.adviceMessage.isEmpty) {
@@ -74,8 +76,8 @@ class _AiAdviceCardCompactState extends ConsumerState<AiAdviceCardCompact> {
 
         // アドバイスを最初の2文に制限
         final sentences = advice.adviceMessage.split('。');
-        final shortAdvice = sentences.take(2).join('。') + 
-            (sentences.length > 2 ? '。' : '');
+        final shortAdvice =
+            sentences.take(2).join('。') + (sentences.length > 2 ? '。' : '');
 
         return TontonCardBase(
           child: InkWell(
@@ -163,7 +165,9 @@ class _AiAdviceCardCompactState extends ConsumerState<AiAdviceCardCompact> {
                         icon: const Icon(Icons.refresh, size: 20),
                         onPressed: () async {
                           // キャッシュを無効化して再取得
-                          await ref.read(aiAdviceCacheProvider.notifier).invalidateCache();
+                          await ref
+                              .read(aiAdviceCacheProvider.notifier)
+                              .invalidateCache();
                           ref.read(aiAdviceProvider.notifier).reset();
                           _fetchAdviceIfNeeded();
                         },
@@ -191,75 +195,91 @@ class _AiAdviceCardCompactState extends ConsumerState<AiAdviceCardCompact> {
   void _showFullAdvice(BuildContext context, dynamic advice) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Row(
-          children: [
-            Icon(
-              TontonIcons.ai,
-              color: Theme.of(context).colorScheme.primary,
+      builder:
+          (context) => AlertDialog(
+            title: Row(
+              children: [
+                Icon(
+                  TontonIcons.ai,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+                const SizedBox(width: TontonSpacing.sm),
+                const Text('AIコーチからのアドバイス'),
+              ],
             ),
-            const SizedBox(width: TontonSpacing.sm),
-            const Text('AIコーチからのアドバイス'),
-          ],
-        ),
-        content: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(advice.adviceMessage ?? advice.advice ?? ''),
-              if (advice.suggestions != null && advice.suggestions.isNotEmpty) ...[
-                const SizedBox(height: 16),
-                const Divider(),
-                const SizedBox(height: 8),
-                Text(
-                  'おすすめの食品・メニュー',
-                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                ...advice.suggestions.map<Widget>((suggestion) => Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 4),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Icon(Icons.check_circle, size: 16, color: TontonColors.success),
-                      const SizedBox(width: 8),
-                      Expanded(child: Text(suggestion)),
-                    ],
-                  ),
-                )).toList(),
-              ],
-              if (advice.warning != null) ...[
-                const SizedBox(height: 16),
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: TontonColors.warning.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: TontonColors.warning.withValues(alpha: 0.3)),
-                  ),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Icon(Icons.warning_amber_rounded, size: 20, color: TontonColors.warning),
-                      const SizedBox(width: 8),
-                      Expanded(child: Text(advice.warning)),
-                    ],
-                  ),
-                ),
-              ],
+            content: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(advice.adviceMessage ?? advice.advice ?? ''),
+                  if (advice.suggestions != null &&
+                      advice.suggestions.isNotEmpty) ...[
+                    const SizedBox(height: 16),
+                    const Divider(),
+                    const SizedBox(height: 8),
+                    Text(
+                      'おすすめの食品・メニュー',
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    ...advice.suggestions
+                        .map<Widget>(
+                          (suggestion) => Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 4),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Icon(
+                                  Icons.check_circle,
+                                  size: 16,
+                                  color: TontonColors.success,
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(child: Text(suggestion)),
+                              ],
+                            ),
+                          ),
+                        )
+                        .toList(),
+                  ],
+                  if (advice.warning != null) ...[
+                    const SizedBox(height: 16),
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: TontonColors.warning.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: TontonColors.warning.withValues(alpha: 0.3),
+                        ),
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Icon(
+                            Icons.warning_amber_rounded,
+                            size: 20,
+                            color: TontonColors.warning,
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(child: Text(advice.warning)),
+                        ],
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('閉じる'),
+              ),
             ],
           ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('閉じる'),
-          ),
-        ],
-      ),
     );
   }
 }

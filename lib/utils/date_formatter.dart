@@ -32,7 +32,7 @@ class DateFormatter {
     final weekdays = ['日', '月', '火', '水', '木', '金', '土'];
     return '${weekdays[date.weekday % 7]}曜日';
   }
-  
+
   /// Formats a date in long format like '2023年12月31日 (土)'
   static String formatLongDate(DateTime date) {
     final weekdays = ['日', '月', '火', '水', '木', '金', '土'];

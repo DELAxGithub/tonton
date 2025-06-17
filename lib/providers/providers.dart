@@ -34,7 +34,9 @@ final mealDataServiceProvider = Provider<MealDataService>((ref) {
   return mealDataService;
 });
 
-final dailySummaryDataServiceProvider = Provider<DailySummaryDataService>((ref) {
+final dailySummaryDataServiceProvider = Provider<DailySummaryDataService>((
+  ref,
+) {
   final service = DailySummaryDataService();
   return service;
 });

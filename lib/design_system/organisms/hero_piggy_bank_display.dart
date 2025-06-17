@@ -8,10 +8,7 @@ import '../../theme/typography.dart';
 import '../../providers/providers.dart';
 
 class HeroPiggyBankDisplay extends ConsumerWidget {
-  const HeroPiggyBankDisplay({
-    super.key,
-  });
-
+  const HeroPiggyBankDisplay({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -25,9 +22,10 @@ class HeroPiggyBankDisplay extends ConsumerWidget {
         final remainingDays = summary.remainingDaysInMonth;
         final targetMonthlyNetBurn = summary.targetMonthlyNetBurn;
         final currentMonthlyNetBurn = summary.currentMonthlyNetBurn;
-        final requiredDailyAverage = remainingDays > 0 
-            ? (targetMonthlyNetBurn - currentMonthlyNetBurn) / remainingDays
-            : 0.0;
+        final requiredDailyAverage =
+            remainingDays > 0
+                ? (targetMonthlyNetBurn - currentMonthlyNetBurn) / remainingDays
+                : 0.0;
 
         return TontonCardBase(
           child: Column(
@@ -36,10 +34,7 @@ class HeroPiggyBankDisplay extends ConsumerWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  TontonText(
-                    '今月の貯金目標',
-                    style: TontonTypography.headline,
-                  ),
+                  TontonText('今月の貯金目標', style: TontonTypography.headline),
                   const SizedBox(height: Spacing.xs),
                   TontonText(
                     '${currentMonthlyNetBurn.toStringAsFixed(0)} / ${targetMonthlyNetBurn.toStringAsFixed(0)} kcal',
@@ -58,7 +53,9 @@ class HeroPiggyBankDisplay extends ConsumerWidget {
                   minHeight: 20,
                   backgroundColor: theme.colorScheme.surfaceContainerHighest,
                   valueColor: AlwaysStoppedAnimation<Color>(
-                    progress >= 1.0 ? TontonColors.systemGreen : TontonColors.pigPink,
+                    progress >= 1.0
+                        ? TontonColors.systemGreen
+                        : TontonColors.pigPink,
                   ),
                 ),
               ),

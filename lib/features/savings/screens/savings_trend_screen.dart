@@ -5,7 +5,7 @@ import '../../../providers/providers.dart';
 
 class SavingsTrendScreen extends ConsumerWidget {
   const SavingsTrendScreen({super.key});
-  
+
   // Previously this screen offered demo controls via a dropdown.
   // Those elements were removed, leaving only a simple list of savings data.
 
@@ -13,9 +13,9 @@ class SavingsTrendScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final savingsRecordsAsync = ref.watch(calorieSavingsDataProvider);
     return savingsRecordsAsync.when(
-      loading: () => const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      ),
+      loading:
+          () =>
+              const Scaffold(body: Center(child: CircularProgressIndicator())),
       error: (e, _) => Scaffold(body: Center(child: Text('Error: $e'))),
       data: (savingsRecords) {
         return Scaffold(
@@ -31,9 +31,7 @@ class SavingsTrendScreen extends ConsumerWidget {
             itemBuilder: (context, index) {
               final record = savingsRecords[index];
               return ListTile(
-                title: Text(
-                  '${record.date.month}/${record.date.day}',
-                ),
+                title: Text('${record.date.month}/${record.date.day}'),
                 subtitle: Text(
                   '摂取: ${record.caloriesConsumed.toStringAsFixed(0)} kcal\n'
                   '消費: ${record.caloriesBurned.toStringAsFixed(0)} kcal',
@@ -50,4 +48,3 @@ class SavingsTrendScreen extends ConsumerWidget {
     );
   }
 }
-

@@ -53,19 +53,23 @@ class TontonTypography {
   static const String secondaryFontFamily = 'Roboto';
 
   // Map to new typography system
-  static TextStyle get displayLarge => new_typography.TontonTypography.largeTitle;
+  static TextStyle get displayLarge =>
+      new_typography.TontonTypography.largeTitle;
   static TextStyle get displayMedium => new_typography.TontonTypography.title1;
   static TextStyle get displaySmall => new_typography.TontonTypography.title2;
   static TextStyle get headlineLarge => new_typography.TontonTypography.title2;
   static TextStyle get headlineMedium => new_typography.TontonTypography.title3;
-  static TextStyle get headlineSmall => new_typography.TontonTypography.headline;
+  static TextStyle get headlineSmall =>
+      new_typography.TontonTypography.headline;
   static TextStyle get titleLarge => new_typography.TontonTypography.headline;
-  static TextStyle get titleMedium => new_typography.TontonTypography.subheadline;
+  static TextStyle get titleMedium =>
+      new_typography.TontonTypography.subheadline;
   static TextStyle get titleSmall => new_typography.TontonTypography.footnote;
   static TextStyle get bodyLarge => new_typography.TontonTypography.body;
   static TextStyle get bodyMedium => new_typography.TontonTypography.callout;
   static TextStyle get bodySmall => new_typography.TontonTypography.footnote;
-  static TextStyle get labelLarge => new_typography.TontonTypography.footnote.copyWith(fontWeight: FontWeight.w600);
+  static TextStyle get labelLarge => new_typography.TontonTypography.footnote
+      .copyWith(fontWeight: FontWeight.w600);
   static TextStyle get labelMedium => new_typography.TontonTypography.caption1;
   static TextStyle get labelSmall => new_typography.TontonTypography.caption2;
 }
@@ -120,9 +124,7 @@ class TontonTheme {
       titleTextStyle: new_typography.TontonTypography.navigationTitle.copyWith(
         color: new_colors.TontonColors.label,
       ),
-      iconTheme: const IconThemeData(
-        color: new_colors.TontonColors.label,
-      ),
+      iconTheme: const IconThemeData(color: new_colors.TontonColors.label),
     ),
     scaffoldBackgroundColor: new_colors.TontonColors.systemGroupedBackground,
     cardTheme: CardThemeData(
@@ -219,7 +221,10 @@ class TontonTheme {
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: new_tokens.Radii.mediumBorderRadius,
-        borderSide: const BorderSide(color: new_colors.TontonColors.pigPink, width: 2),
+        borderSide: const BorderSide(
+          color: new_colors.TontonColors.pigPink,
+          width: 2,
+        ),
       ),
       errorBorder: OutlineInputBorder(
         borderRadius: new_tokens.Radii.mediumBorderRadius,
@@ -227,7 +232,10 @@ class TontonTheme {
       ),
       focusedErrorBorder: OutlineInputBorder(
         borderRadius: new_tokens.Radii.mediumBorderRadius,
-        borderSide: const BorderSide(color: new_colors.TontonColors.systemRed, width: 2),
+        borderSide: const BorderSide(
+          color: new_colors.TontonColors.systemRed,
+          width: 2,
+        ),
       ),
       contentPadding: EdgeInsets.symmetric(
         horizontal: new_tokens.Spacing.md,
@@ -312,11 +320,10 @@ class TontonTheme {
       titleTextStyle: new_typography.TontonTypography.navigationTitle.copyWith(
         color: new_colors.TontonColors.labelDark,
       ),
-      iconTheme: const IconThemeData(
-        color: new_colors.TontonColors.labelDark,
-      ),
+      iconTheme: const IconThemeData(color: new_colors.TontonColors.labelDark),
     ),
-    scaffoldBackgroundColor: new_colors.TontonColors.systemGroupedBackgroundDark,
+    scaffoldBackgroundColor:
+        new_colors.TontonColors.systemGroupedBackgroundDark,
     cardTheme: CardThemeData(
       elevation: 0,
       shape: RoundedRectangleBorder(
@@ -403,15 +410,22 @@ class TontonTheme {
       fillColor: new_colors.TontonColors.tertiarySystemBackgroundDark,
       border: OutlineInputBorder(
         borderRadius: new_tokens.Radii.mediumBorderRadius,
-        borderSide: const BorderSide(color: new_colors.TontonColors.separatorDark),
+        borderSide: const BorderSide(
+          color: new_colors.TontonColors.separatorDark,
+        ),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: new_tokens.Radii.mediumBorderRadius,
-        borderSide: const BorderSide(color: new_colors.TontonColors.separatorDark),
+        borderSide: const BorderSide(
+          color: new_colors.TontonColors.separatorDark,
+        ),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: new_tokens.Radii.mediumBorderRadius,
-        borderSide: const BorderSide(color: new_colors.TontonColors.pigPink, width: 2),
+        borderSide: const BorderSide(
+          color: new_colors.TontonColors.pigPink,
+          width: 2,
+        ),
       ),
       errorBorder: OutlineInputBorder(
         borderRadius: new_tokens.Radii.mediumBorderRadius,
@@ -419,7 +433,10 @@ class TontonTheme {
       ),
       focusedErrorBorder: OutlineInputBorder(
         borderRadius: new_tokens.Radii.mediumBorderRadius,
-        borderSide: const BorderSide(color: new_colors.TontonColors.systemPink, width: 2),
+        borderSide: const BorderSide(
+          color: new_colors.TontonColors.systemPink,
+          width: 2,
+        ),
       ),
       contentPadding: EdgeInsets.symmetric(
         horizontal: new_tokens.Spacing.md,
@@ -445,7 +462,9 @@ class TontonTheme {
       behavior: SnackBarBehavior.floating,
     ),
     chipTheme: ChipThemeData(
-      backgroundColor: new_colors.TontonColors.systemGray.withValues(alpha: 0.24),
+      backgroundColor: new_colors.TontonColors.systemGray.withValues(
+        alpha: 0.24,
+      ),
       selectedColor: new_colors.TontonColors.pigPink.withValues(alpha: 0.3),
       labelStyle: new_typography.TontonTypography.footnote,
       padding: EdgeInsets.symmetric(
@@ -481,7 +500,8 @@ class TontonTheme {
       brightness: Brightness.dark,
       primaryColor: new_colors.TontonColors.pigPink,
       primaryContrastingColor: Colors.black,
-      scaffoldBackgroundColor: new_colors.TontonColors.systemGroupedBackgroundDark,
+      scaffoldBackgroundColor:
+          new_colors.TontonColors.systemGroupedBackgroundDark,
     ),
   );
 }

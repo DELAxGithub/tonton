@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart'; // Import Riverpod
-import 'package:url_launcher/url_launcher.dart';
 
 import 'package:go_router/go_router.dart';
 
@@ -8,16 +7,17 @@ import '../../../routes/router.dart';
 import '../../../design_system/templates/standard_page_layout.dart';
 import '../../../design_system/atoms/tonton_button.dart';
 import '../../../providers/providers.dart';
-import '../../../l10n/app_localizations.dart';
 
-class SignupScreen extends ConsumerStatefulWidget { // Changed to ConsumerStatefulWidget
+class SignupScreen extends ConsumerStatefulWidget {
+  // Changed to ConsumerStatefulWidget
   const SignupScreen({super.key});
 
   @override
   ConsumerState<SignupScreen> createState() => _SignupScreenState(); // Changed to ConsumerState
 }
 
-class _SignupScreenState extends ConsumerState<SignupScreen> { // Changed to ConsumerState
+class _SignupScreenState extends ConsumerState<SignupScreen> {
+  // Changed to ConsumerState
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -44,18 +44,32 @@ class _SignupScreenState extends ConsumerState<SignupScreen> { // Changed to Con
           email: _emailController.text.trim(),
           password: _passwordController.text.trim(),
         );
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Signup successful! Please check your email to confirm.')), // Or navigate directly if email confirmation is off
-          );
-          // Navigate to the login screen using the GoRouter
-          // The router will handle any redirects based on auth state
-          context.go(TontonRoutes.login);
-        }
+        if (!mounted) return;
+
+        // Immediately complete onboarding after successful signup
+        await ref.read(onboardingCompletedProvider.notifier).complete();
+        if (!mounted) return;
+
+        await ref.read(userProfileProvider.notifier).completeOnboarding();
+        if (!mounted) return;
+
+        final service = ref.read(onboardingServiceProvider);
+        await service.completeOnboarding();
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Welcome to Tonton! Account created successfully.'),
+          ),
+        );
+        context.go(TontonRoutes.home);
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Signup failed: ${e.toString().replaceFirst("Exception: ", "")}')),
+            SnackBar(
+              content: Text(
+                'Signup failed: ${e.toString().replaceFirst("Exception: ", "")}',
+              ),
+            ),
           );
         }
       } finally {
@@ -71,9 +85,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> { // Changed to Con
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Sign Up'),
-      ),
+      appBar: AppBar(title: const Text('Sign Up')),
       body: StandardPageLayout(
         children: [
           Form(
@@ -143,36 +155,13 @@ class _SignupScreenState extends ConsumerState<SignupScreen> { // Changed to Con
                     return null;
                   },
                 ),
-                const SizedBox(height: 16.0),
-                // Privacy policy agreement
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text("By signing up, you agree to our "),
-                    GestureDetector(
-                      onTap: () async {
-                        final url = Uri.parse('https://hiroshikodera.github.io/tonton-privacy/');
-                        if (await canLaunchUrl(url)) {
-                          await launchUrl(url, mode: LaunchMode.externalApplication);
-                        }
-                      },
-                      child: const Text(
-                        'Privacy Policy',
-                        style: TextStyle(
-                          color: Colors.blue,
-                          decoration: TextDecoration.underline,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
                 const SizedBox(height: 24.0),
                 _isLoading
                     ? const Center(child: CircularProgressIndicator())
                     : TontonButton.primary(
-                        label: 'Sign Up',
-                        onPressed: _signup,
-                      ),
+                      label: 'Sign Up',
+                      onPressed: _signup,
+                    ),
                 const SizedBox(height: 16.0),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,

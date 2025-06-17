@@ -51,9 +51,9 @@ class DailyStatRing extends StatelessWidget {
                     TontonText(
                       currentValue,
                       style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                            color: progressColor,
-                            fontWeight: FontWeight.bold,
-                          ),
+                        color: progressColor,
+                        fontWeight: FontWeight.bold,
+                      ),
                       align: TextAlign.center,
                     ),
                     if (targetValue != null)
@@ -63,7 +63,7 @@ class DailyStatRing extends StatelessWidget {
                         align: TextAlign.center,
                       ),
                   ],
-                )
+                ),
               ],
             ),
           ),

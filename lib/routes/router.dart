@@ -58,7 +58,7 @@ class TontonRoutes {
 final routerProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authStateChangesProvider);
   final onboardingCompleted = ref.watch(onboardingCompletedProvider);
-  
+
   return GoRouter(
     initialLocation: TontonRoutes.home,
     debugLogDiagnostics: true,
@@ -69,49 +69,41 @@ final routerProvider = Provider<GoRouter>((ref) {
         loading: () => false,
         error: (_, __) => false,
       );
-      
-      // Debug logging
-      print('=== Router Redirect Debug ===');
-      print('Current path: ${state.matchedLocation}');
-      print('Is logged in: $isLoggedIn');
-      print('Onboarding completed: $onboardingCompleted');
-      
+
       // Determine if the user is going to an auth or onboarding page
-      final isAuthRoute = state.matchedLocation == TontonRoutes.login ||
-                          state.matchedLocation == TontonRoutes.signup;
-      final isOnboardingRoute = state.matchedLocation == TontonRoutes.onboardingBasicInfo ||
-                                // state.matchedLocation == TontonRoutes.onboardingHealthKit ||
-                                state.matchedLocation == TontonRoutes.onboardingIntro ||
-                                state.matchedLocation == TontonRoutes.onboardingStartDate ||
-                                state.matchedLocation == TontonRoutes.onboardingWeight;
-      
+      final isAuthRoute =
+          state.matchedLocation == TontonRoutes.login ||
+          state.matchedLocation == TontonRoutes.signup;
+      final isOnboardingRoute =
+          state.matchedLocation == TontonRoutes.onboardingBasicInfo ||
+          // state.matchedLocation == TontonRoutes.onboardingHealthKit ||
+          state.matchedLocation == TontonRoutes.onboardingIntro ||
+          state.matchedLocation == TontonRoutes.onboardingStartDate ||
+          state.matchedLocation == TontonRoutes.onboardingWeight;
+
       // If the user is not logged in and trying to access a protected page
       if (!isLoggedIn && !isAuthRoute) {
-        print('Redirecting to login (not logged in)');
         return TontonRoutes.login;
       }
 
-      // If onboarding is incomplete, force onboarding flow
-      if (isLoggedIn && !onboardingCompleted && !isOnboardingRoute) {
-        print('Redirecting to onboarding basic info (onboarding incomplete)');
-        return TontonRoutes.onboardingBasicInfo;
-      }
+      // Skip onboarding flow - it's now completed automatically on login/signup
+      // This block is commented out to bypass the profile setup requirement
+      // if (isLoggedIn && !onboardingCompleted && !isOnboardingRoute) {
+      //   print('Redirecting to onboarding basic info (onboarding incomplete)');
+      //   return TontonRoutes.onboardingBasicInfo;
+      // }
 
       // Prevent accessing onboarding again once completed
       if (isLoggedIn && onboardingCompleted && isOnboardingRoute) {
-        print('Redirecting to home (onboarding already completed)');
         return TontonRoutes.home;
       }
 
       // If the user is logged in and trying to access an auth page
       if (isLoggedIn && isAuthRoute) {
-        final redirectTo = onboardingCompleted ? TontonRoutes.home : TontonRoutes.onboardingBasicInfo;
-        print('Redirecting from auth to: $redirectTo');
-        return redirectTo;
+        return TontonRoutes.home;
       }
 
       // No redirect needed
-      print('No redirect needed');
       return null;
     },
     routes: [
@@ -153,14 +145,16 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
 
       // Shell route with bottom navigation
-        ShellRoute(
-          builder: (context, state, child) {
-            final appPage = child is AppPage ? child as AppPage : null;
-            final appBar = appPage?.buildAppBar(context);
-            return AppShell(
-              appBar: appBar,
-              bottomNavigationBar: MainNavigationBar(location: state.matchedLocation),
-              body: child,
+      ShellRoute(
+        builder: (context, state, child) {
+          final appPage = child is AppPage ? child as AppPage : null;
+          final appBar = appPage?.buildAppBar(context);
+          return AppShell(
+            appBar: appBar,
+            bottomNavigationBar: MainNavigationBar(
+              location: state.matchedLocation,
+            ),
+            body: child,
           );
         },
         routes: [
@@ -206,7 +200,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           ),
         ],
       ),
-      
+
       // Meal routes (temporarily disabled)
       // GoRoute(
       //   path: TontonRoutes.addMeal,
@@ -221,29 +215,28 @@ final routerProvider = Provider<GoRouter>((ref) {
       //     return MealInputScreenNew(mealRecord: mealRecord);
       //   },
       // ),
-      
       GoRoute(
         path: TontonRoutes.useSavings,
         name: 'useSavings',
         builder: (context, state) => const UseSavingsScreen(),
       ),
-      
+
       // Daily meals detail
       GoRoute(
         path: TontonRoutes.dailyMealsDetail,
         name: 'dailyMealsDetail',
         builder: (context, state) {
-          final Map<String, dynamic>? extra = state.extra as Map<String, dynamic>?;
+          final Map<String, dynamic>? extra =
+              state.extra as Map<String, dynamic>?;
           final date = extra?['date'] as DateTime? ?? DateTime.now();
-          final savingsRecord = extra?['savingsRecord'] as CalorieSavingsRecord?;
+          final savingsRecord =
+              extra?['savingsRecord'] as CalorieSavingsRecord?;
           return DailyMealsDetailScreen(
             date: date,
             savingsRecord: savingsRecord,
           );
         },
       ),
-
-
 
       // AI meal logging flow
       GoRoute(
@@ -259,7 +252,8 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: TontonRoutes.aiMealConfirm,
         name: 'aiMealConfirm',
         builder: (context, state) {
-          final Map<String, dynamic>? extra = state.extra as Map<String, dynamic>?;
+          final Map<String, dynamic>? extra =
+              state.extra as Map<String, dynamic>?;
           return AIMealLoggingStep3ConfirmEdit(
             imageFile: File(extra?['image'] as String),
             nutrition: extra?['nutrition'] as EstimatedMealNutrition,

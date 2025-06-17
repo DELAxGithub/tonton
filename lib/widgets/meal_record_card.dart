@@ -9,21 +9,17 @@ import '../models/meal_record.dart';
 class MealRecordCard extends StatelessWidget {
   /// The meal record to display
   final MealRecord mealRecord;
-  
+
   /// Callback for when the card is tapped
   final VoidCallback? onTap;
 
   /// Constructor for MealRecordCard
-  const MealRecordCard({
-    super.key,
-    required this.mealRecord,
-    this.onTap,
-  });
+  const MealRecordCard({super.key, required this.mealRecord, this.onTap});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Card(
       clipBehavior: Clip.antiAlias,
       margin: const EdgeInsets.only(bottom: 12),
@@ -75,7 +71,7 @@ class MealRecordCard extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 12),
-              
+
               // Meal name
               Text(
                 mealRecord.mealName,
@@ -83,7 +79,7 @@ class MealRecordCard extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              
+
               // Meal description (if available)
               if (mealRecord.description.isNotEmpty) ...[
                 const SizedBox(height: 4),
@@ -94,10 +90,10 @@ class MealRecordCard extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
               ],
-              
+
               const SizedBox(height: 12),
               const Divider(),
-              
+
               // Nutrition information
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -154,19 +150,11 @@ class MealRecordCard extends StatelessWidget {
       children: [
         Row(
           children: [
-            Icon(
-              icon,
-              color: color,
-              size: 16,
-              semanticLabel: label,
-            ),
+            Icon(icon, color: color, size: 16, semanticLabel: label),
             const SizedBox(width: 4),
             Text(
               value,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: color,
-              ),
+              style: TextStyle(fontWeight: FontWeight.bold, color: color),
             ),
           ],
         ),

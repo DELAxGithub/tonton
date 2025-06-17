@@ -3,11 +3,7 @@ class NutrientInfo {
   final double fat;
   final double carbs;
 
-  NutrientInfo({
-    required this.protein,
-    required this.fat,
-    required this.carbs,
-  });
+  NutrientInfo({required this.protein, required this.fat, required this.carbs});
 
   factory NutrientInfo.fromJson(Map<String, dynamic> json) {
     return NutrientInfo(

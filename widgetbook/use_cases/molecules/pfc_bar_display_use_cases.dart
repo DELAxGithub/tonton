@@ -58,35 +58,19 @@ final pfcBarDisplayUseCases = WidgetbookComponent(
             children: [
               _buildExample(
                 'Balanced Diet',
-                const PFCBarDisplay(
-                  protein: 50,
-                  fat: 40,
-                  carbs: 110,
-                ),
+                const PFCBarDisplay(protein: 50, fat: 40, carbs: 110),
               ),
               _buildExample(
                 'High Protein',
-                const PFCBarDisplay(
-                  protein: 80,
-                  fat: 30,
-                  carbs: 90,
-                ),
+                const PFCBarDisplay(protein: 80, fat: 30, carbs: 90),
               ),
               _buildExample(
                 'Low Carb',
-                const PFCBarDisplay(
-                  protein: 60,
-                  fat: 60,
-                  carbs: 30,
-                ),
+                const PFCBarDisplay(protein: 60, fat: 60, carbs: 30),
               ),
               _buildExample(
                 'High Carb',
-                const PFCBarDisplay(
-                  protein: 30,
-                  fat: 20,
-                  carbs: 150,
-                ),
+                const PFCBarDisplay(protein: 30, fat: 20, carbs: 150),
               ),
             ],
           ),
@@ -158,35 +142,19 @@ final pfcBarDisplayUseCases = WidgetbookComponent(
             children: [
               _buildExample(
                 'All Zero',
-                const PFCBarDisplay(
-                  protein: 0,
-                  fat: 0,
-                  carbs: 0,
-                ),
+                const PFCBarDisplay(protein: 0, fat: 0, carbs: 0),
               ),
               _buildExample(
                 'Only Protein',
-                const PFCBarDisplay(
-                  protein: 100,
-                  fat: 0,
-                  carbs: 0,
-                ),
+                const PFCBarDisplay(protein: 100, fat: 0, carbs: 0),
               ),
               _buildExample(
                 'Very Small Values',
-                const PFCBarDisplay(
-                  protein: 1,
-                  fat: 2,
-                  carbs: 3,
-                ),
+                const PFCBarDisplay(protein: 1, fat: 2, carbs: 3),
               ),
               _buildExample(
                 'Very Large Values',
-                const PFCBarDisplay(
-                  protein: 200,
-                  fat: 150,
-                  carbs: 350,
-                ),
+                const PFCBarDisplay(protein: 200, fat: 150, carbs: 350),
               ),
             ],
           ),
@@ -202,10 +170,7 @@ Widget _buildExample(String title, Widget widget) {
     children: [
       Text(
         title,
-        style: const TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-        ),
+        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
       ),
       const SizedBox(height: 8),
       widget,

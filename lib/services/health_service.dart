@@ -18,31 +18,52 @@ class HealthService {
   final _permissions = _types.map((e) => HealthDataAccess.READ).toList();
 
   Future<bool> requestPermissions() async {
-    developer.log('Requesting HealthKit permissions', name: 'TonTon.HealthService');
+    developer.log(
+      'Requesting HealthKit permissions',
+      name: 'TonTon.HealthService',
+    );
     try {
-      final result = await _health.requestAuthorization(_types, permissions: _permissions);
-      developer.log('HealthKit permission result: $result', name: 'TonTon.HealthService');
+      final result = await _health.requestAuthorization(
+        _types,
+        permissions: _permissions,
+      );
+      developer.log(
+        'HealthKit permission result: $result',
+        name: 'TonTon.HealthService',
+      );
       return result;
     } catch (e, stack) {
-      developer.log('Permission request error: $e', name: 'TonTon.HealthService.error', error: e, stackTrace: stack);
+      developer.log(
+        'Permission request error: $e',
+        name: 'TonTon.HealthService.error',
+        error: e,
+        stackTrace: stack,
+      );
       return false;
     }
   }
 
   Future<ActivitySummary> getTodayActivitySummary() async {
-    developer.log('Getting today activity summary', name: 'TonTon.HealthService');
-    final now = DateTime.now();
-    return getActivitySummary(
-      DateTime(now.year, now.month, now.day),
+    developer.log(
+      'Getting today activity summary',
+      name: 'TonTon.HealthService',
     );
+    final now = DateTime.now();
+    return getActivitySummary(DateTime(now.year, now.month, now.day));
   }
 
   Future<ActivitySummary> getActivitySummary(DateTime date) async {
-    developer.log('Getting activity summary for date: $date', name: 'TonTon.HealthService');
-    
+    developer.log(
+      'Getting activity summary for date: $date',
+      name: 'TonTon.HealthService',
+    );
+
     final startTime = DateTime(date.year, date.month, date.day, 0, 0, 0);
     final endTime = DateTime(date.year, date.month, date.day, 23, 59, 59, 999);
-    developer.log('Time range: $startTime to $endTime', name: 'TonTon.HealthService');
+    developer.log(
+      'Time range: $startTime to $endTime',
+      name: 'TonTon.HealthService',
+    );
 
     try {
       // Get workout data
@@ -52,7 +73,10 @@ class HealthService {
         endTime: endTime,
         types: [HealthDataType.WORKOUT],
       );
-      developer.log('Fetched ${workoutsData.length} workout records', name: 'TonTon.HealthService');
+      developer.log(
+        'Fetched ${workoutsData.length} workout records',
+        name: 'TonTon.HealthService',
+      );
 
       // Extract workout types and calories
       final workoutTypes = <String>[];
@@ -84,24 +108,32 @@ class HealthService {
         endTime: endTime,
         types: [HealthDataType.ACTIVE_ENERGY_BURNED],
       );
-      developer.log('Fetched ${activeEnergyData.length} active energy records', name: 'TonTon.HealthService');
+      developer.log(
+        'Fetched ${activeEnergyData.length} active energy records',
+        name: 'TonTon.HealthService',
+      );
 
       final basalEnergyData = await _health.getHealthDataFromTypes(
         startTime: startTime,
         endTime: endTime,
         types: [HealthDataType.BASAL_ENERGY_BURNED],
       );
-      developer.log('Fetched ${basalEnergyData.length} basal energy records', name: 'TonTon.HealthService');
+      developer.log(
+        'Fetched ${basalEnergyData.length} basal energy records',
+        name: 'TonTon.HealthService',
+      );
 
       // Calculate total energy
       double totalActiveEnergy = activeEnergyData.fold(0, (prev, e) {
         final val = e.value;
-        return prev + (val is NumericHealthValue ? val.numericValue.toDouble() : 0.0);
+        return prev +
+            (val is NumericHealthValue ? val.numericValue.toDouble() : 0.0);
       });
 
       double totalBasalEnergy = basalEnergyData.fold(0, (prev, e) {
         final val = e.value;
-        return prev + (val is NumericHealthValue ? val.numericValue.toDouble() : 0.0);
+        return prev +
+            (val is NumericHealthValue ? val.numericValue.toDouble() : 0.0);
       });
 
       // Get body fat percentage
@@ -111,7 +143,10 @@ class HealthService {
         endTime: endTime,
         types: [HealthDataType.BODY_FAT_PERCENTAGE],
       );
-      developer.log('Fetched ${bodyFatData.length} body fat records', name: 'TonTon.HealthService');
+      developer.log(
+        'Fetched ${bodyFatData.length} body fat records',
+        name: 'TonTon.HealthService',
+      );
 
       double? bodyFatPercentage;
       if (bodyFatData.isNotEmpty) {
@@ -128,11 +163,19 @@ class HealthService {
         totalCalories: totalActiveEnergy + totalBasalEnergy,
         bodyFatPercentage: bodyFatPercentage,
       );
-      
-      developer.log('Built activity summary: ${summary.toString()}', name: 'TonTon.HealthService');
+
+      developer.log(
+        'Built activity summary: ${summary.toString()}',
+        name: 'TonTon.HealthService',
+      );
       return summary;
     } catch (e, stack) {
-      developer.log('Error in getActivitySummary: $e', name: 'TonTon.HealthService.error', error: e, stackTrace: stack);
+      developer.log(
+        'Error in getActivitySummary: $e',
+        name: 'TonTon.HealthService.error',
+        error: e,
+        stackTrace: stack,
+      );
       // Return empty summary rather than crashing
       return ActivitySummary(
         workoutTypes: [],
@@ -143,11 +186,22 @@ class HealthService {
   }
 
   Future<WeightRecord?> getLatestWeight(DateTime date) async {
-    developer.log('Getting latest weight for date: $date', name: 'TonTon.HealthService');
-    
+    developer.log(
+      'Getting latest weight for date: $date',
+      name: 'TonTon.HealthService',
+    );
+
     try {
       final startTime = DateTime(date.year, date.month, date.day, 0, 0, 0);
-      final endTime = DateTime(date.year, date.month, date.day, 23, 59, 59, 999);
+      final endTime = DateTime(
+        date.year,
+        date.month,
+        date.day,
+        23,
+        59,
+        59,
+        999,
+      );
 
       // Get weight data
       developer.log('Fetching weight data', name: 'TonTon.HealthService');
@@ -156,7 +210,10 @@ class HealthService {
         endTime: endTime,
         types: [HealthDataType.WEIGHT],
       );
-      developer.log('Fetched ${weightData.length} weight records', name: 'TonTon.HealthService');
+      developer.log(
+        'Fetched ${weightData.length} weight records',
+        name: 'TonTon.HealthService',
+      );
 
       if (weightData.isEmpty) {
         developer.log('No weight data available', name: 'TonTon.HealthService');
@@ -167,9 +224,12 @@ class HealthService {
       weightData.sort((a, b) => b.dateFrom.compareTo(a.dateFrom));
       final latestWeightData = weightData.first;
       final weightValue = latestWeightData.value;
-      
+
       if (weightValue is! NumericHealthValue) {
-        developer.log('Weight data is not numeric', name: 'TonTon.HealthService');
+        developer.log(
+          'Weight data is not numeric',
+          name: 'TonTon.HealthService',
+        );
         return null;
       }
 
@@ -182,7 +242,10 @@ class HealthService {
         endTime: endTime,
         types: [HealthDataType.BODY_FAT_PERCENTAGE],
       );
-      developer.log('Fetched ${bodyFatData.length} body fat records', name: 'TonTon.HealthService');
+      developer.log(
+        'Fetched ${bodyFatData.length} body fat records',
+        name: 'TonTon.HealthService',
+      );
 
       double? bodyFatPercentage;
       if (bodyFatData.isNotEmpty) {
@@ -204,11 +267,19 @@ class HealthService {
         bodyFatPercentage: bodyFatPercentage,
         bodyFatMass: bodyFatMass,
       );
-      
-      developer.log('Built weight record: ${record.toString()}', name: 'TonTon.HealthService');
+
+      developer.log(
+        'Built weight record: ${record.toString()}',
+        name: 'TonTon.HealthService',
+      );
       return record;
     } catch (e, stack) {
-      developer.log('Error in getLatestWeight: $e', name: 'TonTon.HealthService.error', error: e, stackTrace: stack);
+      developer.log(
+        'Error in getLatestWeight: $e',
+        name: 'TonTon.HealthService.error',
+        error: e,
+        stackTrace: stack,
+      );
       return null;
     }
   }

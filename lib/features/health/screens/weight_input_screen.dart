@@ -48,13 +48,15 @@ class _WeightInputScreenState extends ConsumerState<WeightInputScreen> {
   Future<void> _save() async {
     // キーボードを閉じる
     _focusNode.unfocus();
-    
+
     final weight = double.tryParse(_controller.text);
     if (weight != null) {
       await ref.read(userWeightProvider.notifier).setWeight(weight);
-      
+
       // オンボーディング中の場合は完了処理を実行
-      final isOnboarding = ModalRoute.of(context)?.settings.name?.contains('onboarding') ?? false;
+      final isOnboarding =
+          ModalRoute.of(context)?.settings.name?.contains('onboarding') ??
+          false;
       if (isOnboarding) {
         await ref.read(onboardingServiceProvider).completeOnboarding();
         // オンボーディング完了状態を更新
@@ -85,18 +87,21 @@ class _WeightInputScreenState extends ConsumerState<WeightInputScreen> {
             TextField(
               controller: _controller,
               focusNode: _focusNode,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
               textInputAction: TextInputAction.done,
               decoration: InputDecoration(
                 labelText: '体重 (kg)',
-                suffixIcon: _focusNode.hasFocus
-                    ? IconButton(
-                        icon: const Icon(Icons.done),
-                        onPressed: () {
-                          _focusNode.unfocus();
-                        },
-                      )
-                    : null,
+                suffixIcon:
+                    _focusNode.hasFocus
+                        ? IconButton(
+                          icon: const Icon(Icons.done),
+                          onPressed: () {
+                            _focusNode.unfocus();
+                          },
+                        )
+                        : null,
               ),
               onSubmitted: (_) => _save(),
               // iOS用のキーボードツールバー
@@ -106,10 +111,7 @@ class _WeightInputScreenState extends ConsumerState<WeightInputScreen> {
               ],
             ),
             const SizedBox(height: 24),
-            TontonButton.primary(
-              label: '保存',
-              onPressed: _save,
-            ),
+            TontonButton.primary(label: '保存', onPressed: _save),
           ],
         ),
       ),

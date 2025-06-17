@@ -23,7 +23,7 @@ final dailySummarySectionUseCases = WidgetbookComponent(
           max: 4000,
           initialValue: 2200,
         );
-        
+
         final summary = DailySummary(
           id: DateTime.now().toIso8601String().split('T')[0],
           date: DateTime.now(),
@@ -84,43 +84,23 @@ final dailySummarySectionUseCases = WidgetbookComponent(
             children: [
               _buildExample(
                 'Calorie Deficit (Good Day)',
-                CalorieSummaryRow(
-                  consumed: 1500,
-                  burned: 2200,
-                  saved: 700,
-                ),
+                CalorieSummaryRow(consumed: 1500, burned: 2200, saved: 700),
               ),
               _buildExample(
                 'Maintenance',
-                CalorieSummaryRow(
-                  consumed: 2000,
-                  burned: 2000,
-                  saved: 0,
-                ),
+                CalorieSummaryRow(consumed: 2000, burned: 2000, saved: 0),
               ),
               _buildExample(
                 'Calorie Surplus',
-                CalorieSummaryRow(
-                  consumed: 2500,
-                  burned: 2000,
-                  saved: -500,
-                ),
+                CalorieSummaryRow(consumed: 2500, burned: 2000, saved: -500),
               ),
               _buildExample(
                 'Very Active Day',
-                CalorieSummaryRow(
-                  consumed: 1800,
-                  burned: 3200,
-                  saved: 1400,
-                ),
+                CalorieSummaryRow(consumed: 1800, burned: 3200, saved: 1400),
               ),
               _buildExample(
                 'Rest Day',
-                CalorieSummaryRow(
-                  consumed: 1600,
-                  burned: 1800,
-                  saved: 200,
-                ),
+                CalorieSummaryRow(consumed: 1600, burned: 1800, saved: 200),
               ),
             ],
           ),
@@ -223,11 +203,7 @@ final dailySummarySectionUseCases = WidgetbookComponent(
                   ],
                 ),
                 const SizedBox(height: 16),
-                CalorieSummaryRow(
-                  consumed: 1750,
-                  burned: 2150,
-                  saved: 400,
-                ),
+                CalorieSummaryRow(consumed: 1750, burned: 2150, saved: 400),
                 const SizedBox(height: 12),
                 Row(
                   children: [
@@ -267,10 +243,7 @@ Widget _buildExample(String title, Widget widget) {
     children: [
       Text(
         title,
-        style: const TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-        ),
+        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
       ),
       const SizedBox(height: 8),
       widget,
@@ -297,9 +270,7 @@ Widget _buildCompactStat(
       children: [
         Text(
           label,
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: color,
-          ),
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(color: color),
         ),
         const SizedBox(height: 4),
         Row(
@@ -316,9 +287,9 @@ Widget _buildCompactStat(
             const SizedBox(width: 4),
             Text(
               unit,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: color,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: color),
             ),
           ],
         ),

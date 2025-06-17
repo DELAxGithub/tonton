@@ -9,7 +9,7 @@ class AiAdviceService {
   final SupabaseClient _supabaseClient;
 
   AiAdviceService(this._supabaseClient);
-  
+
   /// JSONレスポンスをサニタイズしてパースする
   Map<String, dynamic> _sanitizeAndParseJson(dynamic data) {
     if (data is String) {
@@ -22,7 +22,8 @@ class AiAdviceService {
           int braceCount = 0;
           int lastValidIndex = -1;
           for (int i = 0; i < jsonString.length; i++) {
-            if (jsonString[i] == '{') braceCount++;
+            if (jsonString[i] == '{')
+              braceCount++;
             else if (jsonString[i] == '}') {
               braceCount--;
               if (braceCount == 0) {
@@ -57,7 +58,8 @@ class AiAdviceService {
 
       if (response.status != 200) {
         // Attempt to parse error message from function
-        String errorMessage = "Failed to get meal advice. Status code: ${response.status}";
+        String errorMessage =
+            "Failed to get meal advice. Status code: ${response.status}";
         if (response.data != null && response.data['error'] != null) {
           errorMessage = response.data['error'].toString();
         } else if (response.data != null) {
@@ -65,42 +67,60 @@ class AiAdviceService {
         }
         throw Exception(errorMessage);
       }
-      
+
       if (response.data == null) {
         throw Exception("Received null data from meal advice function.");
       }
 
       final jsonData = _sanitizeAndParseJson(response.data);
-      
+
       // デバッグ: レスポンスの内容を確認
-      developer.log('AI Advice Response: ${json.encode(jsonData)}', name: 'TonTon.AiAdviceService');
+      developer.log(
+        'AI Advice Response: ${json.encode(jsonData)}',
+        name: 'TonTon.AiAdviceService',
+      );
       if (jsonData['menuSuggestion'] != null) {
-        developer.log('menuSuggestion found: ${json.encode(jsonData['menuSuggestion'])}', name: 'TonTon.AiAdviceService');
+        developer.log(
+          'menuSuggestion found: ${json.encode(jsonData['menuSuggestion'])}',
+          name: 'TonTon.AiAdviceService',
+        );
       } else {
         developer.log('menuSuggestion is null', name: 'TonTon.AiAdviceService');
       }
-      
-      return AiAdviceResponse.fromJson(jsonData);
 
+      return AiAdviceResponse.fromJson(jsonData);
     } on FunctionException catch (e) {
       // This can catch more specific Supabase function errors
       final errorMessage = e.details?.toString() ?? e.toString();
-      developer.log('Supabase FunctionException: $errorMessage', name: 'TonTon.AiAdviceService');
-      developer.log('Details: ${e.details}', name: 'TonTon.AiAdviceService'); // Log details which might contain response info
+      developer.log(
+        'Supabase FunctionException: $errorMessage',
+        name: 'TonTon.AiAdviceService',
+      );
+      developer.log(
+        'Details: ${e.details}',
+        name: 'TonTon.AiAdviceService',
+      ); // Log details which might contain response info
 
       String detailedMessage = "Error calling meal advice function";
       if (e.details != null) {
         detailedMessage += " Details: ${e.details}";
       } else {
-        detailedMessage += " Details: ${e.toString()}"; // Fallback to e.toString() if details is null
+        detailedMessage +=
+            " Details: ${e.toString()}"; // Fallback to e.toString() if details is null
       }
       throw Exception("Supabase function error: $detailedMessage");
     } catch (e) {
-      developer.log('Error in AiAdviceService.getMealAdvice: $e', name: 'TonTon.AiAdviceService', error: e);
-      throw Exception("An unexpected error occurred while fetching meal advice: ${e.toString()}");
+      developer.log(
+        'Error in AiAdviceService.getMealAdvice: $e',
+        name: 'TonTon.AiAdviceService',
+        error: e,
+      );
+      throw Exception(
+        "An unexpected error occurred while fetching meal advice: ${e.toString()}",
+      );
     }
   }
-  
+
   /// 拡張版：ユーザーコンテキストを含めたアドバイス生成
   Future<AiAdviceResponse> generateMealAdvice({
     required AiAdviceRequest request,
@@ -121,7 +141,7 @@ class AiAdviceService {
       } else {
         timeOfDay = 'evening';
       }
-      
+
       // リクエストデータにコンテキストを追加
       final enhancedRequest = {
         ...request.toJson(),
@@ -133,41 +153,54 @@ class AiAdviceService {
           'weeklyTrend': weeklyTrend,
         },
       };
-      
+
       final response = await _supabaseClient.functions.invoke(
         'generate-meal-advice', // v1を使用して栄養情報付きメニュー提案を取得
         body: enhancedRequest,
       );
 
       if (response.status != 200) {
-        String errorMessage = "Failed to generate meal advice. Status code: ${response.status}";
+        String errorMessage =
+            "Failed to generate meal advice. Status code: ${response.status}";
         if (response.data != null && response.data['error'] != null) {
           errorMessage = response.data['error'].toString();
         }
         throw Exception(errorMessage);
       }
-      
+
       if (response.data == null) {
         throw Exception("Received null data from meal advice function.");
       }
 
       final jsonData = _sanitizeAndParseJson(response.data);
-      
+
       // デバッグ: レスポンスの内容を確認
-      developer.log('AI Advice Response: ${json.encode(jsonData)}', name: 'TonTon.AiAdviceService');
+      developer.log(
+        'AI Advice Response: ${json.encode(jsonData)}',
+        name: 'TonTon.AiAdviceService',
+      );
       if (jsonData['menuSuggestion'] != null) {
-        developer.log('menuSuggestion found: ${json.encode(jsonData['menuSuggestion'])}', name: 'TonTon.AiAdviceService');
+        developer.log(
+          'menuSuggestion found: ${json.encode(jsonData['menuSuggestion'])}',
+          name: 'TonTon.AiAdviceService',
+        );
       } else {
         developer.log('menuSuggestion is null', name: 'TonTon.AiAdviceService');
       }
-      
-      return AiAdviceResponse.fromJson(jsonData);
 
+      return AiAdviceResponse.fromJson(jsonData);
     } on FunctionException catch (e) {
-      developer.log('Supabase FunctionException: ${e.details}', name: 'TonTon.AiAdviceService');
+      developer.log(
+        'Supabase FunctionException: ${e.details}',
+        name: 'TonTon.AiAdviceService',
+      );
       throw Exception("Supabase function error: ${e.details ?? e.toString()}");
     } catch (e) {
-      developer.log('Error in generateMealAdvice: $e', name: 'TonTon.AiAdviceService', error: e);
+      developer.log(
+        'Error in generateMealAdvice: $e',
+        name: 'TonTon.AiAdviceService',
+        error: e,
+      );
       throw Exception("An unexpected error occurred: ${e.toString()}");
     }
   }

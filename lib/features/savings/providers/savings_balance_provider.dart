@@ -27,4 +27,5 @@ class SavingsBalanceNotifier extends StateNotifier<double> {
 
 final savingsBalanceProvider =
     StateNotifierProvider<SavingsBalanceNotifier, double>(
-        (ref) => SavingsBalanceNotifier());
+      (ref) => SavingsBalanceNotifier(),
+    );

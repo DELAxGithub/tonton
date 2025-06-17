@@ -24,36 +24,61 @@ class DailyMealsDetailScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final mealRecordsAsync = ref.watch(mealRecordsProvider);
-    
+
     return Scaffold(
-      appBar: AppBar(
-        title: Text(DateFormatter.formatLongDate(date)),
-      ),
+      appBar: AppBar(title: Text(DateFormatter.formatLongDate(date))),
       body: mealRecordsAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stack) => Center(
-          child: Text('エラーが発生しました: $error'),
-        ),
+        error: (error, stack) => Center(child: Text('エラーが発生しました: $error')),
         data: (mealRecordsState) {
-          final meals = ref.read(mealRecordsProvider.notifier).getMealRecordsForDate(date);
-          
+          // Directly filter meals from the state instead of using the notifier methods
+          final meals =
+              mealRecordsState.records.where((record) {
+                final consumed = record.consumedAt.toLocal();
+                return consumed.year == date.year &&
+                    consumed.month == date.month &&
+                    consumed.day == date.day;
+              }).toList();
+
+          // Calculate calories directly from filtered meals
+          final totalCalories = meals.fold<double>(
+            0.0,
+            (sum, record) => sum + record.calories,
+          );
+
+          // Manual calculation
+          double manualTotalCalories = 0.0;
+          for (final meal in meals) {
+            manualTotalCalories += meal.calories;
+          }
+
+          // Always use our calculated calories, override the savings record if needed
+          final effectiveCalories =
+              manualTotalCalories; // Always use our calculation!
+
+          final displayRecord = CalorieSavingsRecord.fromRaw(
+            date: date,
+            caloriesConsumed: effectiveCalories, // Use our calculated value
+            caloriesBurned:
+                savingsRecord?.caloriesBurned ??
+                0.0, // Keep HealthKit data if available
+          );
+
           return StandardPageLayout(
             children: [
               // Summary Card
-              if (savingsRecord != null) ...[
-                _buildSummaryCard(context, savingsRecord!),
-                const SizedBox(height: tokens.Spacing.lg),
-              ],
-              
+              _buildSummaryCard(context, displayRecord),
+              const SizedBox(height: tokens.Spacing.lg),
+
               // Meals Section
               Text(
                 '食事記録',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: tokens.Spacing.sm),
-              
+
               if (meals.isEmpty)
                 EmptyState(
                   title: 'この日の食事記録はありません',
@@ -72,15 +97,13 @@ class DailyMealsDetailScreen extends ConsumerWidget {
                       onTap: () {
                         // TODO: Implement edit functionality
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('編集機能は準備中です'),
-                          ),
+                          const SnackBar(content: Text('編集機能は準備中です')),
                         );
                       },
                     );
                   },
                 ),
-              
+
               const SizedBox(height: 80), // Bottom padding
             ],
           );
@@ -88,10 +111,10 @@ class DailyMealsDetailScreen extends ConsumerWidget {
       ),
     );
   }
-  
+
   Widget _buildSummaryCard(BuildContext context, CalorieSavingsRecord record) {
     final isPositive = record.dailyBalance > 0;
-    
+
     return Card(
       elevation: 2,
       color: Theme.of(context).colorScheme.primaryContainer,
@@ -125,7 +148,7 @@ class DailyMealsDetailScreen extends ConsumerWidget {
                   '摂取カロリー',
                   '${record.caloriesConsumed.toStringAsFixed(0)} kcal',
                   Icons.restaurant,
-                  TontonColors.primary,
+                  Colors.red, // Use red for better visibility
                 ),
                 _buildMetric(
                   context,
@@ -148,7 +171,7 @@ class DailyMealsDetailScreen extends ConsumerWidget {
       ),
     );
   }
-  
+
   Widget _buildMetric(
     BuildContext context,
     String label,
@@ -167,11 +190,18 @@ class DailyMealsDetailScreen extends ConsumerWidget {
           ),
         ),
         const SizedBox(height: 2),
-        Text(
-          value,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: color,
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.9),
+            borderRadius: BorderRadius.circular(4),
+          ),
+          child: Text(
+            value,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
           ),
         ),
       ],

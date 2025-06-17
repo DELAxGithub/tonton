@@ -5,19 +5,19 @@ import '../../theme/app_theme.dart';
 class StatItem {
   /// The title of the statistic
   final String title;
-  
+
   /// The value to display
   final String value;
-  
+
   /// The icon to show
   final IconData icon;
-  
+
   /// Optional subtitle or unit
   final String? subtitle;
-  
+
   /// Optional accent color
   final Color? color;
-  
+
   /// Constructor for StatItem
   const StatItem({
     required this.title,
@@ -32,13 +32,13 @@ class StatItem {
 class StatsGrid extends StatelessWidget {
   /// The statistics to display
   final List<StatItem> items;
-  
+
   /// The number of columns in the grid (defaults to 2)
   final int crossAxisCount;
-  
+
   /// The spacing between items
   final double spacing;
-  
+
   /// Constructor for StatsGrid
   const StatsGrid({
     super.key,
@@ -65,12 +65,12 @@ class StatsGrid extends StatelessWidget {
       },
     );
   }
-  
+
   /// Builds a single stat card
   Widget _buildStatCard(BuildContext context, StatItem item) {
     final theme = Theme.of(context);
     final cardColor = item.color ?? theme.colorScheme.primary;
-    
+
     return Card(
       elevation: 1,
       child: Padding(
@@ -82,11 +82,7 @@ class StatsGrid extends StatelessWidget {
             // Icon and title
             Row(
               children: [
-                Icon(
-                  item.icon,
-                  color: cardColor,
-                  size: 16,
-                ),
+                Icon(item.icon, color: cardColor, size: 16),
                 const SizedBox(width: TontonSpacing.xs),
                 Expanded(
                   child: Text(
@@ -100,7 +96,7 @@ class StatsGrid extends StatelessWidget {
               ],
             ),
             const SizedBox(height: TontonSpacing.xs),
-            
+
             // Value and subtitle
             Row(
               crossAxisAlignment: CrossAxisAlignment.baseline,

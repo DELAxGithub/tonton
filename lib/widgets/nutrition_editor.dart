@@ -6,25 +6,26 @@ import '../theme/app_theme.dart';
 class NutritionEditor extends StatefulWidget {
   /// Current calorie value
   final double calories;
-  
+
   /// Current protein value (in grams)
   final double protein;
-  
+
   /// Current fat value (in grams)
   final double fat;
-  
+
   /// Current carbs value (in grams)
   final double carbs;
-  
+
   /// Callback when nutrition values change
-  final void Function(double calories, double protein, double fat, double carbs) onChanged;
-  
+  final void Function(double calories, double protein, double fat, double carbs)
+  onChanged;
+
   /// Optional max values to display in the sliders
   final double? maxCalories;
   final double? maxProtein;
   final double? maxFat;
   final double? maxCarbs;
-  
+
   const NutritionEditor({
     super.key,
     required this.calories,
@@ -47,14 +48,14 @@ class _NutritionEditorState extends State<NutritionEditor> {
   late final TextEditingController _proteinController;
   late final TextEditingController _fatController;
   late final TextEditingController _carbsController;
-  
+
   double _calories = 0;
   double _protein = 0;
   double _fat = 0;
   double _carbs = 0;
-  
+
   final _formKey = GlobalKey<FormState>();
-  
+
   @override
   void initState() {
     super.initState();
@@ -62,13 +63,13 @@ class _NutritionEditorState extends State<NutritionEditor> {
     _protein = widget.protein;
     _fat = widget.fat;
     _carbs = widget.carbs;
-    
+
     _caloriesController = TextEditingController(text: _calories.toString());
     _proteinController = TextEditingController(text: _protein.toString());
     _fatController = TextEditingController(text: _fat.toString());
     _carbsController = TextEditingController(text: _carbs.toString());
   }
-  
+
   @override
   void didUpdateWidget(NutritionEditor oldWidget) {
     super.didUpdateWidget(oldWidget);
@@ -89,7 +90,7 @@ class _NutritionEditorState extends State<NutritionEditor> {
       _carbsController.text = _carbs.toString();
     }
   }
-  
+
   @override
   void dispose() {
     _caloriesController.dispose();
@@ -98,13 +99,13 @@ class _NutritionEditorState extends State<NutritionEditor> {
     _carbsController.dispose();
     super.dispose();
   }
-  
+
   void _submitChanges() {
     if (_formKey.currentState!.validate()) {
       widget.onChanged(_calories, _protein, _fat, _carbs);
     }
   }
-  
+
   void _updateCalories(double value) {
     setState(() {
       _calories = value;
@@ -112,7 +113,7 @@ class _NutritionEditorState extends State<NutritionEditor> {
     });
     _submitChanges();
   }
-  
+
   void _updateProtein(double value) {
     setState(() {
       _protein = value;
@@ -120,7 +121,7 @@ class _NutritionEditorState extends State<NutritionEditor> {
     });
     _submitChanges();
   }
-  
+
   void _updateFat(double value) {
     setState(() {
       _fat = value;
@@ -128,7 +129,7 @@ class _NutritionEditorState extends State<NutritionEditor> {
     });
     _submitChanges();
   }
-  
+
   void _updateCarbs(double value) {
     setState(() {
       _carbs = value;
@@ -136,7 +137,7 @@ class _NutritionEditorState extends State<NutritionEditor> {
     });
     _submitChanges();
   }
-  
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -144,7 +145,7 @@ class _NutritionEditorState extends State<NutritionEditor> {
     final maxProtein = widget.maxProtein ?? 100;
     final maxFat = widget.maxFat ?? 100;
     final maxCarbs = widget.maxCarbs ?? 300;
-    
+
     return Form(
       key: _formKey,
       child: Column(
@@ -166,9 +167,9 @@ class _NutritionEditorState extends State<NutritionEditor> {
             },
             onSliderChanged: _updateCalories,
           ),
-          
+
           const SizedBox(height: TontonSpacing.sm),
-          
+
           // Protein
           _buildNutrientRow(
             context: context,
@@ -185,9 +186,9 @@ class _NutritionEditorState extends State<NutritionEditor> {
             },
             onSliderChanged: _updateProtein,
           ),
-          
+
           const SizedBox(height: TontonSpacing.sm),
-          
+
           // Fat
           _buildNutrientRow(
             context: context,
@@ -204,9 +205,9 @@ class _NutritionEditorState extends State<NutritionEditor> {
             },
             onSliderChanged: _updateFat,
           ),
-          
+
           const SizedBox(height: TontonSpacing.sm),
-          
+
           // Carbs
           _buildNutrientRow(
             context: context,
@@ -227,7 +228,7 @@ class _NutritionEditorState extends State<NutritionEditor> {
       ),
     );
   }
-  
+
   Widget _buildNutrientRow({
     required BuildContext context,
     required String label,
@@ -240,7 +241,7 @@ class _NutritionEditorState extends State<NutritionEditor> {
     required void Function(double value) onSliderChanged,
   }) {
     final theme = Theme.of(context);
-    
+
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -254,15 +255,14 @@ class _NutritionEditorState extends State<NutritionEditor> {
             ),
           ),
         ),
-        
+
         // Slider
         Expanded(
           flex: 3,
           child: SliderTheme(
             data: SliderThemeData(
               activeTrackColor: color,
-              inactiveTrackColor:
-                  color.withValues(alpha: 0.2),
+              inactiveTrackColor: color.withValues(alpha: 0.2),
               thumbColor: color,
             ),
             child: Slider(
@@ -273,7 +273,7 @@ class _NutritionEditorState extends State<NutritionEditor> {
             ),
           ),
         ),
-        
+
         // Value text field
         SizedBox(
           width: 70,

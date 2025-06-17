@@ -127,35 +127,19 @@ final calorieDisplayUseCases = WidgetbookComponent(
             children: [
               _buildExample(
                 'Under Target (Good)',
-                DailyStatRing(
-                  consumed: 1500,
-                  burned: 2000,
-                  target: 2000,
-                ),
+                DailyStatRing(consumed: 1500, burned: 2000, target: 2000),
               ),
               _buildExample(
                 'At Target',
-                DailyStatRing(
-                  consumed: 2000,
-                  burned: 2000,
-                  target: 2000,
-                ),
+                DailyStatRing(consumed: 2000, burned: 2000, target: 2000),
               ),
               _buildExample(
                 'Over Target',
-                DailyStatRing(
-                  consumed: 2500,
-                  burned: 2000,
-                  target: 2000,
-                ),
+                DailyStatRing(consumed: 2500, burned: 2000, target: 2000),
               ),
               _buildExample(
                 'Very Active Day',
-                DailyStatRing(
-                  consumed: 1800,
-                  burned: 3000,
-                  target: 2200,
-                ),
+                DailyStatRing(consumed: 1800, burned: 3000, target: 2200),
               ),
             ],
           ),
@@ -245,10 +229,7 @@ Widget _buildExample(String title, Widget widget) {
     children: [
       Text(
         title,
-        style: const TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-        ),
+        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
       ),
       const SizedBox(height: 8),
       widget,

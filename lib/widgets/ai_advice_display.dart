@@ -8,14 +8,14 @@ import 'nutrition_summary_card.dart';
 class AiAdviceDisplay extends StatelessWidget {
   /// The advice data to display
   final AiAdviceResponse advice;
-  
+
   /// Constructor
   const AiAdviceDisplay({super.key, required this.advice});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(
@@ -28,8 +28,7 @@ class AiAdviceDisplay extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(TontonSpacing.md),
             decoration: BoxDecoration(
-              color: theme.colorScheme.primaryContainer
-                  .withValues(alpha: 0.7),
+              color: theme.colorScheme.primaryContainer.withValues(alpha: 0.7),
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(TontonRadius.lg),
                 topRight: Radius.circular(TontonRadius.lg),
@@ -60,7 +59,7 @@ class AiAdviceDisplay extends StatelessWidget {
               ],
             ),
           ),
-          
+
           // Card content
           Padding(
             padding: const EdgeInsets.all(TontonSpacing.md),
@@ -96,14 +95,15 @@ class AiAdviceDisplay extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: TontonSpacing.md),
-                
+
                 // Remaining calorie goal (if met or exceeded)
                 if (advice.calorieGoalMetOrExceeded)
                   _buildInfoItem(
                     context: context,
                     icon: TontonIcons.energy,
                     title: 'Daily Calorie Goal',
-                    content: 'Your daily calorie goal has been reached or exceeded! 🎉',
+                    content:
+                        'Your daily calorie goal has been reached or exceeded! 🎉',
                   )
                 // Menu suggestion (if available)
                 else if (advice.menuSuggestion != null)
@@ -114,7 +114,8 @@ class AiAdviceDisplay extends StatelessWidget {
                     context: context,
                     icon: Icons.no_meals,
                     title: 'No Menu Suggestion',
-                    content: 'Based on your meals today, a specific menu suggestion is not available.',
+                    content:
+                        'Based on your meals today, a specific menu suggestion is not available.',
                   ),
               ],
             ),
@@ -123,12 +124,12 @@ class AiAdviceDisplay extends StatelessWidget {
       ),
     );
   }
-  
+
   /// Builds the menu suggestion section of the advice display
   Widget _buildMenuSuggestion(BuildContext context, AiAdviceResponse advice) {
     final theme = Theme.of(context);
     final menuSuggestion = advice.menuSuggestion!;
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -141,7 +142,7 @@ class AiAdviceDisplay extends StatelessWidget {
           isHighlighted: true,
         ),
         const SizedBox(height: TontonSpacing.sm),
-        
+
         // Menu description
         Padding(
           padding: const EdgeInsets.only(left: TontonSpacing.xl),
@@ -151,18 +152,18 @@ class AiAdviceDisplay extends StatelessWidget {
           ),
         ),
         const SizedBox(height: TontonSpacing.md),
-        
+
         // Nutrition card for the suggested meal
         NutritionSummaryCard(
-            title: 'Estimated Nutrition',
-            calories: menuSuggestion.estimatedNutrition.calories,
-            protein: menuSuggestion.estimatedNutrition.protein,
-            fat: menuSuggestion.estimatedNutrition.fat,
-            carbs: menuSuggestion.estimatedNutrition.carbohydrates,
-            showPercentages: true,
+          title: 'Estimated Nutrition',
+          calories: menuSuggestion.estimatedNutrition.calories,
+          protein: menuSuggestion.estimatedNutrition.protein,
+          fat: menuSuggestion.estimatedNutrition.fat,
+          carbs: menuSuggestion.estimatedNutrition.carbohydrates,
+          showPercentages: true,
         ),
         const SizedBox(height: TontonSpacing.md),
-        
+
         // Recommendation reason
         _buildInfoItem(
           context: context,
@@ -170,7 +171,7 @@ class AiAdviceDisplay extends StatelessWidget {
           title: 'Why We Recommend This',
           content: menuSuggestion.recommendationReason,
         ),
-        
+
         // Target PFC breakdown (if available)
         if (advice.calculatedTargetPfcForLastMeal != null) ...[
           const SizedBox(height: TontonSpacing.md),
@@ -178,10 +179,11 @@ class AiAdviceDisplay extends StatelessWidget {
             context: context,
             icon: Icons.assignment_outlined,
             title: 'Nutritional Targets',
-            content: 'These are your optimal targets for your next meal to balance your daily intake.',
+            content:
+                'These are your optimal targets for your next meal to balance your daily intake.',
           ),
           const SizedBox(height: TontonSpacing.sm),
-          
+
           // Target values in a grid
           Padding(
             padding: const EdgeInsets.only(left: TontonSpacing.xl),
@@ -192,25 +194,29 @@ class AiAdviceDisplay extends StatelessWidget {
                 _buildNutrientChip(
                   context: context,
                   label: 'Calories',
-                  value: '${advice.remainingCaloriesForLastMeal?.toStringAsFixed(0) ?? "N/A"} kcal',
+                  value:
+                      '${advice.remainingCaloriesForLastMeal?.toStringAsFixed(0) ?? "N/A"} kcal',
                   color: theme.colorScheme.primary,
                 ),
                 _buildNutrientChip(
                   context: context,
                   label: 'Protein',
-                  value: '${advice.calculatedTargetPfcForLastMeal!.protein.toStringAsFixed(1)} g',
+                  value:
+                      '${advice.calculatedTargetPfcForLastMeal!.protein.toStringAsFixed(1)} g',
                   color: TontonColors.proteinColor,
                 ),
                 _buildNutrientChip(
                   context: context,
                   label: 'Fat',
-                  value: '${advice.calculatedTargetPfcForLastMeal!.fat.toStringAsFixed(1)} g',
+                  value:
+                      '${advice.calculatedTargetPfcForLastMeal!.fat.toStringAsFixed(1)} g',
                   color: TontonColors.fatColor,
                 ),
                 _buildNutrientChip(
                   context: context,
                   label: 'Carbs',
-                  value: '${advice.calculatedTargetPfcForLastMeal!.carbohydrate.toStringAsFixed(1)} g',
+                  value:
+                      '${advice.calculatedTargetPfcForLastMeal!.carbohydrate.toStringAsFixed(1)} g',
                   color: TontonColors.carbsColor,
                 ),
               ],
@@ -220,7 +226,7 @@ class AiAdviceDisplay extends StatelessWidget {
       ],
     );
   }
-  
+
   /// Helper to build information items with an icon and title
   Widget _buildInfoItem({
     required BuildContext context,
@@ -230,23 +236,25 @@ class AiAdviceDisplay extends StatelessWidget {
     bool isHighlighted = false,
   }) {
     final theme = Theme.of(context);
-    
+
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
           padding: const EdgeInsets.all(TontonSpacing.xs),
           decoration: BoxDecoration(
-            color: isHighlighted
-                ? theme.colorScheme.primary
-                : theme.colorScheme.surfaceContainerHighest,
+            color:
+                isHighlighted
+                    ? theme.colorScheme.primary
+                    : theme.colorScheme.surfaceContainerHighest,
             borderRadius: BorderRadius.circular(TontonRadius.sm),
           ),
           child: Icon(
             icon,
-            color: isHighlighted
-                ? theme.colorScheme.onPrimary 
-                : theme.colorScheme.onSurfaceVariant,
+            color:
+                isHighlighted
+                    ? theme.colorScheme.onPrimary
+                    : theme.colorScheme.onSurfaceVariant,
             size: 18,
           ),
         ),
@@ -259,23 +267,21 @@ class AiAdviceDisplay extends StatelessWidget {
                 title,
                 style: theme.textTheme.titleSmall?.copyWith(
                   fontWeight: FontWeight.bold,
-                  color: isHighlighted
-                      ? theme.colorScheme.primary
-                      : theme.colorScheme.onSurface,
+                  color:
+                      isHighlighted
+                          ? theme.colorScheme.primary
+                          : theme.colorScheme.onSurface,
                 ),
               ),
               const SizedBox(height: TontonSpacing.xs),
-              Text(
-                content,
-                style: theme.textTheme.bodyMedium,
-              ),
+              Text(content, style: theme.textTheme.bodyMedium),
             ],
           ),
         ),
       ],
     );
   }
-  
+
   /// Build a chip to display nutrient information
   Widget _buildNutrientChip({
     required BuildContext context,
@@ -284,7 +290,7 @@ class AiAdviceDisplay extends StatelessWidget {
     required Color color,
   }) {
     final theme = Theme.of(context);
-    
+
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: TontonSpacing.sm,
@@ -293,9 +299,7 @@ class AiAdviceDisplay extends StatelessWidget {
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(TontonRadius.md),
-        border: Border.all(
-          color: color.withValues(alpha: 0.3),
-        ),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,

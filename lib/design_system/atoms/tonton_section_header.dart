@@ -5,19 +5,19 @@ import '../../theme/app_theme.dart';
 class SectionHeader extends StatelessWidget {
   /// The title text to display
   final String title;
-  
+
   /// Optional subtitle text to display
   final String? subtitle;
-  
+
   /// Optional icon to display before the title
   final IconData? icon;
-  
+
   /// Optional action widget (usually a button) to display on the right
   final Widget? action;
-  
+
   /// Constructor for SectionHeader
   const SectionHeader({
-    super.key, 
+    super.key,
     required this.title,
     this.subtitle,
     this.icon,
@@ -27,7 +27,7 @@ class SectionHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -39,26 +39,18 @@ class SectionHeader extends StatelessWidget {
             Row(
               children: [
                 if (icon != null) ...[
-                  Icon(
-                    icon,
-                    color: theme.colorScheme.primary,
-                    size: 20,
-                  ),
+                  Icon(icon, color: theme.colorScheme.primary, size: 20),
                   const SizedBox(width: TontonSpacing.sm),
                 ],
-                Text(
-                  title,
-                  style: theme.textTheme.titleLarge,
-                ),
+                Text(title, style: theme.textTheme.titleLarge),
               ],
             ),
-            
+
             // Optional action button
-            if (action != null)
-              action!,
+            if (action != null) action!,
           ],
         ),
-        
+
         // Optional subtitle
         if (subtitle != null) ...[
           const SizedBox(height: TontonSpacing.xs),

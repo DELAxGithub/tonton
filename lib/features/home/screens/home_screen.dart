@@ -36,7 +36,6 @@ class HomeScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(currentUserProvider);
 
-
     final dailySummaryAsync = ref.watch(todayCalorieSummaryProvider);
 
     final greeting = _greetingFor(DateTime.now());
@@ -49,37 +48,33 @@ class HomeScreen extends ConsumerWidget {
         return Scaffold(
           body: StandardPageLayout(
             children: [
-            Padding(
-              padding: const EdgeInsets.only(bottom: Spacing.md),
-              child: Text(
-                '$greeting、$userName',
-                style: Theme.of(context).textTheme.titleLarge,
+              Padding(
+                padding: const EdgeInsets.only(bottom: Spacing.md),
+                child: Text(
+                  '$greeting、$userName',
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
               ),
-            ),
-            const HeroPiggyBankDisplay(),
-            const SizedBox(height: Spacing.xl),
-            const CalorieSummaryRow(),
-            const SizedBox(height: Spacing.md),
-            const PfcBalanceCard(),
-            const SizedBox(height: Spacing.xl),
-            const AiAdviceCardCompact(),
-            const SizedBox(height: Spacing.xl),
-            const TodaysMealRecordsList(),
-            const SizedBox(height: Spacing.xxl),
-          ],
+              const HeroPiggyBankDisplay(),
+              const SizedBox(height: Spacing.xl),
+              const CalorieSummaryRow(),
+              const SizedBox(height: Spacing.md),
+              const PfcBalanceCard(),
+              const SizedBox(height: Spacing.xl),
+              const AiAdviceCardCompact(),
+              const SizedBox(height: Spacing.xl),
+              const TodaysMealRecordsList(),
+              const SizedBox(height: Spacing.xxl),
+            ],
           ),
           floatingActionButton: FloatingActionButton.large(
             onPressed: () => context.push(TontonRoutes.aiMealCamera),
             backgroundColor: Theme.of(context).colorScheme.primary,
-            child: const Icon(
-              Icons.add,
-              size: 36,
-            ),
+            child: const Icon(Icons.add, size: 36),
           ),
           floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
         );
       },
     );
   }
-
 }

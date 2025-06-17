@@ -16,10 +16,10 @@ class AiAdviceRequest {
   });
 
   Map<String, dynamic> toJson() => {
-        'targetCalories': targetCalories,
-        'targetPfcRatio': targetPfcRatio.toJson(),
-        'consumedMealsPfc': consumedMealsPfc.toJson(),
-        'activeCalories': activeCalories,
-        'lang': lang,
-      };
+    'targetCalories': targetCalories,
+    'targetPfcRatio': targetPfcRatio.toJson(),
+    'consumedMealsPfc': consumedMealsPfc.toJson(),
+    'activeCalories': activeCalories,
+    'lang': lang,
+  };
 }

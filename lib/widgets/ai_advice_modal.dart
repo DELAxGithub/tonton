@@ -22,7 +22,8 @@ class _AIAdviceModalContent extends ConsumerStatefulWidget {
   const _AIAdviceModalContent();
 
   @override
-  ConsumerState<_AIAdviceModalContent> createState() => _AIAdviceModalContentState();
+  ConsumerState<_AIAdviceModalContent> createState() =>
+      _AIAdviceModalContentState();
 }
 
 class _AIAdviceModalContentState extends ConsumerState<_AIAdviceModalContent> {
@@ -38,7 +39,7 @@ class _AIAdviceModalContentState extends ConsumerState<_AIAdviceModalContent> {
   void _fetchAdviceIfNeeded() {
     final adviceState = ref.read(cachedAiAdviceProvider);
     final todayMeals = ref.read(todaysMealRecordsProvider);
-    
+
     // キャッシュがない場合やエラーの場合に新規取得
     if (!adviceState.hasValue || adviceState.hasError) {
       final locale = Localizations.localeOf(context).languageCode;
@@ -50,7 +51,7 @@ class _AIAdviceModalContentState extends ConsumerState<_AIAdviceModalContent> {
     // キャッシュを無効化して再取得
     await ref.read(aiAdviceCacheProvider.notifier).invalidateCache();
     ref.read(aiAdviceProvider.notifier).reset();
-    
+
     final todayMeals = ref.read(todaysMealRecordsProvider);
     final locale = Localizations.localeOf(context).languageCode;
     ref.read(aiAdviceProvider.notifier).fetchAdvice(todayMeals, locale);
@@ -63,7 +64,7 @@ class _AIAdviceModalContentState extends ConsumerState<_AIAdviceModalContent> {
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Container(
-      height: screenHeight * 0.85,  // 高さを増やして表示領域を拡大
+      height: screenHeight * 0.85, // 高さを増やして表示領域を拡大
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
@@ -80,7 +81,7 @@ class _AIAdviceModalContentState extends ConsumerState<_AIAdviceModalContent> {
               borderRadius: BorderRadius.circular(2),
             ),
           ),
-          
+
           // ヘッダー
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 16, 8, 16),
@@ -92,10 +93,7 @@ class _AIAdviceModalContentState extends ConsumerState<_AIAdviceModalContent> {
                     color: theme.colorScheme.primaryContainer,
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Text(
-                    '🐷',
-                    style: theme.textTheme.titleLarge,
-                  ),
+                  child: Text('🐷', style: theme.textTheme.titleLarge),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -124,50 +122,50 @@ class _AIAdviceModalContentState extends ConsumerState<_AIAdviceModalContent> {
               ],
             ),
           ),
-          
+
           const Divider(height: 1),
-          
+
           // コンテンツ
           Expanded(
             child: adviceAsync.when(
-              loading: () => const Center(
-                child: LoadingIndicator(
-                  message: 'AIアドバイスを生成中...',
-                ),
-              ),
-              error: (error, _) => Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(24),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.error_outline,
-                        size: 64,
-                        color: theme.colorScheme.error,
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        'アドバイスの取得に失敗しました',
-                        style: theme.textTheme.titleMedium,
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        error.toString(),
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 24),
-                      TontonButton.primary(
-                        label: '再試行',
-                        onPressed: _refreshAdvice,
-                      ),
-                    ],
+              loading:
+                  () => const Center(
+                    child: LoadingIndicator(message: 'AIアドバイスを生成中...'),
                   ),
-                ),
-              ),
+              error:
+                  (error, _) => Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.error_outline,
+                            size: 64,
+                            color: theme.colorScheme.error,
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            'アドバイスの取得に失敗しました',
+                            style: theme.textTheme.titleMedium,
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            error.toString(),
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 24),
+                          TontonButton.primary(
+                            label: '再試行',
+                            onPressed: _refreshAdvice,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
               data: (advice) {
                 if (advice == null) {
                   return Center(
@@ -204,35 +202,54 @@ class _AIAdviceModalContentState extends ConsumerState<_AIAdviceModalContent> {
                     ),
                   );
                 }
-                
+
                 return SingleChildScrollView(
-                  padding: const EdgeInsets.fromLTRB(24, 24, 24, 48), // 下部に余白を追加
+                  padding: const EdgeInsets.fromLTRB(
+                    24,
+                    24,
+                    24,
+                    48,
+                  ), // 下部に余白を追加
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // カロリー貯金状況
-                      if (advice.currentSavings != null && advice.savingsStatus != null) ...[
+                      if (advice.currentSavings != null &&
+                          advice.savingsStatus != null) ...[
                         Container(
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
-                            color: advice.savingsStatus == '黒字' 
-                                ? TontonColors.success.withValues(alpha: 0.1)
-                                : TontonColors.warning.withValues(alpha: 0.1),
+                            color:
+                                advice.savingsStatus == '黒字'
+                                    ? TontonColors.success.withValues(
+                                      alpha: 0.1,
+                                    )
+                                    : TontonColors.warning.withValues(
+                                      alpha: 0.1,
+                                    ),
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
-                              color: advice.savingsStatus == '黒字'
-                                  ? TontonColors.success.withValues(alpha: 0.3)
-                                  : TontonColors.warning.withValues(alpha: 0.3),
+                              color:
+                                  advice.savingsStatus == '黒字'
+                                      ? TontonColors.success.withValues(
+                                        alpha: 0.3,
+                                      )
+                                      : TontonColors.warning.withValues(
+                                        alpha: 0.3,
+                                      ),
                             ),
                           ),
                           child: Row(
                             children: [
                               Icon(
-                                advice.savingsStatus == '黒字' ? Icons.savings : Icons.trending_down,
+                                advice.savingsStatus == '黒字'
+                                    ? Icons.savings
+                                    : Icons.trending_down,
                                 size: 24,
-                                color: advice.savingsStatus == '黒字' 
-                                    ? TontonColors.success
-                                    : TontonColors.warning,
+                                color:
+                                    advice.savingsStatus == '黒字'
+                                        ? TontonColors.success
+                                        : TontonColors.warning,
                               ),
                               const SizedBox(width: 12),
                               Column(
@@ -244,12 +261,14 @@ class _AIAdviceModalContentState extends ConsumerState<_AIAdviceModalContent> {
                                   ),
                                   Text(
                                     '${advice.currentSavings} kcal (${advice.savingsStatus})',
-                                    style: theme.textTheme.titleMedium?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      color: advice.savingsStatus == '黒字'
-                                          ? TontonColors.success
-                                          : TontonColors.warning,
-                                    ),
+                                    style: theme.textTheme.titleMedium
+                                        ?.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                          color:
+                                              advice.savingsStatus == '黒字'
+                                                  ? TontonColors.success
+                                                  : TontonColors.warning,
+                                        ),
                                   ),
                                 ],
                               ),
@@ -258,16 +277,23 @@ class _AIAdviceModalContentState extends ConsumerState<_AIAdviceModalContent> {
                         ),
                         const SizedBox(height: 16),
                       ],
-                      
+
                       // トントン先生からのメッセージ
                       if (advice.tontonAdvice != null) ...[
                         Container(
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
-                              colors: advice.isHaruMode == true
-                                  ? [Colors.pink.shade50, Colors.purple.shade50]
-                                  : [theme.colorScheme.primaryContainer, theme.colorScheme.secondaryContainer],
+                              colors:
+                                  advice.isHaruMode == true
+                                      ? [
+                                        Colors.pink.shade50,
+                                        Colors.purple.shade50,
+                                      ]
+                                      : [
+                                        theme.colorScheme.primaryContainer,
+                                        theme.colorScheme.secondaryContainer,
+                                      ],
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
                             ),
@@ -284,7 +310,9 @@ class _AIAdviceModalContentState extends ConsumerState<_AIAdviceModalContent> {
                                   ),
                                   const SizedBox(width: 8),
                                   Text(
-                                    advice.isHaruMode == true ? 'ハルちゃん' : 'トントン先生',
+                                    advice.isHaruMode == true
+                                        ? 'ハルちゃん'
+                                        : 'トントン先生',
                                     style: theme.textTheme.titleSmall?.copyWith(
                                       fontWeight: FontWeight.bold,
                                     ),
@@ -292,17 +320,22 @@ class _AIAdviceModalContentState extends ConsumerState<_AIAdviceModalContent> {
                                   if (advice.specialDayTheme != null) ...[
                                     const SizedBox(width: 8),
                                     Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                        vertical: 2,
+                                      ),
                                       decoration: BoxDecoration(
                                         color: theme.colorScheme.tertiary,
                                         borderRadius: BorderRadius.circular(8),
                                       ),
                                       child: Text(
                                         advice.specialDayTheme!,
-                                        style: theme.textTheme.labelSmall?.copyWith(
-                                          color: theme.colorScheme.onTertiary,
-                                          fontWeight: FontWeight.bold,
-                                        ),
+                                        style: theme.textTheme.labelSmall
+                                            ?.copyWith(
+                                              color:
+                                                  theme.colorScheme.onTertiary,
+                                              fontWeight: FontWeight.bold,
+                                            ),
                                       ),
                                     ),
                                   ],
@@ -318,13 +351,14 @@ class _AIAdviceModalContentState extends ConsumerState<_AIAdviceModalContent> {
                         ),
                         const SizedBox(height: 16),
                       ],
-                      
+
                       // 今日の摂取状況サマリー
                       if (advice.todaysSummary != null) ...[
                         Container(
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
-                            color: theme.colorScheme.secondaryContainer.withValues(alpha: 0.2),
+                            color: theme.colorScheme.secondaryContainer
+                                .withValues(alpha: 0.2),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Column(
@@ -356,11 +390,28 @@ class _AIAdviceModalContentState extends ConsumerState<_AIAdviceModalContent> {
                               ),
                               const SizedBox(height: 8),
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
-                                  _buildBalanceStatus('タンパク質', advice.todaysSummary!.balanceStatus['protein']!, theme),
-                                  _buildBalanceStatus('脂質', advice.todaysSummary!.balanceStatus['fat']!, theme),
-                                  _buildBalanceStatus('炭水化物', advice.todaysSummary!.balanceStatus['carbohydrate']!, theme),
+                                  _buildBalanceStatus(
+                                    'タンパク質',
+                                    advice
+                                        .todaysSummary!
+                                        .balanceStatus['protein']!,
+                                    theme,
+                                  ),
+                                  _buildBalanceStatus(
+                                    '脂質',
+                                    advice.todaysSummary!.balanceStatus['fat']!,
+                                    theme,
+                                  ),
+                                  _buildBalanceStatus(
+                                    '炭水化物',
+                                    advice
+                                        .todaysSummary!
+                                        .balanceStatus['carbohydrate']!,
+                                    theme,
+                                  ),
                                 ],
                               ),
                             ],
@@ -368,12 +419,14 @@ class _AIAdviceModalContentState extends ConsumerState<_AIAdviceModalContent> {
                         ),
                         const SizedBox(height: 16),
                       ],
-                      
+
                       // メインアドバイス
                       Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: theme.colorScheme.primaryContainer.withValues(alpha: 0.3),
+                          color: theme.colorScheme.primaryContainer.withValues(
+                            alpha: 0.3,
+                          ),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Column(
@@ -404,7 +457,7 @@ class _AIAdviceModalContentState extends ConsumerState<_AIAdviceModalContent> {
                           ],
                         ),
                       ),
-                      
+
                       // メニュー提案（v1形式）
                       if (advice.menuSuggestion != null) ...[
                         const SizedBox(height: 24),
@@ -418,7 +471,8 @@ class _AIAdviceModalContentState extends ConsumerState<_AIAdviceModalContent> {
                         Container(
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
-                            color: theme.colorScheme.secondaryContainer.withValues(alpha: 0.3),
+                            color: theme.colorScheme.secondaryContainer
+                                .withValues(alpha: 0.3),
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
                               color: theme.colorScheme.secondaryContainer,
@@ -448,7 +502,8 @@ class _AIAdviceModalContentState extends ConsumerState<_AIAdviceModalContent> {
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround,
                                   children: [
                                     _buildNutrientInfo(
                                       'カロリー',
@@ -484,10 +539,16 @@ class _AIAdviceModalContentState extends ConsumerState<_AIAdviceModalContent> {
                                   const SizedBox(width: 8),
                                   Expanded(
                                     child: Text(
-                                      advice.menuSuggestion!.recommendationReason,
-                                      style: theme.textTheme.bodySmall?.copyWith(
-                                        color: theme.colorScheme.onSurfaceVariant,
-                                      ),
+                                      advice
+                                          .menuSuggestion!
+                                          .recommendationReason,
+                                      style: theme.textTheme.bodySmall
+                                          ?.copyWith(
+                                            color:
+                                                theme
+                                                    .colorScheme
+                                                    .onSurfaceVariant,
+                                          ),
                                     ),
                                   ),
                                 ],
@@ -506,9 +567,10 @@ class _AIAdviceModalContentState extends ConsumerState<_AIAdviceModalContent> {
                           ),
                         ),
                       ],
-                      
+
                       // おすすめの食品・メニュー（v2形式）
-                      if (advice.suggestions != null && advice.suggestions!.isNotEmpty) ...[
+                      if (advice.suggestions != null &&
+                          advice.suggestions!.isNotEmpty) ...[
                         const SizedBox(height: 24),
                         Text(
                           'その他のおすすめ',
@@ -517,36 +579,42 @@ class _AIAdviceModalContentState extends ConsumerState<_AIAdviceModalContent> {
                           ),
                         ),
                         const SizedBox(height: 12),
-                        ...advice.suggestions!.map((suggestion) => Padding(
-                          padding: const EdgeInsets.only(bottom: 8),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                margin: const EdgeInsets.only(top: 2),
-                                padding: const EdgeInsets.all(4),
-                                decoration: BoxDecoration(
-                                  color: TontonColors.success.withValues(alpha: 0.2),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: Icon(
-                                  Icons.check,
-                                  size: 12,
-                                  color: TontonColors.success,
+                        ...advice.suggestions!
+                            .map(
+                              (suggestion) => Padding(
+                                padding: const EdgeInsets.only(bottom: 8),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Container(
+                                      margin: const EdgeInsets.only(top: 2),
+                                      padding: const EdgeInsets.all(4),
+                                      decoration: BoxDecoration(
+                                        color: TontonColors.success.withValues(
+                                          alpha: 0.2,
+                                        ),
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: Icon(
+                                        Icons.check,
+                                        size: 12,
+                                        color: TontonColors.success,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Expanded(
+                                      child: Text(
+                                        suggestion,
+                                        style: theme.textTheme.bodyMedium,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Text(
-                                  suggestion,
-                                  style: theme.textTheme.bodyMedium,
-                                ),
-                              ),
-                            ],
-                          ),
-                        )).toList(),
+                            )
+                            .toList(),
                       ],
-                      
+
                       // 注意事項
                       if (advice.warning != null) ...[
                         const SizedBox(height: 24),
@@ -556,7 +624,9 @@ class _AIAdviceModalContentState extends ConsumerState<_AIAdviceModalContent> {
                             color: TontonColors.warning.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
-                              color: TontonColors.warning.withValues(alpha: 0.3),
+                              color: TontonColors.warning.withValues(
+                                alpha: 0.3,
+                              ),
                             ),
                           ),
                           child: Row(
@@ -578,7 +648,7 @@ class _AIAdviceModalContentState extends ConsumerState<_AIAdviceModalContent> {
                           ),
                         ),
                       ],
-                      
+
                       // 更新ボタン
                       const SizedBox(height: 32),
                       Center(
@@ -598,7 +668,7 @@ class _AIAdviceModalContentState extends ConsumerState<_AIAdviceModalContent> {
       ),
     );
   }
-  
+
   Widget _buildNutrientInfo(String label, String value, ThemeData theme) {
     return Column(
       children: [
@@ -618,16 +688,22 @@ class _AIAdviceModalContentState extends ConsumerState<_AIAdviceModalContent> {
       ],
     );
   }
-  
+
   Widget _buildBalanceStatus(String nutrient, String status, ThemeData theme) {
-    final color = status == '過剰' ? TontonColors.error :
-                  status == '不足' ? TontonColors.warning :
-                  TontonColors.success;
-    
-    final icon = status == '過剰' ? Icons.arrow_upward :
-                 status == '不足' ? Icons.arrow_downward :
-                 Icons.check_circle;
-    
+    final color =
+        status == '過剰'
+            ? TontonColors.error
+            : status == '不足'
+            ? TontonColors.warning
+            : TontonColors.success;
+
+    final icon =
+        status == '過剰'
+            ? Icons.arrow_upward
+            : status == '不足'
+            ? Icons.arrow_downward
+            : Icons.check_circle;
+
     return Row(
       children: [
         Icon(icon, size: 16, color: color),

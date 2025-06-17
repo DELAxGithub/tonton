@@ -5,33 +5,33 @@ import '../theme/app_theme.dart';
 class NutritionSummaryCard extends StatelessWidget {
   /// Calories value
   final double calories;
-  
+
   /// Protein value (g)
   final double protein;
-  
+
   /// Fat value (g)
   final double fat;
-  
+
   /// Carbs value (g)
   final double carbs;
-  
+
   /// Optional title for the card
   final String? title;
-  
+
   /// Optional subtitle for the card
   final String? subtitle;
 
   /// Optional action button
   final Widget? action;
-  
+
   /// Show or hide macronutrient percentages
   final bool showPercentages;
-  
+
   const NutritionSummaryCard({
     super.key,
     required this.calories,
     required this.protein,
-    required this.fat, 
+    required this.fat,
     required this.carbs,
     this.title,
     this.subtitle,
@@ -42,22 +42,25 @@ class NutritionSummaryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     // Calculate percentages based on 4-4-9 calorie distribution
     // (4 cal/g for protein, 4 cal/g for carbs, 9 cal/g for fat)
     final totalCaloriesFromMacros = (protein * 4) + (carbs * 4) + (fat * 9);
-    
+
     // Avoid division by zero
-    final double proteinPercentage = totalCaloriesFromMacros > 0 
-        ? ((protein * 4) / totalCaloriesFromMacros * 100).clamp(0, 100)
-        : 0;
-    final double carbsPercentage = totalCaloriesFromMacros > 0 
-        ? ((carbs * 4) / totalCaloriesFromMacros * 100).clamp(0, 100)
-        : 0;
-    final double fatPercentage = totalCaloriesFromMacros > 0 
-        ? ((fat * 9) / totalCaloriesFromMacros * 100).clamp(0, 100)
-        : 0;
-    
+    final double proteinPercentage =
+        totalCaloriesFromMacros > 0
+            ? ((protein * 4) / totalCaloriesFromMacros * 100).clamp(0, 100)
+            : 0;
+    final double carbsPercentage =
+        totalCaloriesFromMacros > 0
+            ? ((carbs * 4) / totalCaloriesFromMacros * 100).clamp(0, 100)
+            : 0;
+    final double fatPercentage =
+        totalCaloriesFromMacros > 0
+            ? ((fat * 9) / totalCaloriesFromMacros * 100).clamp(0, 100)
+            : 0;
+
     return Card(
       elevation: 2,
       margin: const EdgeInsets.symmetric(vertical: TontonSpacing.sm),
@@ -80,13 +83,10 @@ class NutritionSummaryCard extends StatelessWidget {
                     )
                   else
                     const SizedBox.shrink(),
-                  if (action != null)
-                    action!
-                  else
-                    const SizedBox.shrink(),
+                  if (action != null) action! else const SizedBox.shrink(),
                 ],
               ),
-              
+
             // Subtitle if provided
             if (subtitle != null)
               Padding(
@@ -98,11 +98,11 @@ class NutritionSummaryCard extends StatelessWidget {
                   ),
                 ),
               ),
-              
+
             // Add spacing if we have header content
             if (title != null || subtitle != null || action != null)
               const SizedBox(height: TontonSpacing.md),
-            
+
             // Calories
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -123,9 +123,9 @@ class NutritionSummaryCard extends StatelessWidget {
                 ),
               ],
             ),
-            
+
             const SizedBox(height: TontonSpacing.md),
-            
+
             // Macronutrient distribution bar
             Container(
               height: 12,
@@ -153,9 +153,9 @@ class NutritionSummaryCard extends StatelessWidget {
                 ],
               ),
             ),
-            
+
             const SizedBox(height: TontonSpacing.md),
-            
+
             // Macronutrient breakdown
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -168,7 +168,7 @@ class NutritionSummaryCard extends StatelessWidget {
                   percentage: showPercentages ? proteinPercentage : null,
                   color: TontonColors.proteinColor,
                 ),
-                
+
                 // Carbs
                 _buildMacronutrientInfo(
                   context: context,
@@ -177,7 +177,7 @@ class NutritionSummaryCard extends StatelessWidget {
                   percentage: showPercentages ? carbsPercentage : null,
                   color: TontonColors.carbsColor,
                 ),
-                
+
                 // Fat
                 _buildMacronutrientInfo(
                   context: context,
@@ -193,7 +193,7 @@ class NutritionSummaryCard extends StatelessWidget {
       ),
     );
   }
-  
+
   Widget _buildMacronutrientInfo({
     required BuildContext context,
     required String label,
@@ -202,7 +202,7 @@ class NutritionSummaryCard extends StatelessWidget {
     required Color color,
   }) {
     final theme = Theme.of(context);
-    
+
     return Column(
       children: [
         // Label with color indicator
@@ -212,10 +212,7 @@ class NutritionSummaryCard extends StatelessWidget {
             Container(
               width: 10,
               height: 10,
-              decoration: BoxDecoration(
-                color: color,
-                shape: BoxShape.circle,
-              ),
+              decoration: BoxDecoration(color: color, shape: BoxShape.circle),
             ),
             const SizedBox(width: 4),
             Text(
@@ -238,9 +235,7 @@ class NutritionSummaryCard extends StatelessWidget {
         if (percentage != null)
           Text(
             '${percentage.toStringAsFixed(0)}%',
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: color,
-            ),
+            style: theme.textTheme.bodySmall?.copyWith(color: color),
           ),
       ],
     );

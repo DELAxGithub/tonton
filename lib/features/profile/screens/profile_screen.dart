@@ -343,15 +343,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                               items: const [
                                 DropdownMenuItem(
                                   value: 'young', 
-                                  child: Text('若い頃と変わらない'),
+                                  child: Text('変わらない', style: TextStyle(fontSize: 13)),
                                 ),
                                 DropdownMenuItem(
                                   value: 'middle', 
-                                  child: Text('脂肪が増えやすくなった'),
+                                  child: Text('脂肪増加', style: TextStyle(fontSize: 13)),
                                 ),
                                 DropdownMenuItem(
                                   value: 'senior', 
-                                  child: Text('健康が気になってきた'),
+                                  child: Text('健康重視', style: TextStyle(fontSize: 13)),
                                 ),
                               ],
                               onChanged: (String? newValue) async {
@@ -579,11 +579,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             : '未設定';
     final ageGroupText =
         userProfile.ageGroup == 'young'
-            ? '若い頃と変わらない'
+            ? '変わらない'
             : userProfile.ageGroup == 'middle'
-            ? '脂肪が増えやすくなった'
+            ? '脂肪増加'
             : userProfile.ageGroup == 'senior'
-            ? '健康が気になってきた'
+            ? '健康重視'
             : '未設定';
 
     return TontonCardBase(

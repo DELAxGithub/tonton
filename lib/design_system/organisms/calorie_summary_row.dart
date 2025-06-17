@@ -30,8 +30,8 @@ class CalorieSummaryRow extends ConsumerWidget {
       orElse: () => 0.0,
     );
 
-    // Calculate net savings (consumed - burned)
-    final netSavings = consumedCalories - burnedCalories;
+    // Calculate net savings (burned - consumed)
+    final netSavings = burnedCalories - consumedCalories;
 
     return Row(
       children: [

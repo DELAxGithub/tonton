@@ -29,6 +29,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
   bool _isEditing = false;
   String? _savingField;
+  
+  // Track the last known weight to detect changes
+  double? _lastKnownWeight;
 
   @override
   void initState() {
@@ -135,6 +138,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     });
     await ref.read(userWeightProvider.notifier).setWeight(weight);
     await ref.read(userGoalsProvider.notifier).setBodyWeight(weight);
+    
+    // Update the last known weight to prevent field from being overwritten
+    _lastKnownWeight = weight;
+    
     setState(() {
       _isEditing = false;
       _savingField = null;
@@ -195,8 +202,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     if (_goalController.text.isEmpty) {
       _goalController.text = monthlyGoal.toStringAsFixed(0);
     }
-    if (userWeightRecord != null && _weightController.text.isEmpty) {
-      _weightController.text = userWeightRecord.weight.toString();
+    
+    // Handle weight field updates more carefully
+    if (userWeightRecord != null) {
+      final currentWeight = userWeightRecord.weight;
+      // Update if the weight value has changed or if the field is empty
+      if (_lastKnownWeight != currentWeight || _weightController.text.isEmpty) {
+        _weightController.text = currentWeight.toString();
+        _lastKnownWeight = currentWeight;
+      }
     }
 
     return GestureDetector(

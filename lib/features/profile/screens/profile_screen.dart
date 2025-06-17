@@ -13,6 +13,7 @@ import '../../../services/health_service.dart';
 import '../../../theme/tokens.dart';
 import '../../../theme/app_theme.dart';
 import '../../progress/providers/auto_pfc_provider.dart';
+import '../../../core/providers/monthly_progress_provider.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
@@ -104,7 +105,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       _isEditing = true;
       _savingField = 'goal';
     });
-    ref.read(monthlyCalorieGoalProvider.notifier).setGoal(goal);
+    
+    // Use the monthly target notifier to ensure synchronization with home screen
+    await ref.read(monthlyTargetNotifierProvider.notifier).updateTarget(goal);
+    
     setState(() {
       _isEditing = false;
       _savingField = null;
@@ -192,16 +196,23 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     final userName = ref.watch(userNameProvider);
     final userProfile = ref.watch(userProfileProvider);
     final startDate = ref.watch(onboardingStartDateProvider);
-    final monthlyGoal = ref.watch(monthlyCalorieGoalProvider);
+    final monthlyGoalAsync = ref.watch(monthlyTargetProvider);
     final userWeightRecord = ref.watch(latestWeightRecordProvider);
     final lastFetched = ref.watch(lastHealthFetchProvider);
 
     if (userName != null && _nameController.text.isEmpty) {
       _nameController.text = userName;
     }
-    if (_goalController.text.isEmpty) {
-      _goalController.text = monthlyGoal.toStringAsFixed(0);
-    }
+    // Handle monthly goal field updates
+    monthlyGoalAsync.when(
+      data: (monthlyGoal) {
+        if (_goalController.text.isEmpty) {
+          _goalController.text = monthlyGoal.toStringAsFixed(0);
+        }
+      },
+      loading: () {},
+      error: (_, __) {},
+    );
     
     // Handle weight field updates more carefully
     if (userWeightRecord != null) {

@@ -165,7 +165,7 @@
 https://github.com/DELAxGithub/tonton/wiki/support
 
 ### プライバシーポリシーURL
-https://delaxgithub.github.io/tonton/privacy-policy
+https://delaxgithub.github.io/tonton/privacy-policy.html
 
 ### マーケティングURL
 https://github.com/DELAxGithub/tonton

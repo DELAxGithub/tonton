@@ -5,7 +5,7 @@
 - [x] バージョン: 1.0.0+6
 - [x] カテゴリ: ヘルスケア＆フィットネス
 - [x] 年齢制限: 12+
-- [x] プライバシーポリシーURL: https://delaxgithub.github.io/tonton/privacy-policy
+- [x] プライバシーポリシーURL: https://delaxgithub.github.io/tonton/privacy-policy.html
 
 ## ✅ 技術要件
 - [x] iOS最小バージョン: 16.2
@@ -36,7 +36,7 @@
 - [ ] リポジトリ設定でGitHub Pagesを有効化
 - [ ] ブランチ: app-store-clean
 - [ ] フォルダ: / (root)
-- [ ] URLアクセス確認: https://delaxgithub.github.io/tonton/privacy-policy
+- [ ] URLアクセス確認: https://delaxgithub.github.io/tonton/privacy-policy.html
 
 ### 2. デモアカウント準備
 - [ ] reviewer@tonton-health.app のアカウント作成

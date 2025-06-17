@@ -15,9 +15,14 @@ class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
 
   Future<void> _openPrivacyPolicy() async {
-    final url = Uri.parse('https://hiroshikodera.github.io/tonton-privacy/');
+    final url = Uri.parse('https://delaxgithub.github.io/tonton/privacy-policy');
     if (await canLaunchUrl(url)) {
       await launchUrl(url, mode: LaunchMode.externalApplication);
+    } else {
+      // Fallback for development/testing
+      if (await canLaunchUrl(Uri.parse('mailto:info@delax.co.jp'))) {
+        await launchUrl(Uri.parse('mailto:info@delax.co.jp?subject=プライバシーポリシーについて'));
+      }
     }
   }
 

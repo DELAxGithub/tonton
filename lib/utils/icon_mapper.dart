@@ -12,18 +12,18 @@ class TontonIcons {
   /// Font family name for custom icons
   static const String _fontFamily = 'TontonIcons';
 
-  // Custom icon definitions from the generated font
-  static const IconData _iconArrow = IconData(0xe900, fontFamily: _fontFamily);
-  static const IconData _iconBicycle = IconData(0xe901, fontFamily: _fontFamily);
-  static const IconData _iconCamera = IconData(0xe902, fontFamily: _fontFamily);
-  static const IconData _iconCoin = IconData(0xe903, fontFamily: _fontFamily);
-  static const IconData _iconGraph = IconData(0xe904, fontFamily: _fontFamily);
-  static const IconData _iconPigface = IconData(0xe905, fontFamily: _fontFamily);
-  static const IconData _iconPiggybank = IconData(0xe906, fontFamily: _fontFamily);
-  static const IconData _iconPresent = IconData(0xe907, fontFamily: _fontFamily);
-  static const IconData _iconRestaurant = IconData(0xe908, fontFamily: _fontFamily);
-  static const IconData _iconScale = IconData(0xe909, fontFamily: _fontFamily);
-  static const IconData _iconWorkout = IconData(0xe90a, fontFamily: _fontFamily);
+  // Temporary fallback to system icons to fix build issue
+  static const IconData _iconArrow = Icons.arrow_forward;
+  static const IconData _iconBicycle = Icons.directions_bike;
+  static const IconData _iconCamera = Icons.camera_alt;
+  static const IconData _iconCoin = Icons.monetization_on;
+  static const IconData _iconGraph = Icons.show_chart;
+  static const IconData _iconPigface = Icons.face;
+  static const IconData _iconPiggybank = Icons.account_balance;
+  static const IconData _iconPresent = Icons.card_giftcard;
+  static const IconData _iconRestaurant = Icons.restaurant;
+  static const IconData _iconScale = Icons.monitor_weight;
+  static const IconData _iconWorkout = Icons.fitness_center;
 
   // Public accessors for custom icons
   static IconData get arrow => _iconArrow;

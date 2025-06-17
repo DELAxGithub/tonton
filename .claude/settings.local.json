@@ -47,7 +47,9 @@
       "Bash(java:*)",
       "Bash(git filter-branch:*)",
       "Bash('git rm --cached --ignore-unmatch .env.production .env' )",
-      "Bash(--prune-empty --tag-name-filter cat -- --all)"
+      "Bash(--prune-empty --tag-name-filter cat -- --all)",
+      "Bash(pip3 install:*)",
+      "Bash(cp:*)"
     ],
     "deny": []
   },

@@ -96,4 +96,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get testProvider => 'Test Provider';
+
+  @override
+  String get privacyPolicy => 'Privacy Policy';
+
+  @override
+  String get deleteAccount => 'Delete Account';
+
+  @override
+  String get deleteAccountConfirm => 'Are you sure you want to delete your account? This action cannot be undone.';
+
+  @override
+  String get permissionDeniedHealthKit => 'HealthKit access denied. Manual input only available.';
+
+  @override
+  String get permissionDeniedCamera => 'Camera access denied. AI meal analysis not available.';
 }

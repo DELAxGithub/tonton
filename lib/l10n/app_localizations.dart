@@ -268,6 +268,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Test Provider'**
   String get testProvider;
+
+  /// No description provided for @privacyPolicy.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy Policy'**
+  String get privacyPolicy;
+
+  /// No description provided for @deleteAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Account'**
+  String get deleteAccount;
+
+  /// No description provided for @deleteAccountConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete your account? This action cannot be undone.'**
+  String get deleteAccountConfirm;
+
+  /// No description provided for @permissionDeniedHealthKit.
+  ///
+  /// In en, this message translates to:
+  /// **'HealthKit access denied. Manual input only available.'**
+  String get permissionDeniedHealthKit;
+
+  /// No description provided for @permissionDeniedCamera.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera access denied. AI meal analysis not available.'**
+  String get permissionDeniedCamera;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

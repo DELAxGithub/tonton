@@ -20,7 +20,7 @@ class NavigationLinkCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(Radii.md.x),
+      borderRadius: Radii.mediumBorderRadius,
       child: TontonCardBase(
         child: Column(
           mainAxisSize: MainAxisSize.min,

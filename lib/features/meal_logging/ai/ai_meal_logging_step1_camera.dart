@@ -4,19 +4,40 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../routes/router.dart';
+import '../../../l10n/app_localizations.dart';
 
 /// Step 1: Screen for capturing or selecting a meal photo.
 class AIMealLoggingStep1Camera extends ConsumerWidget {
   const AIMealLoggingStep1Camera({super.key});
 
   Future<void> _pickImage(BuildContext context, ImageSource source) async {
+    final l10n = AppLocalizations.of(context)!;
     final picker = ImagePicker();
-    final XFile? file = await picker.pickImage(
-      source: source,
-      imageQuality: 100,
-    );
-    if (file != null && context.mounted) {
-      context.go(TontonRoutes.aiMealAnalyzing, extra: file.path);
+    
+    try {
+      final XFile? file = await picker.pickImage(
+        source: source,
+        imageQuality: 100,
+      );
+      if (file != null && context.mounted) {
+        context.go(TontonRoutes.aiMealAnalyzing, extra: file.path);
+      }
+    } catch (e) {
+      if (context.mounted) {
+        // Show permission denied message
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l10n.permissionDeniedCamera),
+            backgroundColor: Colors.orange,
+            action: SnackBarAction(
+              label: '設定',
+              onPressed: () {
+                // You could optionally open app settings here
+              },
+            ),
+          ),
+        );
+      }
     }
   }
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart'; // Import Riverpod
+import 'package:url_launcher/url_launcher.dart';
 
 import 'package:go_router/go_router.dart';
 
@@ -7,6 +8,7 @@ import '../../../routes/router.dart';
 import '../../../design_system/templates/standard_page_layout.dart';
 import '../../../design_system/atoms/tonton_button.dart';
 import '../../../providers/providers.dart';
+import '../../../l10n/app_localizations.dart';
 
 class SignupScreen extends ConsumerStatefulWidget { // Changed to ConsumerStatefulWidget
   const SignupScreen({super.key});
@@ -140,6 +142,29 @@ class _SignupScreenState extends ConsumerState<SignupScreen> { // Changed to Con
                     }
                     return null;
                   },
+                ),
+                const SizedBox(height: 16.0),
+                // Privacy policy agreement
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text("By signing up, you agree to our "),
+                    GestureDetector(
+                      onTap: () async {
+                        final url = Uri.parse('https://hiroshikodera.github.io/tonton-privacy/');
+                        if (await canLaunchUrl(url)) {
+                          await launchUrl(url, mode: LaunchMode.externalApplication);
+                        }
+                      },
+                      child: const Text(
+                        'Privacy Policy',
+                        style: TextStyle(
+                          color: Colors.blue,
+                          decoration: TextDecoration.underline,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 24.0),
                 _isLoading

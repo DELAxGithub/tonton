@@ -79,6 +79,17 @@ class MealDataService {
     developer.log('MealDataService: Meal record deleted and flushed. ID: $id', name: 'TonTon.MealDataService');
   }
 
+  Future<void> clearAllData() async {
+    if (!isInitialized) {
+      developer.log('MealDataService not initialized, cannot clear all data.', name: 'TonTon.MealDataService', level: 900);
+      throw StateError('MealDataService: Box not initialized. Cannot clear.');
+    }
+    developer.log('MealDataService: Clearing all meal records. Count: ${_mealRecordsBox!.values.length}', name: 'TonTon.MealDataService');
+    await _mealRecordsBox!.clear();
+    await _mealRecordsBox!.flush(); // Ensure data is written to disk
+    developer.log('MealDataService: All meal records cleared and flushed.', name: 'TonTon.MealDataService');
+  }
+
   Future<void> close() async {
     // Box closing is generally handled by Hive's lifecycle or a central manager.
     developer.log('MealDataService: Close called. Box management is typically global.', name: 'TonTon.MealDataService');

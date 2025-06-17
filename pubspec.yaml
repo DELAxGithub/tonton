@@ -40,6 +40,9 @@ dependencies:
   # Added for routing
   go_router: ^13.2.0
 
+  # Added for external links
+  url_launcher: ^6.2.4
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

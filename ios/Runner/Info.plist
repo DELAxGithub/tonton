@@ -36,6 +36,8 @@
 	<string>ワークアウトデータや健康記録を読み取るためにヘルスケアデータへのアクセスを許可してください。</string>
 	<key>NSHealthUpdateUsageDescription</key>
 	<string>健康データをヘルスケアアプリに記録するためにアクセスを許可してください。(このアプリでは書き込みは行いません)</string>
+	<key>LSApplicationContentRating</key>
+	<string>12</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>

@@ -27,5 +27,10 @@
   "aiAdviceError": "AIアドバイスの取得に失敗しました: {error}",
   "addMeal": "食事を追加",
   "debugPanel": "デバッグパネル",
-  "testProvider": "プロバイダーをテスト"
+  "testProvider": "プロバイダーをテスト",
+  "privacyPolicy": "プライバシーポリシー",
+  "deleteAccount": "アカウント削除",
+  "deleteAccountConfirm": "アカウントを削除しますか？この操作は取り消せません。",
+  "permissionDeniedHealthKit": "HealthKit未連携のため、手動入力のみ利用可能です",
+  "permissionDeniedCamera": "カメラ未許可のため、AI食事解析は利用できません"
 }

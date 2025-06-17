@@ -96,4 +96,19 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get testProvider => 'プロバイダーをテスト';
+
+  @override
+  String get privacyPolicy => 'プライバシーポリシー';
+
+  @override
+  String get deleteAccount => 'アカウント削除';
+
+  @override
+  String get deleteAccountConfirm => 'アカウントを削除しますか？この操作は取り消せません。';
+
+  @override
+  String get permissionDeniedHealthKit => 'HealthKit未連携のため、手動入力のみ利用可能です';
+
+  @override
+  String get permissionDeniedCamera => 'カメラ未許可のため、AI食事解析は利用できません';
 }

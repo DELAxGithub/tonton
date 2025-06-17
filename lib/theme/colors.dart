@@ -212,6 +212,11 @@ class TontonColors {
   static Color fillColor(BuildContext context) {
     return Theme.of(context).brightness == Brightness.dark ? fillDark : fill;
   }
+
+  /// Returns appropriate quaternary label color based on brightness
+  static Color quaternaryLabelColor(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark ? quaternaryLabelDark : quaternaryLabel;
+  }
 }
 
 // Legacy compatibility aliases

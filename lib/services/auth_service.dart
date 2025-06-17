@@ -72,6 +72,36 @@ class AuthService {
     }
   }
 
+  // Delete account
+  Future<void> deleteAccount() async {
+    try {
+      final user = currentUser;
+      if (user == null) {
+        throw Exception('No user is currently signed in.');
+      }
+      
+      developer.log('Attempting to delete account for user: ${user.id}', name: 'TonTon.AuthService');
+      
+      // Call Supabase admin API to delete user
+      // Note: This requires RLS policies and Edge Functions for proper implementation
+      // For now, we'll use the updateUser method to mark the account as deleted
+      await _supabase.auth.updateUser(
+        UserAttributes(data: {'deleted': true, 'deleted_at': DateTime.now().toIso8601String()})
+      );
+      
+      // Sign out after marking as deleted
+      await signOut();
+      
+      developer.log('Account deletion successful.', name: 'TonTon.AuthService');
+    } on AuthException catch (e) {
+      developer.log('Supabase AuthException during account deletion: ${e.message}', name: 'TonTon.AuthService.Error', error: e);
+      throw Exception('Account deletion failed: ${e.message}');
+    } catch (e, stackTrace) {
+      developer.log('Unexpected error during account deletion: $e', name: 'TonTon.AuthService.Exception', error: e, stackTrace: stackTrace);
+      throw Exception('Account deletion failed: An unexpected error occurred.');
+    }
+  }
+
   // Stream of authentication state changes
   Stream<AuthState> get authStateChanges => _supabase.auth.onAuthStateChange;
 }

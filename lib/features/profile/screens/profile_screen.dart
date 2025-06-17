@@ -243,7 +243,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   ),
                   const SizedBox(height: Spacing.md),
 
-                  // 性別と年齢層の表示
+                  // 性別と年齢層の選択
                   Row(
                     children: [
                       Expanded(
@@ -254,17 +254,47 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                               '性別',
                               style: Theme.of(context).textTheme.bodySmall,
                             ),
-                            Text(
-                              userProfile.gender == 'male'
-                                  ? '男性'
-                                  : userProfile.gender == 'female'
-                                  ? '女性'
-                                  : '未設定',
-                              style: Theme.of(context).textTheme.bodyMedium,
+                            const SizedBox(height: 4),
+                            DropdownButtonFormField<String>(
+                              value: userProfile.gender?.isNotEmpty == true 
+                                  ? userProfile.gender 
+                                  : null,
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(),
+                                contentPadding: EdgeInsets.symmetric(
+                                  horizontal: 12, 
+                                  vertical: 8,
+                                ),
+                              ),
+                              items: const [
+                                DropdownMenuItem(
+                                  value: 'male', 
+                                  child: Text('男性'),
+                                ),
+                                DropdownMenuItem(
+                                  value: 'female', 
+                                  child: Text('女性'),
+                                ),
+                              ],
+                              onChanged: (String? newValue) async {
+                                if (newValue != null) {
+                                  await ref
+                                      .read(userProfileProvider.notifier)
+                                      .updateGender(newValue);
+                                  if (mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text('性別を更新しました'),
+                                      ),
+                                    );
+                                  }
+                                }
+                              },
                             ),
                           ],
                         ),
                       ),
+                      const SizedBox(width: 16),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -273,15 +303,46 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                               '体の変化',
                               style: Theme.of(context).textTheme.bodySmall,
                             ),
-                            Text(
-                              userProfile.ageGroup == 'young'
-                                  ? '若い頃と変わらない'
-                                  : userProfile.ageGroup == 'middle'
-                                  ? '脂肪が増えやすくなった'
-                                  : userProfile.ageGroup == 'senior'
-                                  ? '健康が気になってきた'
-                                  : '未設定',
-                              style: Theme.of(context).textTheme.bodyMedium,
+                            const SizedBox(height: 4),
+                            DropdownButtonFormField<String>(
+                              value: userProfile.ageGroup?.isNotEmpty == true 
+                                  ? userProfile.ageGroup 
+                                  : null,
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(),
+                                contentPadding: EdgeInsets.symmetric(
+                                  horizontal: 12, 
+                                  vertical: 8,
+                                ),
+                              ),
+                              items: const [
+                                DropdownMenuItem(
+                                  value: 'young', 
+                                  child: Text('若い頃と変わらない'),
+                                ),
+                                DropdownMenuItem(
+                                  value: 'middle', 
+                                  child: Text('脂肪が増えやすくなった'),
+                                ),
+                                DropdownMenuItem(
+                                  value: 'senior', 
+                                  child: Text('健康が気になってきた'),
+                                ),
+                              ],
+                              onChanged: (String? newValue) async {
+                                if (newValue != null) {
+                                  await ref
+                                      .read(userProfileProvider.notifier)
+                                      .updateAgeGroup(newValue);
+                                  if (mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text('体の変化を更新しました'),
+                                      ),
+                                    );
+                                  }
+                                }
+                              },
                             ),
                           ],
                         ),

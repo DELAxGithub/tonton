@@ -162,25 +162,24 @@
 ## 8. サポート情報
 
 ### サポートURL
-https://github.com/your-org/tonton-health/wiki/support
+https://github.com/DELAxGithub/tonton/wiki/support
 
 ### プライバシーポリシーURL
-https://your-domain.com/privacy-policy
-*（注：実際のリリース前に作成が必要）*
+https://delaxgithub.github.io/tonton/privacy-policy
 
 ### マーケティングURL
-https://your-domain.com/tonton-health
+https://github.com/DELAxGithub/tonton
 
 ## 9. 年齢制限
 
 ### 対象年齢
-**4+** （4歳以上）
+**12+** （12歳以上）
 
 ### 理由
-- 医療診断機能は含まず、健康管理サポートツールとして設計
-- 不適切なコンテンツは一切含まない
-- 教育的側面があり、健康意識の向上に寄与
-- インターネット接続を使用するが、安全なAPI通信のみ
+- 健康管理には適切な判断力が必要
+- カロリー管理は適切な年齢から開始すべき
+- 食事制限や体重管理に関する内容を含む
+- 成長期の子供には専門家の指導が推奨される
 
 ## 10. スクリーンショット用説明文
 

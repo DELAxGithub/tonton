@@ -34,7 +34,7 @@ class HeroPiggyBankDisplay extends ConsumerWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  TontonText('今月の貯金目標', style: TontonTypography.headline),
+                  TontonText('貯金目標', style: TontonTypography.headline),
                   const SizedBox(height: Spacing.xs),
                   TontonText(
                     '${currentMonthlyNetBurn.toStringAsFixed(0)} / ${targetMonthlyNetBurn.toStringAsFixed(0)} kcal',

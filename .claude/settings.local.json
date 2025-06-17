@@ -59,7 +59,8 @@
       "Bash(FILTER_BRANCH_SQUELCH_WARNING=1 git filter-branch --force --index-filter \"git rm --cached --ignore-unmatch .env.production SECURITY_INCIDENT.md\" --prune-empty --tag-name-filter cat -- --all)",
       "Bash(FILTER_BRANCH_SQUELCH_WARNING=1 git filter-branch --force --index-filter 'git rm --cached --ignore-unmatch .env.production SECURITY_INCIDENT.md' --prune-empty --tag-name-filter cat -- --all)",
       "Bash(git merge:*)",
-      "Bash(git ls-tree:*)"
+      "Bash(git ls-tree:*)",
+      "Bash(dart run build_runner build:*)"
     ],
     "deny": []
   },

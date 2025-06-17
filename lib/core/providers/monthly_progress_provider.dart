@@ -9,6 +9,7 @@ import '../../repositories/user_settings_repository.dart';
 import '../../services/health_service.dart';
 import '../../features/meal_logging/providers/meal_records_provider.dart';
 import 'calorie_savings_provider.dart';
+import 'onboarding_start_date_provider.dart';
 
 part 'monthly_progress_provider.g.dart';
 
@@ -74,8 +75,12 @@ Future<MonthlyProgressSummary> monthlyProgressSummary(Ref ref) async {
   );
   final service = ref.watch(calorieCalculationServiceProvider);
   final target = await ref.watch(monthlyTargetProvider.future);
+  final startDate = ref.watch(onboardingStartDateProvider);
 
-  return service.calculateMonthlyProgressSummary(targetMonthlyNetBurn: target);
+  return service.calculateMonthlyProgressSummary(
+    targetMonthlyNetBurn: target,
+    startDate: startDate,
+  );
 }
 
 /// Average daily calorie savings over the past 7 days.

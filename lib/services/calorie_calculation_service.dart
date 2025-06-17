@@ -52,46 +52,49 @@ class CalorieCalculationService {
     );
   }
 
-  /// Calculate monthly progress summary for the current month
+  /// Calculate monthly progress summary from onboarding start date
   Future<MonthlyProgressSummary> calculateMonthlyProgressSummary({
     required double targetMonthlyNetBurn,
+    required DateTime startDate,
   }) async {
     developer.log(
-      'Calculating monthly progress with target: $targetMonthlyNetBurn',
+      'Calculating monthly progress with target: $targetMonthlyNetBurn, startDate: $startDate',
       name: 'TonTon.CalorieCalculationService',
     );
 
-    // Get current date and determine month boundaries
+    // Get current date
     final now = DateTime.now();
-    final lastDayOfMonth = DateTime(
-      now.year,
-      now.month + 1,
-      0,
-    ); // Last day of current month
-
-    // Calculate days elapsed and remaining
-    final daysElapsedInMonth = now.day;
+    final normalizedNow = DateTime(now.year, now.month, now.day);
+    final normalizedStartDate = DateTime(startDate.year, startDate.month, startDate.day);
+    
+    // Calculate days elapsed since start date
+    final totalDaysElapsed = normalizedNow.difference(normalizedStartDate).inDays + 1;
+    
+    // For display purposes, calculate remaining days in current month
+    final lastDayOfMonth = DateTime(now.year, now.month + 1, 0);
     final remainingDaysInMonth = lastDayOfMonth.day - now.day;
 
-    // Calculate current monthly net burn
-    double currentMonthlyNetBurn = 0;
+    // Calculate current cumulative net burn from start date to today
+    double currentCumulativeNetBurn = 0;
 
-    // Process each day from the first of the month to today
-    for (int day = 1; day <= daysElapsedInMonth; day++) {
-      final date = DateTime(now.year, now.month, day);
+    // Process each day from start date to today
+    for (int dayOffset = 0; dayOffset < totalDaysElapsed; dayOffset++) {
+      final date = normalizedStartDate.add(Duration(days: dayOffset));
+      if (date.isAfter(normalizedNow)) break;
+      
       final dailySummary = await calculateDailyCalorieSummary(date);
-      currentMonthlyNetBurn += dailySummary.netCalories;
+      currentCumulativeNetBurn += dailySummary.netCalories;
 
       developer.log(
-        'Day $day: net=${dailySummary.netCalories}, monthly total so far=$currentMonthlyNetBurn',
+        'Day ${date.toIso8601String().split('T')[0]}: net=${dailySummary.netCalories}, cumulative total=$currentCumulativeNetBurn',
         name: 'TonTon.CalorieCalculationService',
       );
     }
 
     final summary = MonthlyProgressSummary(
       targetMonthlyNetBurn: targetMonthlyNetBurn,
-      currentMonthlyNetBurn: currentMonthlyNetBurn,
-      daysElapsedInMonth: daysElapsedInMonth,
+      currentMonthlyNetBurn: currentCumulativeNetBurn,
+      daysElapsedInMonth: totalDaysElapsed,
       remainingDaysInMonth: remainingDaysInMonth,
     );
 

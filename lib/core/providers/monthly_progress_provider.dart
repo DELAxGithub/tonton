@@ -77,9 +77,12 @@ Future<MonthlyProgressSummary> monthlyProgressSummary(Ref ref) async {
   final target = await ref.watch(monthlyTargetProvider.future);
   final startDate = ref.watch(onboardingStartDateProvider);
 
+  // If start date is not set, use current date as fallback
+  final effectiveStartDate = startDate ?? DateTime.now();
+
   return service.calculateMonthlyProgressSummary(
     targetMonthlyNetBurn: target,
-    startDate: startDate,
+    startDate: effectiveStartDate,
   );
 }
 

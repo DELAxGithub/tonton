@@ -258,7 +258,7 @@ final todayCalorieSummaryProvider =
 typedef TodayCalorieSummaryRef
     = AutoDisposeFutureProviderRef<DailyCalorieSummary>;
 String _$monthlyProgressSummaryHash() =>
-    r'89aaeec71e2ce7356be5868b60fd81dec0b9e0d9';
+    r'd39d0188d3124ecc455724e07493eaf4fb0a68ce';
 
 /// See also [monthlyProgressSummary].
 @ProviderFor(monthlyProgressSummary)

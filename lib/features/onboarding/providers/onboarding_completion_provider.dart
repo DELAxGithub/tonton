@@ -8,16 +8,30 @@ class OnboardingCompletionNotifier extends StateNotifier<bool> {
 
   Future<void> _load() async {
     final prefs = await SharedPreferences.getInstance();
-    state = prefs.getBool('onboardingCompleted') ?? false;
+    final completed = prefs.getBool('onboardingCompleted') ?? false;
+    state = completed;
   }
 
   Future<void> complete() async {
-    state = true;
     final prefs = await SharedPreferences.getInstance();
+
+    // Set state first to immediately update UI
+    state = true;
+
+    // Then persist to SharedPreferences
     await prefs.setBool('onboardingCompleted', true);
+
+    // Also set the UserProfile completion flag key to ensure synchronization
+    await prefs.setBool('user_profile_onboarding_completed', true);
+  }
+
+  /// Force reload the completion state from SharedPreferences
+  Future<void> reload() async {
+    await _load();
   }
 }
 
 final onboardingCompletedProvider =
     StateNotifierProvider<OnboardingCompletionNotifier, bool>(
-        (ref) => OnboardingCompletionNotifier());
+      (ref) => OnboardingCompletionNotifier(),
+    );

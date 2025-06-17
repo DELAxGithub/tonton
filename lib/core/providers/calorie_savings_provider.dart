@@ -20,15 +20,20 @@ class MonthlyCalorieGoalNotifier extends StateNotifier<double> {
 
 final monthlyCalorieGoalProvider =
     StateNotifierProvider<MonthlyCalorieGoalNotifier, double>(
-        (ref) => MonthlyCalorieGoalNotifier());
+      (ref) => MonthlyCalorieGoalNotifier(),
+    );
 
 // Provider for calorie savings data
-final calorieSavingsDataProvider =
-    FutureProvider<List<CalorieSavingsRecord>>((ref) async {
+final calorieSavingsDataProvider = FutureProvider<List<CalorieSavingsRecord>>((
+  ref,
+) async {
   // Watch meal records so savings data updates when meals change.
-  ref.watch(mealRecordsProvider);
+  final mealRecordsAsync = ref.watch(mealRecordsProvider);
   final startDate = ref.watch(onboardingStartDateProvider);
   if (startDate == null) return [];
+
+  // Only proceed if meal records are loaded
+  if (!mealRecordsAsync.hasValue) return [];
 
   final service = ref.watch(dailySummaryServiceProvider);
   final endDate = DateTime.now();
@@ -36,7 +41,8 @@ final calorieSavingsDataProvider =
   var current = DateTime(startDate.year, startDate.month, startDate.day);
 
   while (!current.isAfter(endDate)) {
-    summaries.add(await service.getDailySummary(current));
+    final summary = await service.getDailySummary(current);
+    summaries.add(summary);
     current = current.add(const Duration(days: 1));
   }
 
@@ -55,7 +61,9 @@ final calorieSavingsDataProvider =
 });
 
 /// Filtered calorie savings records based on the selected period.
-final filteredCalorieSavingsProvider = Provider<List<CalorieSavingsRecord>>((ref) {
+final filteredCalorieSavingsProvider = Provider<List<CalorieSavingsRecord>>((
+  ref,
+) {
   final period = ref.watch(selectedPeriodProvider);
   final recordsAsync = ref.watch(calorieSavingsDataProvider);
 
@@ -74,4 +82,3 @@ final filteredCalorieSavingsProvider = Provider<List<CalorieSavingsRecord>>((ref
     orElse: () => [],
   );
 });
-

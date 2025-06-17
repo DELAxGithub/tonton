@@ -12,7 +12,7 @@ class ActivitySummary {
   });
 
   bool get hasWorkouts => workoutTypes.isNotEmpty;
-  
+
   @override
   String toString() {
     return 'ActivitySummary(workoutTypes: $workoutTypes, workoutCalories: $workoutCalories, totalCalories: $totalCalories, bodyFatPercentage: $bodyFatPercentage)';

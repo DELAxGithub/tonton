@@ -33,12 +33,13 @@ class ConfirmDialog extends StatelessWidget {
   }) {
     return showDialog<bool>(
       context: context,
-      builder: (context) => ConfirmDialog.delete(
-        itemName: itemName,
-        message: message,
-        onConfirm: () => Navigator.of(context).pop(true),
-        onCancel: () => Navigator.of(context).pop(false),
-      ),
+      builder:
+          (context) => ConfirmDialog.delete(
+            itemName: itemName,
+            message: message,
+            onConfirm: () => Navigator.of(context).pop(true),
+            onCancel: () => Navigator.of(context).pop(false),
+          ),
     );
   }
 
@@ -49,11 +50,12 @@ class ConfirmDialog extends StatelessWidget {
   }) {
     return showDialog<bool>(
       context: context,
-      builder: (context) => ConfirmDialog.save(
-        message: message,
-        onConfirm: () => Navigator.of(context).pop(true),
-        onCancel: () => Navigator.of(context).pop(false),
-      ),
+      builder:
+          (context) => ConfirmDialog.save(
+            message: message,
+            onConfirm: () => Navigator.of(context).pop(true),
+            onCancel: () => Navigator.of(context).pop(false),
+          ),
     );
   }
 
@@ -64,11 +66,12 @@ class ConfirmDialog extends StatelessWidget {
   }) {
     return showDialog<bool>(
       context: context,
-      builder: (context) => ConfirmDialog.exit(
-        message: message,
-        onConfirm: () => Navigator.of(context).pop(true),
-        onCancel: () => Navigator.of(context).pop(false),
-      ),
+      builder:
+          (context) => ConfirmDialog.exit(
+            message: message,
+            onConfirm: () => Navigator.of(context).pop(true),
+            onCancel: () => Navigator.of(context).pop(false),
+          ),
     );
   }
 
@@ -143,9 +146,10 @@ class ConfirmDialog extends StatelessWidget {
               Icon(
                 icon,
                 size: 48,
-                color: isDestructive 
-                    ? TontonColors.error 
-                    : theme.colorScheme.primary,
+                color:
+                    isDestructive
+                        ? TontonColors.error
+                        : theme.colorScheme.primary,
               ),
               const SizedBox(height: TontonSpacing.md),
             ],

@@ -1,19 +1,19 @@
 class DailyCalorieSummary {
   /// The date this summary represents
   final DateTime date;
-  
+
   /// Total calories consumed (from meals)
   final double totalCaloriesConsumed;
-  
+
   /// Total calories burned (from HealthKit)
   final double totalCaloriesBurned;
 
   /// Calories burned from workouts only
   final double workoutCalories;
-  
+
   /// Net calorie balance (burned - consumed)
   double get netCalories => totalCaloriesBurned - totalCaloriesConsumed;
-  
+
   /// Whether this day had a calorie surplus (negative net is deficit/savings)
   bool get isCalorieSurplus => netCalories < 0;
 

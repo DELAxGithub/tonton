@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../atoms/tonton_card_base.dart';
-import '../atoms/tonton_text.dart';
 import '../../theme/tokens.dart';
 import '../../theme/colors.dart';
 import '../../theme/typography.dart';
@@ -47,7 +46,7 @@ class CalorieSummaryRow extends ConsumerWidget {
           ),
         ),
         const SizedBox(width: Spacing.sm),
-        
+
         // Burned Calories Card
         Expanded(
           child: _CalorieCard(
@@ -59,7 +58,7 @@ class CalorieSummaryRow extends ConsumerWidget {
           ),
         ),
         const SizedBox(width: Spacing.sm),
-        
+
         // Net Savings Card
         Expanded(
           child: _CalorieCard(
@@ -97,13 +96,12 @@ class _CalorieCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return TontonCardBase(
       elevation: Elevation.level1,
       padding: const EdgeInsets.all(Spacing.sm),
-      backgroundColor: isHighlighted 
-          ? TontonColors.pigPink.withValues(alpha: 0.1)
-          : null,
+      backgroundColor:
+          isHighlighted ? TontonColors.pigPink.withValues(alpha: 0.1) : null,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -111,11 +109,7 @@ class _CalorieCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                icon,
-                size: IconSize.small,
-                color: iconColor,
-              ),
+              Icon(icon, size: IconSize.small, color: iconColor),
               const SizedBox(width: Spacing.xxs),
               Text(
                 title,
@@ -126,16 +120,17 @@ class _CalorieCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: Spacing.xs),
-          
+
           // Value
           Text(
             value,
             style: TontonTypography.title3.copyWith(
               fontWeight: FontWeight.bold,
-              color: isHighlighted ? iconColor : TontonColors.labelColor(context),
+              color:
+                  isHighlighted ? iconColor : TontonColors.labelColor(context),
             ),
           ),
-          
+
           // Unit
           Text(
             unit,

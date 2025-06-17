@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:io' show Platform;
 
 /// Apple HIG-compliant typography system for Tonton
-/// 
+///
 /// This class provides text styles following Apple's Human Interface Guidelines
 /// with proper font families for iOS/macOS and fallbacks for other platforms.
 class TontonTypography {
@@ -33,7 +33,7 @@ class TontonTypography {
   ];
 
   // ===== Apple HIG Text Styles =====
-  
+
   /// Large Title - Used for prominent titles
   /// Size: 34pt, Weight: Regular (400)
   static TextStyle largeTitle = TextStyle(
@@ -156,7 +156,7 @@ class TontonTypography {
   );
 
   // ===== Weight Variations =====
-  
+
   /// Returns a TextStyle with specified weight
   static TextStyle withWeight(TextStyle style, FontWeight weight) {
     return style.copyWith(fontWeight: weight);
@@ -165,14 +165,17 @@ class TontonTypography {
   /// Common weight variations
   static TextStyle thin(TextStyle style) => withWeight(style, FontWeight.w100);
   static TextStyle light(TextStyle style) => withWeight(style, FontWeight.w300);
-  static TextStyle regular(TextStyle style) => withWeight(style, FontWeight.w400);
-  static TextStyle medium(TextStyle style) => withWeight(style, FontWeight.w500);
-  static TextStyle semibold(TextStyle style) => withWeight(style, FontWeight.w600);
+  static TextStyle regular(TextStyle style) =>
+      withWeight(style, FontWeight.w400);
+  static TextStyle medium(TextStyle style) =>
+      withWeight(style, FontWeight.w500);
+  static TextStyle semibold(TextStyle style) =>
+      withWeight(style, FontWeight.w600);
   static TextStyle bold(TextStyle style) => withWeight(style, FontWeight.w700);
   static TextStyle heavy(TextStyle style) => withWeight(style, FontWeight.w900);
 
   // ===== TextTheme Factory =====
-  
+
   /// Creates a complete TextTheme following Apple HIG
   static TextTheme textTheme() {
     return TextTheme(
@@ -180,22 +183,22 @@ class TontonTypography {
       displayLarge: largeTitle,
       displayMedium: title1,
       displaySmall: title2,
-      
+
       // Headline styles
       headlineLarge: title1,
       headlineMedium: title2,
       headlineSmall: title3,
-      
+
       // Title styles
       titleLarge: title2,
       titleMedium: title3,
       titleSmall: headline,
-      
+
       // Body styles
       bodyLarge: body,
       bodyMedium: callout,
       bodySmall: footnote,
-      
+
       // Label styles
       labelLarge: headline,
       labelMedium: subheadline,
@@ -204,40 +207,43 @@ class TontonTypography {
   }
 
   // ===== Semantic Text Styles =====
-  
+
   /// Navigation bar title
   static TextStyle get navigationTitle => headline;
-  
+
   /// Tab bar label
   static TextStyle get tabLabel => caption1;
-  
+
   /// Button text
   static TextStyle get button => body.copyWith(fontWeight: FontWeight.w600);
-  
+
   /// Text field input
   static TextStyle get textField => body;
-  
+
   /// Text field placeholder
-  static TextStyle get placeholder => body.copyWith(fontWeight: FontWeight.w400);
-  
+  static TextStyle get placeholder =>
+      body.copyWith(fontWeight: FontWeight.w400);
+
   /// List item title
   static TextStyle get listTitle => body;
-  
+
   /// List item subtitle
   static TextStyle get listSubtitle => subheadline;
-  
+
   /// Section header
-  static TextStyle get sectionHeader => footnote.copyWith(fontWeight: FontWeight.w600);
-  
+  static TextStyle get sectionHeader =>
+      footnote.copyWith(fontWeight: FontWeight.w600);
+
   /// Card title
   static TextStyle get cardTitle => headline;
-  
+
   /// Card subtitle
   static TextStyle get cardSubtitle => subheadline;
-  
+
   /// Metric value (large numbers)
-  static TextStyle get metricValue => title1.copyWith(fontWeight: FontWeight.w600);
-  
+  static TextStyle get metricValue =>
+      title1.copyWith(fontWeight: FontWeight.w600);
+
   /// Metric label
   static TextStyle get metricLabel => caption1;
 }

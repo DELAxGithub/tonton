@@ -26,7 +26,7 @@ final tontonTextFieldUseCases = WidgetbookComponent(
           label: 'Error Text',
           initialValue: 'This field is required',
         );
-        
+
         return Center(
           child: Padding(
             padding: const EdgeInsets.all(16),
@@ -59,7 +59,7 @@ final tontonTextFieldUseCases = WidgetbookComponent(
           label: 'Required',
           initialValue: true,
         );
-        
+
         return Center(
           child: Padding(
             padding: const EdgeInsets.all(16),
@@ -186,10 +186,7 @@ final tontonTextFieldUseCases = WidgetbookComponent(
             children: [
               const Text(
                 'User Profile Form',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 24),
               TontonLabeledTextField(

@@ -5,7 +5,7 @@ class CalorieSavingsRecord {
   final double caloriesBurned;
   final double dailyBalance; // Daily difference (burned - consumed)
   final double cumulativeSavings; // Running total of savings
-  
+
   CalorieSavingsRecord({
     required this.date,
     required this.caloriesConsumed,
@@ -13,7 +13,7 @@ class CalorieSavingsRecord {
     required this.dailyBalance,
     required this.cumulativeSavings,
   }) : dayOfMonth = date.day;
-  
+
   // Constructor for creating records from raw data
   factory CalorieSavingsRecord.fromRaw({
     required DateTime date,
@@ -23,7 +23,7 @@ class CalorieSavingsRecord {
   }) {
     final dailyBalance = caloriesBurned - caloriesConsumed;
     final cumulativeSavings = (previousCumulativeSavings ?? 0) + dailyBalance;
-    
+
     return CalorieSavingsRecord(
       date: date,
       caloriesConsumed: caloriesConsumed,

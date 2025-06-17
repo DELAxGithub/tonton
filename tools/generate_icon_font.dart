@@ -4,11 +4,29 @@ import 'package:args/args.dart';
 /// Simple Dart wrapper around FontForge to generate a TTF icon font from SVG files.
 /// Requires `fontforge` to be installed and accessible on the system path.
 Future<void> main(List<String> arguments) async {
-  final parser = ArgParser()
-    ..addOption('svg-dir', defaultsTo: 'assets/icons/svg', help: 'Directory containing SVG icons')
-    ..addOption('output-dir', defaultsTo: 'assets/fonts', help: 'Directory to place generated font')
-    ..addOption('font-name', defaultsTo: 'TontonIcons', help: 'Font name for the generated TTF')
-    ..addFlag('help', abbr: 'h', negatable: false, help: 'Show usage information');
+  final parser =
+      ArgParser()
+        ..addOption(
+          'svg-dir',
+          defaultsTo: 'assets/icons/svg',
+          help: 'Directory containing SVG icons',
+        )
+        ..addOption(
+          'output-dir',
+          defaultsTo: 'assets/fonts',
+          help: 'Directory to place generated font',
+        )
+        ..addOption(
+          'font-name',
+          defaultsTo: 'TontonIcons',
+          help: 'Font name for the generated TTF',
+        )
+        ..addFlag(
+          'help',
+          abbr: 'h',
+          negatable: false,
+          help: 'Show usage information',
+        );
 
   final args = parser.parse(arguments);
 
@@ -55,7 +73,9 @@ font.generate(os.path.join(sys.argv[2], sys.argv[3] + '.ttf'))''',
   stderr.write(processResult.stderr);
 
   if (processResult.exitCode != 0) {
-    stderr.writeln('Font generation failed with exit code ${processResult.exitCode}.');
+    stderr.writeln(
+      'Font generation failed with exit code ${processResult.exitCode}.',
+    );
     exit(processResult.exitCode);
   }
 

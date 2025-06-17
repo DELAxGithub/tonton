@@ -24,22 +24,32 @@ import 'l10n/app_localizations.dart';
 
 // Function to initialize Hive
 Future<void> _initHive() async {
-  developer.log('Initializing Hive for Tonton main app...', name: 'TonTon.HiveInit');
+  developer.log(
+    'Initializing Hive for Tonton main app...',
+    name: 'TonTon.HiveInit',
+  );
   try {
-    final appDocumentDir = await path_provider.getApplicationDocumentsDirectory();
+    final appDocumentDir =
+        await path_provider.getApplicationDocumentsDirectory();
     await Hive.initFlutter(appDocumentDir.path);
-    developer.log('Hive initialized at: ${appDocumentDir.path}', name: 'TonTon.HiveInit');
+    developer.log(
+      'Hive initialized at: ${appDocumentDir.path}',
+      name: 'TonTon.HiveInit',
+    );
 
     // Register adapters
-    if (!Hive.isAdapterRegistered(1)) { // MealTimeTypeAdapter
+    if (!Hive.isAdapterRegistered(1)) {
+      // MealTimeTypeAdapter
       Hive.registerAdapter(MealTimeTypeAdapter());
       developer.log('MealTimeTypeAdapter registered.', name: 'TonTon.HiveInit');
     }
-    if (!Hive.isAdapterRegistered(2)) { // MealRecordAdapter
+    if (!Hive.isAdapterRegistered(2)) {
+      // MealRecordAdapter
       Hive.registerAdapter(MealRecordAdapter());
       developer.log('MealRecordAdapter registered.', name: 'TonTon.HiveInit');
     }
-    if (!Hive.isAdapterRegistered(3)) { // DailySummaryAdapter
+    if (!Hive.isAdapterRegistered(3)) {
+      // DailySummaryAdapter
       Hive.registerAdapter(DailySummaryAdapter());
       developer.log('DailySummaryAdapter registered.', name: 'TonTon.HiveInit');
     }
@@ -50,64 +60,93 @@ Future<void> _initHive() async {
     developer.log('Box "tonton_meal_records" opened.', name: 'TonTon.HiveInit');
 
     await Hive.openBox<DailySummary>('tonton_daily_summaries');
-    developer.log('Box "tonton_daily_summaries" opened.', name: 'TonTon.HiveInit');
+    developer.log(
+      'Box "tonton_daily_summaries" opened.',
+      name: 'TonTon.HiveInit',
+    );
 
     // Initialize MealDataService after Hive is ready so that the box is reused
     // consistently across the app.
     await mealDataService.init();
-    developer.log('MealDataService initialized after Hive.', name: 'TonTon.HiveInit');
-
+    developer.log(
+      'MealDataService initialized after Hive.',
+      name: 'TonTon.HiveInit',
+    );
   } catch (e, stack) {
-    developer.log('Error initializing Hive: $e', name: 'TonTon.HiveInit.Error', error: e, stackTrace: stack);
+    developer.log(
+      'Error initializing Hive: $e',
+      name: 'TonTon.HiveInit.Error',
+      error: e,
+      stackTrace: stack,
+    );
     // Depending on the app's requirements, you might want to rethrow or handle this error.
   }
 }
 
-void main() async { // Modified to be async
+void main() async {
+  // Modified to be async
   WidgetsFlutterBinding.ensureInitialized();
 
   try {
     await dotenv.load(fileName: ".env");
     developer.log('.env file loaded successfully', name: 'TonTon.EnvLoad');
   } catch (e) {
-    developer.log('Could not load .env file. Using compile-time variables if available. Error: $e', 
-      name: 'TonTon.EnvLoad.Error');
+    developer.log(
+      'Could not load .env file. Using compile-time variables if available. Error: $e',
+      name: 'TonTon.EnvLoad.Error',
+    );
     // エラーが発生しても継続できるように、デフォルト値を設定
-    dotenv.testLoad(fileInput: '''
+    dotenv.testLoad(
+      fileInput: '''
       SUPABASE_URL=default_url
       SUPABASE_ANON_KEY=default_key
-    ''');
+    ''',
+    );
   }
 
   // Initialize Supabase using environment variables
   try {
-    final supabaseUrl = dotenv.env['SUPABASE_URL'] ??
-                      Platform.environment['SUPABASE_URL'] ??
-                      const String.fromEnvironment('SUPABASE_URL');
-    final supabaseAnonKey = dotenv.env['SUPABASE_ANON_KEY'] ??
-                          Platform.environment['SUPABASE_ANON_KEY'] ??
-                          const String.fromEnvironment('SUPABASE_ANON_KEY');
+    final supabaseUrl =
+        dotenv.env['SUPABASE_URL'] ??
+        Platform.environment['SUPABASE_URL'] ??
+        const String.fromEnvironment('SUPABASE_URL');
+    final supabaseAnonKey =
+        dotenv.env['SUPABASE_ANON_KEY'] ??
+        Platform.environment['SUPABASE_ANON_KEY'] ??
+        const String.fromEnvironment('SUPABASE_ANON_KEY');
 
     if (supabaseUrl.isEmpty || supabaseAnonKey.isEmpty) {
-      throw Exception('Supabase URL or Anon Key is missing. Ensure .env file is set up or variables are passed via --dart-define.');
+      throw Exception(
+        'Supabase URL or Anon Key is missing. Ensure .env file is set up or variables are passed via --dart-define.',
+      );
     }
 
-    await Supabase.initialize(
-      url: supabaseUrl,
-      anonKey: supabaseAnonKey,
+    await Supabase.initialize(url: supabaseUrl, anonKey: supabaseAnonKey);
+    developer.log(
+      'Supabase initialized successfully with URL: $supabaseUrl',
+      name: 'TonTon.SupabaseInit',
     );
-    developer.log('Supabase initialized successfully with URL: $supabaseUrl', name: 'TonTon.SupabaseInit');
   } catch (e, stack) {
-    developer.log('Error initializing Supabase: $e', name: 'TonTon.SupabaseInit.Error', error: e, stackTrace: stack);
+    developer.log(
+      'Error initializing Supabase: $e',
+      name: 'TonTon.SupabaseInit.Error',
+      error: e,
+      stackTrace: stack,
+    );
     rethrow;
   }
-  
+
   await _initHive(); // Added Hive initialization call
-  developer.log('TonTon App starting after initialization...', name: 'TonTon.main');
+  developer.log(
+    'TonTon App starting after initialization...',
+    name: 'TonTon.main',
+  );
   final dailySummaryService = DailySummaryDataService();
   final startDateNotifier = OnboardingStartDateNotifier(dailySummaryService);
-  final onboardingService =
-      OnboardingService(startDateNotifier, HealthService());
+  final onboardingService = OnboardingService(
+    startDateNotifier,
+    HealthService(),
+  );
   await onboardingService.ensureInitialized();
   final firstLaunch = await onboardingService.getFirstLaunch();
 
@@ -115,9 +154,7 @@ void main() async { // Modified to be async
     ProviderScope(
       overrides: [
         onboardingStartDateProvider.overrideWith((ref) => startDateNotifier),
-        firstLaunchTimestampProvider.overrideWith(
-          (ref) async => firstLaunch,
-        ),
+        firstLaunchTimestampProvider.overrideWith((ref) async => firstLaunch),
       ],
       child: const MyApp(),
     ),
@@ -147,8 +184,10 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) async {
     if (state == AppLifecycleState.paused) {
-      developer.log('App paused - flushing Hive boxes',
-          name: '[HIVE_LIFECYCLE]');
+      developer.log(
+        'App paused - flushing Hive boxes',
+        name: '[HIVE_LIFECYCLE]',
+      );
       await _flushAllBoxes();
     } else if (state == AppLifecycleState.resumed) {
       developer.log('App resumed', name: '[HIVE_LIFECYCLE]');
@@ -171,12 +210,15 @@ class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
 
     return provider_pkg.ChangeNotifierProvider<HealthProvider>(
       create: (context) {
-        developer.log('Creating HealthProvider', name: 'TonTon.Provider.create');
+        developer.log(
+          'Creating HealthProvider',
+          name: 'TonTon.Provider.create',
+        );
         return HealthProvider();
       },
       child: MaterialApp.router(
-        onGenerateTitle: (context) =>
-            AppLocalizations.of(context)?.appTitle ?? 'Tonton',
+        onGenerateTitle:
+            (context) => AppLocalizations.of(context)?.appTitle ?? 'Tonton',
         locale: const Locale('ja'),
         debugShowCheckedModeBanner: true,
         theme: TontonTheme.light,

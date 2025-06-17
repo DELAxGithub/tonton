@@ -22,24 +22,26 @@ class EstimatedMealNutrition {
       mealName: json['food_name'] as String,
       description: json['description'] as String,
       calories: (json['calories'] as num).toDouble(),
-      nutrients: NutrientInfo( // Directly create NutrientInfo from top-level keys
+      nutrients: NutrientInfo(
+        // Directly create NutrientInfo from top-level keys
         protein: (json['protein_g'] as num).toDouble(),
         fat: (json['fat_g'] as num).toDouble(),
         carbs: (json['carbs_g'] as num).toDouble(),
       ),
       // 'notes' is not part of the current Gemini API prompt in FINDINGS.md.
       // Handle its absence gracefully.
-      notes: json.containsKey('notes') && json['notes'] != null
-          ? List<String>.from(json['notes'])
-          : null,
+      notes:
+          json.containsKey('notes') && json['notes'] != null
+              ? List<String>.from(json['notes'])
+              : null,
     );
   }
 
   Map<String, dynamic> toJson() => {
-        'mealName': mealName,
-        'description': description,
-        'calories': calories,
-        'nutrients': nutrients.toJson(), // NutrientInfo.toJson() remains the same
-        if (notes != null) 'notes': notes,
-      };
+    'mealName': mealName,
+    'description': description,
+    'calories': calories,
+    'nutrients': nutrients.toJson(), // NutrientInfo.toJson() remains the same
+    if (notes != null) 'notes': notes,
+  };
 }

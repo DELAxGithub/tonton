@@ -40,10 +40,7 @@ class PfcPieChart extends StatelessWidget {
     ];
 
     return PieChart(
-      PieChartData(
-        sections: sections,
-        centerSpaceRadius: 18,
-      ),
+      PieChartData(sections: sections, centerSpaceRadius: 18),
       swapAnimationDuration: const Duration(milliseconds: 300),
     );
   }

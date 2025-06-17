@@ -10,7 +10,9 @@ class MainNavigationBar extends StatelessWidget {
   const MainNavigationBar({super.key, required this.location});
 
   int _locationToIndex(String loc) {
-    if (loc.startsWith(TontonRoutes.progress) || loc.startsWith(TontonRoutes.progressAchievements)) return 1;
+    if (loc.startsWith(TontonRoutes.progress) ||
+        loc.startsWith(TontonRoutes.progressAchievements))
+      return 1;
     // AIコーチはモーダル表示なので、ルートとしては存在しない
     if (loc.startsWith(TontonRoutes.profile)) return 3;
     return 0;
@@ -55,10 +57,7 @@ class MainNavigationBar extends StatelessWidget {
             icon: Icon(Icons.receipt_long),
             label: 'ヒストリー',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(TontonIcons.ai),
-            label: 'AIコーチ',
-          ),
+          BottomNavigationBarItem(icon: Icon(TontonIcons.ai), label: 'AIコーチ'),
           BottomNavigationBarItem(
             icon: Icon(TontonIcons.settings),
             label: 'プロフィール',

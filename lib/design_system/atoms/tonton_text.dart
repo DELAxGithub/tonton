@@ -18,10 +18,10 @@ class TontonText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Text(
-        data,
-        maxLines: maxLines,
-        textAlign: align,
-        overflow: overflow,
-        style: style ?? Theme.of(context).textTheme.bodyMedium,
-      );
+    data,
+    maxLines: maxLines,
+    textAlign: align,
+    overflow: overflow,
+    style: style ?? Theme.of(context).textTheme.bodyMedium,
+  );
 }

@@ -48,18 +48,18 @@ class PfcRatio {
     required this.protein,
     required this.fat,
     required this.carbohydrate,
-  })
-      : assert(
-            (protein + fat + carbohydrate) >= 0.99 &&
-                (protein + fat + carbohydrate) <= 1.01,
-            'PFC ratios must sum to 1.0');
+  }) : assert(
+         (protein + fat + carbohydrate) >= 0.99 &&
+             (protein + fat + carbohydrate) <= 1.01,
+         'PFC ratios must sum to 1.0',
+       );
 
   Map<String, dynamic> toJson() => {
-        'protein': protein,
-        'fat': fat,
-        'carbohydrate': carbohydrate,
-      };
-  
+    'protein': protein,
+    'fat': fat,
+    'carbohydrate': carbohydrate,
+  };
+
   factory PfcRatio.fromJson(Map<String, dynamic> json) {
     return PfcRatio(
       protein: (json['protein'] as num).toDouble(),

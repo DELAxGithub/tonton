@@ -26,15 +26,19 @@ class LatestWeightRecordNotifier extends StateNotifier<WeightRecord?> {
   Future<void> setRecord(WeightRecord record) async {
     state = record;
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('latest_weight_record', jsonEncode({
-      'weight': record.weight,
-      'date': record.date.toIso8601String(),
-      'bodyFatPercentage': record.bodyFatPercentage,
-      'bodyFatMass': record.bodyFatMass,
-    }));
+    await prefs.setString(
+      'latest_weight_record',
+      jsonEncode({
+        'weight': record.weight,
+        'date': record.date.toIso8601String(),
+        'bodyFatPercentage': record.bodyFatPercentage,
+        'bodyFatMass': record.bodyFatMass,
+      }),
+    );
   }
 }
 
 final latestWeightRecordProvider =
     StateNotifierProvider<LatestWeightRecordNotifier, WeightRecord?>(
-        (ref) => LatestWeightRecordNotifier());
+      (ref) => LatestWeightRecordNotifier(),
+    );

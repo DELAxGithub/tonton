@@ -50,7 +50,7 @@ class _State extends ConsumerState<AIMealLoggingStep3ConfirmEdit> {
     _protein = widget.nutrition.nutrients.protein;
     _fat = widget.nutrition.nutrients.fat;
     _carbs = widget.nutrition.nutrients.carbs;
-    
+
     // Set meal time based on current time
     final hour = DateTime.now().hour;
     if (hour >= 5 && hour < 10) {
@@ -103,7 +103,12 @@ class _State extends ConsumerState<AIMealLoggingStep3ConfirmEdit> {
     });
   }
 
-  void _onNutritionChanged(double calories, double protein, double fat, double carbs) {
+  void _onNutritionChanged(
+    double calories,
+    double protein,
+    double fat,
+    double carbs,
+  ) {
     setState(() {
       _calories = calories;
       _protein = protein;
@@ -158,21 +163,21 @@ class _State extends ConsumerState<AIMealLoggingStep3ConfirmEdit> {
 
       context.go(TontonRoutes.home);
     } catch (e, _) {
-
       if (!mounted) return;
       setState(() => _isSaving = false);
       showDialog(
         context: context,
-        builder: (context) => AlertDialog(
-          title: const Text('エラー'),
-          content: Text('保存に失敗しました:\n$e'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('OK'),
+        builder:
+            (context) => AlertDialog(
+              title: const Text('エラー'),
+              content: Text('保存に失敗しました:\n$e'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('OK'),
+                ),
+              ],
             ),
-          ],
-        ),
       );
     } finally {
       if (mounted) setState(() => _isSaving = false);
@@ -185,14 +190,14 @@ class _State extends ConsumerState<AIMealLoggingStep3ConfirmEdit> {
     final todaysTotals = ref.watch(todaysPfcProvider);
     final dailyTarget = ref.watch(dailyCalorieTargetProvider);
     final pfcTargets = ref.watch(autoPfcTargetProvider);
-    
+
     // Calculate totals including this meal
     final currentTotalCalories = ref.watch(todaysTotalCaloriesProvider);
     final totalCalories = (currentTotalCalories ?? 0) + _calories;
     final totalProtein = (todaysTotals?.protein ?? 0) + _protein;
     final totalFat = (todaysTotals?.fat ?? 0) + _fat;
     final totalCarbs = (todaysTotals?.carbohydrate ?? 0) + _carbs;
-    
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -249,9 +254,9 @@ class _State extends ConsumerState<AIMealLoggingStep3ConfirmEdit> {
                     ],
                   ),
                 ),
-                
+
                 const SizedBox(height: TontonSpacing.lg),
-                
+
                 // Nutrition summary card
                 NutritionSummaryCard(
                   calories: _calories,
@@ -261,14 +266,14 @@ class _State extends ConsumerState<AIMealLoggingStep3ConfirmEdit> {
                   title: '栄養成分',
                   showPercentages: true,
                 ),
-                
+
                 const SizedBox(height: TontonSpacing.lg),
-                
+
                 // Quantity adjustment buttons
                 _buildQuantityAdjustmentSection(),
-                
+
                 const SizedBox(height: TontonSpacing.lg),
-                
+
                 // Nutrition editor with sliders
                 Card(
                   child: Padding(
@@ -298,9 +303,9 @@ class _State extends ConsumerState<AIMealLoggingStep3ConfirmEdit> {
                     ),
                   ),
                 ),
-                
+
                 const SizedBox(height: TontonSpacing.lg),
-                
+
                 // PFC balance visualization
                 Row(
                   children: [
@@ -328,9 +333,9 @@ class _State extends ConsumerState<AIMealLoggingStep3ConfirmEdit> {
                     ),
                   ],
                 ),
-                
+
                 const SizedBox(height: TontonSpacing.lg),
-                
+
                 // Date and time selection
                 Card(
                   child: Column(
@@ -351,14 +356,20 @@ class _State extends ConsumerState<AIMealLoggingStep3ConfirmEdit> {
                     ],
                   ),
                 ),
-                
+
                 const SizedBox(height: TontonSpacing.md),
-                
+
                 // Meal type selection
                 SegmentedButton<MealTimeType>(
-                  segments: MealTimeType.values
-                      .map((e) => ButtonSegment(value: e, label: Text(e.displayName)))
-                      .toList(),
+                  segments:
+                      MealTimeType.values
+                          .map(
+                            (e) => ButtonSegment(
+                              value: e,
+                              label: Text(e.displayName),
+                            ),
+                          )
+                          .toList(),
                   selected: {_mealTime},
                   onSelectionChanged: (set) {
                     if (set.isNotEmpty) {
@@ -369,23 +380,24 @@ class _State extends ConsumerState<AIMealLoggingStep3ConfirmEdit> {
               ],
             ),
           ),
-          
+
           // Floating action button for save
           Positioned(
             bottom: 16,
             right: 16,
             child: FloatingActionButton.extended(
               onPressed: _isSaving ? null : _save,
-              icon: _isSaving
-                  ? const SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: Colors.white,
-                      ),
-                    )
-                  : const Icon(Icons.check),
+              icon:
+                  _isSaving
+                      ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
+                      )
+                      : const Icon(Icons.check),
               label: Text(_isSaving ? '保存中...' : '記録する'),
             ),
           ),
@@ -403,9 +415,9 @@ class _State extends ConsumerState<AIMealLoggingStep3ConfirmEdit> {
           children: [
             Text(
               '量の調整',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: TontonSpacing.sm),
             Wrap(
@@ -431,7 +443,8 @@ class _State extends ConsumerState<AIMealLoggingStep3ConfirmEdit> {
       label: Text(label),
       selected: isSelected,
       onSelected: (_) => _updateQuantity(multiplier),
-      backgroundColor: isSelected ? Theme.of(context).colorScheme.primaryContainer : null,
+      backgroundColor:
+          isSelected ? Theme.of(context).colorScheme.primaryContainer : null,
       selectedColor: Theme.of(context).colorScheme.primaryContainer,
     );
   }
@@ -445,19 +458,16 @@ class _State extends ConsumerState<AIMealLoggingStep3ConfirmEdit> {
     required PfcBreakdown? pfcTargets,
   }) {
     final theme = Theme.of(context);
-    
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(TontonSpacing.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              '今日の合計（この食事含む）',
-              style: theme.textTheme.titleSmall,
-            ),
+            Text('今日の合計（この食事含む）', style: theme.textTheme.titleSmall),
             const SizedBox(height: TontonSpacing.sm),
-            
+
             // Calories
             _buildProgressRow(
               label: 'カロリー',
@@ -466,10 +476,10 @@ class _State extends ConsumerState<AIMealLoggingStep3ConfirmEdit> {
               unit: 'kcal',
               color: theme.colorScheme.primary,
             ),
-            
+
             if (pfcTargets != null) ...[
               const SizedBox(height: TontonSpacing.xs),
-              
+
               // Protein
               _buildProgressRow(
                 label: 'タンパク質',
@@ -478,9 +488,9 @@ class _State extends ConsumerState<AIMealLoggingStep3ConfirmEdit> {
                 unit: 'g',
                 color: TontonColors.proteinColor,
               ),
-              
+
               const SizedBox(height: TontonSpacing.xs),
-              
+
               // Fat
               _buildProgressRow(
                 label: '脂質',
@@ -489,9 +499,9 @@ class _State extends ConsumerState<AIMealLoggingStep3ConfirmEdit> {
                 unit: 'g',
                 color: TontonColors.fatColor,
               ),
-              
+
               const SizedBox(height: TontonSpacing.xs),
-              
+
               // Carbs
               _buildProgressRow(
                 label: '炭水化物',
@@ -516,17 +526,14 @@ class _State extends ConsumerState<AIMealLoggingStep3ConfirmEdit> {
   }) {
     final percentage = target > 0 ? (value / target * 100).clamp(0, 150) : 0;
     final isOver = value > target;
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              label,
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
+            Text(label, style: Theme.of(context).textTheme.bodySmall),
             Text(
               '${value.toStringAsFixed(0)} / ${target.toStringAsFixed(0)} $unit',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(

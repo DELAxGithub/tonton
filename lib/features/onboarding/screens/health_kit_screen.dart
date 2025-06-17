@@ -15,7 +15,10 @@ class HealthKitScreen extends ConsumerWidget {
 
   Future<void> _requestPermissions(BuildContext context) async {
     // Request HealthKit permissions via existing provider
-    final health = provider_pkg.Provider.of<HealthProvider>(context, listen: false);
+    final health = provider_pkg.Provider.of<HealthProvider>(
+      context,
+      listen: false,
+    );
     await health.requestPermissions();
 
     // Attempt to trigger camera permission by opening and immediately disposing image picker
@@ -37,7 +40,9 @@ class HealthKitScreen extends ConsumerWidget {
 
     // Save default start date if not set
     if (ref.read(onboardingStartDateProvider) == null) {
-      await ref.read(onboardingStartDateProvider.notifier).setDate(DateTime.now());
+      await ref
+          .read(onboardingStartDateProvider.notifier)
+          .setDate(DateTime.now());
     }
 
     if (context.mounted) {
@@ -53,7 +58,9 @@ class HealthKitScreen extends ConsumerWidget {
 
     // Save default start date if not set
     if (ref.read(onboardingStartDateProvider) == null) {
-      await ref.read(onboardingStartDateProvider.notifier).setDate(DateTime.now());
+      await ref
+          .read(onboardingStartDateProvider.notifier)
+          .setDate(DateTime.now());
     }
 
     if (context.mounted) {
@@ -92,7 +99,7 @@ class HealthKitScreen extends ConsumerWidget {
               ],
             ),
             const SizedBox(height: 40),
-            
+
             // アイコン
             Container(
               width: 120,
@@ -108,21 +115,18 @@ class HealthKitScreen extends ConsumerWidget {
               ),
             ),
             const SizedBox(height: 32),
-            
-            Text(
-              'ヘルスケアと連携',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
+
+            Text('ヘルスケアと連携', style: Theme.of(context).textTheme.headlineMedium),
             const SizedBox(height: 16),
             Text(
               'ヘルスケアアプリと連携することで、\n毎日の活動量を自動で記録できます',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Colors.grey.shade600,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(color: Colors.grey.shade600),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 40),
-            
+
             // 連携のメリット
             Container(
               padding: const EdgeInsets.all(16),
@@ -135,7 +139,11 @@ class HealthKitScreen extends ConsumerWidget {
                 children: [
                   Row(
                     children: [
-                      Icon(Icons.check_circle, color: Colors.green.shade600, size: 20),
+                      Icon(
+                        Icons.check_circle,
+                        color: Colors.green.shade600,
+                        size: 20,
+                      ),
                       const SizedBox(width: 8),
                       const Text('歩数や運動の消費カロリーを自動計測'),
                     ],
@@ -143,7 +151,11 @@ class HealthKitScreen extends ConsumerWidget {
                   const SizedBox(height: 12),
                   Row(
                     children: [
-                      Icon(Icons.check_circle, color: Colors.green.shade600, size: 20),
+                      Icon(
+                        Icons.check_circle,
+                        color: Colors.green.shade600,
+                        size: 20,
+                      ),
                       const SizedBox(width: 8),
                       const Text('体重の変化を記録'),
                     ],
@@ -151,7 +163,11 @@ class HealthKitScreen extends ConsumerWidget {
                   const SizedBox(height: 12),
                   Row(
                     children: [
-                      Icon(Icons.check_circle, color: Colors.green.shade600, size: 20),
+                      Icon(
+                        Icons.check_circle,
+                        color: Colors.green.shade600,
+                        size: 20,
+                      ),
                       const SizedBox(width: 8),
                       const Text('より正確なカロリー貯金の計算'),
                     ],
@@ -160,7 +176,7 @@ class HealthKitScreen extends ConsumerWidget {
               ),
             ),
             const SizedBox(height: 40),
-            
+
             SizedBox(
               width: double.infinity,
               child: TontonButton.primary(
@@ -169,14 +185,12 @@ class HealthKitScreen extends ConsumerWidget {
               ),
             ),
             const SizedBox(height: 16),
-            
+
             TextButton(
               onPressed: () => _skipForNow(context, ref),
               child: Text(
                 '今はしない',
-                style: TextStyle(
-                  color: Colors.grey.shade600,
-                ),
+                style: TextStyle(color: Colors.grey.shade600),
               ),
             ),
             const SizedBox(height: 40),

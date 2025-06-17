@@ -28,21 +28,23 @@ final tontonCardUseCases = WidgetbookComponent(
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: TontonCardBase(
-              header: hasHeader
-                  ? const Text(
-                      'Card Header',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    )
-                  : null,
-              footer: hasFooter
-                  ? TextButton(
-                      onPressed: () {},
-                      child: const Text('View Details'),
-                    )
-                  : null,
+              header:
+                  hasHeader
+                      ? const Text(
+                        'Card Header',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      )
+                      : null,
+              footer:
+                  hasFooter
+                      ? TextButton(
+                        onPressed: () {},
+                        child: const Text('View Details'),
+                      )
+                      : null,
               elevation: elevation,
               child: const Padding(
                 padding: EdgeInsets.all(16),
@@ -88,11 +90,7 @@ final tontonCardUseCases = WidgetbookComponent(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(
-                      Icons.star,
-                      size: 48,
-                      color: Colors.amber,
-                    ),
+                    Icon(Icons.star, size: 48, color: Colors.amber),
                     SizedBox(height: 8),
                     Text(
                       'Achievement Unlocked!',
@@ -133,9 +131,7 @@ final tontonCardUseCases = WidgetbookComponent(
                 child: Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    border: Border.all(
-                      color: Theme.of(context).dividerColor,
-                    ),
+                    border: Border.all(color: Theme.of(context).dividerColor),
                     borderRadius: Radii.mediumBorderRadius,
                   ),
                   child: const Text('Flat Card with Border'),
@@ -161,22 +157,13 @@ final tontonCardUseCases = WidgetbookComponent(
               TontonCardBase(
                 header: const Text(
                   'Complete Card',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 footer: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    TextButton(
-                      onPressed: () {},
-                      child: const Text('Cancel'),
-                    ),
-                    TextButton(
-                      onPressed: () {},
-                      child: const Text('Confirm'),
-                    ),
+                    TextButton(onPressed: () {}, child: const Text('Cancel')),
+                    TextButton(onPressed: () {}, child: const Text('Confirm')),
                   ],
                 ),
                 child: const Padding(

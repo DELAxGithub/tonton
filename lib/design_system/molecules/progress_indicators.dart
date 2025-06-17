@@ -5,25 +5,25 @@ import '../../theme/app_theme.dart';
 class LabeledProgressBar extends StatelessWidget {
   /// The progress value (0.0 to 1.0)
   final double value;
-  
+
   /// Label to display above the progress bar
   final String label;
-  
+
   /// Optional subtitle to display
   final String? subtitle;
-  
+
   /// Whether to show the percentage value
   final bool showPercentage;
-  
+
   /// Optional custom color for the progress bar
   final Color? progressColor;
-  
+
   /// Optional custom color for the background
   final Color? backgroundColor;
-  
+
   /// Height of the progress bar
   final double height;
-  
+
   /// Constructor
   const LabeledProgressBar({
     super.key,
@@ -40,12 +40,13 @@ class LabeledProgressBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final color = progressColor ?? theme.colorScheme.primary;
-    final bgColor = backgroundColor ??
+    final bgColor =
+        backgroundColor ??
         theme.colorScheme.primaryContainer.withValues(alpha: 0.3);
-    
+
     // Calculate percentage for display
     final percentage = (value * 100).clamp(0, 100).toInt();
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -53,10 +54,7 @@ class LabeledProgressBar extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              label,
-              style: theme.textTheme.titleSmall,
-            ),
+            Text(label, style: theme.textTheme.titleSmall),
             if (showPercentage)
               Text(
                 '$percentage%',
@@ -67,7 +65,7 @@ class LabeledProgressBar extends StatelessWidget {
               ),
           ],
         ),
-        
+
         // Optional subtitle
         if (subtitle != null) ...[
           const SizedBox(height: TontonSpacing.xs),
@@ -78,7 +76,7 @@ class LabeledProgressBar extends StatelessWidget {
             ),
           ),
         ],
-        
+
         // Progress bar
         const SizedBox(height: TontonSpacing.sm),
         ClipRRect(
@@ -99,25 +97,25 @@ class LabeledProgressBar extends StatelessWidget {
 class LabeledCircularProgress extends StatelessWidget {
   /// The progress value (0.0 to 1.0)
   final double value;
-  
+
   /// Label to display inside the circle
   final String label;
-  
+
   /// Optional subtitle to display below the circle
   final String? subtitle;
-  
+
   /// Size of the circular progress indicator
   final double size;
-  
+
   /// Thickness of the progress indicator stroke
   final double strokeWidth;
-  
+
   /// Optional custom color for the progress
   final Color? progressColor;
-  
+
   /// Optional custom color for the background
   final Color? backgroundColor;
-  
+
   /// Constructor
   const LabeledCircularProgress({
     super.key,
@@ -134,12 +132,13 @@ class LabeledCircularProgress extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final color = progressColor ?? theme.colorScheme.primary;
-    final bgColor = backgroundColor ??
+    final bgColor =
+        backgroundColor ??
         theme.colorScheme.primaryContainer.withValues(alpha: 0.3);
-    
+
     // Calculate percentage for display
     final percentage = (value * 100).clamp(0, 100).toInt();
-    
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -157,7 +156,7 @@ class LabeledCircularProgress extends StatelessWidget {
                 color: color,
                 strokeWidth: strokeWidth,
               ),
-              
+
               // Centered label
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -169,16 +168,13 @@ class LabeledCircularProgress extends StatelessWidget {
                       color: color,
                     ),
                   ),
-                  Text(
-                    label,
-                    style: theme.textTheme.bodySmall,
-                  ),
+                  Text(label, style: theme.textTheme.bodySmall),
                 ],
               ),
             ],
           ),
         ),
-        
+
         // Optional subtitle
         if (subtitle != null) ...[
           const SizedBox(height: TontonSpacing.sm),

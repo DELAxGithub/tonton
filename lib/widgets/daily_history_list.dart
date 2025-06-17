@@ -28,13 +28,17 @@ class DailyHistoryList extends StatelessWidget {
               Icon(
                 Icons.history,
                 size: 48,
-                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.3),
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.3),
               ),
               const SizedBox(height: 16),
               Text(
                 'まだ履歴がありません',
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withValues(alpha: 0.6),
                 ),
               ),
             ],
@@ -43,9 +47,7 @@ class DailyHistoryList extends StatelessWidget {
       );
     }
 
-    final sortedRecords = showLatestFirst 
-        ? records.reversed.toList() 
-        : records;
+    final sortedRecords = showLatestFirst ? records.reversed.toList() : records;
 
     return ListView.separated(
       shrinkWrap: true,
@@ -55,14 +57,16 @@ class DailyHistoryList extends StatelessWidget {
       itemBuilder: (context, index) {
         final record = sortedRecords[index];
         final isPositive = record.dailyBalance > 0;
-        
+
         return Card(
           elevation: 0,
           color: Theme.of(context).colorScheme.surface,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
             side: BorderSide(
-              color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
+              color: Theme.of(
+                context,
+              ).colorScheme.outline.withValues(alpha: 0.2),
             ),
           ),
           child: InkWell(
@@ -70,10 +74,7 @@ class DailyHistoryList extends StatelessWidget {
             onTap: () {
               context.push(
                 TontonRoutes.dailyMealsDetail,
-                extra: {
-                  'date': record.date,
-                  'savingsRecord': record,
-                },
+                extra: {'date': record.date, 'savingsRecord': record},
               );
             },
             child: Padding(
@@ -88,14 +89,17 @@ class DailyHistoryList extends StatelessWidget {
                       children: [
                         Text(
                           DateFormatter.formatMonthDay(record.date),
-                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                          style: Theme.of(context).textTheme.titleMedium
+                              ?.copyWith(fontWeight: FontWeight.bold),
                         ),
                         Text(
                           DateFormatter.formatWeekdayJa(record.date),
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                          style: Theme.of(
+                            context,
+                          ).textTheme.bodySmall?.copyWith(
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurface.withValues(alpha: 0.6),
                           ),
                         ),
                       ],
@@ -110,19 +114,25 @@ class DailyHistoryList extends StatelessWidget {
                         Row(
                           children: [
                             Icon(
-                              isPositive ? Icons.trending_up : Icons.trending_down,
+                              isPositive
+                                  ? Icons.trending_up
+                                  : Icons.trending_down,
                               size: 16,
-                              color: isPositive 
-                                  ? TontonColors.success 
-                                  : TontonColors.error,
+                              color:
+                                  isPositive
+                                      ? TontonColors.success
+                                      : TontonColors.error,
                             ),
                             const SizedBox(width: 4),
                             Text(
                               '${isPositive ? "+" : ""}${record.dailyBalance.toStringAsFixed(0)} kcal',
-                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                color: isPositive 
-                                    ? TontonColors.success 
-                                    : TontonColors.error,
+                              style: Theme.of(
+                                context,
+                              ).textTheme.titleMedium?.copyWith(
+                                color:
+                                    isPositive
+                                        ? TontonColors.success
+                                        : TontonColors.error,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -131,8 +141,12 @@ class DailyHistoryList extends StatelessWidget {
                         const SizedBox(height: 4),
                         Text(
                           '累積: ${record.cumulativeSavings.toStringAsFixed(0)} kcal',
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+                          style: Theme.of(
+                            context,
+                          ).textTheme.bodySmall?.copyWith(
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurface.withValues(alpha: 0.7),
                           ),
                         ),
                       ],
@@ -141,7 +155,9 @@ class DailyHistoryList extends StatelessWidget {
                   // Chevron icon
                   Icon(
                     Icons.chevron_right,
-                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.3),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withValues(alpha: 0.3),
                   ),
                 ],
               ),

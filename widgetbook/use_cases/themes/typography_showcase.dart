@@ -12,7 +12,7 @@ final typographyShowcaseUseCase = WidgetbookComponent(
           label: 'Sample Text',
           initialValue: 'The quick brown fox jumps',
         );
-        
+
         return SingleChildScrollView(
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -54,7 +54,7 @@ final typographyShowcaseUseCase = WidgetbookComponent(
           label: 'Sample Text',
           initialValue: 'The quick brown fox jumps over the lazy dog',
         );
-        
+
         return SingleChildScrollView(
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -305,10 +305,7 @@ Widget _buildSectionTitle(String title) {
     padding: const EdgeInsets.only(bottom: 16, top: 8),
     child: Text(
       title,
-      style: const TextStyle(
-        fontSize: 20,
-        fontWeight: FontWeight.bold,
-      ),
+      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
     ),
   );
 }
@@ -328,10 +325,7 @@ Widget _buildTypographyExample(
           children: [
             Text(
               name,
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-              ),
+              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
             ),
             const SizedBox(width: 8),
             Container(
@@ -342,19 +336,13 @@ Widget _buildTypographyExample(
               ),
               child: Text(
                 description,
-                style: const TextStyle(
-                  fontSize: 11,
-                  color: Colors.grey,
-                ),
+                style: const TextStyle(fontSize: 11, color: Colors.grey),
               ),
             ),
           ],
         ),
         const SizedBox(height: 8),
-        Text(
-          text,
-          style: style,
-        ),
+        Text(text, style: style),
       ],
     ),
   );

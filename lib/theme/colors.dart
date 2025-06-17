@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 /// Apple HIG-compliant color system for Tonton
-/// 
+///
 /// This class provides system colors, semantic colors, and brand colors
 /// following Apple's Human Interface Guidelines.
 class TontonColors {
@@ -11,7 +11,7 @@ class TontonColors {
   // ===== Brand Colors =====
   /// Tonton's signature pig pink color
   static const Color pigPink = Color(0xFFF7B6B9);
-  
+
   /// Darker variant of pig pink for emphasis
   static const Color pigPinkDark = Color(0xFFE89B9E);
 
@@ -42,7 +42,7 @@ class TontonColors {
   static const Color secondaryLabel = Color(0x993C3C43);
   static const Color tertiaryLabel = Color(0x4D3C3C43);
   static const Color quaternaryLabel = Color(0x2E3C3C43);
-  
+
   static const Color fill = Color(0x1F787880);
   static const Color secondaryFill = Color(0x29787880);
   static const Color tertiaryFill = Color(0x0F767680);
@@ -55,7 +55,7 @@ class TontonColors {
   static const Color systemBackground = Color(0xFFFFFFFF);
   static const Color secondarySystemBackground = Color(0xFFF2F2F7);
   static const Color tertiarySystemBackground = Color(0xFFFFFFFF);
-  
+
   static const Color systemGroupedBackground = Color(0xFFF2F2F7);
   static const Color secondarySystemGroupedBackground = Color(0xFFFFFFFF);
   static const Color tertiarySystemGroupedBackground = Color(0xFFF2F2F7);
@@ -100,35 +100,35 @@ class TontonColors {
       onPrimary: Colors.white,
       primaryContainer: pigPink,
       onPrimaryContainer: Colors.white,
-      
+
       secondary: systemBlue,
       onSecondary: Colors.white,
       secondaryContainer: Color(0xFFE5F3FF),
       onSecondaryContainer: systemBlue,
-      
+
       tertiary: systemGreen,
       onTertiary: Colors.white,
       tertiaryContainer: Color(0xFFE5F5E9),
       onTertiaryContainer: systemGreen,
-      
+
       error: systemRed,
       onError: Colors.white,
       errorContainer: Color(0xFFFFEBEB),
       onErrorContainer: systemRed,
-      
+
       surface: systemBackground,
       onSurface: label,
       surfaceContainerHighest: secondarySystemBackground,
       onSurfaceVariant: secondaryLabel,
-      
+
       outline: separator,
       outlineVariant: systemGray5,
-      
+
       scrim: Colors.black12,
       inverseSurface: label,
       onInverseSurface: systemBackground,
       inversePrimary: pigPinkDark,
-      
+
       shadow: Colors.black26,
     );
   }
@@ -139,35 +139,35 @@ class TontonColors {
       onPrimary: Colors.black,
       primaryContainer: pigPinkDark,
       onPrimaryContainer: Colors.white,
-      
+
       secondary: systemCyan,
       onSecondary: Colors.black,
       secondaryContainer: Color(0xFF004A77),
       onSecondaryContainer: systemCyan,
-      
+
       tertiary: systemGreen,
       onTertiary: Colors.black,
       tertiaryContainer: Color(0xFF003A2E),
       onTertiaryContainer: systemGreen,
-      
+
       error: systemPink,
       onError: Colors.black,
       errorContainer: Color(0xFF93000A),
       onErrorContainer: systemPink,
-      
+
       surface: systemBackgroundDark,
       onSurface: labelDark,
       surfaceContainerHighest: secondarySystemBackgroundDark,
       onSurfaceVariant: secondaryLabelDark,
-      
+
       outline: separatorDark,
       outlineVariant: Color(0xFF43474E),
-      
+
       scrim: Colors.black87,
       inverseSurface: labelDark,
       onInverseSurface: systemBackgroundDark,
       inversePrimary: pigPink,
-      
+
       shadow: Colors.black87,
     );
   }
@@ -180,32 +180,51 @@ class TontonColors {
 
   /// Returns appropriate secondary label color based on brightness
   static Color secondaryLabelColor(BuildContext context) {
-    return Theme.of(context).brightness == Brightness.dark ? secondaryLabelDark : secondaryLabel;
+    return Theme.of(context).brightness == Brightness.dark
+        ? secondaryLabelDark
+        : secondaryLabel;
   }
 
   /// Returns appropriate tertiary label color based on brightness
   static Color tertiaryLabelColor(BuildContext context) {
-    return Theme.of(context).brightness == Brightness.dark ? tertiaryLabelDark : tertiaryLabel;
+    return Theme.of(context).brightness == Brightness.dark
+        ? tertiaryLabelDark
+        : tertiaryLabel;
+  }
+
+  /// Returns appropriate quaternary label color based on brightness
+  static Color quaternaryLabelColor(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark
+        ? quaternaryLabelDark
+        : quaternaryLabel;
   }
 
   /// Returns appropriate background color based on brightness
   static Color backgroundColor(BuildContext context) {
-    return Theme.of(context).brightness == Brightness.dark ? systemBackgroundDark : systemBackground;
+    return Theme.of(context).brightness == Brightness.dark
+        ? systemBackgroundDark
+        : systemBackground;
   }
 
   /// Returns appropriate secondary background color based on brightness
   static Color secondaryBackgroundColor(BuildContext context) {
-    return Theme.of(context).brightness == Brightness.dark ? secondarySystemBackgroundDark : secondarySystemBackground;
+    return Theme.of(context).brightness == Brightness.dark
+        ? secondarySystemBackgroundDark
+        : secondarySystemBackground;
   }
 
   /// Returns appropriate grouped background color based on brightness
   static Color groupedBackgroundColor(BuildContext context) {
-    return Theme.of(context).brightness == Brightness.dark ? systemGroupedBackgroundDark : systemGroupedBackground;
+    return Theme.of(context).brightness == Brightness.dark
+        ? systemGroupedBackgroundDark
+        : systemGroupedBackground;
   }
 
   /// Returns appropriate separator color based on brightness
   static Color separatorColor(BuildContext context) {
-    return Theme.of(context).brightness == Brightness.dark ? separatorDark : separator;
+    return Theme.of(context).brightness == Brightness.dark
+        ? separatorDark
+        : separator;
   }
 
   /// Returns appropriate fill color based on brightness

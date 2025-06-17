@@ -29,7 +29,8 @@ class PFCCalculator {
     // 2. 推奨カロリーの取得
     int recommendedCalories = defaultRecommendedCalories;
     if (gender != null && ageGroup != null) {
-      recommendedCalories = calorieMatrix[ageGroup]?[gender] ?? defaultRecommendedCalories;
+      recommendedCalories =
+          calorieMatrix[ageGroup]?[gender] ?? defaultRecommendedCalories;
     }
 
     // 3. 目標カロリー = 推奨カロリー - 貯金目標

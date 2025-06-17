@@ -21,7 +21,10 @@ final currentUserProvider = Provider<User?>((ref) {
   // this provider will re-evaluate and return the current user.
   // This is a common pattern to get the User object reactively.
   final authState = ref.watch(authStateChangesProvider);
-  return authState.value?.session?.user; // Access user from session within AuthState
+  return authState
+      .value
+      ?.session
+      ?.user; // Access user from session within AuthState
 });
 
 // A more specific provider that just tells if a user is logged in or not,

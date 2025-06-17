@@ -11,16 +11,25 @@ class DailySummaryDataService {
 
   Future<void> init() async {
     if (isInitialized) {
-      developer.log('DailySummaryDataService already initialized.', name: 'TonTon.DailySummaryDataService');
+      developer.log(
+        'DailySummaryDataService already initialized.',
+        name: 'TonTon.DailySummaryDataService',
+      );
       return;
     }
-    developer.log('Initializing DailySummaryDataService...', name: 'TonTon.DailySummaryDataService');
+    developer.log(
+      'Initializing DailySummaryDataService...',
+      name: 'TonTon.DailySummaryDataService',
+    );
     if (Hive.isBoxOpen(_boxName)) {
       _box = Hive.box<DailySummary>(_boxName);
     } else {
       _box = await Hive.openBox<DailySummary>(_boxName);
     }
-    developer.log('DailySummaryDataService initialized. Items: ${_box?.length}', name: 'TonTon.DailySummaryDataService');
+    developer.log(
+      'DailySummaryDataService initialized. Items: ${_box?.length}',
+      name: 'TonTon.DailySummaryDataService',
+    );
   }
 
   Future<void> saveSummary(DailySummary summary) async {
@@ -52,4 +61,3 @@ class DailySummaryDataService {
     await _box!.flush();
   }
 }
-

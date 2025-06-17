@@ -24,7 +24,8 @@ class DualAxisChart extends StatelessWidget {
     final maxSavings = records.map((r) => r.cumulativeSavings).reduce(math.max);
 
     // Scale factor to overlay cumulative savings on the weight axis
-    final scale = (maxFatMass - minFatMass) / (maxSavings == 0 ? 1 : maxSavings);
+    final scale =
+        (maxFatMass - minFatMass) / (maxSavings == 0 ? 1 : maxSavings);
 
     return LineChart(
       LineChartData(
@@ -36,10 +37,8 @@ class DualAxisChart extends StatelessWidget {
           show: true,
           drawVerticalLine: false,
           horizontalInterval: (maxFatMass - minFatMass) / 4,
-          getDrawingHorizontalLine: (value) => FlLine(
-            color: Colors.grey.shade300,
-            strokeWidth: 1,
-          ),
+          getDrawingHorizontalLine:
+              (value) => FlLine(color: Colors.grey.shade300, strokeWidth: 1),
         ),
         titlesData: FlTitlesData(
           bottomTitles: AxisTitles(
@@ -76,13 +75,15 @@ class DualAxisChart extends StatelessWidget {
               getTitlesWidget: (value, meta) => Text(value.toStringAsFixed(1)),
             ),
           ),
-          topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          topTitles: const AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
         ),
         lineBarsData: [
           LineChartBarData(
             spots: [
               for (int i = 0; i < bodyFatMasses.length; i++)
-                FlSpot(i.toDouble(), bodyFatMasses[i])
+                FlSpot(i.toDouble(), bodyFatMasses[i]),
             ],
             isCurved: true,
             color: Colors.orange,
@@ -92,7 +93,10 @@ class DualAxisChart extends StatelessWidget {
           LineChartBarData(
             spots: [
               for (int i = 0; i < records.length; i++)
-                FlSpot(i.toDouble(), minFatMass + records[i].cumulativeSavings * scale)
+                FlSpot(
+                  i.toDouble(),
+                  minFatMass + records[i].cumulativeSavings * scale,
+                ),
             ],
             isCurved: true,
             color: Colors.blue,

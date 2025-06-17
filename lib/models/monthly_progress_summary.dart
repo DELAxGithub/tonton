@@ -1,23 +1,23 @@
-
 class MonthlyProgressSummary {
   /// Target monthly net calorie burn (negative value means deficit goal)
   final double targetMonthlyNetBurn;
-  
+
   /// Current accumulated net calorie burn for the month
   final double currentMonthlyNetBurn;
-  
+
   /// Number of days elapsed in the current month
   final int daysElapsedInMonth;
-  
+
   /// Number of days remaining in the current month
   final int remainingDaysInMonth;
-  
+
   /// Average daily net burn needed to reach the target
   double get averageDailyNetBurnNeeded {
     if (remainingDaysInMonth <= 0) return 0;
-    return (targetMonthlyNetBurn - currentMonthlyNetBurn) / remainingDaysInMonth;
+    return (targetMonthlyNetBurn - currentMonthlyNetBurn) /
+        remainingDaysInMonth;
   }
-  
+
   /// Completion percentage (0-100)
   double get completionPercentage {
     if (targetMonthlyNetBurn == 0) return 0;
@@ -26,11 +26,13 @@ class MonthlyProgressSummary {
     // Otherwise show progress as percentage toward goal
     return (currentMonthlyNetBurn / targetMonthlyNetBurn * 100).clamp(0, 100);
   }
-  
+
   /// Whether the current progress is on track to meet the target
   bool get isOnTrack {
     if (daysElapsedInMonth <= 0) return true;
-    final expectedProgress = (daysElapsedInMonth / (daysElapsedInMonth + remainingDaysInMonth)) * targetMonthlyNetBurn;
+    final expectedProgress =
+        (daysElapsedInMonth / (daysElapsedInMonth + remainingDaysInMonth)) *
+        targetMonthlyNetBurn;
     return currentMonthlyNetBurn >= expectedProgress;
   }
 

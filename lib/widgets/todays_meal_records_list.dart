@@ -46,29 +46,32 @@ class TodaysMealRecordsList extends ConsumerWidget {
                   // 削除確認ダイアログを表示
                   return await showDialog<bool>(
                     context: context,
-                    builder: (context) => AlertDialog(
-                      title: const Text('削除の確認'),
-                      content: Text('${meal.mealName}を削除しますか？'),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.of(context).pop(false),
-                          child: const Text('キャンセル'),
+                    builder:
+                        (context) => AlertDialog(
+                          title: const Text('削除の確認'),
+                          content: Text('${meal.mealName}を削除しますか？'),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.of(context).pop(false),
+                              child: const Text('キャンセル'),
+                            ),
+                            TextButton(
+                              onPressed: () => Navigator.of(context).pop(true),
+                              child: const Text(
+                                '削除',
+                                style: TextStyle(color: Colors.red),
+                              ),
+                            ),
+                          ],
                         ),
-                        TextButton(
-                          onPressed: () => Navigator.of(context).pop(true),
-                          child: const Text(
-                            '削除',
-                            style: TextStyle(color: Colors.red),
-                          ),
-                        ),
-                      ],
-                    ),
                   );
                 },
                 onDismissed: (direction) async {
                   // 削除処理
-                  await ref.read(mealRecordsProvider.notifier).deleteMealRecord(meal.id);
-                  
+                  await ref
+                      .read(mealRecordsProvider.notifier)
+                      .deleteMealRecord(meal.id);
+
                   // SnackBarで通知
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -88,20 +91,15 @@ class TodaysMealRecordsList extends ConsumerWidget {
                   color: Colors.red,
                   alignment: Alignment.centerRight,
                   padding: const EdgeInsets.only(right: 20),
-                  child: const Icon(
-                    Icons.delete,
-                    color: Colors.white,
-                  ),
+                  child: const Icon(Icons.delete, color: Colors.white),
                 ),
                 child: MealRecordCard(
                   mealRecord: meal,
                   onTap: () {
                     // TODO: 編集画面への遷移を実装
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('編集機能は準備中です'),
-                      ),
-                    );
+                    ScaffoldMessenger.of(
+                      context,
+                    ).showSnackBar(const SnackBar(content: Text('編集機能は準備中です')));
                   },
                 ),
               );

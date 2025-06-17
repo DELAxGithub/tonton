@@ -2,7 +2,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../models/daily_summary.dart';
 import '../../services/daily_summary_service.dart';
-import 'monthly_progress_provider.dart';
 import '../../providers/providers.dart';
 
 /// Provides an instance of [DailySummaryService].
@@ -26,8 +25,5 @@ final realtimeDailySummaryProvider = FutureProvider<DailySummary>((ref) async {
 /// Net calories for today in real time.
 final realtimeNetCaloriesProvider = Provider<double>((ref) {
   final summaryAsync = ref.watch(realtimeDailySummaryProvider);
-  return summaryAsync.maybeWhen(
-    data: (s) => s.netCalories,
-    orElse: () => 0.0,
-  );
+  return summaryAsync.maybeWhen(data: (s) => s.netCalories, orElse: () => 0.0);
 });

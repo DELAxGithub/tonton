@@ -1,7 +1,7 @@
 name: tonton
 description: "A health tracking application with iOS HealthKit integration."
 publish_to: 'none'
-version: 1.0.0+2
+version: 1.0.0+6
 
 environment:
   sdk: ^3.7.2
@@ -26,6 +26,7 @@ dependencies:
   image: ^4.1.7        # Image processing (resize/compress)
   mime: ^1.0.4         # Added for MIME type detection
   path: ^1.8.3         # Added for path handling
+  google_generative_ai: ^0.4.6  # Direct Gemini API access
   args: ^2.4.2         # Required for build tools
   yaml: ^3.1.2         # Required for configuration tools
   

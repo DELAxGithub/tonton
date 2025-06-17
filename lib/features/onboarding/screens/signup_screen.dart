@@ -8,14 +8,16 @@ import '../../../design_system/templates/standard_page_layout.dart';
 import '../../../design_system/atoms/tonton_button.dart';
 import '../../../providers/providers.dart';
 
-class SignupScreen extends ConsumerStatefulWidget { // Changed to ConsumerStatefulWidget
+class SignupScreen extends ConsumerStatefulWidget {
+  // Changed to ConsumerStatefulWidget
   const SignupScreen({super.key});
 
   @override
   ConsumerState<SignupScreen> createState() => _SignupScreenState(); // Changed to ConsumerState
 }
 
-class _SignupScreenState extends ConsumerState<SignupScreen> { // Changed to ConsumerState
+class _SignupScreenState extends ConsumerState<SignupScreen> {
+  // Changed to ConsumerState
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -42,18 +44,32 @@ class _SignupScreenState extends ConsumerState<SignupScreen> { // Changed to Con
           email: _emailController.text.trim(),
           password: _passwordController.text.trim(),
         );
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Signup successful! Please check your email to confirm.')), // Or navigate directly if email confirmation is off
-          );
-          // Navigate to the login screen using the GoRouter
-          // The router will handle any redirects based on auth state
-          context.go(TontonRoutes.login);
-        }
+        if (!mounted) return;
+
+        // Immediately complete onboarding after successful signup
+        await ref.read(onboardingCompletedProvider.notifier).complete();
+        if (!mounted) return;
+
+        await ref.read(userProfileProvider.notifier).completeOnboarding();
+        if (!mounted) return;
+
+        final service = ref.read(onboardingServiceProvider);
+        await service.completeOnboarding();
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Welcome to Tonton! Account created successfully.'),
+          ),
+        );
+        context.go(TontonRoutes.home);
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Signup failed: ${e.toString().replaceFirst("Exception: ", "")}')),
+            SnackBar(
+              content: Text(
+                'Signup failed: ${e.toString().replaceFirst("Exception: ", "")}',
+              ),
+            ),
           );
         }
       } finally {
@@ -69,9 +85,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> { // Changed to Con
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Sign Up'),
-      ),
+      appBar: AppBar(title: const Text('Sign Up')),
       body: StandardPageLayout(
         children: [
           Form(
@@ -145,9 +159,9 @@ class _SignupScreenState extends ConsumerState<SignupScreen> { // Changed to Con
                 _isLoading
                     ? const Center(child: CircularProgressIndicator())
                     : TontonButton.primary(
-                        label: 'Sign Up',
-                        onPressed: _signup,
-                      ),
+                      label: 'Sign Up',
+                      onPressed: _signup,
+                    ),
                 const SizedBox(height: 16.0),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,

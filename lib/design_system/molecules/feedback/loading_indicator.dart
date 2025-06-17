@@ -6,7 +6,7 @@ class LoadingIndicator extends StatelessWidget {
   final String? message;
   final double size;
   final Color? color;
-  
+
   const LoadingIndicator({
     super.key,
     this.message,
@@ -16,11 +16,7 @@ class LoadingIndicator extends StatelessWidget {
 
   /// フルスクリーンローディング
   static Widget fullScreen({String? message}) {
-    return Scaffold(
-      body: Center(
-        child: LoadingIndicator(message: message),
-      ),
-    );
+    return Scaffold(body: Center(child: LoadingIndicator(message: message)));
   }
 
   /// カード内ローディング

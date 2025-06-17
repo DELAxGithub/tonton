@@ -11,7 +11,7 @@ String? validatePositiveNumber(String? value) {
   if (value == null || value.trim().isEmpty) {
     return 'This field is required';
   }
-  
+
   try {
     final number = double.parse(value);
     if (number < 0) {
@@ -20,7 +20,7 @@ String? validatePositiveNumber(String? value) {
   } catch (e) {
     return 'Please enter a valid number';
   }
-  
+
   return null;
 }
 
@@ -29,12 +29,12 @@ String? validateInteger(String? value) {
   if (value == null || value.trim().isEmpty) {
     return 'This field is required';
   }
-  
+
   try {
     int.parse(value);
   } catch (e) {
     return 'Please enter a whole number';
   }
-  
+
   return null;
 }

@@ -40,10 +40,7 @@ class WidgetbookApp extends StatelessWidget {
           children: [
             WidgetbookFolder(
               name: 'Themes',
-              children: [
-                colorShowcaseUseCase,
-                typographyShowcaseUseCase,
-              ],
+              children: [colorShowcaseUseCase, typographyShowcaseUseCase],
             ),
             WidgetbookFolder(
               name: 'Atoms',
@@ -55,17 +52,11 @@ class WidgetbookApp extends StatelessWidget {
             ),
             WidgetbookFolder(
               name: 'Molecules',
-              children: [
-                pfcBarDisplayUseCases,
-                calorieDisplayUseCases,
-              ],
+              children: [pfcBarDisplayUseCases, calorieDisplayUseCases],
             ),
             WidgetbookFolder(
               name: 'Organisms',
-              children: [
-                heroPiggyBankUseCases,
-                dailySummarySectionUseCases,
-              ],
+              children: [heroPiggyBankUseCases, dailySummarySectionUseCases],
             ),
           ],
         ),
@@ -83,32 +74,16 @@ class WidgetbookApp extends StatelessWidget {
         ),
         ThemeAddon(
           themes: [
-            WidgetbookTheme(
-              name: 'Light',
-              data: AppTheme.lightTheme(),
-            ),
-            WidgetbookTheme(
-              name: 'Dark',
-              data: AppTheme.darkTheme(),
-            ),
+            WidgetbookTheme(name: 'Light', data: AppTheme.lightTheme()),
+            WidgetbookTheme(name: 'Dark', data: AppTheme.darkTheme()),
           ],
           themeBuilder: (context, theme, child) {
-            return Theme(
-              data: theme,
-              child: child,
-            );
+            return Theme(data: theme, child: child);
           },
         ),
-        TextScaleAddon(
-          min: 0.8,
-          max: 1.5,
-          initialScale: 1.0,
-        ),
+        TextScaleAddon(min: 0.8, max: 1.5, initialScale: 1.0),
         LocalizationAddon(
-          locales: [
-            const Locale('en', 'US'),
-            const Locale('ja', 'JP'),
-          ],
+          locales: [const Locale('en', 'US'), const Locale('ja', 'JP')],
           localizationsDelegates: const [
             DefaultWidgetsLocalizations.delegate,
             DefaultMaterialLocalizations.delegate,

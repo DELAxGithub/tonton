@@ -6,7 +6,7 @@ import 'health_service.dart';
 /// Handles persistence of onboarding status and first launch timestamp.
 class OnboardingService {
   OnboardingService(this._startDateNotifier, [HealthService? healthService])
-      : _healthService = healthService ?? HealthService();
+    : _healthService = healthService ?? HealthService();
 
   final OnboardingStartDateNotifier _startDateNotifier;
   final HealthService _healthService;

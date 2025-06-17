@@ -64,10 +64,10 @@ class MealRecord {
     DateTime? consumedAt,
     DateTime? createdAt,
     DateTime? updatedAt,
-  })  : id = id ?? const Uuid().v4(),
-        consumedAt = consumedAt ?? DateTime.now(),
-        createdAt = createdAt ?? DateTime.now(),
-        updatedAt = updatedAt ?? DateTime.now();
+  }) : id = id ?? const Uuid().v4(),
+       consumedAt = consumedAt ?? DateTime.now(),
+       createdAt = createdAt ?? DateTime.now(),
+       updatedAt = updatedAt ?? DateTime.now();
 
   /// Creates a copy of this MealRecord with the given fields replaced with the new values
   MealRecord copyWith({

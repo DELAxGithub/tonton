@@ -26,21 +26,15 @@ class EmptyState extends StatelessWidget {
       title: '食事の記録がありません',
       message: '食事を記録して、健康管理を始めましょう',
       icon: TontonIcons.restaurantIcon,
-      action: onAdd != null
-          ? TontonButton.primary(
-              label: '食事を記録する',
-              onPressed: onAdd,
-            )
-          : null,
+      action:
+          onAdd != null
+              ? TontonButton.primary(label: '食事を記録する', onPressed: onAdd)
+              : null,
     );
   }
 
   /// データなし（汎用）
-  factory EmptyState.noData({
-    String? message,
-    IconData? icon,
-    Widget? action,
-  }) {
+  factory EmptyState.noData({String? message, IconData? icon, Widget? action}) {
     return EmptyState(
       title: 'データがありません',
       message: message,
@@ -73,19 +67,17 @@ class EmptyState extends StatelessWidget {
       title: '検索結果がありません',
       message: '別のキーワードで検索してみてください',
       icon: Icons.search_off,
-      action: onClear != null
-          ? TontonButton.text(
-              label: '検索をクリア',
-              onPressed: onClear,
-            )
-          : null,
+      action:
+          onClear != null
+              ? TontonButton.text(label: '検索をクリア', onPressed: onClear)
+              : null,
     );
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     if (isCompact) {
       return _buildCompact(theme);
     }

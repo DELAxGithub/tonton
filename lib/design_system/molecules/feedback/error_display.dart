@@ -102,10 +102,7 @@ class ErrorDisplay extends StatelessWidget {
             ],
             if (onRetry != null) ...[
               const SizedBox(height: TontonSpacing.lg),
-              TontonButton.primary(
-                label: '再試行',
-                onPressed: onRetry!,
-              ),
+              TontonButton.primary(label: '再試行', onPressed: onRetry!),
             ],
           ],
         ),

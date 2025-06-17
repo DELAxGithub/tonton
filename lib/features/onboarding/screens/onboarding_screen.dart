@@ -16,7 +16,10 @@ class OnboardingScreen extends ConsumerWidget {
 
   Future<void> _requestPermissions(BuildContext context) async {
     // Request HealthKit permissions via existing provider
-    final health = provider_pkg.Provider.of<HealthProvider>(context, listen: false);
+    final health = provider_pkg.Provider.of<HealthProvider>(
+      context,
+      listen: false,
+    );
     await health.requestPermissions();
 
     // Attempt to trigger camera permission by opening and immediately disposing image picker
@@ -38,7 +41,9 @@ class OnboardingScreen extends ConsumerWidget {
 
     // Save default start date if not set
     if (ref.read(onboardingStartDateProvider) == null) {
-      await ref.read(onboardingStartDateProvider.notifier).setDate(DateTime.now());
+      await ref
+          .read(onboardingStartDateProvider.notifier)
+          .setDate(DateTime.now());
     }
 
     if (context.mounted) {

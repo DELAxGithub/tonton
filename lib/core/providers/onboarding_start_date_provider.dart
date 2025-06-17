@@ -30,9 +30,7 @@ class OnboardingStartDateNotifier extends StateNotifier<DateTime?> {
 }
 
 final onboardingStartDateProvider =
-    StateNotifierProvider<OnboardingStartDateNotifier, DateTime?>(
-  (ref) {
-    final dataService = ref.read(dailySummaryDataServiceProvider);
-    return OnboardingStartDateNotifier(dataService);
-  },
-);
+    StateNotifierProvider<OnboardingStartDateNotifier, DateTime?>((ref) {
+      final dataService = ref.read(dailySummaryDataServiceProvider);
+      return OnboardingStartDateNotifier(dataService);
+    });

@@ -45,15 +45,16 @@ class CalorieWeightChart extends StatelessWidget {
         minX: 0,
         maxX: (records.length - 1).toDouble(),
         minY: 0,
-        maxY: maxSavings > 0 ? maxSavings * 1.1 : 1000, // Add 10% padding or default
+        maxY:
+            maxSavings > 0
+                ? maxSavings * 1.1
+                : 1000, // Add 10% padding or default
         gridData: FlGridData(
           show: true,
           drawVerticalLine: false,
           horizontalInterval: maxSavings > 0 ? maxSavings / 5 : 1000,
-          getDrawingHorizontalLine: (value) => FlLine(
-            color: Colors.grey.shade300,
-            strokeWidth: 1,
-          ),
+          getDrawingHorizontalLine:
+              (value) => FlLine(color: Colors.grey.shade300, strokeWidth: 1),
         ),
         titlesData: FlTitlesData(
           bottomTitles: AxisTitles(
@@ -65,14 +66,18 @@ class CalorieWeightChart extends StatelessWidget {
                 if (idx < 0 || idx >= records.length) {
                   return const SizedBox.shrink();
                 }
-                
+
                 // Show dates at appropriate intervals
-                final showInterval = records.length > 30 ? 7 : 
-                                    records.length > 14 ? 3 : 1;
+                final showInterval =
+                    records.length > 30
+                        ? 7
+                        : records.length > 14
+                        ? 3
+                        : 1;
                 if (idx % showInterval != 0) {
                   return const SizedBox.shrink();
                 }
-                
+
                 final date = records[idx].date;
                 return Text(
                   '${date.month}/${date.day}',
@@ -82,7 +87,10 @@ class CalorieWeightChart extends StatelessWidget {
             ),
           ),
           leftTitles: AxisTitles(
-            axisNameWidget: const Text('累積貯金 (kcal)', style: TextStyle(fontSize: 12)),
+            axisNameWidget: const Text(
+              '累積貯金 (kcal)',
+              style: TextStyle(fontSize: 12),
+            ),
             axisNameSize: 20,
             sideTitles: SideTitles(
               showTitles: true,
@@ -96,14 +104,18 @@ class CalorieWeightChart extends StatelessWidget {
             ),
           ),
           rightTitles: AxisTitles(
-            axisNameWidget: const Text('体重 (kg)', style: TextStyle(fontSize: 12)),
+            axisNameWidget: const Text(
+              '体重 (kg)',
+              style: TextStyle(fontSize: 12),
+            ),
             axisNameSize: 20,
             sideTitles: SideTitles(
               showTitles: validWeights.isNotEmpty,
               reservedSize: 48,
               getTitlesWidget: (value, meta) {
                 // Map from calorie scale to weight scale
-                final weightValue = minWeight + (value / maxSavings) * (maxWeight - minWeight);
+                final weightValue =
+                    minWeight + (value / maxSavings) * (maxWeight - minWeight);
                 return Text(
                   weightValue.toStringAsFixed(1),
                   style: const TextStyle(fontSize: 10),
@@ -111,14 +123,16 @@ class CalorieWeightChart extends StatelessWidget {
               },
             ),
           ),
-          topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          topTitles: const AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
         ),
         lineBarsData: [
           // Calorie savings bar chart
           LineChartBarData(
             spots: [
               for (int i = 0; i < records.length; i++)
-                FlSpot(i.toDouble(), records[i].cumulativeSavings)
+                FlSpot(i.toDouble(), records[i].cumulativeSavings),
             ],
             isCurved: false,
             color: TontonColors.secondary,
@@ -136,10 +150,11 @@ class CalorieWeightChart extends StatelessWidget {
               spots: [
                 for (final entry in validWeights.entries)
                   FlSpot(
-                    entry.key.toDouble(), 
+                    entry.key.toDouble(),
                     // Map weight to calorie scale for display
-                    ((entry.value - minWeight) / (maxWeight - minWeight)) * maxSavings
-                  )
+                    ((entry.value - minWeight) / (maxWeight - minWeight)) *
+                        maxSavings,
+                  ),
               ],
               isCurved: true,
               color: TontonColors.primary,
@@ -163,10 +178,10 @@ class CalorieWeightChart extends StatelessWidget {
               return touchedSpots.map((spot) {
                 final idx = spot.x.toInt();
                 if (idx < 0 || idx >= records.length) return null;
-                
+
                 final date = records[idx].date;
                 final dateStr = '${date.month}/${date.day}';
-                
+
                 if (spot.barIndex == 0) {
                   // Calorie savings
                   return LineTooltipItem(
@@ -179,8 +194,10 @@ class CalorieWeightChart extends StatelessWidget {
                   );
                 } else {
                   // Weight
-                  final weightEntry = validWeights.entries
-                      .firstWhere((e) => e.key == idx, orElse: () => MapEntry(-1, 0));
+                  final weightEntry = validWeights.entries.firstWhere(
+                    (e) => e.key == idx,
+                    orElse: () => MapEntry(-1, 0),
+                  );
                   if (weightEntry.key != -1) {
                     return LineTooltipItem(
                       '$dateStr\n${weightEntry.value.toStringAsFixed(1)} kg',
@@ -203,7 +220,7 @@ class CalorieWeightChart extends StatelessWidget {
 
   Widget _buildCaloriesOnlyChart(BuildContext context) {
     final maxSavings = records.map((r) => r.cumulativeSavings).reduce(math.max);
-    
+
     return BarChart(
       BarChartData(
         barGroups: [
@@ -236,13 +253,17 @@ class CalorieWeightChart extends StatelessWidget {
                 if (idx < 0 || idx >= records.length) {
                   return const SizedBox.shrink();
                 }
-                
-                final showInterval = records.length > 30 ? 7 : 
-                                    records.length > 14 ? 3 : 1;
+
+                final showInterval =
+                    records.length > 30
+                        ? 7
+                        : records.length > 14
+                        ? 3
+                        : 1;
                 if (idx % showInterval != 0) {
                   return const SizedBox.shrink();
                 }
-                
+
                 final date = records[idx].date;
                 return Text(
                   '${date.month}/${date.day}',
@@ -252,7 +273,10 @@ class CalorieWeightChart extends StatelessWidget {
             ),
           ),
           leftTitles: AxisTitles(
-            axisNameWidget: const Text('累積貯金 (kcal)', style: TextStyle(fontSize: 12)),
+            axisNameWidget: const Text(
+              '累積貯金 (kcal)',
+              style: TextStyle(fontSize: 12),
+            ),
             axisNameSize: 20,
             sideTitles: SideTitles(
               showTitles: true,
@@ -265,8 +289,12 @@ class CalorieWeightChart extends StatelessWidget {
               },
             ),
           ),
-          rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-          topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          rightTitles: const AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
+          topTitles: const AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
         ),
       ),
     );

@@ -1,39 +1,5 @@
-# Matchfile for TonTon iOS app code signing
-
-# Git URL for storing certificates
-# Create a private repository for this purpose
-git_url(ENV["MATCH_GIT_URL"] || "https://github.com/YOUR_ORG/certificates")
-
-# Type of storage (git, google_cloud, s3)
+git_url("https://github.com/DELAxGithub/tonton-match.git")
 storage_mode("git")
-
-# The default type of certificates/profiles to generate
 type("development")
-
-# The bundle identifier(s) of your app
-app_identifier(["com.example.tonton"])
-
-# Your Apple Developer Portal username
-username(ENV["APPLE_ID"] || "your-apple-id@example.com")
-
-# Specific git branch to use
-git_branch("main")
-
-# Enable shallow clone for faster operations
-shallow_clone(true)
-
-# Clone certificates repo to a specific folder
-clone_branch_directly(true)
-
-# Platform
-platform("ios")
-
-# Additional settings for enhanced security
-# readonly(true)  # Only fetch existing certificates, don't create new ones
-
-# For CI/CD environments
-# if ENV["CI"]
-#   readonly(true)
-#   keychain_name("ci-keychain")
-#   keychain_password(ENV["KEYCHAIN_PASSWORD"])
-# end
+app_identifier(["com.HiroshiKodera.tonton"])
+username("notheshow@mac.com")

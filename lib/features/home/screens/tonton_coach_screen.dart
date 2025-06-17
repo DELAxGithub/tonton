@@ -18,9 +18,7 @@ class TontonCoachScreen extends StatelessWidget {
           onPressed: () => context.pop(),
         ),
       ),
-      body: const Center(
-        child: Text('この機能は現在開発中です。'),
-      ),
+      body: const Center(child: Text('この機能は現在開発中です。')),
     );
   }
 }

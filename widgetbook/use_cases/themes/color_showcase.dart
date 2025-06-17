@@ -14,11 +14,7 @@ final colorShowcaseUseCase = WidgetbookComponent(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildSectionTitle('Primary Brand Colors'),
-              _buildColorTile(
-                'Pig Pink',
-                TontonColors.pigPink,
-                '#F7B6B9',
-              ),
+              _buildColorTile('Pig Pink', TontonColors.pigPink, '#F7B6B9'),
               _buildColorTile(
                 'Pig Pink Dark',
                 TontonColors.pigPinkDark,
@@ -38,11 +34,7 @@ final colorShowcaseUseCase = WidgetbookComponent(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildSectionTitle('iOS System Colors'),
-              _buildColorTile(
-                'System Red',
-                TontonColors.systemRed,
-                '#FF3B30',
-              ),
+              _buildColorTile('System Red', TontonColors.systemRed, '#FF3B30'),
               _buildColorTile(
                 'System Orange',
                 TontonColors.systemOrange,
@@ -209,7 +201,7 @@ final colorShowcaseUseCase = WidgetbookComponent(
       name: 'Dynamic Colors',
       builder: (context) {
         final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-        
+
         return SingleChildScrollView(
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -283,10 +275,7 @@ Widget _buildSectionTitle(String title) {
     padding: const EdgeInsets.only(bottom: 12, top: 8),
     child: Text(
       title,
-      style: const TextStyle(
-        fontSize: 20,
-        fontWeight: FontWeight.bold,
-      ),
+      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
     ),
   );
 }
@@ -319,9 +308,7 @@ Widget _buildColorTile(
             ),
           ],
         ),
-        child: icon != null
-            ? Icon(icon, color: Colors.white)
-            : null,
+        child: icon != null ? Icon(icon, color: Colors.white) : null,
       ),
       title: Text(name),
       subtitle: subtitle != null ? Text(subtitle) : null,
@@ -333,23 +320,17 @@ Widget _buildColorTile(
         ),
         child: Text(
           hex,
-          style: const TextStyle(
-            fontFamily: 'monospace',
-            fontSize: 12,
-          ),
+          style: const TextStyle(fontFamily: 'monospace', fontSize: 12),
         ),
       ),
     ),
   );
 }
 
-Widget _buildDynamicColorTile(
-  BuildContext context,
-  String name,
-  Color color,
-) {
-  final hexValue = '#${color.value.toRadixString(16).substring(2).toUpperCase()}';
-  
+Widget _buildDynamicColorTile(BuildContext context, String name, Color color) {
+  final hexValue =
+      '#${color.value.toRadixString(16).substring(2).toUpperCase()}';
+
   return Container(
     margin: const EdgeInsets.only(bottom: 8),
     decoration: BoxDecoration(
@@ -363,9 +344,10 @@ Widget _buildDynamicColorTile(
         decoration: BoxDecoration(
           color: color,
           borderRadius: BorderRadius.circular(8),
-          border: color.computeLuminance() > 0.9
-              ? Border.all(color: Colors.grey.withOpacity(0.2))
-              : null,
+          border:
+              color.computeLuminance() > 0.9
+                  ? Border.all(color: Colors.grey.withOpacity(0.2))
+                  : null,
         ),
       ),
       title: Text(name),
@@ -377,10 +359,7 @@ Widget _buildDynamicColorTile(
         ),
         child: Text(
           hexValue,
-          style: const TextStyle(
-            fontFamily: 'monospace',
-            fontSize: 12,
-          ),
+          style: const TextStyle(fontFamily: 'monospace', fontSize: 12),
         ),
       ),
     ),

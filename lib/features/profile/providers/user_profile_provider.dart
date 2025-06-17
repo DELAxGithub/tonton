@@ -12,13 +12,18 @@ class UserProfileNotifier extends StateNotifier<UserProfile> {
 
   Future<void> _load() async {
     final prefs = await SharedPreferences.getInstance();
-    
+
+    final completed =
+        prefs.getBool('${_keyPrefix}onboarding_completed') ?? false;
+
     state = UserProfile(
-      displayName: prefs.getString('${_keyPrefix}display_name') ?? prefs.getString('user_name'),
+      displayName:
+          prefs.getString('${_keyPrefix}display_name') ??
+          prefs.getString('user_name'),
       weight: prefs.getDouble('${_keyPrefix}weight'),
       gender: prefs.getString('${_keyPrefix}gender'),
       ageGroup: prefs.getString('${_keyPrefix}age_group'),
-      onboardingCompleted: prefs.getBool('${_keyPrefix}onboarding_completed') ?? false,
+      onboardingCompleted: completed,
     );
   }
 
@@ -29,9 +34,13 @@ class UserProfileNotifier extends StateNotifier<UserProfile> {
 
     final user = Supabase.instance.client.auth.currentUser;
     if (user != null) {
-      await Supabase.instance.client.auth.updateUser(
-        UserAttributes(data: {'name': name}),
-      );
+      try {
+        await Supabase.instance.client.auth.updateUser(
+          UserAttributes(data: {'name': name}),
+        );
+      } catch (e) {
+        // Silently handle sync errors
+      }
     }
   }
 
@@ -55,8 +64,16 @@ class UserProfileNotifier extends StateNotifier<UserProfile> {
 
   Future<void> completeOnboarding() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('${_keyPrefix}onboarding_completed', true);
+
+    // Update state first for immediate UI update
     state = state.copyWith(onboardingCompleted: true);
+
+    // Persist both keys to ensure synchronization
+    await prefs.setBool('${_keyPrefix}onboarding_completed', true);
+    await prefs.setBool(
+      'onboardingCompleted',
+      true,
+    ); // Also set the OnboardingCompletion key
   }
 
   // Legacy support for old userNameProvider
@@ -67,7 +84,8 @@ class UserProfileNotifier extends StateNotifier<UserProfile> {
 
 final userProfileProvider =
     StateNotifierProvider<UserProfileNotifier, UserProfile>(
-        (ref) => UserProfileNotifier());
+      (ref) => UserProfileNotifier(),
+    );
 
 // Legacy provider for backward compatibility
 final userNameProvider = Provider<String?>((ref) {

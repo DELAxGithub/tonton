@@ -17,10 +17,10 @@ Future<void> testImageAnalysis() async {
   print('=======================================');
   print('STARTING IMAGE ANALYSIS TEST');
   print('=======================================');
-  
+
   // Create an instance of the AI service
   final aiService = AIService();
-  
+
   try {
     // Pick an image
     print('Selecting test image...');
@@ -31,31 +31,33 @@ Future<void> testImageAnalysis() async {
       maxHeight: 1200,
       imageQuality: 80,
     );
-    
+
     if (pickedImage == null) {
       print('No image selected. Test cancelled.');
       return;
     }
-    
+
     // Get file info
     final imageFile = File(pickedImage.path);
     final fileSize = await imageFile.length();
     final fileSizeKB = fileSize / 1024;
     print('Selected image: ${pickedImage.path}');
     print('Image size: ${fileSizeKB.toStringAsFixed(2)} KB');
-    
+
     // Start timer
     final startTime = DateTime.now();
     print('Starting AI analysis...');
-    
+
     // Call the service
     final result = await aiService.estimateNutritionFromImageFile(imageFile);
-    
+
     // Calculate duration
     final endTime = DateTime.now();
     final duration = endTime.difference(startTime);
-    print('Analysis completed in ${duration.inSeconds}.${duration.inMilliseconds % 1000} seconds');
-    
+    print(
+      'Analysis completed in ${duration.inSeconds}.${duration.inMilliseconds % 1000} seconds',
+    );
+
     // Check result
     if (result != null) {
       print('✅ ANALYSIS SUCCESSFUL');
@@ -78,7 +80,7 @@ Future<void> testImageAnalysis() async {
     print('❌ ERROR DURING ANALYSIS: $e');
     print('Stack trace: $stackTrace');
   }
-  
+
   print('=======================================');
   print('IMAGE ANALYSIS TEST COMPLETE');
   print('=======================================');
@@ -87,13 +89,11 @@ Future<void> testImageAnalysis() async {
 /// Simple widget to run the test
 class ImageAnalysisTestScreen extends ConsumerWidget {
   const ImageAnalysisTestScreen({Key? key}) : super(key: key);
-  
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Image Analysis Test'),
-      ),
+      appBar: AppBar(title: const Text('Image Analysis Test')),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

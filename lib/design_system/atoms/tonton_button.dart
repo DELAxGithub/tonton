@@ -8,13 +8,13 @@ import '../../theme/typography.dart';
 enum TontonButtonStyle {
   /// Primary action button with filled background
   filled,
-  
+
   /// Secondary action button with gray background
   gray,
-  
+
   /// Tertiary action button with transparent background
   plain,
-  
+
   /// Destructive action button
   destructive,
 }
@@ -23,43 +23,43 @@ enum TontonButtonStyle {
 enum TontonButtonSize {
   /// Small button (28pt height)
   small,
-  
+
   /// Regular button (34pt height)
   regular,
-  
+
   /// Large button (44pt height)
   large,
 }
 
 /// Apple HIG-compliant button component
-/// 
+///
 /// A button that follows Apple's design guidelines with proper
 /// sizing, styling, and interaction feedback.
 class TontonButton extends StatefulWidget {
   /// Button label text
   final String label;
-  
+
   /// Optional leading icon
   final IconData? icon;
-  
+
   /// Callback when button is pressed
   final VoidCallback? onPressed;
-  
+
   /// Button style variant
   final TontonButtonStyle style;
-  
+
   /// Button size
   final TontonButtonSize size;
-  
+
   /// Whether the button should expand to fill available width
   final bool isFullWidth;
-  
+
   /// Loading state
   final bool isLoading;
-  
+
   /// Custom foreground color
   final Color? foregroundColor;
-  
+
   /// Custom background color
   final Color? backgroundColor;
 
@@ -162,12 +162,12 @@ class _TontonButtonState extends State<TontonButton> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    
+
     // Determine button height based on size
     double height;
     double fontSize;
     EdgeInsetsGeometry padding;
-    
+
     switch (widget.size) {
       case TontonButtonSize.small:
         height = tokens.MinSize.compactButton;
@@ -185,13 +185,13 @@ class _TontonButtonState extends State<TontonButton> {
         padding = const EdgeInsets.symmetric(horizontal: tokens.Spacing.lg);
         break;
     }
-    
+
     // Determine colors based on style
     Color backgroundColor;
     Color foregroundColor;
     Color disabledBackgroundColor;
     Color disabledForegroundColor;
-    
+
     switch (widget.style) {
       case TontonButtonStyle.filled:
         backgroundColor = widget.backgroundColor ?? theme.colorScheme.primary;
@@ -199,23 +199,26 @@ class _TontonButtonState extends State<TontonButton> {
         disabledBackgroundColor = TontonColors.systemGray3;
         disabledForegroundColor = TontonColors.systemGray;
         break;
-      
+
       case TontonButtonStyle.gray:
-        backgroundColor = widget.backgroundColor ?? (isDark 
-            ? TontonColors.systemGray5.withValues(alpha: 0.24)
-            : TontonColors.systemGray5);
-        foregroundColor = widget.foregroundColor ?? TontonColors.labelColor(context);
+        backgroundColor =
+            widget.backgroundColor ??
+            (isDark
+                ? TontonColors.systemGray5.withValues(alpha: 0.24)
+                : TontonColors.systemGray5);
+        foregroundColor =
+            widget.foregroundColor ?? TontonColors.labelColor(context);
         disabledBackgroundColor = backgroundColor.withValues(alpha: 0.5);
         disabledForegroundColor = TontonColors.tertiaryLabelColor(context);
         break;
-      
+
       case TontonButtonStyle.plain:
         backgroundColor = widget.backgroundColor ?? Colors.transparent;
         foregroundColor = widget.foregroundColor ?? theme.colorScheme.primary;
         disabledBackgroundColor = Colors.transparent;
         disabledForegroundColor = TontonColors.tertiaryLabelColor(context);
         break;
-      
+
       case TontonButtonStyle.destructive:
         backgroundColor = widget.backgroundColor ?? TontonColors.systemRed;
         foregroundColor = widget.foregroundColor ?? Colors.white;
@@ -223,19 +226,19 @@ class _TontonButtonState extends State<TontonButton> {
         disabledForegroundColor = TontonColors.systemGray;
         break;
     }
-    
+
     // Apply pressed state opacity
     if (_isPressed && widget.onPressed != null) {
       backgroundColor = backgroundColor.withValues(alpha: 0.8);
     }
-    
+
     // Apply disabled state
     final isDisabled = widget.onPressed == null || widget.isLoading;
     if (isDisabled) {
       backgroundColor = disabledBackgroundColor;
       foregroundColor = disabledForegroundColor;
     }
-    
+
     // Build button content
     Widget content = Row(
       mainAxisSize: widget.isFullWidth ? MainAxisSize.max : MainAxisSize.min,
@@ -251,11 +254,7 @@ class _TontonButtonState extends State<TontonButton> {
             ),
           )
         else if (widget.icon != null) ...[
-          Icon(
-            widget.icon,
-            size: fontSize + 2,
-            color: foregroundColor,
-          ),
+          Icon(widget.icon, size: fontSize + 2, color: foregroundColor),
           const SizedBox(width: tokens.Spacing.xs),
         ],
         if (!widget.isLoading)
@@ -269,7 +268,7 @@ class _TontonButtonState extends State<TontonButton> {
           ),
       ],
     );
-    
+
     return GestureDetector(
       onTapDown: isDisabled ? null : _handleTapDown,
       onTapUp: isDisabled ? null : _handleTapUp,
@@ -282,12 +281,13 @@ class _TontonButtonState extends State<TontonButton> {
         decoration: BoxDecoration(
           color: backgroundColor,
           borderRadius: tokens.Radii.mediumBorderRadius,
-          border: widget.style == TontonButtonStyle.plain && !isDark
-              ? Border.all(
-                  color: foregroundColor.withValues(alpha: 0.2),
-                  width: 1,
-                )
-              : null,
+          border:
+              widget.style == TontonButtonStyle.plain && !isDark
+                  ? Border.all(
+                    color: foregroundColor.withValues(alpha: 0.2),
+                    width: 1,
+                  )
+                  : null,
         ),
         child: content,
       ),
@@ -299,19 +299,19 @@ class _TontonButtonState extends State<TontonButton> {
 class TontonIconButton extends StatelessWidget {
   /// Icon to display
   final IconData icon;
-  
+
   /// Callback when button is pressed
   final VoidCallback? onPressed;
-  
+
   /// Icon color
   final Color? color;
-  
+
   /// Icon size
   final double? size;
-  
+
   /// Background style
   final bool hasBackground;
-  
+
   /// Tooltip
   final String? tooltip;
 
@@ -330,11 +330,10 @@ class TontonIconButton extends StatelessWidget {
     final theme = Theme.of(context);
     final iconColor = color ?? theme.colorScheme.primary;
     final iconSize = size ?? tokens.IconSize.medium;
-    
+
     Widget button = Material(
-      color: hasBackground 
-          ? TontonColors.fillColor(context)
-          : Colors.transparent,
+      color:
+          hasBackground ? TontonColors.fillColor(context) : Colors.transparent,
       shape: const CircleBorder(),
       child: InkWell(
         onTap: onPressed,
@@ -345,22 +344,20 @@ class TontonIconButton extends StatelessWidget {
           alignment: Alignment.center,
           child: Icon(
             icon,
-            color: onPressed != null 
-                ? iconColor 
-                : TontonColors.tertiaryLabelColor(context),
+            color:
+                onPressed != null
+                    ? iconColor
+                    : TontonColors.tertiaryLabelColor(context),
             size: iconSize,
           ),
         ),
       ),
     );
-    
+
     if (tooltip != null) {
-      return Tooltip(
-        message: tooltip!,
-        child: button,
-      );
+      return Tooltip(message: tooltip!, child: button);
     }
-    
+
     return button;
   }
 }

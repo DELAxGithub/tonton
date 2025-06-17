@@ -23,4 +23,5 @@ class LastHealthFetchNotifier extends StateNotifier<DateTime?> {
 
 final lastHealthFetchProvider =
     StateNotifierProvider<LastHealthFetchNotifier, DateTime?>(
-        (ref) => LastHealthFetchNotifier());
+      (ref) => LastHealthFetchNotifier(),
+    );

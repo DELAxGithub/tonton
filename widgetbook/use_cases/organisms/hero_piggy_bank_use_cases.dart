@@ -143,10 +143,7 @@ Widget _buildExample(String title, Widget widget) {
     children: [
       Text(
         title,
-        style: const TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-        ),
+        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
       ),
       const SizedBox(height: 8),
       widget,
@@ -170,10 +167,9 @@ class _MockHeroPiggyBank extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final progress = (currentSaved / targetSaved).clamp(0.0, 1.0);
-    final requiredDaily = remainingDays > 0
-        ? (targetSaved - currentSaved) / remainingDays
-        : 0.0;
-    
+    final requiredDaily =
+        remainingDays > 0 ? (targetSaved - currentSaved) / remainingDays : 0.0;
+
     // Replicate the actual HeroPiggyBankDisplay UI
     return Container(
       padding: const EdgeInsets.all(16),
@@ -191,10 +187,7 @@ class _MockHeroPiggyBank extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            '今月の貯金目標',
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
+          Text('今月の貯金目標', style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: 8),
           Text(
             '${currentSaved.toStringAsFixed(0)} / ${targetSaved.toStringAsFixed(0)} kcal',
@@ -221,9 +214,9 @@ class _MockHeroPiggyBank extends StatelessWidget {
             children: [
               Text(
                 '${(progress * 100).toStringAsFixed(0)}% 達成',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
               ),
               Text(
                 'あと$remainingDays日',

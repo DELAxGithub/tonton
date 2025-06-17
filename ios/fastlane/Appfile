@@ -1,16 +1,16 @@
 # Appfile for TonTon iOS app
 
 # The bundle identifier of your app
-app_identifier("com.example.tonton")
+app_identifier("com.HiroshiKodera.tonton")
 
 # Your Apple Developer Portal username
-apple_id(ENV["APPLE_ID"] || "your-apple-id@example.com")
+apple_id("notheshow@mac.com")
 
 # Your App Store Connect Team ID
 itc_team_id(ENV["ITC_TEAM_ID"])
 
 # Your Developer Portal Team ID
-team_id(ENV["TEAM_ID"])
+team_id("Z88477N5ZU")
 
 # You can use environment variables for sensitive data
 # Example:

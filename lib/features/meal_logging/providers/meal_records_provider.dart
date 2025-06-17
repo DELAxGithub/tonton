@@ -39,7 +39,8 @@ class MealRecords extends _$MealRecords {
   MealDataService get _mealDataService => ref.read(mealDataServiceProvider);
 
   @override
-  Future<MealRecordsState> build() async { // Modified to be async
+  Future<MealRecordsState> build() async {
+    // Modified to be async
     // Ensure MealDataService is initialized before trying to use it.
     // This assumes mealDataServiceProvider gives an instance that might not be initialized.
     // A better pattern might be a FutureProvider for mealDataService if its init is async.
@@ -51,11 +52,13 @@ class MealRecords extends _$MealRecords {
   }
 
   /// Adds a new meal record to the state and persists it
-  Future<void> addMealRecord(MealRecord record) async { // Modified to be async
+  Future<void> addMealRecord(MealRecord record) async {
+    // Modified to be async
     state = AsyncValue.data(state.value!.copyWith(isLoading: true));
     try {
       await _mealDataService.saveMealRecord(record);
-      final newRecords = List<MealRecord>.from(state.value!.records)..add(record);
+      final newRecords = List<MealRecord>.from(state.value!.records)
+        ..add(record);
       state = AsyncValue.data(
         MealRecordsState(records: newRecords, isLoading: false),
       );
@@ -66,24 +69,32 @@ class MealRecords extends _$MealRecords {
   }
 
   /// Updates an existing meal record in the state and persists it
-  Future<void> updateMealRecord(MealRecord record) async { // Modified to be async
+  Future<void> updateMealRecord(MealRecord record) async {
+    // Modified to be async
     state = AsyncValue.data(state.value!.copyWith(isLoading: true));
     try {
-      await _mealDataService.saveMealRecord(record); // saveMealRecord handles both create and update
+      await _mealDataService.saveMealRecord(
+        record,
+      ); // saveMealRecord handles both create and update
       final updatedRecords = await _mealDataService.getAllMealRecords();
-      state = AsyncValue.data(MealRecordsState(records: updatedRecords, isLoading: false));
+      state = AsyncValue.data(
+        MealRecordsState(records: updatedRecords, isLoading: false),
+      );
     } catch (e, stack) {
       state = AsyncValue.error(e, stack);
     }
   }
 
   /// Deletes a meal record by its ID from the state and persists the change
-  Future<void> deleteMealRecord(String id) async { // Modified to be async
+  Future<void> deleteMealRecord(String id) async {
+    // Modified to be async
     state = AsyncValue.data(state.value!.copyWith(isLoading: true));
     try {
       await _mealDataService.deleteMealRecord(id);
       final updatedRecords = await _mealDataService.getAllMealRecords();
-      state = AsyncValue.data(MealRecordsState(records: updatedRecords, isLoading: false));
+      state = AsyncValue.data(
+        MealRecordsState(records: updatedRecords, isLoading: false),
+      );
     } catch (e, stack) {
       state = AsyncValue.error(e, stack);
     }
@@ -109,12 +120,12 @@ class MealRecords extends _$MealRecords {
 
   /// Gets all meal records for a specific date and meal time type from the current state
   List<MealRecord> getMealRecordsForDateAndType(
-    DateTime date, 
+    DateTime date,
     MealTimeType mealTimeType,
   ) {
-    return getMealRecordsForDate(date)
-      .where((record) => record.mealTimeType == mealTimeType)
-      .toList();
+    return getMealRecordsForDate(
+      date,
+    ).where((record) => record.mealTimeType == mealTimeType).toList();
   }
 
   /// Gets the total calories for a specific date from the current state
@@ -122,8 +133,10 @@ class MealRecords extends _$MealRecords {
     // This is one of the duplicated methods. The one above is correct for AsyncValue.
     // Keeping the one that handles AsyncValue state.
     if (state.hasValue) {
-       return getMealRecordsForDate(date) // This now refers to the method that handles AsyncValue
-         .fold(0, (sum, record) => sum + record.calories);
+      return getMealRecordsForDate(
+        date,
+      ) // This now refers to the method that handles AsyncValue
+      .fold(0, (sum, record) => sum + record.calories);
     }
     return 0.0;
   }
@@ -134,7 +147,7 @@ class MealRecords extends _$MealRecords {
 List<MealRecord> todaysMealRecords(Ref ref) {
   // Watch the async state of mealRecordsProvider
   final mealRecordsAsyncValue = ref.watch(mealRecordsProvider);
-  
+
   // Handle loading, error, and data states
   return mealRecordsAsyncValue.when(
     data: (mealRecordsState) {
@@ -142,12 +155,14 @@ List<MealRecord> todaysMealRecords(Ref ref) {
       return mealRecordsState.records.where((record) {
         final recordDate = record.consumedAt;
         return recordDate.year == today.year &&
-               recordDate.month == today.month &&
-               recordDate.day == today.day;
+            recordDate.month == today.month &&
+            recordDate.day == today.day;
       }).toList();
     },
     loading: () => [], // Return empty list while loading
-    error: (error, stack) => [], // Return empty list on error, or handle error differently
+    error:
+        (error, stack) =>
+            [], // Return empty list on error, or handle error differently
   );
 }
 
@@ -155,7 +170,9 @@ List<MealRecord> todaysMealRecords(Ref ref) {
 @riverpod
 double todaysTotalCalories(Ref ref) {
   // This provider depends on todaysMealRecordsProvider, which now handles async state.
-  final todaysRecords = ref.watch(todaysMealRecordsProvider); // This will be List<MealRecord>
+  final todaysRecords = ref.watch(
+    todaysMealRecordsProvider,
+  ); // This will be List<MealRecord>
   return todaysRecords.fold(0, (sum, record) => sum + record.calories);
 }
 
@@ -163,7 +180,7 @@ double todaysTotalCalories(Ref ref) {
 @riverpod
 MealRecord? mealRecord(Ref ref, String id) {
   final mealRecordsAsyncValue = ref.watch(mealRecordsProvider);
-  
+
   return mealRecordsAsyncValue.when(
     data: (mealRecordsState) {
       try {

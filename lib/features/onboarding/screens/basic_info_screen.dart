@@ -21,11 +21,11 @@ class _BasicInfoScreenState extends ConsumerState<BasicInfoScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nicknameController = TextEditingController();
   final _weightController = TextEditingController();
-  
+
   String? _selectedGender;
   String? _selectedAgeGroup;
   bool _isLoading = false;
-  
+
   @override
   void initState() {
     super.initState();
@@ -33,19 +33,19 @@ class _BasicInfoScreenState extends ConsumerState<BasicInfoScreen> {
     _nicknameController.addListener(_updateFormState);
     _weightController.addListener(_updateFormState);
   }
-  
+
   @override
   void dispose() {
     _nicknameController.dispose();
     _weightController.dispose();
     super.dispose();
   }
-  
+
   void _updateFormState() {
     // フォームの状態が変更されたらUIを更新
     setState(() {});
   }
-  
+
   bool get _isFormValid {
     // ニックネームのみ必須、体重は任意
     return _nicknameController.text.isNotEmpty;
@@ -56,52 +56,73 @@ class _BasicInfoScreenState extends ConsumerState<BasicInfoScreen> {
       setState(() {
         _isLoading = true;
       });
-      
+
       try {
         // ニックネームの保存
         if (_nicknameController.text.isNotEmpty) {
-          await ref.read(userProfileProvider.notifier).updateDisplayName(_nicknameController.text);
+          await ref
+              .read(userProfileProvider.notifier)
+              .updateDisplayName(_nicknameController.text);
+          if (!mounted) return;
         }
-        
+
         // 体重の保存
         if (_weightController.text.isNotEmpty) {
           final weight = double.tryParse(_weightController.text);
           if (weight != null) {
             await ref.read(userProfileProvider.notifier).updateWeight(weight);
+            if (!mounted) return;
           }
         }
-        
+
         // 性別と年齢層の保存
         if (_selectedGender != null) {
-          await ref.read(userProfileProvider.notifier).updateGender(_selectedGender!);
+          await ref
+              .read(userProfileProvider.notifier)
+              .updateGender(_selectedGender!);
+          if (!mounted) return;
         }
-        
+
         if (_selectedAgeGroup != null) {
-          await ref.read(userProfileProvider.notifier).updateAgeGroup(_selectedAgeGroup!);
+          await ref
+              .read(userProfileProvider.notifier)
+              .updateAgeGroup(_selectedAgeGroup!);
+          if (!mounted) return;
         }
-        
-        // オンボーディングを完了させる
+
+        // オンボーディングを完了させる（両方のフラグを同期）
+        // UserProfileのonboardingCompletedフラグを設定
+        await ref.read(userProfileProvider.notifier).completeOnboarding();
+        if (!mounted) return;
+
+        // OnboardingCompletionProviderのフラグも設定
+        await ref.read(onboardingCompletedProvider.notifier).complete();
+        if (!mounted) return;
+
+        // OnboardingServiceも完了させる
         final service = ref.read(onboardingServiceProvider);
         await service.completeOnboarding();
-        await ref.read(onboardingCompletedProvider.notifier).complete();
-        
+        if (!mounted) return;
+
         // デフォルトの開始日を設定
         // TODO: onboardingStartDateProviderのインポートを修正する必要あり
         // if (ref.read(onboardingStartDateProvider) == null) {
         //   await ref.read(onboardingStartDateProvider.notifier).setDate(DateTime.now());
         // }
-        
+
         // 次の画面へ遷移（暫定的に直接ホーム画面へ）
         if (mounted) {
-          print('=== BasicInfoScreen Navigation Debug ===');
-          print('Completing onboarding and navigating to home');
-          print('Current onboarding state: ${ref.read(onboardingCompletedProvider)}');
+          // Give a small delay to ensure state propagation
+          await Future.delayed(const Duration(milliseconds: 100));
+          if (!mounted) return;
+
+          // Force reload of completion providers to ensure they reflect the saved state
+          await ref.read(onboardingCompletedProvider.notifier).reload();
+          if (!mounted) return;
+
           context.go(TontonRoutes.home);
         }
-      } catch (e, stackTrace) {
-        print('=== BasicInfoScreen Error ===');
-        print('Error: $e');
-        print('StackTrace: $stackTrace');
+      } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -151,20 +172,17 @@ class _BasicInfoScreenState extends ConsumerState<BasicInfoScreen> {
               ],
             ),
             const SizedBox(height: 40),
-            
-            Text(
-              'プロフィール設定',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
+
+            Text('プロフィール設定', style: Theme.of(context).textTheme.headlineMedium),
             const SizedBox(height: 8),
             Text(
               'あなたに合った目標を設定します',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Colors.grey.shade600,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(color: Colors.grey.shade600),
             ),
             const SizedBox(height: 32),
-            
+
             Form(
               key: _formKey,
               child: Column(
@@ -183,13 +201,15 @@ class _BasicInfoScreenState extends ConsumerState<BasicInfoScreen> {
                     },
                   ),
                   const SizedBox(height: 24),
-                  
+
                   // 体重入力
                   LabeledTextField(
                     label: '体重（任意）',
                     controller: _weightController,
                     hintText: '例：60.5',
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
                     inputFormatters: [
                       FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
                     ],
@@ -209,7 +229,7 @@ class _BasicInfoScreenState extends ConsumerState<BasicInfoScreen> {
                     ),
                   ),
                   const SizedBox(height: 32),
-                  
+
                   // 性別選択
                   Text(
                     '性別（任意）',
@@ -220,25 +240,20 @@ class _BasicInfoScreenState extends ConsumerState<BasicInfoScreen> {
                   const SizedBox(height: 12),
                   SegmentedButton<String>(
                     segments: const [
-                      ButtonSegment(
-                        value: 'male',
-                        label: Text('男性'),
-                      ),
-                      ButtonSegment(
-                        value: 'female',
-                        label: Text('女性'),
-                      ),
+                      ButtonSegment(value: 'male', label: Text('男性')),
+                      ButtonSegment(value: 'female', label: Text('女性')),
                     ],
                     selected: _selectedGender != null ? {_selectedGender!} : {},
                     emptySelectionAllowed: true,
                     onSelectionChanged: (Set<String> newSelection) {
                       setState(() {
-                        _selectedGender = newSelection.isEmpty ? null : newSelection.first;
+                        _selectedGender =
+                            newSelection.isEmpty ? null : newSelection.first;
                       });
                     },
                   ),
                   const SizedBox(height: 32),
-                  
+
                   // 年齢層選択
                   Text(
                     '体の変化（任意）',
@@ -284,44 +299,14 @@ class _BasicInfoScreenState extends ConsumerState<BasicInfoScreen> {
               ),
             ),
             const SizedBox(height: 40),
-            
+
             SizedBox(
               width: double.infinity,
               child: TontonButton.primary(
                 label: _isLoading ? '保存中...' : '次へ',
-                onPressed: _isFormValid && !_isLoading ? _saveAndContinue : null,
+                onPressed:
+                    _isFormValid && !_isLoading ? _saveAndContinue : null,
                 isLoading: _isLoading,
-              ),
-            ),
-            const SizedBox(height: 16),
-            
-            // スキップボタン（暫定対処）
-            TextButton(
-              onPressed: _isLoading ? null : () async {
-                print('=== Skipping BasicInfoScreen ===');
-                // 最低限のデフォルト値を設定
-                await ref.read(userProfileProvider.notifier).updateDisplayName('ユーザー');
-                
-                // オンボーディングを完了させる
-                final service = ref.read(onboardingServiceProvider);
-                await service.completeOnboarding();
-                await ref.read(onboardingCompletedProvider.notifier).complete();
-                
-                // デフォルトの開始日を設定
-                // TODO: onboardingStartDateProviderのインポートを修正する必要あり
-                // if (ref.read(onboardingStartDateProvider) == null) {
-                //   await ref.read(onboardingStartDateProvider.notifier).setDate(DateTime.now());
-                // }
-                
-                if (mounted) {
-                  context.go(TontonRoutes.home);
-                }
-              },
-              child: Text(
-                'スキップ',
-                style: TextStyle(
-                  color: Colors.grey.shade600,
-                ),
               ),
             ),
             const SizedBox(height: 40),

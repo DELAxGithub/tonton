@@ -38,7 +38,8 @@
       "Bash(git rm:*)",
       "Bash(true)",
       "Bash(git restore:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git checkout:*)"
     ],
     "deny": []
   },

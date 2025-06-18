@@ -122,4 +122,43 @@ class AuthService {
 
   // Stream of authentication state changes
   Stream<AuthState> get authStateChanges => _supabase.auth.onAuthStateChange;
+
+  // Delete user account
+  Future<void> deleteAccount() async {
+    try {
+      final userId = currentUser?.id;
+      if (userId == null) {
+        throw Exception('No user logged in');
+      }
+
+      developer.log(
+        'Attempting to delete account for user: $userId',
+        name: 'TonTon.AuthService',
+      );
+
+      // Delete user data from all related tables
+      // First delete from child tables (foreign key constraints)
+      await _supabase.from('weight_goals').delete().eq('user_id', userId);
+      await _supabase.from('measurement_entries').delete().eq('user_id', userId);
+      await _supabase.from('profiles').delete().eq('id', userId);
+      
+      // Sign out the user after deleting their data
+      // Note: Complete auth user deletion requires server-side admin privileges
+      // For now, we delete all user data and sign them out
+      await _supabase.auth.signOut();
+
+      developer.log(
+        'Account data deletion and sign out successful for user: $userId',
+        name: 'TonTon.AuthService',
+      );
+    } catch (e, stackTrace) {
+      developer.log(
+        'Error during account deletion: $e',
+        name: 'TonTon.AuthService.Exception',
+        error: e,
+        stackTrace: stackTrace,
+      );
+      throw Exception('Account deletion failed: $e');
+    }
+  }
 }

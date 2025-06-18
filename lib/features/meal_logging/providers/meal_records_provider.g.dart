@@ -209,7 +209,7 @@ class _MealRecordProviderElement extends AutoDisposeProviderElement<MealRecord?>
   String get id => (origin as MealRecordProvider).id;
 }
 
-String _$mealRecordsHash() => r'fcbc38950435213ff194584eb8f6f4df33fddd6a';
+String _$mealRecordsHash() => r'e350bb25b97fe5854f46cb80bd83858264dced86';
 
 /// Provider for managing meal records state
 ///

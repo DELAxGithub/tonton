@@ -63,6 +63,8 @@ class MealRecords extends _$MealRecords {
         MealRecordsState(records: newRecords, isLoading: false),
       );
       ref.invalidateSelf();
+      // Clear daily summary cache to ensure accurate calorie calculations
+      await _clearDailySummaryCache();
     } catch (e, stack) {
       state = AsyncValue.error(e, stack);
     }
@@ -80,6 +82,8 @@ class MealRecords extends _$MealRecords {
       state = AsyncValue.data(
         MealRecordsState(records: updatedRecords, isLoading: false),
       );
+      // Clear daily summary cache to ensure accurate calorie calculations
+      await _clearDailySummaryCache();
     } catch (e, stack) {
       state = AsyncValue.error(e, stack);
     }
@@ -95,6 +99,8 @@ class MealRecords extends _$MealRecords {
       state = AsyncValue.data(
         MealRecordsState(records: updatedRecords, isLoading: false),
       );
+      // Clear daily summary cache to ensure accurate calorie calculations
+      await _clearDailySummaryCache();
     } catch (e, stack) {
       state = AsyncValue.error(e, stack);
     }
@@ -139,6 +145,19 @@ class MealRecords extends _$MealRecords {
       .fold(0, (sum, record) => sum + record.calories);
     }
     return 0.0;
+  }
+
+  /// Clears the daily summary cache to ensure fresh calculations
+  Future<void> _clearDailySummaryCache() async {
+    try {
+      final dataService = ref.read(dailySummaryDataServiceProvider);
+      await dataService.clearAll();
+      // Also invalidate calorie savings provider to refresh history
+      ref.invalidate(calorieSavingsDataProvider);
+    } catch (e) {
+      // Log error but don't throw to avoid disrupting meal operations
+      print('Failed to clear daily summary cache: $e');
+    }
   }
 }
 

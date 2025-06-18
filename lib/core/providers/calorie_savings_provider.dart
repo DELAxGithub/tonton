@@ -1,8 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../models/calorie_savings_record.dart';
-import '../../models/daily_summary.dart';
 import 'onboarding_start_date_provider.dart';
-import 'realtime_calories_provider.dart';
+import 'monthly_progress_provider.dart';
 import '../../features/meal_logging/providers/meal_records_provider.dart';
 import '../../features/progress/providers/selected_period_provider.dart';
 
@@ -35,29 +34,40 @@ final calorieSavingsDataProvider = FutureProvider<List<CalorieSavingsRecord>>((
   // Only proceed if meal records are loaded
   if (!mealRecordsAsync.hasValue) return [];
 
-  final service = ref.watch(dailySummaryServiceProvider);
+  final mealRecords = mealRecordsAsync.value!.records;
+  final healthService = ref.watch(healthServiceProvider);
   final endDate = DateTime.now();
-  final summaries = <DailySummary>[];
+  final records = <CalorieSavingsRecord>[];
   var current = DateTime(startDate.year, startDate.month, startDate.day);
 
+  double runningTotal = 0;
   while (!current.isAfter(endDate)) {
-    final summary = await service.getDailySummary(current);
-    summaries.add(summary);
+    // Calculate consumed calories directly from meal records
+    final consumed = mealRecords.where((record) {
+      final recordDate = record.consumedAt.toLocal();
+      return recordDate.year == current.year &&
+          recordDate.month == current.month &&
+          recordDate.day == current.day;
+    }).fold<double>(0.0, (sum, record) => sum + record.calories);
+
+    // Get activity data
+    final activity = await healthService.getActivitySummary(current);
+    
+    final daily = activity.totalCalories - consumed;
+    runningTotal += daily;
+    
+    records.add(CalorieSavingsRecord(
+      date: current,
+      caloriesConsumed: consumed,
+      caloriesBurned: activity.totalCalories,
+      dailyBalance: daily,
+      cumulativeSavings: runningTotal,
+    ));
+    
     current = current.add(const Duration(days: 1));
   }
 
-  double runningTotal = 0;
-  return summaries.map((summary) {
-    final daily = summary.caloriesBurned - summary.caloriesConsumed;
-    runningTotal += daily;
-    return CalorieSavingsRecord(
-      date: summary.date,
-      caloriesConsumed: summary.caloriesConsumed,
-      caloriesBurned: summary.caloriesBurned,
-      dailyBalance: daily,
-      cumulativeSavings: runningTotal,
-    );
-  }).toList();
+  return records;
 });
 
 /// Filtered calorie savings records based on the selected period.

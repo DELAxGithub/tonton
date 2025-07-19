@@ -155,8 +155,7 @@ class MealRecords extends _$MealRecords {
       // Also invalidate calorie savings provider to refresh history
       ref.invalidate(calorieSavingsDataProvider);
     } catch (e) {
-      // Log error but don't throw to avoid disrupting meal operations
-      print('Failed to clear daily summary cache: $e');
+      // Silently ignore cache clear errors to avoid disrupting meal operations
     }
   }
 }

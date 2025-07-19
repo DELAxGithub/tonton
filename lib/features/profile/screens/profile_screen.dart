@@ -613,39 +613,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               isFullWidth: true,
             ),
 
-            // 将来実装用のコメント
-            // TODO: 年齢層選択UI
-            // DropdownButtonFormField<String>(
-            //   decoration: const InputDecoration(
-            //     labelText: '年齢層',
-            //     border: OutlineInputBorder(),
-            //   ),
-            //   items: const [
-            //     DropdownMenuItem(value: '20s', child: Text('20代')),
-            //     DropdownMenuItem(value: '30s', child: Text('30代')),
-            //     DropdownMenuItem(value: '40s', child: Text('40代')),
-            //     DropdownMenuItem(value: '50s', child: Text('50代以上')),
-            //   ],
-            //   onChanged: (_) {},
-            // ),
-
-            // TODO: 性別選択UI
-            // SegmentedButton<String>(
-            //   segments: const [
-            //     ButtonSegment(value: 'male', label: Text('男性')),
-            //     ButtonSegment(value: 'female', label: Text('女性')),
-            //   ],
-            //   selected: const {'male'},
-            //   onSelectionChanged: (_) {},
-            // ),
-
-            // TODO: ログアウトボタン
-            // TontonButton.secondary(
-            //   label: 'ログアウト',
-            //   onPressed: () async {
-            //     await ref.read(authServiceProvider).signOut();
-            //   },
-            // ),
           ],
         ),
       ),

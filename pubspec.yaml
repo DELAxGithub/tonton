@@ -1,7 +1,7 @@
 name: tonton
 description: "A health tracking application with iOS HealthKit integration."
 publish_to: 'none'
-version: 1.0.0+7
+version: 1.0.0+9
 
 environment:
   sdk: ^3.7.2
@@ -27,8 +27,6 @@ dependencies:
   mime: ^1.0.4         # Added for MIME type detection
   path: ^1.8.3         # Added for path handling
   google_generative_ai: ^0.4.6  # Direct Gemini API access
-  args: ^2.4.2         # Required for build tools
-  yaml: ^3.1.2         # Required for configuration tools
   
   # Added for Hive
   hive: ^2.2.3
@@ -48,11 +46,8 @@ dev_dependencies:
   riverpod_generator: ^2.3.10
   build_runner: ^2.4.8
   hive_generator: ^2.0.1 # Added for Hive
-  mockito: ^5.4.4        # Added for mocking in tests
   integration_test:      # Added for integration testing
     sdk: flutter
-  widgetbook: ^3.9.0     # Component catalog
-  widgetbook_annotation: ^3.2.0  # Annotations for widgetbook
 
 flutter:
   uses-material-design: true
@@ -61,12 +56,7 @@ flutter:
     - .env
     - assets/images/
     - lib/l10n/ # For localization
-    - assets/images/ # Assuming you have images here
     - assets/icons/svg/ # For your SVG icons
-    - assets/fonts/ # Generated icon font
-    # If your font files are in assets/fonts/, you don't strictly need 'assets/fonts/' here
-    # AS LONG AS they are declared under the 'fonts:' section below.
-    # However, some people like to declare the top-level folder here too for clarity.
 
   fonts:
     - family: Noto Sans JP

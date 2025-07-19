@@ -14,14 +14,6 @@ packages:
     description: dart
     source: sdk
     version: "0.3.3"
-  accessibility_tools:
-    dependency: transitive
-    description:
-      name: accessibility_tools
-      sha256: aaa782bf794d823f371f45d232efe8605cffe081c34a1d83fe4db491ddbba0c7
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.6.0"
   analyzer:
     dependency: transitive
     description:
@@ -79,7 +71,7 @@ packages:
     source: hosted
     version: "4.0.7"
   args:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: args
       sha256: d0481093c50b1da8910eb0bb301626d4d8eb7284aa739614d2b394ee09e3ea04
@@ -270,14 +262,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.3.8"
-  device_frame_plus:
-    dependency: transitive
-    description:
-      name: device_frame_plus
-      sha256: "6b68d43a30a08465f86f33592ac60efcd1499979ef1310fbe3445d94f367297b"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.2.2+1"
   device_info_plus:
     dependency: transitive
     description:
@@ -636,14 +620,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.2.1+1"
-  inspector:
-    dependency: transitive
-    description:
-      name: inspector
-      sha256: "4df4a50b36975550ecd76dc30720ffe03ecb8003f594e3e0b2d34916735094d2"
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.0.0"
   integration_test:
     dependency: "direct dev"
     description: flutter
@@ -769,14 +745,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.6"
-  mockito:
-    dependency: "direct dev"
-    description:
-      name: mockito
-      sha256: f99d8d072e249f719a5531735d146d8cf04c580d93920b04de75bef6dfb2daf6
-      url: "https://pub.dev"
-    source: hosted
-    version: "5.4.5"
   nested:
     dependency: transitive
     description:
@@ -937,14 +905,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.5.0"
-  resizable_widget:
-    dependency: transitive
-    description:
-      name: resizable_widget
-      sha256: db2919754b93f386b9b3fb15e9f48f6c9d6d41f00a24397629133c99df86606a
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.5"
   retry:
     dependency: transitive
     description:
@@ -1334,22 +1294,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.1.0"
-  widgetbook:
-    dependency: "direct dev"
-    description:
-      name: widgetbook
-      sha256: "116efd339f9d060ac4a063f3c1c91266757198bcfb43083fb3f1b7bcbb9e6f75"
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.14.2"
-  widgetbook_annotation:
-    dependency: "direct dev"
-    description:
-      name: widgetbook_annotation
-      sha256: "41662c48c2a0e82cac676a83727203d863621a5f6fb2505395287b8789afdf38"
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.5.0"
   win32:
     dependency: transitive
     description:
@@ -1383,7 +1327,7 @@ packages:
     source: hosted
     version: "6.5.0"
   yaml:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: yaml
       sha256: b9da305ac7c39faa3f030eccd175340f968459dae4af175130b3fc47e40d76ce
@@ -1399,5 +1343,5 @@ packages:
     source: hosted
     version: "2.1.0"
 sdks:
-  dart: ">=3.8.0 <4.0.0"
-  flutter: ">=3.32.0"
+  dart: ">=3.7.2 <4.0.0"
+  flutter: ">=3.27.0"

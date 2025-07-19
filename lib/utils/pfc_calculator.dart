@@ -15,18 +15,42 @@ class PFCCalculator {
 
   /// ユーザー情報から自動的にPFCバランスを計算
   /// @param weight 体重(kg)
-  /// @param gender 性別 ('male' or 'female')
-  /// @param ageGroup 年齢層 ('young', 'middle', 'senior')
+  /// @param gender 性別 ('male' or 'female') - DEPRECATED
+  /// @param ageGroup 年齢層 ('young', 'middle', 'senior') - DEPRECATED
+  /// @param dietGoal ダイエット目的 ('weight_loss', 'muscle_gain', 'maintain')
   static PfcBreakdown calculateAutomatic({
     required double weight,
     String? gender,
     String? ageGroup,
+    String? dietGoal,
   }) {
-    // 1. タンパク質計算: 体重 × 2g
-    final proteinGrams = weight * 2;
+    // 1. ダイエット目的に応じたタンパク質計算
+    double proteinMultiplier;
+    double fatRatio;
+    
+    switch (dietGoal) {
+      case 'muscle_gain':
+        // 筋肉増強: 高タンパク（体重×2.5g）、中脂質（25%）
+        proteinMultiplier = 2.5;
+        fatRatio = 0.25;
+        break;
+      case 'weight_loss':
+        // 体重減少: 中タンパク（体重×2g）、低脂質（20%）
+        proteinMultiplier = 2.0;
+        fatRatio = 0.20;
+        break;
+      case 'maintain':
+      default:
+        // 体型維持: 標準タンパク（体重×1.5g）、標準脂質（30%）
+        proteinMultiplier = 1.5;
+        fatRatio = 0.30;
+        break;
+    }
+    
+    final proteinGrams = weight * proteinMultiplier;
     final proteinCalories = proteinGrams * 4; // タンパク質は1gあたり4kcal
 
-    // 2. 推奨カロリーの取得
+    // 2. 推奨カロリーの取得（旧ロジック互換性のため残す）
     int recommendedCalories = defaultRecommendedCalories;
     if (gender != null && ageGroup != null) {
       recommendedCalories =
@@ -39,8 +63,8 @@ class PFCCalculator {
     // 4. 残りカロリー = 目標カロリー - タンパク質カロリー
     final remainingCalories = targetCalories - proteinCalories;
 
-    // 5. 脂質 = 残りカロリーの30%
-    final fatCalories = remainingCalories * 0.3;
+    // 5. 脂質 = 残りカロリーの指定割合
+    final fatCalories = remainingCalories * fatRatio;
     final fatGrams = fatCalories / 9; // 脂質は1gあたり9kcal
 
     // 6. 炭水化物 = 残りすべて

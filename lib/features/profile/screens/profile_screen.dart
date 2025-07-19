@@ -27,7 +27,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   final _nameController = TextEditingController();
   final _goalController = TextEditingController();
   final _weightController = TextEditingController();
+  final _targetWeightController = TextEditingController();
+  final _targetDaysController = TextEditingController();
   final _weightFocusNode = FocusNode();
+  final _targetWeightFocusNode = FocusNode();
+  final _targetDaysFocusNode = FocusNode();
 
   bool _isEditing = false;
   String? _savingField;
@@ -49,7 +53,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     _nameController.dispose();
     _goalController.dispose();
     _weightController.dispose();
+    _targetWeightController.dispose();
+    _targetDaysController.dispose();
     _weightFocusNode.dispose();
+    _targetWeightFocusNode.dispose();
+    _targetDaysFocusNode.dispose();
     super.dispose();
   }
 
@@ -156,6 +164,74 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text('体重を更新しました')));
+    }
+  }
+
+  Future<void> _saveTargetWeight(String value) async {
+    final targetWeight = double.tryParse(value);
+    if (targetWeight == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('数値を入力してください')),
+      );
+      return;
+    }
+    if (targetWeight < 30 || targetWeight > 200) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('現実的な目標体重を入力してください')),
+      );
+      return;
+    }
+
+    setState(() {
+      _isEditing = true;
+      _savingField = 'targetWeight';
+    });
+    
+    await ref.read(userProfileProvider.notifier).updateTargetWeight(targetWeight);
+    
+    setState(() {
+      _isEditing = false;
+      _savingField = null;
+    });
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('目標体重を更新しました')),
+      );
+    }
+  }
+
+  Future<void> _saveTargetDays(String value) async {
+    final targetDays = int.tryParse(value);
+    if (targetDays == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('日数を入力してください')),
+      );
+      return;
+    }
+    if (targetDays < 30 || targetDays > 365) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('30〜365日の範囲で入力してください')),
+      );
+      return;
+    }
+
+    setState(() {
+      _isEditing = true;
+      _savingField = 'targetDays';
+    });
+    
+    await ref.read(userProfileProvider.notifier).updateTargetDays(targetDays);
+    
+    setState(() {
+      _isEditing = false;
+      _savingField = null;
+    });
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('目標期間を更新しました')),
+      );
     }
   }
 
@@ -300,6 +376,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         _lastKnownWeight = currentWeight;
       }
     }
+    
+    // Handle target weight and days field updates
+    if (userProfile.targetWeight != null && _targetWeightController.text.isEmpty) {
+      _targetWeightController.text = userProfile.targetWeight!.toString();
+    }
+    if (userProfile.targetDays != null && _targetDaysController.text.isEmpty) {
+      _targetDaysController.text = userProfile.targetDays!.toString();
+    }
 
     return GestureDetector(
       onTap: () {
@@ -345,111 +429,48 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   ),
                   const SizedBox(height: Spacing.md),
 
-                  // 性別と年齢層の選択
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '性別',
-                              style: Theme.of(context).textTheme.bodySmall,
-                            ),
-                            const SizedBox(height: 4),
-                            DropdownButtonFormField<String>(
-                              value: userProfile.gender?.isNotEmpty == true 
-                                  ? userProfile.gender 
-                                  : null,
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(),
-                                contentPadding: EdgeInsets.symmetric(
-                                  horizontal: 12, 
-                                  vertical: 8,
-                                ),
-                              ),
-                              items: const [
-                                DropdownMenuItem(
-                                  value: 'male', 
-                                  child: Text('男性'),
-                                ),
-                                DropdownMenuItem(
-                                  value: 'female', 
-                                  child: Text('女性'),
-                                ),
-                              ],
-                              onChanged: (String? newValue) async {
-                                if (newValue != null) {
-                                  await ref
-                                      .read(userProfileProvider.notifier)
-                                      .updateGender(newValue);
-                                  if (mounted) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text('性別を更新しました'),
-                                      ),
-                                    );
-                                  }
-                                }
-                              },
-                            ),
-                          ],
-                        ),
+                  // ダイエット目的の選択
+                  Text(
+                    'ダイエット目的',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  SegmentedButton<String>(
+                    segments: const [
+                      ButtonSegment(
+                        value: 'weight_loss',
+                        label: Text('体重減少', style: TextStyle(fontSize: 12)),
+                        icon: Icon(Icons.trending_down, size: 16),
                       ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '体の変化',
-                              style: Theme.of(context).textTheme.bodySmall,
-                            ),
-                            const SizedBox(height: 4),
-                            DropdownButtonFormField<String>(
-                              value: userProfile.ageGroup?.isNotEmpty == true 
-                                  ? userProfile.ageGroup 
-                                  : null,
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(),
-                                contentPadding: EdgeInsets.symmetric(
-                                  horizontal: 12, 
-                                  vertical: 8,
-                                ),
-                              ),
-                              items: const [
-                                DropdownMenuItem(
-                                  value: 'young', 
-                                  child: Text('変わらない', style: TextStyle(fontSize: 13)),
-                                ),
-                                DropdownMenuItem(
-                                  value: 'middle', 
-                                  child: Text('脂肪増加', style: TextStyle(fontSize: 13)),
-                                ),
-                                DropdownMenuItem(
-                                  value: 'senior', 
-                                  child: Text('健康重視', style: TextStyle(fontSize: 13)),
-                                ),
-                              ],
-                              onChanged: (String? newValue) async {
-                                if (newValue != null) {
-                                  await ref
-                                      .read(userProfileProvider.notifier)
-                                      .updateAgeGroup(newValue);
-                                  if (mounted) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text('体の変化を更新しました'),
-                                      ),
-                                    );
-                                  }
-                                }
-                              },
-                            ),
-                          ],
-                        ),
+                      ButtonSegment(
+                        value: 'muscle_gain',
+                        label: Text('筋肉増強', style: TextStyle(fontSize: 12)),
+                        icon: Icon(Icons.fitness_center, size: 16),
+                      ),
+                      ButtonSegment(
+                        value: 'maintain',
+                        label: Text('体型維持', style: TextStyle(fontSize: 12)),
+                        icon: Icon(Icons.balance, size: 16),
                       ),
                     ],
+                    selected: userProfile.dietGoal != null ? {userProfile.dietGoal!} : {},
+                    onSelectionChanged: (Set<String> newSelection) async {
+                      if (newSelection.isNotEmpty) {
+                        final goal = newSelection.first;
+                        await ref
+                            .read(userProfileProvider.notifier)
+                            .updateDietGoal(goal);
+                        if (mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('ダイエット目的を更新しました'),
+                            ),
+                          );
+                        }
+                      }
+                    },
                   ),
                   const SizedBox(height: Spacing.md),
 
@@ -528,8 +549,113 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('貯金設定', style: Theme.of(context).textTheme.titleMedium),
+                  Text('目標設定', style: Theme.of(context).textTheme.titleMedium),
                   const SizedBox(height: Spacing.sm),
+                  
+                  // 目標体重と目標期間
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: _targetWeightController,
+                          focusNode: _targetWeightFocusNode,
+                          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                          textInputAction: TextInputAction.next,
+                          decoration: InputDecoration(
+                            labelText: '目標体重',
+                            suffixText: 'kg',
+                            border: const OutlineInputBorder(),
+                            suffixIcon: _savingField == 'targetWeight' && _isEditing
+                                ? const SizedBox(
+                                    width: 16,
+                                    height: 16,
+                                    child: CircularProgressIndicator(strokeWidth: 2),
+                                  )
+                                : IconButton(
+                                    icon: const Icon(Icons.save),
+                                    onPressed: () {
+                                      _targetWeightFocusNode.unfocus();
+                                      _saveTargetWeight(_targetWeightController.text);
+                                    },
+                                  ),
+                          ),
+                          onSubmitted: (value) {
+                            _targetWeightFocusNode.unfocus();
+                            _saveTargetWeight(value);
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: TextField(
+                          controller: _targetDaysController,
+                          focusNode: _targetDaysFocusNode,
+                          keyboardType: TextInputType.number,
+                          textInputAction: TextInputAction.done,
+                          decoration: InputDecoration(
+                            labelText: '目標期間',
+                            suffixText: '日',
+                            border: const OutlineInputBorder(),
+                            suffixIcon: _savingField == 'targetDays' && _isEditing
+                                ? const SizedBox(
+                                    width: 16,
+                                    height: 16,
+                                    child: CircularProgressIndicator(strokeWidth: 2),
+                                  )
+                                : IconButton(
+                                    icon: const Icon(Icons.save),
+                                    onPressed: () {
+                                      _targetDaysFocusNode.unfocus();
+                                      _saveTargetDays(_targetDaysController.text);
+                                    },
+                                  ),
+                          ),
+                          onSubmitted: (value) {
+                            _targetDaysFocusNode.unfocus();
+                            _saveTargetDays(value);
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                  
+                  // 自動計算された月間目標カロリー
+                  if (userProfile.targetWeight != null && userProfile.targetDays != null && userWeightRecord != null) ...[
+                    const SizedBox(height: Spacing.sm),
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.secondaryContainer,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '自動計算された目標',
+                            style: Theme.of(context).textTheme.labelMedium,
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            _calculateMonthlyCalorieTarget(
+                              currentWeight: userWeightRecord.weight,
+                              targetWeight: userProfile.targetWeight!,
+                              targetDays: userProfile.targetDays!,
+                            ),
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                  
+                  const SizedBox(height: Spacing.sm),
+                  const Divider(),
+                  const SizedBox(height: Spacing.sm),
+                  
+                  // 開始日設定
                   ListTile(
                     contentPadding: EdgeInsets.zero,
                     title: const Text('開始日'),
@@ -541,14 +667,17 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     onTap: _pickStartDate,
                   ),
                   const SizedBox(height: Spacing.sm),
+                  
+                  // 月間目標（手動設定）
                   TextField(
                     controller: _goalController,
                     keyboardType: TextInputType.number,
                     textInputAction: TextInputAction.done,
                     decoration: InputDecoration(
-                      labelText: '月間目標',
+                      labelText: '月間目標（手動設定）',
                       suffixText: 'kcal',
                       border: const OutlineInputBorder(),
+                      helperText: '自動計算を使用しない場合は手動で設定',
                       suffixIcon:
                           _savingField == 'goal' && _isEditing
                               ? const SizedBox(
@@ -619,25 +748,36 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     );
   }
 
+  String _calculateMonthlyCalorieTarget({
+    required double currentWeight,
+    required double targetWeight,
+    required int targetDays,
+  }) {
+    // 体重差（kg）
+    final weightDiff = currentWeight - targetWeight;
+    // 必要な総カロリー赤字（1kg = 7200kcal）
+    final totalCalorieDeficit = weightDiff * 7200;
+    // 1日あたりの必要カロリー赤字
+    final dailyCalorieDeficit = totalCalorieDeficit / targetDays;
+    // 月間（30日）換算
+    final monthlyCalorieDeficit = dailyCalorieDeficit * 30;
+    
+    return '${monthlyCalorieDeficit.toStringAsFixed(0)} kcal/月（${dailyCalorieDeficit.toStringAsFixed(0)} kcal/日）';
+  }
+
   Widget _buildNutritionBalanceCard(BuildContext context, WidgetRef ref) {
     final userProfile = ref.watch(userProfileProvider);
     final autoPfc = ref.watch(autoPfcTargetProvider);
     final dailyTarget = ref.watch(dailyCalorieTargetProvider);
 
-    // 性別と年齢層の表示テキスト
-    final genderText =
-        userProfile.gender == 'male'
-            ? '男性'
-            : userProfile.gender == 'female'
-            ? '女性'
-            : '未設定';
-    final ageGroupText =
-        userProfile.ageGroup == 'young'
-            ? '変わらない'
-            : userProfile.ageGroup == 'middle'
-            ? '脂肪増加'
-            : userProfile.ageGroup == 'senior'
-            ? '健康重視'
+    // ダイエット目的の表示テキスト
+    final dietGoalText =
+        userProfile.dietGoal == 'weight_loss'
+            ? '体重減少'
+            : userProfile.dietGoal == 'muscle_gain'
+            ? '筋肉増強'
+            : userProfile.dietGoal == 'maintain'
+            ? '体型維持'
             : '未設定';
 
     return TontonCardBase(
@@ -669,10 +809,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 children: [
                   Row(
                     children: [
-                      const Icon(Icons.person, size: 16),
+                      const Icon(Icons.flag, size: 16),
                       const SizedBox(width: 4),
                       Text(
-                        '$genderText / $ageGroupText',
+                        'ダイエット目的: $dietGoalText',
                         style: Theme.of(context).textTheme.bodySmall,
                       ),
                     ],
@@ -739,7 +879,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      '※ プロフィール情報から自動計算されています',
+                      '※ ダイエット目的に応じて自動計算されています',
                       style: Theme.of(
                         context,
                       ).textTheme.bodySmall?.copyWith(color: TontonColors.info),

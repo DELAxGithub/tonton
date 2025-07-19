@@ -11,6 +11,7 @@ export '../core/providers/user_weight_provider.dart';
 // Feature-specific providers
 export '../features/health/providers/last_health_fetch_provider.dart';
 export '../features/health/providers/weight_record_provider.dart';
+export '../features/health/providers/weight_history_provider.dart';
 export '../features/meal_logging/providers/ai_advice_provider.dart';
 export '../features/meal_logging/providers/ai_estimation_provider.dart';
 export '../features/meal_logging/providers/meal_records_provider.dart';

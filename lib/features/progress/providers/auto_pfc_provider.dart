@@ -16,6 +16,7 @@ final autoPfcTargetProvider = Provider<PfcBreakdown?>((ref) {
     weight: userProfile.weight!,
     gender: userProfile.gender,
     ageGroup: userProfile.ageGroup,
+    dietGoal: userProfile.dietGoal,
   );
 });
 

@@ -22,8 +22,7 @@ class _BasicInfoScreenState extends ConsumerState<BasicInfoScreen> {
   final _nicknameController = TextEditingController();
   final _weightController = TextEditingController();
 
-  String? _selectedGender;
-  String? _selectedAgeGroup;
+  String? _selectedDietGoal;
   bool _isLoading = false;
 
   @override
@@ -75,18 +74,11 @@ class _BasicInfoScreenState extends ConsumerState<BasicInfoScreen> {
           }
         }
 
-        // 性別と年齢層の保存
-        if (_selectedGender != null) {
+        // ダイエット目的の保存
+        if (_selectedDietGoal != null) {
           await ref
               .read(userProfileProvider.notifier)
-              .updateGender(_selectedGender!);
-          if (!mounted) return;
-        }
-
-        if (_selectedAgeGroup != null) {
-          await ref
-              .read(userProfileProvider.notifier)
-              .updateAgeGroup(_selectedAgeGroup!);
+              .updateDietGoal(_selectedDietGoal!);
           if (!mounted) return;
         }
 
@@ -230,9 +222,9 @@ class _BasicInfoScreenState extends ConsumerState<BasicInfoScreen> {
                   ),
                   const SizedBox(height: 32),
 
-                  // 性別選択
+                  // ダイエット目的選択
                   Text(
-                    '性別（任意）',
+                    'ダイエット目的（任意）',
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                       fontWeight: FontWeight.w600,
                     ),
@@ -240,60 +232,29 @@ class _BasicInfoScreenState extends ConsumerState<BasicInfoScreen> {
                   const SizedBox(height: 12),
                   SegmentedButton<String>(
                     segments: const [
-                      ButtonSegment(value: 'male', label: Text('男性')),
-                      ButtonSegment(value: 'female', label: Text('女性')),
+                      ButtonSegment(
+                        value: 'weight_loss',
+                        label: Text('体重減少'),
+                        icon: Icon(Icons.trending_down, size: 16),
+                      ),
+                      ButtonSegment(
+                        value: 'muscle_gain',
+                        label: Text('筋肉増強'),
+                        icon: Icon(Icons.fitness_center, size: 16),
+                      ),
+                      ButtonSegment(
+                        value: 'maintain',
+                        label: Text('体型維持'),
+                        icon: Icon(Icons.balance, size: 16),
+                      ),
                     ],
-                    selected: _selectedGender != null ? {_selectedGender!} : {},
+                    selected: _selectedDietGoal != null ? {_selectedDietGoal!} : {},
                     emptySelectionAllowed: true,
                     onSelectionChanged: (Set<String> newSelection) {
                       setState(() {
-                        _selectedGender =
-                            newSelection.isEmpty ? null : newSelection.first;
+                        _selectedDietGoal = newSelection.isEmpty ? null : newSelection.first;
                       });
                     },
-                  ),
-                  const SizedBox(height: 32),
-
-                  // 年齢層選択
-                  Text(
-                    '体の変化（任意）',
-                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  RadioListTile<String>(
-                    title: const Text('若い頃と変わらない'),
-                    value: 'young',
-                    groupValue: _selectedAgeGroup,
-                    onChanged: (value) {
-                      setState(() {
-                        _selectedAgeGroup = value;
-                      });
-                    },
-                    contentPadding: EdgeInsets.zero,
-                  ),
-                  RadioListTile<String>(
-                    title: const Text('脂肪が増えやすくなった'),
-                    value: 'middle',
-                    groupValue: _selectedAgeGroup,
-                    onChanged: (value) {
-                      setState(() {
-                        _selectedAgeGroup = value;
-                      });
-                    },
-                    contentPadding: EdgeInsets.zero,
-                  ),
-                  RadioListTile<String>(
-                    title: const Text('健康が気になってきた'),
-                    value: 'senior',
-                    groupValue: _selectedAgeGroup,
-                    onChanged: (value) {
-                      setState(() {
-                        _selectedAgeGroup = value;
-                      });
-                    },
-                    contentPadding: EdgeInsets.zero,
                   ),
                 ],
               ),

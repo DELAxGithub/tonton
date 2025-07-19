@@ -23,6 +23,9 @@ class UserProfileNotifier extends StateNotifier<UserProfile> {
       weight: prefs.getDouble('${_keyPrefix}weight'),
       gender: prefs.getString('${_keyPrefix}gender'),
       ageGroup: prefs.getString('${_keyPrefix}age_group'),
+      dietGoal: prefs.getString('${_keyPrefix}diet_goal'),
+      targetWeight: prefs.getDouble('${_keyPrefix}target_weight'),
+      targetDays: prefs.getInt('${_keyPrefix}target_days'),
       onboardingCompleted: completed,
     );
   }
@@ -60,6 +63,24 @@ class UserProfileNotifier extends StateNotifier<UserProfile> {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('${_keyPrefix}age_group', ageGroup);
     state = state.copyWith(ageGroup: ageGroup);
+  }
+
+  Future<void> updateDietGoal(String dietGoal) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('${_keyPrefix}diet_goal', dietGoal);
+    state = state.copyWith(dietGoal: dietGoal);
+  }
+
+  Future<void> updateTargetWeight(double targetWeight) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setDouble('${_keyPrefix}target_weight', targetWeight);
+    state = state.copyWith(targetWeight: targetWeight);
+  }
+
+  Future<void> updateTargetDays(int targetDays) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('${_keyPrefix}target_days', targetDays);
+    state = state.copyWith(targetDays: targetDays);
   }
 
   Future<void> completeOnboarding() async {

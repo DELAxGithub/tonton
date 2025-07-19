@@ -1,8 +1,11 @@
 class UserProfile {
   final String? displayName;
   final double? weight;
-  final String? gender; // 'male' or 'female'
-  final String? ageGroup; // 'young', 'middle', 'senior'
+  final String? gender; // 'male' or 'female' - DEPRECATED
+  final String? ageGroup; // 'young', 'middle', 'senior' - DEPRECATED
+  final String? dietGoal; // 'weight_loss', 'muscle_gain', 'maintain'
+  final double? targetWeight;
+  final int? targetDays;
   final bool onboardingCompleted;
   final DateTime? createdAt;
   final DateTime? updatedAt;
@@ -12,6 +15,9 @@ class UserProfile {
     this.weight,
     this.gender,
     this.ageGroup,
+    this.dietGoal,
+    this.targetWeight,
+    this.targetDays,
     this.onboardingCompleted = false,
     this.createdAt,
     this.updatedAt,
@@ -22,6 +28,9 @@ class UserProfile {
     double? weight,
     String? gender,
     String? ageGroup,
+    String? dietGoal,
+    double? targetWeight,
+    int? targetDays,
     bool? onboardingCompleted,
     DateTime? createdAt,
     DateTime? updatedAt,
@@ -31,6 +40,9 @@ class UserProfile {
       weight: weight ?? this.weight,
       gender: gender ?? this.gender,
       ageGroup: ageGroup ?? this.ageGroup,
+      dietGoal: dietGoal ?? this.dietGoal,
+      targetWeight: targetWeight ?? this.targetWeight,
+      targetDays: targetDays ?? this.targetDays,
       onboardingCompleted: onboardingCompleted ?? this.onboardingCompleted,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
@@ -43,6 +55,9 @@ class UserProfile {
       'weight': weight,
       'gender': gender,
       'ageGroup': ageGroup,
+      'dietGoal': dietGoal,
+      'targetWeight': targetWeight,
+      'targetDays': targetDays,
       'onboardingCompleted': onboardingCompleted,
       'createdAt': createdAt?.toIso8601String(),
       'updatedAt': updatedAt?.toIso8601String(),
@@ -55,6 +70,9 @@ class UserProfile {
       weight: json['weight'] as double?,
       gender: json['gender'] as String?,
       ageGroup: json['ageGroup'] as String?,
+      dietGoal: json['dietGoal'] as String?,
+      targetWeight: json['targetWeight'] as double?,
+      targetDays: json['targetDays'] as int?,
       onboardingCompleted: json['onboardingCompleted'] as bool? ?? false,
       createdAt:
           json['createdAt'] != null

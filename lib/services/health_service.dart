@@ -185,6 +185,20 @@ class HealthService {
     }
   }
 
+  /// Get health data for specified types and date range
+  /// This method is used by other services that need direct access to health data
+  Future<List<HealthDataPoint>> getHealthDataFromTypes({
+    required List<HealthDataType> types,
+    required DateTime startTime,
+    required DateTime endTime,
+  }) async {
+    return await _health.getHealthDataFromTypes(
+      types: types,
+      startTime: startTime,
+      endTime: endTime,
+    );
+  }
+
   Future<WeightRecord?> getLatestWeight(DateTime date) async {
     developer.log(
       'Getting latest weight for date: $date',

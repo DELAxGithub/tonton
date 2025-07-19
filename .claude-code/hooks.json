@@ -1,0 +1,31 @@
+{
+  "description": "Claude Code hooks configuration for enforcing spec-driven development",
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "name": "spec-driven-development-enforcer",
+        "description": "Detect development tasks and enforce spec-driven development process",
+        "matcher": "(リファクタリング|新機能|実装|開発|機能追加|バグ修正|改善|変更|作成|追加|削除|修正)",
+        "hooks": [
+          {
+            "type": "prompt-injection",
+            "content": "🔄 **開発タスクが検出されました** - spec-driven developmentプロセスを適用します\n\n**必須フェーズ:**\n1. **事前準備フェーズ**: `.cckiro/specs/{task-name}` ディレクトリ作成\n2. **要件フェーズ**: `requirements.md` 作成・承認\n3. **設計フェーズ**: `design.md` 作成・承認  \n4. **実装計画フェーズ**: `implementation-plan.md` 作成・承認\n5. **実装フェーズ**: 計画に基づく実装\n\n各フェーズでユーザー承認を得てから次に進んでください。\n既にspec化済みのタスクの場合は「spec済み」と明記してください。"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "name": "edit-file-validator",
+        "description": "Validate that major file edits follow spec-driven process",
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "prompt-injection", 
+            "content": "ファイル編集前に、このタスクがspec-driven developmentプロセスに従っているか確認してください。大きな変更の場合は事前に要件・設計・実装計画の承認が必要です。"
+          }
+        ]
+      }
+    ]
+  }
+}

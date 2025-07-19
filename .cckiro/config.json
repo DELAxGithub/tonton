@@ -1,0 +1,54 @@
+{
+  "project": {
+    "name": "tonton",
+    "description": "Calorie savings health tracking application",
+    "version": "1.0.1",
+    "development_methodology": "spec-driven"
+  },
+  "spec_driven_development": {
+    "enabled": true,
+    "required_phases": [
+      "requirements",
+      "design", 
+      "implementation-plan",
+      "implementation"
+    ],
+    "spec_directory": ".cckiro/specs",
+    "auto_create_specs": true,
+    "require_approval": true,
+    "templates": {
+      "requirements": "requirements_template.md",
+      "design": "design_template.md",
+      "implementation_plan": "implementation_plan_template.md"
+    }
+  },
+  "development_rules": {
+    "enforce_spec_for_major_changes": true,
+    "major_change_indicators": [
+      "新機能",
+      "リファクタリング", 
+      "大幅な変更",
+      "アーキテクチャ変更",
+      "複数ファイル編集"
+    ],
+    "allowed_direct_changes": [
+      "typo修正",
+      "小さなバグ修正",
+      "コメント追加",
+      "ログ出力調整"
+    ]
+  },
+  "quality_gates": {
+    "require_tests": false,
+    "require_documentation": true,
+    "require_code_review": false,
+    "allow_breaking_changes": true
+  },
+  "tools": {
+    "preferred_tools": ["Edit", "MultiEdit", "Write", "Bash", "TodoWrite"],
+    "restricted_tools": [],
+    "auto_tools": {
+      "TodoWrite": "always_for_multi_step_tasks"
+    }
+  }
+}

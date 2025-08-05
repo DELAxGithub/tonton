@@ -4,56 +4,43 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-TonTon (トントン) is a Flutter health tracking application focused on "Making health management fun with calorie savings" (カロリー貯金で健康管理を楽しく). The app uses AI-powered meal logging, integrates with iOS HealthKit, and implements a unique calorie savings concept.
+TonTon (トントン) is a SwiftUI health tracking application focused on "Making health management fun with calorie savings" (カロリー貯金で健康管理を楽しく). The app uses CloudKit for data synchronization, AI-powered meal logging, integrates with iOS HealthKit, and implements a unique calorie savings concept.
 
 ## Essential Commands
 
 ```bash
-# Environment Setup
-cp .env.example .env
-# Then edit .env with Supabase credentials
-
 # Development
-flutter run                                    # Run app in debug mode
-flutter run --dart-define=SUPABASE_URL=... --dart-define=SUPABASE_ANON_KEY=...  # Run with env vars
+open Tonton/Tonton.xcodeproj                   # Open Xcode project
+xcodebuild -project Tonton/Tonton.xcodeproj -scheme Tonton build  # Build from command line
 
-# Testing & Analysis
-flutter test                                   # Run all tests
-flutter analyze                                # Static analysis
+# Testing
+xcodebuild test -project Tonton/Tonton.xcodeproj -scheme Tonton -destination 'platform=iOS Simulator,name=iPhone 15'
 
-# Build
-flutter build ios                              # Build iOS app
-flutter build apk                              # Build Android APK
-
-# iOS Deployment
-cd ios && bundle exec fastlane beta           # Deploy to TestFlight
-
-# Component Catalog
-flutter run -t widgetbook/main.dart -d chrome # View design system components
+# Archive & Deploy
+xcodebuild archive -project Tonton/Tonton.xcodeproj -scheme Tonton -archivePath ./build/Tonton.xcarchive
 ```
 
 ## Architecture
 
 ### Directory Structure
-- `lib/features/` - Feature-based modules (health, meal_logging, profile, progress, etc.)
-- `lib/design_system/` - Atomic design components (atoms, molecules, organisms, templates)
-- `lib/core/` - Core providers and services
-- `lib/models/` - Data models
-- `lib/services/` - Business logic services
+- `Tonton/Tonton/Views/` - SwiftUI views organized by feature
+- `Tonton/Tonton/Models/` - SwiftData models for core entities
+- `Tonton/Tonton/Services/` - Business logic services
+- `Tonton/Tonton/Utilities/` - Helper functions and extensions
 
 ### State Management
-Uses Riverpod providers throughout. Key providers:
-- `userProfileProvider` - User profile state
-- `mealLogProvider` - Meal logging state
-- `weightHistoryProvider` - Weight tracking state
-- `healthKitServiceProvider` - HealthKit integration
+Uses SwiftUI + SwiftData for reactive state management:
+- `@Model` classes for data persistence
+- `@ObservableObject` for view models
+- `@Environment` for dependency injection
+- `@Query` for SwiftData queries
 
 ### Key Technologies
-- **Backend**: Supabase (Edge Functions)
-- **AI**: Google Generative AI (Gemini) for meal image analysis
-- **Local Storage**: Hive for offline data
-- **Routing**: go_router with AppShell structure
-- **Localization**: Japanese/English support
+- **Backend**: CloudKit for data synchronization
+- **AI**: Native Swift AI services for meal analysis
+- **Local Storage**: SwiftData for offline-first architecture
+- **Navigation**: SwiftUI NavigationStack with AppShell
+- **Health Integration**: HealthKit framework
 
 ## Critical Development Process
 
@@ -66,62 +53,69 @@ This project enforces **spec-driven development** for major changes:
 
 ## Current Development State
 
-**Branch**: app-store-clean (targeting App Store submission)
-**Version**: 1.0.1
+**Platform**: iOS (SwiftUI)
+**Version**: 1.0+
 
-**Active Work Areas**:
-- Weight history integration (currently showing empty data)
-- Profile screen completion (missing age/gender selection, logout)
-- Auto PFC (protein/fat/carb) calculations
+**Core Features Implemented**:
+- CloudKit data synchronization
+- HealthKit integration for weight and activity data
+- AI-powered meal logging with camera integration
+- Calorie savings tracking system
+- SwiftUI-based user interface
 
-**Urgent Priorities**:
-- GitHub Pages setup for privacy policy
-- App Store review preparation
-- Fix weight history data integration
+**App Store Readiness**:
+- Privacy policy setup
+- App Store metadata preparation
+- CloudKit container configuration
 
 ## Key Implementation Notes
 
 ### AI Meal Logging
-- Uses Gemini API for food image analysis
-- Structured prompt in `lib/features/meal_logging/services/ai_meal_analyzer_service.dart`
+- Native Swift AI services for food image analysis
+- Camera integration with `AVFoundation`
 - Returns calories, PFC breakdown, and meal insights
+- Integrated with SwiftData for meal record persistence
 
 ### Calorie Savings Concept
 - Core feature: calories saved vs consumed
 - Daily savings calculated as: base metabolism - consumed calories
-- Visualized in progress screens with charts
+- Visualized with SwiftUI Charts framework
+- Real-time updates with CloudKit synchronization
 
 ### HealthKit Integration
-- iOS only via `health` package
-- Syncs weight data bidirectionally
-- Requires Info.plist permissions
+- Native HealthKit framework integration
+- Syncs weight and activity data bidirectionally
+- Requires HealthKit entitlements and Info.plist permissions
+- Background health data updates
 
-### Design System
-- Custom theme with design tokens
-- TontonIcons custom icon font
-- Component hierarchy: atoms → molecules → organisms → templates
-- Widgetbook for component documentation
+### CloudKit Backend
+- SwiftData models with CloudKit sync
+- Offline-first architecture with automatic sync
+- User privacy with CloudKit private database
+- Cross-device data consistency
 
 ## Common Tasks
 
-### Adding a New Feature
-1. Create feature directory under `lib/features/`
-2. Implement providers, screens, and services
-3. Update routes in `lib/routes/app_router.dart`
-4. Add to AppShell if needed
+### Adding a New SwiftUI View
+1. Create new view file in `Tonton/Tonton/Views/`
+2. Implement SwiftUI view with proper state management
+3. Add navigation integration in AppShell
+4. Update data models if needed
 
-### Modifying UI Components
-1. Check design system in `lib/design_system/`
-2. Use existing atoms/molecules when possible
-3. Test in Widgetbook before integration
+### Working with SwiftData Models
+1. Define `@Model` classes in `Tonton/Tonton/Models/`
+2. Configure CloudKit sync attributes
+3. Use `@Query` in views for data fetching
+4. Handle data relationships and migrations
 
-### Working with Providers
-1. Define provider in feature's `providers/` directory
-2. Use `ref.watch()` in widgets, `ref.read()` for actions
-3. Dispose resources properly
+### CloudKit Integration
+1. Configure CloudKit schema in Developer portal
+2. Add CloudKit capability to app target
+3. Set up data model relationships
+4. Test sync across multiple devices
 
 ## Testing Approach
-- Unit tests in `/test/` directory
-- No integration tests currently implemented
-- GitHub Actions runs tests on PRs
-- Manual testing required for HealthKit features
+- XCTest framework for unit and integration tests
+- UI tests for critical user workflows
+- Physical device testing required for HealthKit
+- CloudKit testing in development and production environments

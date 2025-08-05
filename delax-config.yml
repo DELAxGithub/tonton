@@ -1,0 +1,146 @@
+# DELAX Configuration for TonTon (トントン)
+# Flutter + SwiftUI Health Tracking App with AI-powered meal logging
+# Calorie savings gamification with HealthKit integration
+
+project:
+  name: "TonTon (トントン)"
+  type: "flutter-ios-hybrid"
+  description: "AI-powered health tracking app with calorie savings gamification and HealthKit integration"
+
+git:
+  main_branch: "main"
+  remote_name: "origin"
+
+# Flutter Configuration
+flutter:
+  version: "3.22.0+"
+  dart_version: "3.4.0+"
+  target_platform: "iOS"
+  build_mode: "debug"
+  features:
+    riverpod: true          # State management
+    hive: true             # Local storage
+    health_kit: true       # iOS HealthKit integration
+    image_picker: true     # Meal photo capture
+    supabase: true         # Backend services
+    ai_integration: true   # Gemini API for meal analysis
+
+# iOS SwiftUI Configuration  
+ios:
+  bundle_id: "com.delax.tonton"
+  deployment_target: "17.0"
+  xcode_project: "TonTonSwiftUI/TonTon/TonTon.xcodeproj"
+  scheme: "TonTon"
+  configuration: "Debug"
+  target_platform: "iOS Simulator"
+  target_device: "iPhone 15"
+  features:
+    swiftdata: true          # Local data persistence
+    healthkit: true          # Native health data access
+    cloudkit: false          # Not currently used
+    avfoundation: false      # Not needed for health tracking
+    speech_recognition: false # Not needed for meal logging
+
+# TonTon specific features
+features:
+  ai_meal_analysis: true           # Gemini integration for food image analysis
+  calorie_savings_gamification: true # Unique savings account concept
+  health_kit_integration: true     # Native iOS health data sync
+  meal_photo_processing: true      # AI-powered meal logging
+  progress_analytics: true         # Health progress tracking and insights
+  offline_mode: true               # Offline meal logging with Hive
+  smart_nutrition_estimation: true # AI-powered nutrition calculation
+  cross_platform_sync: true       # Supabase backend sync
+
+# Development workflow preferences  
+workflow:
+  auto_pull: false                  # Manual pull recommended for hybrid projects
+  build_on_pull: true               # Automatically suggest builds after pull
+  notification_sounds: true         # macOS notification sounds for build results
+  pr_auto_labels: true              # Auto-label PRs by type (flutter, ios, ai, health)
+
+# Health/Nutrition specific settings
+health:
+  supported_metrics: ["weight", "calories", "steps", "heart_rate"]
+  data_retention_days: 365          # 1 year of health data retention
+  sync_frequency_hours: 6           # HealthKit sync every 6 hours
+  ai_advice_enabled: true           # AI-powered health advice
+
+# AI Integration
+ai:
+  gemini_model: "gemini-1.5-flash"         # Google Gemini for image analysis
+  confidence_threshold: 0.7                # Minimum confidence for auto-suggestions
+  analysis_timeout_seconds: 30             # AI analysis timeout
+  supabase_functions: true                 # Backend AI functions
+
+# Data Persistence
+data_storage:
+  local_storage: "hive"            # Hive for offline data
+  remote_backend: "supabase"       # Supabase for cloud sync
+  cache_size_mb: 100              # Local cache size limit
+  auto_sync: true                 # Automatic background sync
+
+# Supabase Configuration
+supabase:
+  functions_enabled: true
+  realtime_enabled: false         # Not currently used
+  auth_enabled: true              # User authentication
+  storage_enabled: true           # Meal image storage
+
+# Notifications
+notifications:
+  slack:
+    webhook_url: "${SLACK_WEBHOOK_URL}"
+    enabled: false                        # Disable for now
+  email:
+    recipient: "${NOTIFICATION_EMAIL}"
+    enabled: false
+  macos:
+    enabled: true                         # Enable macOS notifications for build results
+    success_sound: "Glass"
+    error_sound: "Basso"
+
+# Build optimization
+build:
+  parallel_builds: true
+  clean_before_major_changes: true
+  cache_derived_data: true
+  flutter_build_cache: true              # Flutter build caching
+  ios_build_cache: true                  # iOS build caching
+
+# Quality gates
+quality:
+  flutter_analyze: true
+  dart_format: true
+  ios_swift_lint: false                  # Not configured yet
+  code_coverage_minimum: 60             # 60% minimum code coverage for Flutter
+  performance_tests: true               # Include performance tests for meal logging
+  accessibility_tests: true             # Ensure VoiceOver compatibility
+  health_kit_validation: true           # Validate HealthKit integration
+
+# Error handling patterns specific to TonTon
+error_patterns:
+  health_kit_permission_errors: true     # HealthKit access permission issues
+  supabase_connection_errors: true       # Backend connectivity problems
+  gemini_api_errors: true               # AI service integration issues
+  image_processing_errors: true          # Meal photo processing failures
+  hive_storage_errors: true             # Local storage issues
+  flutter_ios_bridge_errors: true        # Platform channel communication issues
+
+# Development environment
+environment:
+  flutter_version: "3.22.0+"
+  dart_version: "3.4.0+"
+  xcode_version: "16.0+"
+  swift_version: "5.9+"
+  ios_deployment_target: "17.0"
+  macos_development: true              # Support for macOS development environment
+
+# Testing Configuration
+testing:
+  unit_tests: true
+  widget_tests: true
+  integration_tests: true
+  golden_tests: true                   # UI screenshot tests
+  health_kit_mocking: true            # Mock HealthKit for testing
+  ai_service_mocking: true            # Mock AI services for testing

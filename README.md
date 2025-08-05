@@ -1,116 +1,106 @@
 # TonTon
 
-A health tracking application with iOS HealthKit integration.
+A SwiftUI health tracking application with CloudKit integration, focused on "Making health management fun with calorie savings" (カロリー貯金で健康管理を楽しく).
 
 ## Technology Stack
 
-- **Frontend:** Flutter, Riverpod (state management)
-- **Backend:** Supabase (Edge Functions)
-- **AI Integration:** OpenAI API (GPT-4 model)
-- **Local Storage:** Hive, SharedPreferences
+- **Frontend:** SwiftUI, SwiftData
+- **Backend:** CloudKit
+- **AI Integration:** Native Swift AI services
+- **Local Storage:** SwiftData, CloudKit
 - **Health Integration:** iOS HealthKit
 
 ## Getting Started
 
-### 環境変数の設定
+### Prerequisites
 
-1. `.env.example`ファイルをコピーして`.env`ファイルを作成:
+- **Xcode 15.0+** with iOS 17.0+ SDK
+- **Apple Developer Account** for CloudKit setup
+- **iOS Device or Simulator** for testing HealthKit integration
+
+### Development Setup
+
+1. Open the Xcode project:
    ```bash
-   cp .env.example .env
+   open Tonton/Tonton.xcodeproj
    ```
 
-2. `.env`ファイルを編集し、必要な認証情報を設定:
-   ```plaintext
-   SUPABASE_URL=your_supabase_project_url
-   SUPABASE_ANON_KEY=your_supabase_anon_key
-   ```
+2. Configure CloudKit:
+   - Enable CloudKit capability in your app
+   - Set up CloudKit container in Apple Developer portal
+   - Configure data models in CloudKit Dashboard
 
-詳細な設定手順は[環境変数の設定ガイド](docs/env_setup_guide.md)を参照してください。
+3. Build and run:
+   - Select target device or simulator
+   - Build and run the project (⌘+R)
 
-A few resources to get you started if this is your first Flutter project:
+### HealthKit Integration Setup
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+The app integrates with iOS HealthKit for weight and activity data. Ensure:
+- HealthKit permissions are configured in Info.plist
+- Test on physical device (HealthKit not available in simulator)
+## Core Features
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+**Calorie Savings System**
+- Unique calorie savings concept: track daily savings vs consumption
+- Visual progress tracking with charts and statistics
+- Motivational piggy bank metaphor for health management
 
-See [docs/ICON_FONT.md](docs/ICON_FONT.md) for instructions on generating the custom icon font.
+**AI-Powered Meal Logging**
+- Camera-based meal recognition and calorie estimation
+- Nutritional breakdown (protein, fat, carbohydrates)
+- Smart meal analysis with native Swift AI integration
 
-### UI Component Catalog (Widgetbook)
+**Health Integration**
+- Seamless HealthKit integration for weight and activity data
+- Bidirectional data sync between app and Apple Health
+- Real-time health metrics monitoring
 
-```bash
-flutter run -t widgetbook/main.dart -d chrome
-```
-
-Browse all UI components, test different states, and preview themes. See [Widgetbook Guide](docs/design_system/widgetbook_guide.md) for details.
-
-### Environment Variables
-
-The app requires Supabase credentials to run. Set these variables in your shell
-or pass them at build time:
-
-```bash
-export SUPABASE_URL="https://your-project.supabase.co"
-export SUPABASE_ANON_KEY="your-anon-key"
-```
-
-These values are read in `lib/main.dart` and test scripts via
-`Platform.environment`/`String.fromEnvironment`.
-## Development Progress
-
-The following milestones summarize the main features implemented so far:
-
-- Custom design system with theme, design tokens, and icon fonts.
-- Atom widgets such as **TontonIcon** and **TontonText**.
-- Molecules like **TontonButton** and **TontonCardBase**, showcased in Dashbook.
-- Dashbook UI catalog set up for rapid component previews.
-- Integration with Supabase for backend services and Edge Functions.
-- HealthKit integration on iOS.
-- Navigation structure using **go_router** with an AppShell and profile screen.
-- Home screen layout with daily stats ring and PFC bar display.
-- AI meal logging flow powered by the Gemini-based image analysis service.
-- Progress and achievements screen to track user goals.
-
-These features establish the core architecture and primary screens of the TonTon application, providing a solid foundation for further development.
+**CloudKit Backend**
+- Secure data synchronization across devices
+- Offline-first architecture with CloudKit sync
+- Privacy-focused data handling with Apple's ecosystem
 
 ## Build & Deployment
 
-### iOS Deployment with Fastlane
+### iOS App Store Deployment
 
-Automated iOS builds and TestFlight deployment:
+Build and deploy to App Store using Xcode:
 
-```bash
-cd ios
-bundle exec fastlane beta
-```
+1. **Archive the app**: Product → Archive in Xcode
+2. **Upload to App Store Connect**: Use Xcode Organizer or Transporter
+3. **Submit for Review**: Configure app metadata in App Store Connect
 
-See [Fastlane Setup Guide](docs/deployment/fastlane_setup.md) for configuration details.
+### TestFlight Distribution
 
-### Component Documentation
+For beta testing:
+1. Archive and upload to App Store Connect
+2. Add internal/external testers in TestFlight
+3. Distribute builds for testing
 
-View the live component catalog at: [Coming Soon - GitHub Pages]
+## Project Architecture
 
-Or run locally:
-```bash
-flutter run -t widgetbook/main.dart -d chrome
-```
+### SwiftUI + SwiftData Stack
+- **Views**: Declarative UI with SwiftUI
+- **Data Layer**: SwiftData for local persistence
+- **Networking**: CloudKit for synchronization
+- **Services**: Native Swift services for AI and health integration
+
+### Key Components
+- **Models**: SwiftData models for core entities (UserProfile, MealRecord, WeightRecord)
+- **Views**: Modular SwiftUI views organized by feature
+- **Services**: Business logic services (HealthKit, CloudKit, AI)
+- **Utilities**: Helper functions and extensions
 
 ## Documentation
 
-### Development
-- [Environment Setup](docs/env_setup_guide.md)
-- [Engineering Handover](docs/handover/v1.0.0_engineering_handover.md)
-
-### Design System
-- [Widgetbook Component Catalog](https://YOUR_ORG.github.io/codex2-master-widgetbook/) *(Live URL coming soon)*
-- [Widgetbook Guide](docs/design_system/widgetbook_guide.md)
-- [Widgetbook for Designers](docs/design/widgetbook_for_designers.md)
-- [Illustrator Brief](docs/release_notes/v1.0.0_illustrator_brief.md)
+### Project Status
+- [Release Notes](docs/RELEASE_NOTES.md)
+- [Roadmap](docs/ROADMAP.md) 
+- [TODO List](docs/TODO.md)
+- [App Store Checklist](docs/APP_STORE_CHECKLIST.md)
 
 ### Deployment
-- [Fastlane Setup](docs/deployment/fastlane_setup.md)
-- [Fastlane Troubleshooting](docs/deployment/fastlane_troubleshooting.md)
-- [Screenshot Guidelines](docs/deployment/screenshot_guidelines.md)
+- [App Store Submission](docs/app_store_submission_draft.md)
+- [Privacy Policy](docs/privacy-policy.md)
 

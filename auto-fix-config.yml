@@ -1,0 +1,256 @@
+# Auto-Fix Configuration for TonTon (トントン)
+# DELAX health tracking app specific error patterns and fixes
+# AI-powered meal logging with HealthKit integration
+
+project:
+  name: "TonTon (トントン)"
+  type: "flutter-ios-hybrid"
+  description: "AI-powered health tracking app with calorie savings gamification"
+  primary_language: "dart"
+  secondary_language: "swift"
+
+# Health App Specific Error Patterns
+error_patterns:
+  
+  # HealthKit Integration Errors
+  healthkit_permission_errors:
+    enabled: true
+    patterns:
+      - "HealthKit.*permission.*denied"
+      - "HKHealthStore.*authorization.*failed"
+      - "NSHealthShareUsageDescription.*missing"
+      - "NSHealthUpdateUsageDescription.*missing"
+    fixes:
+      - action: "add_info_plist_key"
+        key: "NSHealthShareUsageDescription"
+        value: "TonTonでは健康データを読み取って、より正確なカロリー計算を行います。"
+      - action: "add_info_plist_key"
+        key: "NSHealthUpdateUsageDescription" 
+        value: "TonTonでは体重などの健康データを記録します。"
+      - action: "add_entitlements"
+        entitlement: "com.apple.developer.healthkit"
+        value: true
+    confidence: 95
+
+  # Supabase Backend Connection Errors
+  supabase_connection_errors:
+    enabled: true
+    patterns:
+      - "SupabaseClient.*connection.*failed"
+      - "supabase.*timeout"
+      - "PostgrestException.*network"
+      - "AuthException.*session.*expired"
+      - "supabase.*null.*response"
+    fixes:
+      - action: "add_timeout_handling"
+        method: "supabase_calls"
+        timeout: "30_seconds"
+      - action: "add_retry_logic"
+        max_retries: 3
+        backoff: "exponential"
+      - action: "add_null_safety"
+        pattern: "supabase\\..*\\?"
+    confidence: 88
+
+  # AI/Gemini Integration Errors  
+  ai_integration_errors:
+    enabled: true
+    patterns:
+      - "google_generative_ai.*API.*error"
+      - "Gemini.*rate.*limit"
+      - "AI.*analysis.*failed"
+      - "Image.*processing.*timeout"
+      - "GenerativeAI.*authentication.*failed"
+    fixes:
+      - action: "add_api_error_handling"
+        service: "gemini"
+        fallback: "local_analysis"
+      - action: "add_rate_limiting"
+        service: "gemini_api"
+        requests_per_minute: 60
+      - action: "add_image_compression"
+        max_size: "1MB"
+        quality: 0.8
+    confidence: 85
+
+  # Meal Photo Processing Errors
+  meal_photo_errors:
+    enabled: true
+    patterns:
+      - "image_picker.*permission.*denied"
+      - "Camera.*not.*available"
+      - "Photo.*library.*access.*denied"
+      - "Image.*compression.*failed"
+      - "File.*upload.*timeout"
+    fixes:
+      - action: "add_permission_request"
+        permission: "camera"
+        description: "TonTonでは食事の写真を撮影するためにカメラへのアクセスが必要です。"
+      - action: "add_permission_request"
+        permission: "photo_library"
+        description: "TonTonでは食事の写真を記録するためにフォトライブラリへのアクセスが必要です。"
+      - action: "add_fallback_ui"
+        fallback: "manual_nutrition_entry"
+    confidence: 92
+
+  # Flutter Build Errors
+  flutter_build_errors:
+    enabled: true
+    patterns:
+      - "dart.*analyze.*errors"
+      - "flutter.*build.*failed"
+      - "pubspec.*dependency.*conflict"
+      - "AndroidX.*migration.*required"
+      - "iOS.*deployment.*target.*unsupported"
+    fixes:
+      - action: "run_flutter_clean"
+      - action: "update_dependencies"
+        strategy: "conservative"
+      - action: "fix_dependency_conflicts"
+        resolver: "pub_deps"
+      - action: "update_deployment_target"
+        ios_target: "17.0"
+        android_target: "21"
+    confidence: 90
+
+  # SwiftUI Build Errors (TonTon SwiftUI version)
+  swiftui_build_errors:
+    enabled: true
+    patterns:
+      - "Swift.*compiler.*error"
+      - "SwiftData.*model.*error"
+      - "Xcode.*build.*failed"
+      - "Code.*signing.*error"
+      - "Provisioning.*profile.*error"
+    fixes:
+      - action: "disable_code_signing"
+        build_setting: "CODE_SIGNING_ALLOWED=NO"
+      - action: "clean_build_folder"
+      - action: "update_swift_syntax"
+        version: "latest_stable"
+      - action: "fix_swiftdata_models"
+        strategy: "regenerate_relationships"
+    confidence: 87
+
+  # Data Storage & Hive Errors
+  data_storage_errors:
+    enabled: true
+    patterns:
+      - "Hive.*box.*not.*found"
+      - "HiveError.*corrupted.*box"
+      - "Storage.*permission.*denied"
+      - "Database.*migration.*failed"
+      - "Local.*storage.*full"
+    fixes:
+      - action: "initialize_hive_boxes"
+      - action: "add_error_recovery"
+        strategy: "recreate_corrupted_boxes"
+      - action: "add_storage_cleanup"
+        retention_days: 90
+      - action: "add_migration_fallback"
+    confidence: 91
+
+  # Performance & Memory Errors
+  performance_errors:
+    enabled: true
+    patterns:
+      - "OutOfMemoryError"
+      - "UI.*jank.*detected"
+      - "Frame.*drop.*detected"
+      - "Memory.*leak.*detected"
+      - "Battery.*drain.*high"
+    fixes:
+      - action: "optimize_image_loading"
+        lazy_loading: true
+        cache_size: "50MB"
+      - action: "add_memory_monitoring"
+      - action: "optimize_list_rendering"
+        use_list_view_builder: true
+      - action: "reduce_background_tasks"
+    confidence: 83
+
+# Fix Strategies for TonTon Health App
+fix_strategies:
+  
+  health_data_accuracy:
+    priority: "critical"
+    description: "Ensure health data calculations are accurate"
+    validations:
+      - "BMR calculations match standard formulas"
+      - "Calorie deficit/surplus calculations are correct"
+      - "Weight tracking precision maintained"
+    
+  user_experience:
+    priority: "high" 
+    description: "Maintain smooth meal logging workflow"
+    validations:
+      - "Photo capture → AI analysis → review flow works"
+      - "Offline mode gracefully handles connectivity issues"
+      - "UI remains responsive during AI processing"
+      
+  data_integrity:
+    priority: "high"
+    description: "Prevent data loss and corruption"
+    validations:
+      - "Local and remote data stay synchronized"
+      - "Meal records persist across app restarts"
+      - "HealthKit data import/export works correctly"
+
+# Claude AI Integration for TonTon-specific fixes
+ai_assistant:
+  model: "claude-4-sonnet-20250514"
+  context_optimization:
+    - "Health app development patterns"
+    - "Flutter + SwiftUI hybrid architecture"
+    - "HealthKit integration best practices"
+    - "Supabase backend patterns"
+    - "AI meal analysis workflows"
+    - "Calorie calculation accuracy"
+    
+  specialized_prompts:
+    health_data_validation: |
+      You are a health app developer expert. Review the following health data calculation 
+      code for accuracy, considering standard BMR formulas, calorie deficit calculations, 
+      and weight loss/gain predictions. Ensure calculations match established nutritional science.
+      
+    meal_logging_flow: |
+      You are a UX specialist for meal logging apps. Review this meal photo → AI analysis → 
+      nutrition confirmation workflow. Ensure the user experience is smooth, intuitive, and 
+      handles edge cases like poor photo quality or AI analysis failures gracefully.
+      
+    healthkit_integration: |
+      You are an iOS HealthKit integration specialist. Review this HealthKit data sync code 
+      for proper permission handling, background updates, data type compatibility, and 
+      privacy compliance. Ensure seamless integration with Apple Health app.
+
+# Testing & Validation  
+testing:
+  health_app_specific_tests:
+    - "HealthKit permission flow testing"
+    - "Meal photo AI analysis accuracy testing"
+    - "Calorie calculation validation testing"
+    - "Offline mode data persistence testing"
+    - "Cross-device sync testing"
+    - "Battery usage optimization testing"
+    
+  automated_fixes_validation:
+    - "Build success after auto-fixes applied"
+    - "Health data calculations remain accurate"
+    - "User workflows not disrupted by fixes"
+    - "Performance not degraded by changes"
+
+# Monitoring & Metrics
+monitoring:
+  success_metrics:
+    - "Build success rate >95%"
+    - "Health data sync success rate >98%"
+    - "Meal logging completion rate >90%"
+    - "AI analysis accuracy >85%"
+    - "User retention >80% after 7 days"
+    
+  performance_metrics:
+    - "App launch time <3 seconds"
+    - "Meal photo processing time <10 seconds"
+    - "HealthKit sync time <5 seconds"
+    - "Memory usage <150MB average"
+    - "Battery drain <5% per hour active use"

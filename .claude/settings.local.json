@@ -62,7 +62,16 @@
       "Bash(git ls-tree:*)",
       "Bash(dart run build_runner build:*)",
       "Bash(swift --version)",
-      "Bash(docker pull:*)"
+      "Bash(docker pull:*)",
+      "Bash(mcp list:*)",
+      "Bash(env)",
+      "Bash(node:*)",
+      "Bash(npm:*)",
+      "Bash(cp:*)",
+      "Bash(./Scripts/prepare_demo.sh:*)",
+      "Bash(swift package:*)",
+      "Bash(./Scripts/create_xcode_project.sh:*)",
+      "WebFetch(domain:github.com)"
     ],
     "deny": []
   },

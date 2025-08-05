@@ -1,5 +1,0 @@
-git_url("https://github.com/DELAxGithub/tonton-match.git")
-storage_mode("git")
-type("development")
-app_identifier(["com.HiroshiKodera.tonton"])
-username("notheshow@mac.com")

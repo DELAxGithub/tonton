@@ -37,9 +37,9 @@ class UserProfile {
     var lastCaloriesSyncDate: Date? = nil
     
     // Relationships
-    @Relationship(deleteRule: .cascade) var mealRecords: [MealRecord] = []
-    @Relationship(deleteRule: .cascade) var weightRecords: [WeightRecord] = []
-    @Relationship(deleteRule: .cascade) var calorieSavingsRecords: [CalorieSavingsRecord] = []
+    @Relationship(deleteRule: .cascade) var mealRecords: [MealRecord]?
+    @Relationship(deleteRule: .cascade) var weightRecords: [WeightRecord]?
+    @Relationship(deleteRule: .cascade) var calorieSavingsRecords: [CalorieSavingsRecord]?
     
     init(displayName: String? = nil,
          weight: Double? = nil,

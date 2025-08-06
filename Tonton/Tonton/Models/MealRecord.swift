@@ -19,9 +19,9 @@ class MealRecord {
     var fat: Double = 0.0
     var carbs: Double = 0.0
     var mealTimeType: MealTimeType = MealTimeType.snack
-    var consumedAt: Date
-    var createdAt: Date
-    var updatedAt: Date
+    var consumedAt: Date = Date()
+    var createdAt: Date = Date()
+    var updatedAt: Date = Date()
     
     // Relationships
     @Relationship(inverse: \UserProfile.mealRecords) var userProfile: UserProfile?

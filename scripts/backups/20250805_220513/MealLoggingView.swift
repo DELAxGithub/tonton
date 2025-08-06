@@ -12,7 +12,6 @@ import SwiftData
 struct MealLoggingView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var mealRecords: [MealRecord]
-    @State private var showingCamera = false
     
     var body: some View {
         NavigationStack {
@@ -28,18 +27,6 @@ struct MealLoggingView: View {
             .padding(.horizontal)
             .navigationTitle("食事記録")
             .navigationBarTitleDisplayMode(.large)
-            .sheet(isPresented: $showingCamera) {
-                Text("カメラ機能")
-                    .font(.title)
-                    .padding()
-                    .toolbar {
-                        ToolbarItem(placement: .navigationBarLeading) {
-                            Button("キャンセル") {
-                                showingCamera = false
-                            }
-                        }
-                    }
-            }
         }
     }
     
@@ -51,9 +38,26 @@ struct MealLoggingView: View {
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
             
-            TonTonPrimaryButton("写真を撮る") {
-                showingCamera = true
+            Button(action: {
+                // Open camera for meal photo
+            }) {
+                VStack(spacing: 12) {
+                    Image(systemName: "camera.fill")
+                        .font(.system(size: 40))
+                        .foregroundColor(.white)
+                    
+                    Text("写真を撮る")
+                        .font(.headline)
+                        .foregroundColor(.white)
+                }
+                .frame(maxWidth: .infinity)
+                .frame(height: 120)
+                .background(
+                    RoundedRectangle(cornerRadius: 16)
+                        .fill(Color.green)
+                )
             }
+            .buttonStyle(PlainButtonStyle())
         }
         .padding(.top)
     }
@@ -131,10 +135,10 @@ struct MealRecordRowView: View {
                     .font(.headline)
                     .fontWeight(.bold)
                 
-                HStack(spacing: 8) {
-                    TonTonText.protein(meal.protein)
-                    TonTonText.fat(meal.fat)
-                    TonTonText.carbs(meal.carbs)
+                HStack(spacing: 4) {
+                    Text("P:\(Int(meal.protein))")
+                    Text("F:\(Int(meal.fat))")
+                    Text("C:\(Int(meal.carbs))")
                 }
                 .font(.caption2)
                 .foregroundColor(.secondary)

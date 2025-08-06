@@ -1,0 +1,72 @@
+=== 空のアクションを持つボタン ===
+            }
+            
+            // Edit profile button
+            Button(action: {
+                showingProfileEdit = true
+            }) {
+--
+                Spacer()
+                
+                Button("編集") {
+                    // Navigate to goals editing
+                }
+                .font(.subheadline)
+--
+        
+        // Logout button
+        TonTonCard {
+            Button(action: {
+                // TODO: Handle logout
+            }) {
+                Text("ログアウト")
+--
+                Spacer()
+                
+                Button("すべて見る") {
+                    // Navigate to all meals
+                }
+                .font(.subheadline)
+            Spacer()
+            
+            // Profile image or icon
+            Button(action: {
+                // Navigate to profile
+            }) {
+                Image(systemName: "person.crop.circle.fill")
+// MARK: - ボタンコンポーネント
+
+/// 標準プライマリボタン
+struct TonTonPrimaryButton: View {
+    let title: String
+    let action: () -> Void
+--
+--
+}
+
+/// 標準セカンダリボタン
+struct TonTonSecondaryButton: View {
+    let title: String
+    let action: () -> Void
+--
+--
+}
+
+/// アイコン付きアクションボタン
+struct TonTonIconButton: View {
+    let title: String
+    let icon: String
+--
+                    .font(.title3)
+--
+
+// MARK: - プレビュー
+
+#Preview("Buttons") {
+    VStack(spacing: 20) {
+                    Spacer()
+                    
+                    Button("削除") {
+                        // Implement data deletion
+                    }
+                    .foregroundColor(.red)

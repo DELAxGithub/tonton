@@ -1,0 +1,11 @@
+=== Sheet使用状況 ===
+Tonton/Tonton/Views/ProfileView.swift: 3 sheets
+Tonton/Tonton/Views/UnifiedSettingsView.swift: 3 sheets
+=== State変数の数 ===
+Tonton/Tonton/Views/AISettingsView.swift: 6 @State variables
+Tonton/Tonton/Views/ProfileEditView.swift: 11 @State variables
+Tonton/Tonton/Views/Components/SettingsComponents.swift: 9 @State variables
+Tonton/Tonton/Views/UnifiedSettingsView.swift: 10 @State variables
+Tonton/Tonton/Views/CloudKitSettingsView.swift: 6 @State variables
+Tonton/Tonton/Views/OnboardingView.swift: 9 @State variables
+Tonton/Tonton/Views/BugReportView.swift: 13 @State variables

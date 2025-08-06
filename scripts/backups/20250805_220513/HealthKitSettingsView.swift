@@ -73,7 +73,7 @@ struct HealthKitSettingsView: View {
                 Text("体重とカロリーデータを同期するには、HealthKitへのアクセス許可が必要です。")
             }
             .alert("同期エラー", isPresented: $showingErrorAlert) {
-                Button("了解") { }
+                Button("OK") { }
             } message: {
                 Text(lastSyncError ?? "不明なエラーが発生しました")
             }

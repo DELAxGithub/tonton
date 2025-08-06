@@ -96,7 +96,7 @@ struct CalorieSavingsChart: View {
                 
                 if let latest = filteredRecords.last {
                     HStack {
-                        Text("\(String(format: "%.0f", latest.dailyBalance)) kcal")
+                        Text("\(String(format: "%.0f", latest.dailyBalance))kcal")
                             .font(.title2)
                             .fontWeight(.semibold)
                             .foregroundColor(latest.dailyBalance >= 0 ? .green : .red)
@@ -123,7 +123,7 @@ struct CalorieSavingsChart: View {
                 .foregroundColor(.secondary)
             
             if !filteredRecords.isEmpty {
-                Text("合計: \(String(format: "%.0f", totalSavings)) kcal")
+                Text("合計: \(String(format: "%.0f", totalSavings))kcal")
                     .font(.caption)
                     .foregroundColor(totalSavings >= 0 ? .green : .red)
             }
@@ -174,7 +174,7 @@ struct CalorieSavingsChart: View {
                     .foregroundStyle(.blue)
                     .lineStyle(StrokeStyle(lineWidth: 2, dash: [5, 5]))
                     .annotation(position: .trailing, alignment: .leading) {
-                        Text("平均: \(String(format: "%.0f", averageSavings)) kcal")
+                        Text("平均: \(String(format: "%.0f", averageSavings))kcal")
                             .font(.caption)
                             .foregroundColor(.blue)
                             .padding(.horizontal, 8)
@@ -221,14 +221,14 @@ struct CalorieSavingsChart: View {
         ], spacing: 16) {
             StatCard(
                 title: "総貯金",
-                value: "\(String(format: "%.0f", totalSavings)) kcal",
+                value: "\(String(format: "%.0f", totalSavings))kcal",
                 color: totalSavings >= 0 ? .green : .red,
                 icon: "plus.circle.fill"
             )
             
             StatCard(
                 title: "1日平均",
-                value: "\(String(format: "%.0f", averageSavings)) kcal",
+                value: "\(String(format: "%.0f", averageSavings))kcal",
                 color: averageSavings >= 0 ? .green : .red,
                 icon: "chart.line.uptrend.xyaxis"
             )

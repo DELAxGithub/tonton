@@ -96,7 +96,7 @@ struct WeightProgressChart: View {
                 
                 if let latest = filteredRecords.last {
                     HStack {
-                        Text("\(String(format: "%.1f", latest.weight)) kg")
+                        Text("\(String(format: "%.1f", latest.weight))kg")
                             .font(.title2)
                             .fontWeight(.semibold)
                             .foregroundColor(.blue)
@@ -108,7 +108,7 @@ struct WeightProgressChart: View {
                             HStack(spacing: 4) {
                                 Image(systemName: change >= 0 ? "arrow.up" : "arrow.down")
                                     .font(.caption)
-                                Text("\(change >= 0 ? "+" : "")\(String(format: "%.1f", change)) kg")
+                                Text("\(change >= 0 ? "+" : "")\(String(format: "%.1f", change))kg")
                                     .font(.caption)
                             }
                             .foregroundColor(change >= 0 ? .red : .green)
@@ -185,7 +185,7 @@ struct WeightProgressChart: View {
                     .foregroundStyle(.green)
                     .lineStyle(StrokeStyle(lineWidth: 2, dash: [5, 5]))
                     .annotation(position: .trailing, alignment: .leading) {
-                        Text("目標: \(String(format: "%.1f", target)) kg")
+                        Text("目標: \(String(format: "%.1f", target))kg")
                             .font(.caption)
                             .foregroundColor(.green)
                             .padding(.horizontal, 8)
@@ -228,7 +228,7 @@ struct WeightProgressChart: View {
                 AxisGridLine()
                 AxisValueLabel {
                     if let weight = value.as(Double.self) {
-                        Text("\(String(format: "%.0f", weight)) kg")
+                        Text("\(String(format: "%.0f", weight))kg")
                             .font(.caption)
                     }
                 }

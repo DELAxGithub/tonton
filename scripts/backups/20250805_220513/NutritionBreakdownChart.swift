@@ -147,7 +147,7 @@ struct NutritionBreakdownChart: View {
                     .fontWeight(.medium)
                     .foregroundColor(.secondary)
                 
-                Text("\(String(format: "%.0f", nutritionSummary.totalCalories)) kcal")
+                Text("\(String(format: "%.0f", nutritionSummary.totalCalories))kcal")
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
@@ -276,7 +276,7 @@ struct NutritionRow: View {
                     .font(.subheadline)
                     .fontWeight(.medium)
                 
-                Text("\(String(format: "%.1f", data.value)) g")
+                Text("\(String(format: "%.1f", data.value))g")
                     .font(.caption)
                     .foregroundColor(.secondary)
             }

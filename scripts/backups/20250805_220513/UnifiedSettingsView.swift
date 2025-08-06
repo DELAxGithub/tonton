@@ -97,7 +97,7 @@ struct UnifiedSettingsView: View {
                 CloudKitSettingsView()
             }
             .alert("同期エラー", isPresented: $showingSyncError) {
-                Button("了解") { }
+                Button("OK") { }
             } message: {
                 Text(syncError ?? "不明なエラーが発生しました")
             }

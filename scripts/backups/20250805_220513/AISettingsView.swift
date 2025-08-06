@@ -70,7 +70,7 @@ struct AISettingsView: View {
                 )
             }
             .alert("接続テスト結果", isPresented: $showingConnectionTest) {
-                Button("了解") { }
+                Button("OK") { }
             } message: {
                 Text(testResultsMessage)
             }

@@ -13,8 +13,10 @@ struct ProfileView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var userProfiles: [UserProfile]
     @State private var showingBugReport = false
+    @State private var showingAISettings = false
+    @State private var showingHealthKitSettings = false
+    @State private var showingCloudKitSettings = false
     @State private var showingUnifiedSettings = false
-    @State private var showingProfileEdit = false
     
     private var currentUserProfile: UserProfile? {
         userProfiles.first
@@ -49,11 +51,17 @@ struct ProfileView: View {
                     mealLoggingContext: nil
                 )
             }
+            .sheet(isPresented: $showingAISettings) {
+                AISettingsView()
+            }
+            .sheet(isPresented: $showingHealthKitSettings) {
+                HealthKitSettingsView()
+            }
+            .sheet(isPresented: $showingCloudKitSettings) {
+                CloudKitSettingsView()
+            }
             .sheet(isPresented: $showingUnifiedSettings) {
                 UnifiedSettingsView()
-            }
-            .sheet(isPresented: $showingProfileEdit) {
-                ProfileEditView()
             }
         }
     }
@@ -74,7 +82,7 @@ struct ProfileView: View {
                         .fontWeight(.bold)
                     
                     if let weight = profile.weight {
-                        Text("現在の体重: \(String(format: "%.1f", weight)) kg")
+                        Text("現在の体重: \(String(format: "%.1f", weight))kg")
                             .font(.subheadline)
                             .foregroundColor(.secondary)
                     }
@@ -89,7 +97,7 @@ struct ProfileView: View {
             
             // Edit profile button
             Button(action: {
-                showingProfileEdit = true
+                // Navigate to edit profile
             }) {
                 Text("プロフィールを編集")
                     .font(.subheadline)
@@ -114,27 +122,43 @@ struct ProfileView: View {
                 Spacer()
             }
             
-            if let profile = currentUserProfile {
-                let stats = [
-                    (title: "現在の体重", 
-                     value: profile.weight != nil ? String(format: "%.1f", profile.weight!) : "--", 
-                     unit: "kg", 
-                     color: Color.blue),
-                    (title: "目標体重", 
-                     value: profile.targetWeight != nil ? String(format: "%.1f", profile.targetWeight!) : "--", 
-                     unit: "kg", 
-                     color: Color.green),
-                    (title: "基礎代謝", 
-                     value: profile.calculateBMR() != nil ? String(format: "%.0f", profile.calculateBMR()!) : "--", 
-                     unit: "kcal", 
-                     color: Color.orange),
-                    (title: "目標期間", 
-                     value: profile.targetDays != nil ? "\(profile.targetDays!)" : "--", 
-                     unit: "日", 
-                     color: Color.purple)
-                ]
-                
-                TonTonStatsSummary(stats: stats)
+            LazyVGrid(columns: [
+                GridItem(.flexible()),
+                GridItem(.flexible())
+            ], spacing: 16) {
+                if let profile = currentUserProfile {
+                    HealthStatCard(
+                        title: "現在の体重",
+                        value: profile.weight != nil ? String(format: "%.1f", profile.weight!) : "--",
+                        unit: "kg",
+                        color: .blue
+                    )
+                    
+                    HealthStatCard(
+                        title: "目標体重",
+                        value: profile.targetWeight != nil ? String(format: "%.1f", profile.targetWeight!) : "--",
+                        unit: "kg",
+                        color: .green
+                    )
+                    
+                    if let bmr = profile.calculateBMR() {
+                        HealthStatCard(
+                            title: "基礎代謝",
+                            value: String(format: "%.0f", bmr),
+                            unit: "kcal",
+                            color: .orange
+                        )
+                    }
+                    
+                    if let targetDays = profile.targetDays {
+                        HealthStatCard(
+                            title: "目標期間",
+                            value: "\(targetDays)",
+                            unit: "日",
+                            color: .purple
+                        )
+                    }
+                }
             }
         }
     }
@@ -165,7 +189,7 @@ struct ProfileView: View {
                 GoalRowView(
                     icon: "scalemass",
                     title: "目標体重",
-                    value: currentUserProfile?.targetWeight != nil ? "\(String(format: "%.1f", currentUserProfile!.targetWeight!)) kg" : "未設定",
+                    value: currentUserProfile?.targetWeight != nil ? "\(String(format: "%.1f", currentUserProfile!.targetWeight!))kg" : "未設定",
                     color: .blue
                 )
                 
@@ -181,48 +205,108 @@ struct ProfileView: View {
     
     @ViewBuilder
     private var settingsSection: some View {
-        TonTonSettingsGroup("設定") {
-            TonTonSettingsRow(
-                icon: "gear.badge",
-                title: "統合設定",
-                color: .indigo
-            ) {
-                showingUnifiedSettings = true
+        VStack(spacing: 12) {
+            HStack {
+                Text("設定")
+                    .font(.headline)
+                Spacer()
             }
             
-            Divider()
-                .padding(.leading, 44)
-            
-            TonTonSettingsRow(
-                icon: "questionmark.circle",
-                title: "バグレポート",
-                color: .orange
-            ) {
-                showingBugReport = true
+            VStack(spacing: 0) {
+                SettingsRowView(
+                    icon: "gear.badge",
+                    title: "統合設定",
+                    color: .indigo
+                ) {
+                    showingUnifiedSettings = true
+                }
+                
+                Divider()
+                    .padding(.leading, 44)
+                
+                SettingsRowView(
+                    icon: "brain",
+                    title: "AI設定",
+                    color: .purple
+                ) {
+                    showingAISettings = true
+                }
+                
+                Divider()
+                    .padding(.leading, 44)
+                
+                SettingsRowView(
+                    icon: "bell",
+                    title: "通知設定",
+                    color: .orange
+                ) {
+                    // Navigate to notification settings
+                }
+                
+                Divider()
+                    .padding(.leading, 44)
+                
+                SettingsRowView(
+                    icon: "heart",
+                    title: "HealthKit連携",
+                    color: .red
+                ) {
+                    showingHealthKitSettings = true
+                }
+                
+                Divider()
+                    .padding(.leading, 44)
+                
+                SettingsRowView(
+                    icon: "icloud",
+                    title: "データ同期",
+                    color: .blue
+                ) {
+                    showingCloudKitSettings = true
+                }
+                
+                Divider()
+                    .padding(.leading, 44)
+                
+                SettingsRowView(
+                    icon: "questionmark.circle",
+                    title: "ヘルプ・サポート",
+                    color: .gray
+                ) {
+                    // Navigate to help
+                }
+                
+                Divider()
+                    .padding(.leading, 44)
+                
+                SettingsRowView(
+                    icon: "info.circle",
+                    title: "アプリについて",
+                    color: .gray
+                ) {
+                    // Navigate to about
+                }
             }
+            .background(
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(Color(.systemBackground))
+                    .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: 2)
+            )
             
-            Divider()
-                .padding(.leading, 44)
-            
-            TonTonSettingsRow(
-                icon: "info.circle",
-                title: "アプリについて",
-                color: .gray
-            ) {
-                // TODO: Navigate to about
-            }
-        }
-        
-        // Logout button
-        TonTonCard {
+            // Logout button
             Button(action: {
-                // TODO: Handle logout
+                // Handle logout
             }) {
                 Text("ログアウト")
                     .font(.headline)
                     .foregroundColor(.red)
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, 8)
+                    .padding()
+                    .background(
+                        RoundedRectangle(cornerRadius: 12)
+                            .fill(Color(.systemBackground))
+                            .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: 2)
+                    )
             }
             .buttonStyle(PlainButtonStyle())
         }

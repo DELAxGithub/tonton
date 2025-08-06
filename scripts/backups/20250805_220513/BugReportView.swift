@@ -169,14 +169,14 @@ struct TonTonBugReportView: View {
             }
         }
         .alert("送信完了", isPresented: $showSuccessAlert) {
-            Button("了解") {
+            Button("OK") {
                 dismiss()
             }
         } message: {
             Text("バグレポートを送信しました。ご協力ありがとうございます。")
         }
         .alert("送信エラー", isPresented: $showErrorAlert) {
-            Button("了解") { }
+            Button("OK") { }
         } message: {
             Text(errorMessage)
         }

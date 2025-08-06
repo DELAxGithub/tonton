@@ -1,0 +1,113 @@
+=== 類似の設定項目 ===
+Tonton/Tonton/Models/UserProfile.swift:    // HealthKit Integration
+Tonton/Tonton/Models/WeightRecord.swift://  Model representing a weight measurement record from HealthKit
+Tonton/Tonton/Models/BugReport.swift:    let healthContext: HealthKitContext?
+Tonton/Tonton/Models/BugReport.swift:        healthContext: HealthKitContext? = nil,
+Tonton/Tonton/Models/BugReport.swift:struct HealthKitContext: Codable {
+Tonton/Tonton/Views/ProfileView.swift:                title: "統合設定",
+Tonton/Tonton/Views/ProfileView.swift:    private func createHealthContext() -> HealthKitContext? {
+Tonton/Tonton/Views/ProfileView.swift:        return HealthKitContext(
+Tonton/Tonton/Views/AISettingsView.swift:            .navigationTitle("AI設定")
+Tonton/Tonton/Views/HealthKitSettingsView.swift://  HealthKitSettingsView.swift
+Tonton/Tonton/Views/HealthKitSettingsView.swift://  HealthKit integration settings and synchronization management
+Tonton/Tonton/Views/HealthKitSettingsView.swift:import HealthKit
+Tonton/Tonton/Views/HealthKitSettingsView.swift:struct HealthKitSettingsView: View {
+Tonton/Tonton/Views/HealthKitSettingsView.swift:    @StateObject private var healthKitService = HealthKitService.shared
+Tonton/Tonton/Views/HealthKitSettingsView.swift:                    // HealthKit status section
+Tonton/Tonton/Views/HealthKitSettingsView.swift:            .navigationTitle("HealthKit連携")
+Tonton/Tonton/Views/HealthKitSettingsView.swift:            .alert("HealthKit許可が必要", isPresented: $showingPermissionAlert) {
+Tonton/Tonton/Views/HealthKitSettingsView.swift:                    openHealthKitSettings()
+Tonton/Tonton/Views/HealthKitSettingsView.swift:                Text("体重とカロリーデータを同期するには、HealthKitへのアクセス許可が必要です。")
+Tonton/Tonton/Views/HealthKitSettingsView.swift:                Text("HealthKit状態")
+Tonton/Tonton/Views/HealthKitSettingsView.swift:            HealthKitStatusCard(
+Tonton/Tonton/Views/HealthKitSettingsView.swift:                        requestHealthKitPermission()
+Tonton/Tonton/Views/HealthKitSettingsView.swift:                        permissions: healthKitService.getHealthKitPermissions()
+Tonton/Tonton/Views/HealthKitSettingsView.swift:                    description: "HealthKitと体重データを双方向同期",
+Tonton/Tonton/Views/HealthKitSettingsView.swift:                    description: "消費・摂取カロリーをHealthKitと同期",
+Tonton/Tonton/Views/HealthKitSettingsView.swift:    private func requestHealthKitPermission() {
+Tonton/Tonton/Views/HealthKitSettingsView.swift:    private func openHealthKitSettings() {
+Tonton/Tonton/Views/HealthKitSettingsView.swift:struct HealthKitStatusCard: View {
+Tonton/Tonton/Views/HealthKitSettingsView.swift:                    Text("HealthKit")
+Tonton/Tonton/Views/HealthKitSettingsView.swift:                Text("HealthKit連携を有効化")
+Tonton/Tonton/Views/HealthKitSettingsView.swift:                Text("体重とカロリーデータを自動で同期するには、HealthKitへのアクセス許可が必要です。")
+Tonton/Tonton/Views/HealthKitSettingsView.swift:    HealthKitSettingsView()
+Tonton/Tonton/Views/HomeView.swift:        // This would typically fetch from HealthKit and update summaries
+Tonton/Tonton/Views/HomeView.swift:    private func createHealthContext() -> HealthKitContext? {
+Tonton/Tonton/Views/HomeView.swift:        return HealthKitContext(
+Tonton/Tonton/Views/Components/StandardComponents.swift:            TonTonIconButton("AI設定", icon: "brain", color: .purple) { }
+Tonton/Tonton/Views/Components/SettingsComponents.swift:    let healthKitService: HealthKitService
+Tonton/Tonton/Views/Components/SettingsComponents.swift:                    title: "HealthKit同期",
+Tonton/Tonton/Views/Components/SettingsComponents.swift:                    syncHealthKit()
+Tonton/Tonton/Views/Components/SettingsComponents.swift:                    title: "iCloud同期",
+Tonton/Tonton/Views/Components/SettingsComponents.swift:    private func syncHealthKit() {
+Tonton/Tonton/Views/Components/SettingsComponents.swift:                print("HealthKit sync error: \(error)")
+Tonton/Tonton/Views/Components/SettingsComponents.swift:                    service: "HealthKit",
+Tonton/Tonton/Views/Components/SettingsComponents.swift:                Text("AI設定")
+Tonton/Tonton/Views/UnifiedSettingsView.swift://  Unified settings interface combining AI, HealthKit, and CloudKit configurations
+Tonton/Tonton/Views/UnifiedSettingsView.swift:    @StateObject private var healthKitService = HealthKitService.shared
+Tonton/Tonton/Views/UnifiedSettingsView.swift:    @State private var showingHealthKitSettings = false
+Tonton/Tonton/Views/UnifiedSettingsView.swift:            .navigationTitle("統合設定")
+Tonton/Tonton/Views/UnifiedSettingsView.swift:            .sheet(isPresented: $showingHealthKitSettings) {
+Tonton/Tonton/Views/UnifiedSettingsView.swift:                HealthKitSettingsView()
+Tonton/Tonton/Views/UnifiedSettingsView.swift:                healthKitStatus: getHealthKitStatus(),
+Tonton/Tonton/Views/UnifiedSettingsView.swift:                onHealthKitSettings: { showingHealthKitSettings = true },
+Tonton/Tonton/Views/UnifiedSettingsView.swift:            // HealthKit
+Tonton/Tonton/Views/UnifiedSettingsView.swift:                title: "HealthKit",
+Tonton/Tonton/Views/UnifiedSettingsView.swift:                status: getHealthKitStatus(),
+Tonton/Tonton/Views/UnifiedSettingsView.swift:                onConfigure: { showingHealthKitSettings = true }
+Tonton/Tonton/Views/UnifiedSettingsView.swift:                title: "iCloud同期",
+Tonton/Tonton/Views/UnifiedSettingsView.swift:    private func getHealthKitStatus() -> String {
+Tonton/Tonton/Views/UnifiedSettingsView.swift:                    title: "HealthKit",
+Tonton/Tonton/Views/UnifiedSettingsView.swift:    let onHealthKitSettings: () -> Void
+Tonton/Tonton/Views/UnifiedSettingsView.swift:                    title: "AI設定",
+Tonton/Tonton/Views/UnifiedSettingsView.swift:                    title: "HealthKit",
+Tonton/Tonton/Views/UnifiedSettingsView.swift:                    action: onHealthKitSettings
+Tonton/Tonton/Views/UnifiedSettingsView.swift:                    title: "iCloud同期",
+Tonton/Tonton/Views/UnifiedSettingsView.swift:    let healthKitService: HealthKitService
+Tonton/Tonton/Views/UnifiedSettingsView.swift:                    title: "AI → HealthKit",
+Tonton/Tonton/Views/UnifiedSettingsView.swift:                    title: "HealthKit → CloudKit",
+Tonton/Tonton/Views/CloudKitSettingsView.swift:                    description: "個人情報、目標設定、AI設定",
+Tonton/Tonton/Views/OnboardingView.swift:                FeatureRow(icon: "heart.fill", text: "HealthKit連携で自動同期")
+Tonton/Tonton/Views/OnboardingView.swift:                Text("HealthKit連携")
+Tonton/Tonton/Views/OnboardingView.swift:                HealthKitFeatureRow(icon: "scalemass.fill", text: "体重データの自動記録")
+Tonton/Tonton/Views/OnboardingView.swift:                HealthKitFeatureRow(icon: "figure.walk", text: "運動量の自動計算")
+Tonton/Tonton/Views/OnboardingView.swift:                HealthKitFeatureRow(icon: "chart.bar.fill", text: "詳細な健康データ分析")
+Tonton/Tonton/Views/OnboardingView.swift:            Toggle("HealthKit連携を有効にする", isOn: $healthKitEnabled)
+Tonton/Tonton/Views/OnboardingView.swift:struct HealthKitFeatureRow: View {
+Tonton/Tonton/Views/BugReportView.swift:    let healthContext: HealthKitContext?
+Tonton/Tonton/Views/BugReportView.swift:        healthContext: HealthKitContext? = nil,
+Tonton/Tonton/Views/BugReportView.swift:                            .help("HealthKit 権限、同期状況、体重記録など")
+Tonton/Tonton/Views/BugReportView.swift:                            LabeledContent("HealthKit権限", value: "\(healthContext.healthKitPermissions.count)個")
+Tonton/Tonton/Views/BugReportView.swift:            healthContext: HealthKitContext(
+Tonton/Tonton/Services/DataService.swift:        // In production, this would integrate with HealthKit
+Tonton/Tonton/Services/HealthKitService.swift://  HealthKitService.swift
+Tonton/Tonton/Services/HealthKitService.swift://  Native iOS HealthKit integration for weight and calorie data synchronization
+Tonton/Tonton/Services/HealthKitService.swift:import HealthKit
+Tonton/Tonton/Services/HealthKitService.swift:class HealthKitService: ObservableObject {
+Tonton/Tonton/Services/HealthKitService.swift:    static let shared = HealthKitService()
+Tonton/Tonton/Services/HealthKitService.swift:    // HealthKit data types we need
+Tonton/Tonton/Services/HealthKitService.swift:            throw HealthKitError.notAvailable
+Tonton/Tonton/Services/HealthKitService.swift:            throw HealthKitError.notAuthorized
+Tonton/Tonton/Services/HealthKitService.swift:        // Get latest weight from HealthKit
+Tonton/Tonton/Services/HealthKitService.swift:            throw HealthKitError.noUserProfile
+Tonton/Tonton/Services/HealthKitService.swift:        // Sync TonTon weight records to HealthKit
+Tonton/Tonton/Services/HealthKitService.swift:        try await syncTonTonWeightToHealthKit(modelContext: modelContext)
+Tonton/Tonton/Services/HealthKitService.swift:    private func syncTonTonWeightToHealthKit(modelContext: ModelContext) async throws {
+Tonton/Tonton/Services/HealthKitService.swift:        // Get recent weight records from TonTon that aren't from HealthKit
+Tonton/Tonton/Services/HealthKitService.swift:            try await saveWeightToHealthKit(weight: record.weight, date: record.date)
+Tonton/Tonton/Services/HealthKitService.swift:    private func saveWeightToHealthKit(weight: Double, date: Date) async throws {
+Tonton/Tonton/Services/HealthKitService.swift:            throw HealthKitError.notAuthorized
+Tonton/Tonton/Services/HealthKitService.swift:        // Get today's calorie data from HealthKit
+Tonton/Tonton/Services/HealthKitService.swift:            throw HealthKitError.noUserProfile
+Tonton/Tonton/Services/HealthKitService.swift:        // Sync meal calories to HealthKit
+Tonton/Tonton/Services/HealthKitService.swift:        try await syncMealCaloriesToHealthKit(modelContext: modelContext)
+Tonton/Tonton/Services/HealthKitService.swift:    private func syncMealCaloriesToHealthKit(modelContext: ModelContext) async throws {
+Tonton/Tonton/Services/HealthKitService.swift:            try await saveMealCaloriesToHealthKit(meal: meal)
+Tonton/Tonton/Services/HealthKitService.swift:    private func saveMealCaloriesToHealthKit(meal: MealRecord) async throws {
+Tonton/Tonton/Services/HealthKitService.swift:            throw HealthKitError.notAuthorized
+Tonton/Tonton/Services/HealthKitService.swift:    func getHealthKitPermissions() -> [String] {
+Tonton/Tonton/Services/HealthKitService.swift:enum HealthKitError: Error, LocalizedError {
+Tonton/Tonton/Services/HealthKitService.swift:            return "HealthKitは利用できません"
+Tonton/Tonton/Services/HealthKitService.swift:            return "HealthKitへのアクセスが許可されていません"
+Tonton/Tonton/Services/HealthKitService.swift:// MARK: - HealthKit Context for Bug Reporting
+Tonton/Tonton/Services/HealthKitService.swift:// Note: HealthKitContext is defined in Models/BugReport.swift to avoid duplication

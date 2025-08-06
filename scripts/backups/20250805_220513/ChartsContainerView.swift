@@ -264,7 +264,7 @@ struct OverviewStatsCard: View {
                     
                     OverviewStatItem(
                         title: "体重変化",
-                        value: "\(change >= 0 ? "+" : "")\(String(format: "%.1f", change)) kg",
+                        value: "\(change >= 0 ? "+" : "")\(String(format: "%.1f", change))kg",
                         subtitle: "開始時から",
                         color: change <= 0 ? .green : .red,
                         icon: change <= 0 ? "arrow.down.circle" : "arrow.up.circle"
@@ -275,7 +275,7 @@ struct OverviewStatsCard: View {
                 let totalSavings = data.savings.map { $0.dailyBalance }.reduce(0, +)
                 OverviewStatItem(
                     title: "総カロリー貯金",
-                    value: "\(String(format: "%.0f", totalSavings)) kcal",
+                    value: "\(String(format: "%.0f", totalSavings))kcal",
                     subtitle: "\(data.savings.count)日間",
                     color: totalSavings >= 0 ? .green : .red,
                     icon: "chart.bar.fill"
@@ -294,7 +294,7 @@ struct OverviewStatsCard: View {
                 let avgCalories = data.meals.isEmpty ? 0 : data.meals.map { $0.calories }.reduce(0, +) / Double(data.meals.count)
                 OverviewStatItem(
                     title: "1食平均",
-                    value: "\(String(format: "%.0f", avgCalories)) kcal",
+                    value: "\(String(format: "%.0f", avgCalories))kcal",
                     subtitle: "カロリー",
                     color: .orange,
                     icon: "flame"

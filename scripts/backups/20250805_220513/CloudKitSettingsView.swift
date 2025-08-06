@@ -74,12 +74,12 @@ struct CloudKitSettingsView: View {
                 Text("iCloudに保存されているすべてのTonTonデータが削除されます。この操作は取り消せません。")
             }
             .alert("許可が必要", isPresented: $showingPermissionAlert) {
-                Button("了解") { }
+                Button("OK") { }
             } message: {
                 Text("CloudKitの機能を使用するには、アプリの権限が必要です。")
             }
             .alert("同期エラー", isPresented: $showingErrorAlert) {
-                Button("了解") { }
+                Button("OK") { }
             } message: {
                 Text(lastSyncError ?? "不明なエラーが発生しました")
             }

@@ -13,7 +13,11 @@ class GeminiService: AIProviderServiceProtocol {
     let provider: AIProvider = .gemini
     
     private let baseURL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-vision:generateContent"
-    private let keychainService = KeychainService.shared
+    private let keychainService: KeychainService
+    
+    init(keychainService: KeychainService = KeychainService()) {
+        self.keychainService = keychainService
+    }
     
     var isConfigured: Bool {
         return keychainService.hasAPIKey(for: provider)

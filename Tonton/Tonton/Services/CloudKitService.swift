@@ -12,17 +12,18 @@ import SwiftData
 
 @MainActor
 class CloudKitService: ObservableObject {
-    static let shared = CloudKitService()
-    
-    private let container = CKContainer.default()
-    private let publicDatabase: CKDatabase
-    private let privateDatabase: CKDatabase
+    // CloudKit components - only initialized when safe
+    private var container: CKContainer?
+    private var publicDatabase: CKDatabase?
+    private var privateDatabase: CKDatabase?
     
     @Published var isSignedIn = false
     @Published var userAccountStatus: String = "未確認"
     @Published var lastSyncDate: Date?
     @Published var syncStatus: String = "未同期"
     @Published var isSyncing = false
+    @Published var isInitialized = false
+    @Published var initializationError: String?
     
     // Record types
     private let userProfileRecordType = "UserProfile"
@@ -30,15 +31,103 @@ class CloudKitService: ObservableObject {
     private let weightRecordType = "WeightRecord"
     private let calorieSavingsRecordType = "CalorieSavingsRecord"
     
-    private init() {
-        self.publicDatabase = container.publicCloudDatabase
-        self.privateDatabase = container.privateCloudDatabase
+    init() {
+        // Safe initialization - no CloudKit API calls here
+        updateSyncStatus("初期化中...")
+    }
+    
+    // Safe initialization method - call this after UI is ready
+    func initialize() async {
+        guard !isInitialized else { return }
+        
+        do {
+            // Check iCloud availability first
+            guard FileManager.default.ubiquityIdentityToken != nil else {
+                throw CloudKitError.notSignedIn
+            }
+            
+            // Initialize CloudKit components with enhanced error handling
+            try await initializeCloudKitComponents()
+            
+            // Check account status after initialization
+            await checkAccountStatus()
+            
+        } catch {
+            await handleInitializationError(error)
+        }
+    }
+    
+    @MainActor
+    private func initializeCloudKitComponents() async throws {
+        do {
+            // Attempt CloudKit initialization with timeout protection
+            let result: Result<(CKContainer, CKDatabase, CKDatabase), Error> = await withCheckedContinuation { continuation in
+                Task {
+                    do {
+                        let container = CKContainer.default()
+                        let publicDB = container.publicCloudDatabase
+                        let privateDB = container.privateCloudDatabase
+                        continuation.resume(returning: .success((container, publicDB, privateDB)))
+                    } catch {
+                        continuation.resume(returning: .failure(error))
+                    }
+                }
+            }
+            
+            switch result {
+            case .success(let (container, publicDB, privateDB)):
+                self.container = container
+                self.publicDatabase = publicDB
+                self.privateDatabase = privateDB
+                self.isInitialized = true
+                self.initializationError = nil
+                self.updateSyncStatus("初期化完了")
+                
+            case .failure(let error):
+                throw error
+            }
+            
+        } catch {
+            throw CloudKitError.syncFailed
+        }
+    }
+    
+    @MainActor
+    private func handleInitializationError(_ error: Error) {
+        self.initializationError = error.localizedDescription
+        self.updateSyncStatus("初期化失敗: \(error.localizedDescription)")
+        self.isInitialized = false
+        
+        // Log detailed error for debugging
+        print("[CloudKitService] Initialization failed: \(error)")
+        
+        // Provide fallback behavior
+        if let cloudKitError = error as? CloudKitError {
+            switch cloudKitError {
+            case .notSignedIn:
+                self.updateSyncStatus("iCloudにサインインが必要です")
+            default:
+                self.updateSyncStatus("CloudKit設定を確認してください")
+            }
+        }
+    }
+    
+    // Safe access to CloudKit components
+    private func ensureInitialized() throws {
+        guard isInitialized, 
+              let container = container,
+              let publicDatabase = publicDatabase,
+              let privateDatabase = privateDatabase else {
+            throw CloudKitError.notInitialized
+        }
     }
     
     // MARK: - Authentication
     
     func checkAccountStatus() async {
         do {
+            try ensureInitialized()
+            guard let container = container else { return }
             let status = try await container.accountStatus()
             
             switch status {
@@ -71,12 +160,17 @@ class CloudKitService: ObservableObject {
     }
     
     func requestPermissions() async throws -> Bool {
+        try ensureInitialized()
+        guard let container = container else { 
+            throw CloudKitError.notInitialized 
+        }
         let status = try await container.requestApplicationPermission(.userDiscoverability)
         return status == .granted
     }
     
     // MARK: - Data Synchronization
     
+    @MainActor
     func syncAllData(with modelContext: ModelContext) async throws {
         guard isSignedIn else {
             throw CloudKitError.notSignedIn
@@ -120,6 +214,8 @@ class CloudKitService: ObservableObject {
         let record = CKRecord(recordType: userProfileRecordType)
         record["displayName"] = profile.displayName
         record["weight"] = profile.weight
+        record["height"] = profile.height
+        record["age"] = profile.age
         record["gender"] = profile.gender
         record["ageGroup"] = profile.ageGroup
         record["dietGoal"] = profile.dietGoal
@@ -133,20 +229,31 @@ class CloudKitService: ObservableObject {
         record["lastCaloriesSyncDate"] = profile.lastCaloriesSyncDate
         record["createdAt"] = profile.createdAt
         record["updatedAt"] = profile.updatedAt
+        record["lastModified"] = profile.lastModified
         
         // Store AI preferences as data
         if let preferencesData = profile.aiProviderPreferencesData {
             record["aiProviderPreferencesData"] = preferencesData
         }
         
+        try ensureInitialized()
+        guard let privateDatabase = privateDatabase else {
+            throw CloudKitError.notInitialized
+        }
         try await privateDatabase.save(record)
     }
     
     private func downloadUserProfile(modelContext: ModelContext) async throws {
         let query = CKQuery(recordType: userProfileRecordType, predicate: NSPredicate(value: true))
+        
+        try ensureInitialized()
+        guard let privateDatabase = privateDatabase else {
+            throw CloudKitError.notInitialized
+        }
         let records = try await privateDatabase.records(matching: query)
         
-        guard records.matchResults.first?.1 != nil else { return }
+        guard let firstResult = records.matchResults.first,
+              case .success(let record) = firstResult.1 else { return }
         
         let profileDescriptor = FetchDescriptor<UserProfile>()
         let profiles = try modelContext.fetch(profileDescriptor)
@@ -156,11 +263,34 @@ class CloudKitService: ObservableObject {
             modelContext.insert(profile)
         }
         
-        // Update profile with CloudKit data
-        // Note: CloudKit record.get method signature may need adjustment
-        // Profile sync would go here when CloudKit integration is fully implemented
-        profile.displayName = profile.displayName ?? "ユーザー"
-        // CloudKit sync implementation placeholder
+        // Update profile with CloudKit data - with safe type conversion
+        profile.displayName = record["displayName"] as? String
+        profile.weight = record["weight"] as? Double
+        profile.height = record["height"] as? Double
+        profile.age = record["age"] as? Int
+        profile.gender = record["gender"] as? String
+        profile.ageGroup = record["ageGroup"] as? String
+        profile.dietGoal = record["dietGoal"] as? String
+        profile.targetWeight = record["targetWeight"] as? Double
+        profile.targetDays = record["targetDays"] as? Int
+        
+        if let onboardingValue = record["onboardingCompleted"] as? Int {
+            profile.onboardingCompleted = onboardingValue == 1
+        }
+        
+        profile.selectedAIProvider = record["selectedAIProvider"] as? String ?? AIProvider.gemini.rawValue
+        profile.calorieGoal = record["calorieGoal"] as? Double
+        profile.lastWeightDate = record["lastWeightDate"] as? Date
+        profile.dailyCaloriesBurned = record["dailyCaloriesBurned"] as? Double
+        profile.lastCaloriesSyncDate = record["lastCaloriesSyncDate"] as? Date
+        profile.createdAt = record["createdAt"] as? Date ?? profile.createdAt
+        profile.updatedAt = record["updatedAt"] as? Date ?? Date()
+        profile.lastModified = record["lastModified"] as? Date ?? Date()
+        
+        // Restore AI preferences
+        if let preferencesData = record["aiProviderPreferencesData"] as? Data {
+            profile.aiProviderPreferencesData = preferencesData
+        }
         
         try modelContext.save()
     }
@@ -200,6 +330,10 @@ class CloudKitService: ObservableObject {
             //     record["imageAsset"] = CKAsset(fileURL: tempURL)
             // }
             
+            try ensureInitialized()
+            guard let privateDatabase = privateDatabase else {
+                throw CloudKitError.notInitialized
+            }
             try await privateDatabase.save(record)
         }
     }
@@ -209,6 +343,10 @@ class CloudKitService: ObservableObject {
         let predicate = NSPredicate(format: "date >= %@", thirtyDaysAgo as NSDate)
         let query = CKQuery(recordType: mealRecordType, predicate: predicate)
         
+        try ensureInitialized()
+        guard let privateDatabase = privateDatabase else {
+            throw CloudKitError.notInitialized
+        }
         let records = try await privateDatabase.records(matching: query)
         
         for result in records.matchResults {
@@ -285,6 +423,10 @@ class CloudKitService: ObservableObject {
             // Note: WeightRecord doesn't have source property, using default
             record["localID"] = weight.id.uuidString
             
+            try ensureInitialized()
+            guard let privateDatabase = privateDatabase else {
+                throw CloudKitError.notInitialized
+            }
             try await privateDatabase.save(record)
         }
     }
@@ -294,6 +436,10 @@ class CloudKitService: ObservableObject {
         let predicate = NSPredicate(format: "date >= %@", thirtyDaysAgo as NSDate)
         let query = CKQuery(recordType: weightRecordType, predicate: predicate)
         
+        try ensureInitialized()
+        guard let privateDatabase = privateDatabase else {
+            throw CloudKitError.notInitialized
+        }
         let records = try await privateDatabase.records(matching: query)
         
         for result in records.matchResults {
@@ -356,6 +502,10 @@ class CloudKitService: ObservableObject {
             record["caloriesBurned"] = saving.caloriesBurned
             record["localID"] = saving.id.uuidString
             
+            try ensureInitialized()
+            guard let privateDatabase = privateDatabase else {
+                throw CloudKitError.notInitialized
+            }
             try await privateDatabase.save(record)
         }
     }
@@ -365,6 +515,10 @@ class CloudKitService: ObservableObject {
         let predicate = NSPredicate(format: "date >= %@", thirtyDaysAgo as NSDate)
         let query = CKQuery(recordType: calorieSavingsRecordType, predicate: predicate)
         
+        try ensureInitialized()
+        guard let privateDatabase = privateDatabase else {
+            throw CloudKitError.notInitialized
+        }
         let records = try await privateDatabase.records(matching: query)
         
         for result in records.matchResults {
@@ -422,17 +576,26 @@ class CloudKitService: ObservableObject {
         notificationInfo.shouldSendContentAvailable = true
         subscription.notificationInfo = notificationInfo
         
+        try ensureInitialized()
+        guard let privateDatabase = privateDatabase else {
+            throw CloudKitError.notInitialized
+        }
         try await privateDatabase.save(subscription)
     }
     
     // MARK: - Utility Methods
     
+    @MainActor
     private func updateSyncStatus(_ status: String) {
         syncStatus = status
     }
     
     func getAccountInfo() async -> (userID: String?, email: String?) {
         do {
+            try ensureInitialized()
+            guard let container = container else {
+                return (userID: nil, email: nil)
+            }
             let userID = try await container.userRecordID()
             return (userID: userID.recordName, email: nil)
         } catch {
@@ -440,6 +603,7 @@ class CloudKitService: ObservableObject {
         }
     }
     
+    @MainActor
     func deleteAllCloudData() async throws {
         guard isSignedIn else {
             throw CloudKitError.notSignedIn
@@ -452,6 +616,11 @@ class CloudKitService: ObservableObject {
         
         for recordType in recordTypes {
             let query = CKQuery(recordType: recordType, predicate: NSPredicate(value: true))
+            
+            try ensureInitialized()
+            guard let privateDatabase = privateDatabase else {
+                throw CloudKitError.notInitialized
+            }
             let records = try await privateDatabase.records(matching: query)
             
             for result in records.matchResults {
@@ -472,20 +641,29 @@ class CloudKitService: ObservableObject {
 
 enum CloudKitError: Error, LocalizedError {
     case notSignedIn
+    case notInitialized
     case syncFailed
     case permissionDenied
     case networkError
+    case entitlementsError
+    case containerNotFound
     
     var errorDescription: String? {
         switch self {
         case .notSignedIn:
             return "iCloudにサインインしていません"
+        case .notInitialized:
+            return "CloudKitサービスが初期化されていません"
         case .syncFailed:
             return "データの同期に失敗しました"
         case .permissionDenied:
             return "CloudKitへのアクセスが拒否されました"
         case .networkError:
             return "ネットワークエラーが発生しました"
+        case .entitlementsError:
+            return "CloudKit entitlementsが設定されていません"
+        case .containerNotFound:
+            return "CloudKitコンテナが見つかりません"
         }
     }
 }

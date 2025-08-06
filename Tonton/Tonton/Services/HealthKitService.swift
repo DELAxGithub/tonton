@@ -12,14 +12,14 @@ import SwiftData
 
 @MainActor
 class HealthKitService: ObservableObject {
-    static let shared = HealthKitService()
-    
-    private let healthStore = HKHealthStore()
+    private var healthStore: HKHealthStore?
     
     @Published var isAuthorized = false
     @Published var authorizationStatus: String = "未確認"
     @Published var lastSyncDate: Date?
     @Published var syncStatus: String = "未同期"
+    @Published var isInitialized = false
+    @Published var initializationError: String?
     
     // HealthKit data types we need
     private let readTypes: Set<HKObjectType> = [
@@ -35,11 +35,60 @@ class HealthKitService: ObservableObject {
         HKObjectType.quantityType(forIdentifier: .dietaryEnergyConsumed)!
     ]
     
-    private init() {}
+    init() {
+        updateSyncStatus("初期化中...")
+    }
+    
+    // Safe initialization method - call after UI is ready
+    func initialize() async {
+        guard !isInitialized else { return }
+        
+        do {
+            try await initializeHealthKit()
+        } catch {
+            await handleInitializationError(error)
+        }
+    }
+    
+    @MainActor
+    private func initializeHealthKit() async throws {
+        guard HKHealthStore.isHealthDataAvailable() else {
+            throw HealthKitError.notAvailable
+        }
+        
+        self.healthStore = HKHealthStore()
+        self.isInitialized = true
+        self.initializationError = nil
+        self.updateSyncStatus("初期化完了")
+        
+        // Check authorization status
+        checkAuthorizationStatus()
+    }
+    
+    @MainActor
+    private func handleInitializationError(_ error: Error) {
+        self.initializationError = error.localizedDescription
+        self.updateSyncStatus("初期化失敗: \(error.localizedDescription)")
+        self.isInitialized = false
+        
+        print("[HealthKitService] Initialization failed: \(error)")
+    }
+    
+    // Safe access to HealthStore
+    private func ensureInitialized() throws {
+        guard isInitialized, let healthStore = healthStore else {
+            throw HealthKitError.notInitialized
+        }
+    }
     
     // MARK: - Authorization
     
     func requestAuthorization() async throws -> Bool {
+        try ensureInitialized()
+        guard let healthStore = healthStore else {
+            throw HealthKitError.notInitialized
+        }
+        
         guard HKHealthStore.isHealthDataAvailable() else {
             throw HealthKitError.notAvailable
         }
@@ -62,6 +111,12 @@ class HealthKitService: ObservableObject {
     }
     
     func checkAuthorizationStatus() {
+        guard let healthStore = healthStore else {
+            authorizationStatus = "未初期化"
+            isAuthorized = false
+            return
+        }
+        
         let bodyMassType = HKObjectType.quantityType(forIdentifier: .bodyMass)!
         let status = healthStore.authorizationStatus(for: bodyMassType)
         
@@ -152,6 +207,10 @@ class HealthKitService: ObservableObject {
                 }
             }
             
+            guard let healthStore = self.healthStore else {
+                continuation.resume(throwing: HealthKitError.notInitialized)
+                return
+            }
             healthStore.execute(actualQuery)
         }
     }
@@ -186,6 +245,11 @@ class HealthKitService: ObservableObject {
             end: date,
             metadata: [HKMetadataKeyWasUserEntered: true]
         )
+        
+        try ensureInitialized()
+        guard let healthStore = healthStore else {
+            throw HealthKitError.notInitialized
+        }
         
         return try await withCheckedThrowingContinuation { continuation in
             healthStore.save(weightSample) { success, error in
@@ -262,6 +326,10 @@ class HealthKitService: ObservableObject {
                 }
             }
             
+            guard let healthStore = self.healthStore else {
+                continuation.resume(throwing: HealthKitError.notInitialized)
+                return
+            }
             healthStore.execute(query)
         }
     }
@@ -299,6 +367,11 @@ class HealthKitService: ObservableObject {
             ]
         )
         
+        try ensureInitialized()
+        guard let healthStore = healthStore else {
+            throw HealthKitError.notInitialized
+        }
+        
         return try await withCheckedThrowingContinuation { continuation in
             healthStore.save(calorieSample) { success, error in
                 if let error = error {
@@ -318,6 +391,11 @@ class HealthKitService: ObservableObject {
         }
         
         let weightType = HKObjectType.quantityType(forIdentifier: .bodyMass)!
+        
+        try ensureInitialized()
+        guard let healthStore = healthStore else {
+            throw HealthKitError.notInitialized
+        }
         
         return try await withCheckedThrowingContinuation { continuation in
             healthStore.enableBackgroundDelivery(for: weightType, frequency: .immediate) { success, error in
@@ -342,6 +420,10 @@ class HealthKitService: ObservableObject {
     
     func getHealthKitPermissions() -> [String] {
         var permissions: [String] = []
+        
+        guard let healthStore = healthStore else {
+            return ["HealthKit: 未初期化"]
+        }
         
         for type in readTypes {
             let status = healthStore.authorizationStatus(for: type)
@@ -391,6 +473,7 @@ class HealthKitService: ObservableObject {
 enum HealthKitError: Error, LocalizedError {
     case notAvailable
     case notAuthorized
+    case notInitialized
     case noUserProfile
     case syncFailed
     
@@ -400,6 +483,8 @@ enum HealthKitError: Error, LocalizedError {
             return "HealthKitは利用できません"
         case .notAuthorized:
             return "HealthKitへのアクセスが許可されていません"
+        case .notInitialized:
+            return "HealthKitサービスが初期化されていません"
         case .noUserProfile:
             return "ユーザープロフィールが見つかりません"
         case .syncFailed:

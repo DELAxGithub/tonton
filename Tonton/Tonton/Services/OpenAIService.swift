@@ -13,7 +13,11 @@ class OpenAIService: AIProviderServiceProtocol {
     let provider: AIProvider = .openai
     
     private let baseURL = "https://api.openai.com/v1/chat/completions"
-    private let keychainService = KeychainService.shared
+    private let keychainService: KeychainService
+    
+    init(keychainService: KeychainService = KeychainService()) {
+        self.keychainService = keychainService
+    }
     
     var isConfigured: Bool {
         return keychainService.hasAPIKey(for: provider)

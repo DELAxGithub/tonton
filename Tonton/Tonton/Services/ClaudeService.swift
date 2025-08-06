@@ -13,7 +13,11 @@ class ClaudeService: AIProviderServiceProtocol {
     let provider: AIProvider = .claude
     
     private let baseURL = "https://api.anthropic.com/v1/messages"
-    private let keychainService = KeychainService.shared
+    private let keychainService: KeychainService
+    
+    init(keychainService: KeychainService = KeychainService()) {
+        self.keychainService = keychainService
+    }
     
     var isConfigured: Bool {
         return keychainService.hasAPIKey(for: provider)

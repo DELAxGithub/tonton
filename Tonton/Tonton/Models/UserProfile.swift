@@ -14,6 +14,8 @@ class UserProfile {
     var id: UUID = UUID()
     var displayName: String? = nil
     var weight: Double? = nil
+    var height: Double? = nil // 身長 (cm)
+    var age: Int? = nil // 年齢
     var gender: String? = nil // 'male' or 'female' - DEPRECATED
     var ageGroup: String? = nil // 'young', 'middle', 'senior' - DEPRECATED  
     var dietGoal: String? = nil // 'weight_loss', 'muscle_gain', 'maintain'
@@ -22,6 +24,7 @@ class UserProfile {
     var onboardingCompleted: Bool = false
     var createdAt: Date = Date()
     var updatedAt: Date = Date()
+    var lastModified: Date = Date() // ProfileEditViewで使用
     
     // AI Settings
     var selectedAIProvider: String = AIProvider.gemini.rawValue
@@ -40,6 +43,8 @@ class UserProfile {
     
     init(displayName: String? = nil,
          weight: Double? = nil,
+         height: Double? = nil,
+         age: Int? = nil,
          gender: String? = nil,
          ageGroup: String? = nil,
          dietGoal: String? = nil,
@@ -49,6 +54,8 @@ class UserProfile {
         self.id = UUID()
         self.displayName = displayName
         self.weight = weight
+        self.height = height
+        self.age = age
         self.gender = gender
         self.ageGroup = ageGroup
         self.dietGoal = dietGoal
@@ -57,11 +64,14 @@ class UserProfile {
         self.onboardingCompleted = onboardingCompleted
         self.createdAt = Date()
         self.updatedAt = Date()
+        self.lastModified = Date()
     }
     
     /// Update the profile and set updatedAt timestamp
     func updateProfile(displayName: String? = nil,
                       weight: Double? = nil,
+                      height: Double? = nil,
+                      age: Int? = nil,
                       gender: String? = nil,
                       ageGroup: String? = nil,
                       dietGoal: String? = nil,
@@ -70,6 +80,8 @@ class UserProfile {
                       onboardingCompleted: Bool? = nil) {
         if let displayName = displayName { self.displayName = displayName }
         if let weight = weight { self.weight = weight }
+        if let height = height { self.height = height }
+        if let age = age { self.age = age }
         if let gender = gender { self.gender = gender }
         if let ageGroup = ageGroup { self.ageGroup = ageGroup }
         if let dietGoal = dietGoal { self.dietGoal = dietGoal }
@@ -77,6 +89,7 @@ class UserProfile {
         if let targetDays = targetDays { self.targetDays = targetDays }
         if let onboardingCompleted = onboardingCompleted { self.onboardingCompleted = onboardingCompleted }
         self.updatedAt = Date()
+        self.lastModified = Date()
     }
     
     /// Calculate base metabolic rate (simplified calculation)

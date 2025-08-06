@@ -61,18 +61,19 @@ class AIServiceManager: ObservableObject {
     @Published var errorMessage: String?
     @Published var lastUsedDate: Date?
     
-    private let keychainService = KeychainService.shared
+    private let keychainService: KeychainService
     private var services: [AIProvider: AIProviderServiceProtocol] = [:]
     
-    init() {
+    init(keychainService: KeychainService = KeychainService()) {
+        self.keychainService = keychainService
         setupServices()
         loadUsageStats()
     }
     
     private func setupServices() {
-        services[.gemini] = GeminiService()
-        services[.claude] = ClaudeService()
-        services[.openai] = OpenAIService()
+        services[.gemini] = GeminiService(keychainService: keychainService)
+        services[.claude] = ClaudeService(keychainService: keychainService)
+        services[.openai] = OpenAIService(keychainService: keychainService)
     }
     
     // MARK: - Configuration

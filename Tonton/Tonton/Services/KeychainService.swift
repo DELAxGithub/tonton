@@ -10,13 +10,41 @@ import Foundation
 import Security
 
 class KeychainService {
-    static let shared = KeychainService()
-    
     private let service = "com.delax.tonton"
+    private var isInitialized = false
+    private var initializationError: String?
     
-    private init() {}
+    init() {
+        initialize()
+    }
+    
+    private func initialize() {
+        do {
+            // Test keychain accessibility
+            _ = load(key: "__test_key__")
+            isInitialized = true
+            initializationError = nil
+        } catch {
+            initializationError = error.localizedDescription
+            isInitialized = false
+            print("[KeychainService] Initialization failed: \(error)")
+        }
+    }
+    
+    private func ensureInitialized() throws {
+        guard isInitialized else {
+            throw KeychainError.notInitialized
+        }
+    }
     
     func save(key: String, value: String) -> Bool {
+        do {
+            try ensureInitialized()
+        } catch {
+            print("[KeychainService] Save failed: \(error)")
+            return false
+        }
+        
         guard let data = value.data(using: .utf8) else { return false }
         
         let query: [String: Any] = [
@@ -34,6 +62,13 @@ class KeychainService {
     }
     
     func load(key: String) -> String? {
+        do {
+            try ensureInitialized()
+        } catch {
+            print("[KeychainService] Load failed: \(error)")
+            return nil
+        }
+        
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: service,
@@ -55,6 +90,13 @@ class KeychainService {
     }
     
     func delete(key: String) -> Bool {
+        do {
+            try ensureInitialized()
+        } catch {
+            print("[KeychainService] Delete failed: \(error)")
+            return false
+        }
+        
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: service,
@@ -66,6 +108,13 @@ class KeychainService {
     }
     
     func deleteAll() -> Bool {
+        do {
+            try ensureInitialized()
+        } catch {
+            print("[KeychainService] DeleteAll failed: \(error)")
+            return false
+        }
+        
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: service
@@ -104,6 +153,31 @@ class KeychainService {
             return apiKey.hasPrefix("sk-ant-") && apiKey.count > 40
         case .openai:
             return apiKey.hasPrefix("sk-") && apiKey.count > 40
+        }
+    }
+}
+
+// MARK: - Keychain Error Types
+
+enum KeychainError: LocalizedError {
+    case notInitialized
+    case accessDenied
+    case itemNotFound
+    case duplicateItem
+    case unknown(OSStatus)
+    
+    var errorDescription: String? {
+        switch self {
+        case .notInitialized:
+            return "キーチェーンサービスが初期化されていません"
+        case .accessDenied:
+            return "キーチェーンへのアクセスが拒否されました"
+        case .itemNotFound:
+            return "キーチェーン項目が見つかりません"
+        case .duplicateItem:
+            return "キーチェーンに重複した項目があります"
+        case .unknown(let status):
+            return "不明なキーチェーンエラー: \(status)"
         }
     }
 }

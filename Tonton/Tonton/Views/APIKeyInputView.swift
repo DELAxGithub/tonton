@@ -11,6 +11,7 @@ import SwiftUI
 struct APIKeyInputView: View {
     let provider: AIProvider
     let aiManager: AIServiceManager
+    private let keychainService: KeychainService
     
     @Environment(\.dismiss) private var dismiss
     @State private var apiKey = ""
@@ -18,6 +19,12 @@ struct APIKeyInputView: View {
     @State private var isValidating = false
     @State private var validationResult: String?
     @State private var showingValidation = false
+    
+    init(provider: AIProvider, aiManager: AIServiceManager, keychainService: KeychainService = KeychainService()) {
+        self.provider = provider
+        self.aiManager = aiManager
+        self.keychainService = keychainService
+    }
     
     var body: some View {
         NavigationStack {
@@ -235,7 +242,7 @@ struct APIKeyInputView: View {
     // MARK: - Computed Properties
     
     private var isValidKey: Bool {
-        KeychainService.shared.validateAPIKey(apiKey, for: provider)
+        keychainService.validateAPIKey(apiKey, for: provider)
     }
     
     private var keyValidationMessage: String {
@@ -262,7 +269,7 @@ struct APIKeyInputView: View {
     // MARK: - Actions
     
     private func loadExistingKey() {
-        if let existingKey = KeychainService.shared.loadAPIKey(for: provider) {
+        if let existingKey = keychainService.loadAPIKey(for: provider) {
             apiKey = existingKey
         }
     }
@@ -281,7 +288,7 @@ struct APIKeyInputView: View {
         Task {
             do {
                 // Temporarily save the key for testing
-                let tempSaved = KeychainService.shared.saveAPIKey(for: provider, apiKey: apiKey)
+                let tempSaved = keychainService.saveAPIKey(for: provider, apiKey: apiKey)
                 
                 if tempSaved {
                     let result = try await aiManager.testProvider(provider)
@@ -371,5 +378,5 @@ struct InstructionStep: View {
 }
 
 #Preview {
-    APIKeyInputView(provider: .gemini, aiManager: AIServiceManager())
+    APIKeyInputView(provider: .gemini, aiManager: AIServiceManager(), keychainService: KeychainService())
 }

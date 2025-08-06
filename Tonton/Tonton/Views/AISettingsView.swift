@@ -19,6 +19,7 @@ struct AISettingsView: View {
     @State private var selectedProviderForSetup: AIProvider?
     @State private var showingConnectionTest = false
     @State private var testResults: [AIProvider: Bool] = [:]
+    private let keychainService = KeychainService()
     
     private var currentUserProfile: UserProfile? {
         userProfiles.first
@@ -66,7 +67,8 @@ struct AISettingsView: View {
             .sheet(isPresented: $showingAPIKeyInput) {
                 APIKeyInputView(
                     provider: selectedProviderForSetup ?? .gemini,
-                    aiManager: aiManager
+                    aiManager: aiManager,
+                    keychainService: keychainService
                 )
             }
             .alert("接続テスト結果", isPresented: $showingConnectionTest) {

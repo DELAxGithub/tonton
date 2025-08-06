@@ -14,7 +14,7 @@ struct CloudKitSettingsView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
     
-    @StateObject private var cloudKitService = CloudKitService.shared
+    @StateObject private var cloudKitService = CloudKitService()
     @State private var showingSignInAlert = false
     @State private var showingDeleteConfirmation = false
     @State private var showingPermissionAlert = false
@@ -85,7 +85,7 @@ struct CloudKitSettingsView: View {
             }
         }
         .onAppear {
-            checkAccountStatus()
+            initializeService()
         }
     }
     
@@ -296,15 +296,18 @@ struct CloudKitSettingsView: View {
     
     // MARK: - Actions
     
-    private func checkAccountStatus() {
+    private func initializeService() {
         Task {
-            await cloudKitService.checkAccountStatus()
+            await cloudKitService.initialize()
         }
     }
     
     private func syncAllData() {
         Task {
             do {
+                if !cloudKitService.isInitialized {
+                    await cloudKitService.initialize()
+                }
                 try await cloudKitService.syncAllData(with: modelContext)
             } catch {
                 lastSyncError = error.localizedDescription
@@ -316,6 +319,9 @@ struct CloudKitSettingsView: View {
     private func requestPermissions() {
         Task {
             do {
+                if !cloudKitService.isInitialized {
+                    await cloudKitService.initialize()
+                }
                 let granted = try await cloudKitService.requestPermissions()
                 if !granted {
                     showingPermissionAlert = true
@@ -330,6 +336,9 @@ struct CloudKitSettingsView: View {
     private func deleteCloudData() {
         Task {
             do {
+                if !cloudKitService.isInitialized {
+                    await cloudKitService.initialize()
+                }
                 try await cloudKitService.deleteAllCloudData()
             } catch {
                 lastSyncError = error.localizedDescription

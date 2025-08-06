@@ -15,7 +15,7 @@ struct HealthKitSettingsView: View {
     @Environment(\.dismiss) private var dismiss
     @Query private var userProfiles: [UserProfile]
     
-    @StateObject private var healthKitService = HealthKitService.shared
+    @StateObject private var healthKitService = HealthKitService()
     @State private var showingPermissionAlert = false
     @State private var isSyncing = false
     @State private var lastSyncError: String?
@@ -79,7 +79,7 @@ struct HealthKitSettingsView: View {
             }
         }
         .onAppear {
-            healthKitService.checkAuthorizationStatus()
+            initializeService()
         }
     }
     
@@ -237,9 +237,18 @@ struct HealthKitSettingsView: View {
     
     // MARK: - Actions
     
+    private func initializeService() {
+        Task {
+            await healthKitService.initialize()
+        }
+    }
+    
     private func requestHealthKitPermission() {
         Task {
             do {
+                if !healthKitService.isInitialized {
+                    await healthKitService.initialize()
+                }
                 let authorized = try await healthKitService.requestAuthorization()
                 if authorized {
                     try await healthKitService.enableBackgroundDelivery()
@@ -258,6 +267,9 @@ struct HealthKitSettingsView: View {
         
         Task {
             do {
+                if !healthKitService.isInitialized {
+                    await healthKitService.initialize()
+                }
                 try await healthKitService.syncWeightData(with: modelContext)
                 try await healthKitService.syncCalorieData(with: modelContext)
             } catch {
@@ -274,6 +286,9 @@ struct HealthKitSettingsView: View {
         
         Task {
             do {
+                if !healthKitService.isInitialized {
+                    await healthKitService.initialize()
+                }
                 try await healthKitService.syncWeightData(with: modelContext)
             } catch {
                 lastSyncError = error.localizedDescription
@@ -289,6 +304,9 @@ struct HealthKitSettingsView: View {
         
         Task {
             do {
+                if !healthKitService.isInitialized {
+                    await healthKitService.initialize()
+                }
                 try await healthKitService.syncCalorieData(with: modelContext)
             } catch {
                 lastSyncError = error.localizedDescription

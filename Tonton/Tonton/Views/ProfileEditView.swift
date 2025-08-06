@@ -214,34 +214,32 @@ struct ProfileEditView: View {
         targetWeight = profile.targetWeight != nil ? String(format: "%.1f", profile.targetWeight!) : ""
         targetDays = profile.targetDays != nil ? "\(profile.targetDays!)" : ""
         dietGoal = profile.dietGoal ?? "weight_loss"
-        calorieGoal = profile.calorieGoal != nil ? "\(profile.calorieGoal!)" : ""
+        calorieGoal = profile.calorieGoal != nil ? String(format: "%.0f", profile.calorieGoal!) : ""
     }
     
     private func saveProfile() {
+        let profile = currentUserProfile ?? UserProfile()
+        
+        profile.displayName = displayName.isEmpty ? nil : displayName
+        profile.weight = Double(weight)
+        profile.height = Double(height)
+        profile.age = Int(age)
+        profile.gender = gender
+        profile.targetWeight = Double(targetWeight)
+        profile.targetDays = Int(targetDays)
+        profile.dietGoal = dietGoal
+        profile.calorieGoal = Double(calorieGoal)
+        profile.lastModified = Date()
+        
+        // 新規プロフィールの場合はmodelContextに追加
+        if currentUserProfile == nil {
+            modelContext.insert(profile)
+        }
+        
         do {
-            let profile = currentUserProfile ?? UserProfile()
-            
-            profile.displayName = displayName.isEmpty ? nil : displayName
-            profile.weight = Double(weight)
-            profile.height = Double(height)
-            profile.age = Int(age)
-            profile.gender = gender
-            profile.targetWeight = Double(targetWeight)
-            profile.targetDays = Int(targetDays)
-            profile.dietGoal = dietGoal
-            profile.calorieGoal = Int(calorieGoal)
-            profile.lastModified = Date()
-            
-            // 新規プロフィールの場合はmodelContextに追加
-            if currentUserProfile == nil {
-                modelContext.insert(profile)
-            }
-            
             try modelContext.save()
-            
             alertMessage = "プロフィールを保存しました"
             showingAlert = true
-            
         } catch {
             alertMessage = "プロフィールの保存に失敗しました: \(error.localizedDescription)"
             showingAlert = true

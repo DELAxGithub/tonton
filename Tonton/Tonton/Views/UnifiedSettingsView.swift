@@ -15,8 +15,8 @@ struct UnifiedSettingsView: View {
     @Query private var userProfiles: [UserProfile]
     
     @StateObject private var aiManager = AIServiceManager()
-    @StateObject private var healthKitService = HealthKitService.shared
-    @StateObject private var cloudKitService = CloudKitService.shared
+    @StateObject private var healthKitService = HealthKitService()
+    @StateObject private var cloudKitService = CloudKitService()
     
     @State private var selectedTab: SettingsTab = .overview
     @State private var showingAISettings = false
@@ -297,8 +297,8 @@ struct UnifiedSettingsView: View {
     
     private func refreshServiceStatus() {
         Task {
-            healthKitService.checkAuthorizationStatus()
-            await cloudKitService.checkAccountStatus()
+            await healthKitService.initialize()
+            await cloudKitService.initialize()
         }
     }
     
@@ -309,11 +309,17 @@ struct UnifiedSettingsView: View {
             do {
                 // Sync all services in sequence
                 if healthKitService.isAuthorized {
+                    if !healthKitService.isInitialized {
+                        await healthKitService.initialize()
+                    }
                     try await healthKitService.syncWeightData(with: modelContext)
                     try await healthKitService.syncCalorieData(with: modelContext)
                 }
                 
                 if cloudKitService.isSignedIn {
+                    if !cloudKitService.isInitialized {
+                        await cloudKitService.initialize()
+                    }
                     try await cloudKitService.syncAllData(with: modelContext)
                 }
                 

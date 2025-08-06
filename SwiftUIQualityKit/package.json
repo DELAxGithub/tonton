@@ -1,0 +1,69 @@
+{
+  "name": "SwiftUIQualityKit",
+  "version": "1.0.0",
+  "description": "SwiftUI + CloudKit iOS開発専用の自動化品質管理システム",
+  "main": "install.sh",
+  "type": "development-tools",
+  "platform": "ios",
+  "framework": ["SwiftUI", "CloudKit", "SwiftData"],
+  "language": "ja",
+  "author": "delax development team",
+  "repository": "delax-shared-packages",
+  "created": "2025-08-05",
+  "tags": [
+    "swiftui",
+    "cloudkit",
+    "swiftdata",
+    "quality",
+    "automation",
+    "ios",
+    "japanese",
+    "ui-audit",
+    "real-time",
+    "xcode-integration"
+  ],
+  "dependencies": {
+    "fswatch": "^1.15.0",
+    "xcode": ">=14.0",
+    "ios": ">=15.0"
+  },
+  "features": {
+    "ui_audit": "包括的なUI品質監査システム",
+    "language_fixer": "日本語統一自動化ツール",
+    "watch_mode": "リアルタイムファイル監視",
+    "swiftui_checker": "SwiftUI特化品質分析",
+    "cloudkit_checker": "CloudKit統合品質分析",
+    "xcode_integration": "Build Phase & Pre-commit hook統合",
+    "standard_components": "TonTon統一コンポーネントライブラリ"
+  },
+  "installation": {
+    "method": "script",
+    "command": "./install.sh",
+    "requirements": ["brew install fswatch"]
+  },
+  "usage": {
+    "basic": "./ui_audit.sh",
+    "realtime": "./watch_mode.sh",
+    "automation": "./xcode_integration.sh setup-build-phase"
+  },
+  "quality_metrics": {
+    "language_issues": "日本語・英語混在の検出数",
+    "unimplemented_buttons": "未実装ボタンの検出数",
+    "navigation_complexity": "ナビゲーション複雑度",
+    "state_management": "SwiftUI状態管理の品質",
+    "cloudkit_integration": "CloudKit統合の品質",
+    "accessibility": "アクセシビリティ準拠度"
+  },
+  "automation_levels": {
+    "realtime": "ファイル変更時の即座チェック",
+    "pre_commit": "Gitコミット前の品質ゲート",
+    "build_phase": "Xcodeビルド時の品質チェック",
+    "manual": "手動実行による詳細分析"
+  },
+  "target_projects": {
+    "framework": "SwiftUI + CloudKit",
+    "platform": "iOS 15.0+",
+    "language_support": "日本語・英語混在",
+    "project_type": "iOS App with CloudKit sync"
+  }
+}

@@ -351,7 +351,6 @@ struct ProfileEditView: View {
                         )
                     }
                 }
-            }
         }
         .padding()
         .background(
@@ -483,6 +482,7 @@ struct ProfileEditView: View {
         }
         return true
     }
+}
 
 #Preview {
     ProfileEditView()

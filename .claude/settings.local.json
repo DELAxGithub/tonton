@@ -74,7 +74,14 @@
       "WebFetch(domain:github.com)",
       "Bash(./SwiftUIQualityKit/quick_setup.sh:*)",
       "Bash(xcrun simctl boot:*)",
-      "Bash(claude --version)"
+      "Bash(claude --version)",
+      "Bash(pnpm:*)",
+      "Bash(git --version)",
+      "Bash(swiftlint:*)",
+      "Bash(brew install:*)",
+      "Bash(npx tsx:*)",
+      "Bash(swift:*)",
+      "Bash(xcrun simctl install:*)"
     ],
     "deny": []
   },

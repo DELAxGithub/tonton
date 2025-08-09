@@ -95,6 +95,14 @@
 				TargetAttributes = {
 					CE7BF7272E42B1D20044CA84 = {
 						CreatedOnToolsVersion = 16.4;
+						SystemCapabilities = {
+							com.apple.HealthKit = {
+								enabled = 1;
+							};
+							com.apple.HealthKit.background = {
+								enabled = 1;
+							};
+						};
 					};
 				};
 			};

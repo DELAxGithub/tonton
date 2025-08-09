@@ -58,6 +58,28 @@ enum AIProvider: String, CaseIterable, Codable, Identifiable {
         }
     }
     
+    var modelName: String {
+        switch self {
+        case .gemini:
+            return "gemini-pro-vision"
+        case .claude:
+            return "claude-3-5-sonnet-20241022"
+        case .openai:
+            return "gpt-4-vision-preview"
+        }
+    }
+    
+    var modelDisplayName: String {
+        switch self {
+        case .gemini:
+            return "Gemini Pro Vision"
+        case .claude:
+            return "Claude 3.5 Sonnet"
+        case .openai:
+            return "GPT-4 Vision"
+        }
+    }
+    
     var estimatedCostPerRequest: Double {
         switch self {
         case .gemini: return 0.002  // $0.002 per request (example)

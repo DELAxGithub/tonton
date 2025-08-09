@@ -320,7 +320,7 @@ class HealthKitService: ObservableObject {
                     continuation.resume(throwing: error)
                 } else if let sum = result?.sumQuantity() {
                     let calories = sum.doubleValue(for: HKUnit.kilocalorie())
-                    continuation.resume(returning: calories)
+                    continuation.resume(returning: Double(calories))
                 } else {
                     continuation.resume(returning: 0.0)
                 }

@@ -15,6 +15,8 @@ class DailySummary {
     var date: Date = Date()
     var caloriesConsumed: Double = 0.0
     var caloriesBurned: Double = 0.0
+    var basalCalories: Double = 0.0  // BMR - base metabolic rate
+    var activeCalories: Double = 0.0 // Active calories from exercise
     var weight: Double? = nil
     var bodyFatPercentage: Double? = nil
     var createdAt: Date = Date()
@@ -25,15 +27,19 @@ class DailySummary {
     var totalFat: Double = 0.0
     var totalCarbs: Double = 0.0
     
-    init(date: Date,
-         caloriesConsumed: Double,
-         caloriesBurned: Double,
+    init(date: Date = Date(),
+         caloriesConsumed: Double = 0.0,
+         caloriesBurned: Double = 0.0,
+         basalCalories: Double = 0.0,
+         activeCalories: Double = 0.0,
          weight: Double? = nil,
          bodyFatPercentage: Double? = nil) {
         self.id = UUID()
         self.date = date
         self.caloriesConsumed = caloriesConsumed
         self.caloriesBurned = caloriesBurned
+        self.basalCalories = basalCalories
+        self.activeCalories = activeCalories
         self.weight = weight
         self.bodyFatPercentage = bodyFatPercentage
         self.createdAt = Date()
@@ -58,6 +64,8 @@ class DailySummary {
     /// Update summary with new data
     func updateSummary(caloriesConsumed: Double? = nil,
                       caloriesBurned: Double? = nil,
+                      basalCalories: Double? = nil,
+                      activeCalories: Double? = nil,
                       weight: Double? = nil,
                       bodyFatPercentage: Double? = nil,
                       totalProtein: Double? = nil,
@@ -65,6 +73,8 @@ class DailySummary {
                       totalCarbs: Double? = nil) {
         if let consumed = caloriesConsumed { self.caloriesConsumed = consumed }
         if let burned = caloriesBurned { self.caloriesBurned = burned }
+        if let basal = basalCalories { self.basalCalories = basal }
+        if let active = activeCalories { self.activeCalories = active }
         if let weight = weight { self.weight = weight }
         if let bodyFat = bodyFatPercentage { self.bodyFatPercentage = bodyFat }
         if let protein = totalProtein { self.totalProtein = protein }

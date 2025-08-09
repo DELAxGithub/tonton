@@ -20,10 +20,23 @@ class KeychainService {
     
     private func initialize() {
         do {
-            // Test keychain accessibility
-            _ = load(key: "__test_key__")
-            isInitialized = true
-            initializationError = nil
+            // Test keychain accessibility by attempting a safe operation
+            let testQuery: [String: Any] = [
+                kSecClass as String: kSecClassGenericPassword,
+                kSecAttrService as String: service,
+                kSecMatchLimit as String: kSecMatchLimitOne
+            ]
+            
+            var result: AnyObject?
+            let status = SecItemCopyMatching(testQuery as CFDictionary, &result)
+            
+            // If keychain is accessible (even if no items found), we're initialized
+            if status == errSecSuccess || status == errSecItemNotFound {
+                isInitialized = true
+                initializationError = nil
+            } else {
+                throw KeychainError.unknown(status)
+            }
         } catch {
             initializationError = error.localizedDescription
             isInitialized = false

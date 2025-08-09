@@ -89,4 +89,74 @@ class MealRecord {
         formatter.timeStyle = .short
         return formatter.string(from: consumedAt)
     }
+    
+    // MARK: - PFC Analysis
+    
+    /// Calculate PFC (Protein/Fat/Carbs) balance percentages
+    var pfcBalance: PFCBalance {
+        let totalCalories = calculatedCalories
+        guard totalCalories > 0 else {
+            return PFCBalance(proteinPercent: 0, fatPercent: 0, carbsPercent: 0)
+        }
+        
+        let proteinPercent = (protein * 4) / totalCalories * 100
+        let fatPercent = (fat * 9) / totalCalories * 100
+        let carbsPercent = (carbs * 4) / totalCalories * 100
+        
+        return PFCBalance(
+            proteinPercent: proteinPercent,
+            fatPercent: fatPercent,
+            carbsPercent: carbsPercent
+        )
+    }
+    
+    /// Get formatted nutrition string
+    var formattedNutrition: String {
+        return "P: \(String(format: "%.1f", protein))g | F: \(String(format: "%.1f", fat))g | C: \(String(format: "%.1f", carbs))g"
+    }
+    
+    /// Calculate calorie accuracy (difference between stated and calculated)
+    var calorieAccuracy: Double {
+        guard calculatedCalories > 0 else { return 0 }
+        return abs(calories - calculatedCalories) / calculatedCalories * 100
+    }
+    
+    /// Check if this meal fits dietary goals
+    func fitsGoals(for profile: UserProfile) -> Bool {
+        guard let goal = profile.dietGoal else { return true }
+        
+        switch goal {
+        case "weight_loss":
+            // Lower calorie density preferred
+            return calories < 600
+        case "muscle_gain":
+            // High protein preferred
+            return pfcBalance.proteinPercent >= 20
+        case "maintain":
+            // Balanced nutrition
+            let balance = pfcBalance
+            return balance.proteinPercent >= 15 && balance.fatPercent <= 35
+        default:
+            return true
+        }
+    }
+}
+
+// MARK: - Supporting Types
+
+struct PFCBalance {
+    let proteinPercent: Double
+    let fatPercent: Double
+    let carbsPercent: Double
+    
+    var isBalanced: Bool {
+        return proteinPercent >= 15 && proteinPercent <= 30 &&
+               fatPercent >= 20 && fatPercent <= 35 &&
+               carbsPercent >= 45 && carbsPercent <= 65
+    }
+    
+    var formattedString: String {
+        return String(format: "P: %.1f%% | F: %.1f%% | C: %.1f%%", 
+                      proteinPercent, fatPercent, carbsPercent)
+    }
 }

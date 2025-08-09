@@ -73,7 +73,8 @@
       "Bash(./Scripts/create_xcode_project.sh:*)",
       "WebFetch(domain:github.com)",
       "Bash(./SwiftUIQualityKit/quick_setup.sh:*)",
-      "Bash(xcrun simctl boot:*)"
+      "Bash(xcrun simctl boot:*)",
+      "Bash(claude --version)"
     ],
     "deny": []
   },

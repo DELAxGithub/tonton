@@ -2,6 +2,14 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>NSHealthShareUsageDescription</key>
+	<string>TonTonアプリでは、体重や運動データを読み取って健康管理をサポートします。</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>TonTonアプリでは、体重や消費カロリーデータを記録して健康目標の達成をサポートします。</string>
+	<key>NSCameraUsageDescription</key>
+	<string>食事の写真を撮影するためにカメラを使用します。</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>食事の写真を選択するためにアルバムにアクセスします。</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>remote-notification</string>

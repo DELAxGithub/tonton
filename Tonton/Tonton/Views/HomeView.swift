@@ -15,6 +15,10 @@ struct HomeView: View {
     @Query private var todaysSummary: [DailySummary]
     @Query private var calorieSavingsRecords: [CalorieSavingsRecord]
     @State private var showingBugReport = false
+    @State private var calculationService: CalorieCalculationService?
+    @State private var dailyBalance: Double = 0
+    @State private var totalSavings: Double = 0
+    @State private var isCalculating = false
     
     private var currentUserProfile: UserProfile? {
         userProfiles.first
@@ -63,6 +67,11 @@ struct HomeView: View {
                     mealLoggingContext: nil
                 )
             }
+            .onAppear {
+                Task {
+                    await refreshData()
+                }
+            }
         }
     }
     
@@ -108,14 +117,47 @@ struct HomeView: View {
                     .font(.headline)
                     .foregroundColor(.secondary)
                 
-                if let savings = todaysCalorieSavings {
-                    Text(savings.formattedDailyBalance)
-                        .font(.system(size: 48, weight: .bold, design: .rounded))
-                        .foregroundColor(savings.hasSavings ? .green : .red)
+                if isCalculating {
+                    ProgressView()
+                        .scaleEffect(0.8)
+                } else if let savings = todaysCalorieSavings {
+                    VStack(spacing: 4) {
+                        Text(savings.formattedDailyBalance)
+                            .font(.system(size: 48, weight: .bold, design: .rounded))
+                            .foregroundColor(savings.hasSavings ? .green : .red)
+                        
+                        // Show category and emoji
+                        HStack {
+                            Text(savings.savingsCategory.emoji)
+                            Text(savings.motivationalMessage)
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                                .multilineTextAlignment(.center)
+                        }
+                    }
                 } else {
-                    Text("+0 kcal")
-                        .font(.system(size: 48, weight: .bold, design: .rounded))
+                    VStack(spacing: 4) {
+                        Text(dailyBalance >= 0 ? "+\(Int(dailyBalance)) kcal" : "\(Int(dailyBalance)) kcal")
+                            .font(.system(size: 48, weight: .bold, design: .rounded))
+                            .foregroundColor(dailyBalance >= 0 ? .green : .red)
+                        
+                        Text("計算中...")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                }
+            }
+            
+            // Total savings display
+            if totalSavings != 0 {
+                VStack(spacing: 4) {
+                    Text("累積貯金")
+                        .font(.caption)
                         .foregroundColor(.secondary)
+                    Text(totalSavings >= 0 ? "+\(Int(totalSavings)) kcal" : "\(Int(totalSavings)) kcal")
+                        .font(.title2)
+                        .fontWeight(.semibold)
+                        .foregroundColor(totalSavings >= 0 ? .green : .red)
                 }
             }
             
@@ -145,13 +187,24 @@ struct HomeView: View {
                 Text("今日の詳細")
                     .font(.headline)
                 Spacer()
+                
+                if let profile = currentUserProfile,
+                   let bmr = profile.calculateBMR() {
+                    Text("BMR: \(String(format: "%.0f", bmr)) kcal")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
             }
             
-            HStack(spacing: 16) {
+            LazyVGrid(columns: [
+                GridItem(.flexible()),
+                GridItem(.flexible()),
+                GridItem(.flexible())
+            ], spacing: 12) {
                 // Calories consumed
                 StatCardView(
                     title: "摂取",
-                    value: String(format: "%.0f", todaysDailySummary?.caloriesConsumed ?? 0),
+                    value: String(format: "%.0f", todaysDailySummary?.caloriesConsumed ?? 0.0),
                     unit: "kcal",
                     color: .orange
                 )
@@ -159,20 +212,51 @@ struct HomeView: View {
                 // Calories burned
                 StatCardView(
                     title: "消費",
-                    value: String(format: "%.0f", todaysDailySummary?.caloriesBurned ?? 0),
+                    value: String(format: "%.0f", todaysDailySummary?.caloriesBurned ?? 0.0),
                     unit: "kcal", 
                     color: .blue
                 )
                 
-                // Weight (if available)
-                if let weight = todaysDailySummary?.weight {
+                // Efficiency percentage
+                if let savings = todaysCalorieSavings,
+                   let profile = currentUserProfile,
+                   let targetSavings = profile.calculateTargetSavings() {
+                    let efficiency = savings.savingsEfficiency(targetSavings: targetSavings)
                     StatCardView(
-                        title: "体重",
-                        value: String(format: "%.1f", weight),
-                        unit: "kg",
-                        color: .purple
+                        title: "効率",
+                        value: String(format: "%.0f", efficiency),
+                        unit: "%",
+                        color: efficiency >= 80 ? .green : efficiency >= 60 ? .orange : .red
                     )
                 }
+            }
+            
+            // Additional insights row
+            if let savings = todaysCalorieSavings {
+                HStack(spacing: 12) {
+                    VStack {
+                        Text("カテゴリ")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        Text(savings.savingsCategory.emoji)
+                            .font(.title2)
+                    }
+                    
+                    VStack(alignment: .leading) {
+                        Text("予想体重変化")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        Text(savings.estimatedWeightImpact >= 0 ? 
+                             "+\(String(format: "%.3f", savings.estimatedWeightImpact))kg" :
+                             "\(String(format: "%.3f", savings.estimatedWeightImpact))kg")
+                            .font(.subheadline)
+                            .fontWeight(.medium)
+                            .foregroundColor(savings.estimatedWeightImpact >= 0 ? .green : .red)
+                    }
+                    
+                    Spacer()
+                }
+                .padding(.top, 8)
             }
         }
     }
@@ -293,9 +377,33 @@ struct HomeView: View {
     }
     
     private func refreshData() async {
-        // Implement data refresh logic
-        // This would typically fetch from HealthKit and update summaries
-        try? await Task.sleep(nanoseconds: 1_000_000_000) // 1 second delay for demo
+        isCalculating = true
+        
+        do {
+            // Initialize calculation service if needed
+            if calculationService == nil {
+                calculationService = CalorieCalculationService(modelContext: modelContext)
+            }
+            
+            guard let service = calculationService else { return }
+            
+            // Update user goal if profile exists
+            if let profile = currentUserProfile {
+                service.updateDailyGoal(for: profile)
+            }
+            
+            // Calculate and save today's savings
+            let savingsRecord = try await service.calculateAndSaveDailySavings()
+            
+            // Update state variables
+            dailyBalance = savingsRecord.dailyBalance
+            totalSavings = await service.getCumulativeSavings(upTo: Date())
+            
+        } catch {
+            print("Error refreshing data: \(error)")
+        }
+        
+        isCalculating = false
     }
     
     private func createHealthContext() -> HealthKitContext? {

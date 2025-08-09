@@ -8,7 +8,7 @@
 
 import Foundation
 
-enum MealTimeType: String, CaseIterable, Codable {
+enum MealTimeType: String, CaseIterable, Codable, Identifiable {
     case breakfast = "breakfast"
     case lunch = "lunch"
     case dinner = "dinner"
@@ -45,4 +45,6 @@ enum MealTimeType: String, CaseIterable, Codable {
     static func fromString(_ value: String) -> MealTimeType {
         return MealTimeType(rawValue: value.lowercased()) ?? .snack
     }
+
+    var id: String { self.rawValue }
 }

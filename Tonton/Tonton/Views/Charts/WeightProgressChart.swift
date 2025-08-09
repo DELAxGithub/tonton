@@ -165,14 +165,14 @@ struct WeightProgressChart: View {
             // Weight data line
             ForEach(filteredRecords, id: \.id) { record in
                 LineMark(
-                    x: .value("日付", record.date),
+                    x: .value("日付", record.date, unit: .day),
                     y: .value("体重", record.weight)
                 )
                 .foregroundStyle(.blue)
                 .lineStyle(StrokeStyle(lineWidth: 3, lineCap: .round, lineJoin: .round))
                 
                 PointMark(
-                    x: .value("日付", record.date),
+                    x: .value("日付", record.date, unit: .day),
                     y: .value("体重", record.weight)
                 )
                 .foregroundStyle(.blue)
@@ -295,34 +295,6 @@ struct WeightProgressChart: View {
 }
 
 // MARK: - Supporting Types
-
-enum ChartTimeRange: String, CaseIterable {
-    case week = "week"
-    case month = "month"
-    case threeMonths = "3months"
-    case sixMonths = "6months"
-    case year = "year"
-    
-    var displayName: String {
-        switch self {
-        case .week: return "1週間"
-        case .month: return "1ヶ月"
-        case .threeMonths: return "3ヶ月"
-        case .sixMonths: return "6ヶ月"
-        case .year: return "1年"
-        }
-    }
-    
-    var axisStride: Calendar.Component {
-        switch self {
-        case .week: return .day
-        case .month: return .day
-        case .threeMonths: return .weekOfYear
-        case .sixMonths: return .month
-        case .year: return .month
-        }
-    }
-}
 
 struct LegendItem: View {
     let color: Color

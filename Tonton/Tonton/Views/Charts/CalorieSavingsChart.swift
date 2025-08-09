@@ -156,7 +156,7 @@ struct CalorieSavingsChart: View {
             // Calorie savings bars
             ForEach(filteredRecords, id: \.id) { record in
                 BarMark(
-                    x: .value("日付", record.date),
+                    x: .value("日付", record.date, unit: .day),
                     y: .value("貯金", record.dailyBalance)
                 )
                 .foregroundStyle(record.dailyBalance >= 0 ? .green : .red)

@@ -108,4 +108,94 @@ class CalorieSavingsRecord {
         formatter.dateStyle = .medium
         return formatter.string(from: date)
     }
+    
+    // MARK: - Advanced Calculations
+    
+    /// Calculate if user met their savings goal for the day
+    func metSavingsGoal(targetSavings: Double) -> Bool {
+        return dailyBalance >= targetSavings
+    }
+    
+    /// Calculate savings efficiency (actual vs target)
+    func savingsEfficiency(targetSavings: Double) -> Double {
+        guard targetSavings > 0 else { return 0 }
+        return (dailyBalance / targetSavings) * 100
+    }
+    
+    /// Get savings category for display purposes
+    var savingsCategory: SavingsCategory {
+        switch dailyBalance {
+        case ..<0:
+            return .deficit
+        case 0..<100:
+            return .minimal
+        case 100..<300:
+            return .good
+        case 300..<500:
+            return .excellent
+        default:
+            return .outstanding
+        }
+    }
+    
+    /// Calculate estimated weight impact (1 pound ≈ 3500 calories)
+    var estimatedWeightImpact: Double {
+        return dailyBalance / 3500.0 // kg equivalent
+    }
+    
+    /// Get motivational message based on savings
+    var motivationalMessage: String {
+        switch savingsCategory {
+        case .deficit:
+            return "今日は少し多めでしたが、明日は新しいチャンス！"
+        case .minimal:
+            return "良いスタートです！もう少し頑張りましょう"
+        case .good:
+            return "素晴らしい！健康的なペースで進んでいます"
+        case .excellent:
+            return "とても良い結果です！この調子で続けましょう"
+        case .outstanding:
+            return "驚異的な成果！完璧なバランスです"
+        }
+    }
+}
+
+// MARK: - Supporting Types
+
+enum SavingsCategory {
+    case deficit
+    case minimal
+    case good
+    case excellent
+    case outstanding
+    
+    var color: String {
+        switch self {
+        case .deficit:
+            return "#FF6B6B"    // Red
+        case .minimal:
+            return "#FFD93D"    // Yellow
+        case .good:
+            return "#6BCF7F"    // Light Green
+        case .excellent:
+            return "#4ECDC4"    // Teal
+        case .outstanding:
+            return "#45B7D1"    // Blue
+        }
+    }
+    
+    var emoji: String {
+        switch self {
+        case .deficit:
+            return "😔"
+        case .minimal:
+            return "🌱"
+        case .good:
+            return "👍"
+        case .excellent:
+            return "🎉"
+        case .outstanding:
+            return "🏆"
+        }
+    }
 }

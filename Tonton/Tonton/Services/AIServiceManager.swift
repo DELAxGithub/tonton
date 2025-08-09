@@ -10,7 +10,7 @@ import Foundation
 import SwiftUI
 import UIKit
 
-struct MealAnalysisResult {
+struct MealAnalysisResult: Identifiable {
     let mealName: String
     let description: String
     let calories: Double
@@ -41,6 +41,8 @@ struct MealAnalysisResult {
         self.requestId = UUID().uuidString
         self.timestamp = Date()
     }
+
+    var id: String { requestId }
 }
 
 protocol AIProviderServiceProtocol {
@@ -118,65 +120,182 @@ class AIServiceManager: ObservableObject {
     // MARK: - Analysis
     
     func analyzeMealImage(_ image: UIImage, userProfile: UserProfile) async throws -> MealAnalysisResult {
+        print("🚀 AIServiceManager.analyzeMealImage called")
         isAnalyzing = true
         errorMessage = nil
         
-        defer { isAnalyzing = false }
+        defer { 
+            isAnalyzing = false 
+            print("🏁 AIServiceManager analysis completed")
+        }
         
         let provider = userProfile.aiProvider
         let preferences = userProfile.aiProviderPreferences
+        
+        print("📋 Using provider: \(provider.displayName)")
+        print("⚙️ Preferences - maxRetries: \(preferences.maxRetries), enableFallback: \(preferences.enableFallback)")
+        
+        // Check daily usage limit before making request
+        if !canMakeRequest(for: provider, userProfile: userProfile) {
+            print("❌ Daily cost limit exceeded for \(provider.displayName)")
+            errorMessage = "日々の使用制限に達しました"
+            throw AIServiceError.dailyLimitExceeded
+        }
         
         do {
             let result = try await performAnalysis(image, provider: provider, preferences: preferences)
             lastAnalysisResult = result
             lastUsedDate = Date()
             recordUsage(for: provider, cost: provider.estimatedCostPerRequest)
+            print("✅ Analysis successful with \(provider.displayName)")
             return result
         } catch {
-            // Try fallback if enabled
+            print("❌ Primary provider \(provider.displayName) failed: \(error)")
+            
+            // Try fallback if enabled and the error is not rate limiting
             if preferences.enableFallback, 
                let fallbackProvider = preferences.fallbackProvider,
-               fallbackProvider != provider {
+               fallbackProvider != provider,
+               !isNonFallbackError(error) {
+                
+                // Check fallback provider's daily limit
+                if !canMakeRequest(for: fallbackProvider, userProfile: userProfile) {
+                    print("❌ Fallback provider \(fallbackProvider.displayName) daily limit also exceeded")
+                    errorMessage = "メイン及びフォールバックプロバイダーで日々の制限に達しました"
+                    throw AIServiceError.dailyLimitExceeded
+                }
+                
+                print("🔄 Trying fallback provider: \(fallbackProvider.displayName)")
                 do {
                     let result = try await performAnalysis(image, provider: fallbackProvider, preferences: preferences)
                     lastAnalysisResult = result
                     lastUsedDate = Date()
                     recordUsage(for: fallbackProvider, cost: fallbackProvider.estimatedCostPerRequest)
+                    print("✅ Fallback analysis successful with \(fallbackProvider.displayName)")
                     return result
                 } catch {
+                    print("❌ Fallback provider \(fallbackProvider.displayName) also failed: \(error)")
                     errorMessage = "メイン及びフォールバックプロバイダーでエラーが発生しました"
                     throw error
                 }
             } else {
-                errorMessage = error.localizedDescription
+                if isNonFallbackError(error) {
+                    print("❌ Non-fallback error, skipping fallback: \(error)")
+                }
+                errorMessage = getLocalizedErrorMessage(error)
                 throw error
             }
         }
     }
     
+    private func isNonFallbackError(_ error: Error) -> Bool {
+        // Don't try fallback for these errors
+        if let aiError = error as? AIServiceError {
+            switch aiError {
+            case .dailyLimitExceeded, .invalidAPIKey, .notConfigured:
+                return true
+            case .networkError, .unknown, .providerNotAvailable:
+                return false
+            }
+        }
+        return false
+    }
+    
+    private func getLocalizedErrorMessage(_ error: Error) -> String {
+        if let aiError = error as? AIServiceError {
+            return aiError.localizedDescription
+        } else if let urlError = error as? URLError {
+            switch urlError.code {
+            case .timedOut:
+                return "タイムアウトが発生しました"
+            case .notConnectedToInternet:
+                return "インターネット接続がありません"
+            case .cannotConnectToHost:
+                return "サーバーに接続できません"
+            default:
+                return "ネットワークエラーが発生しました"
+            }
+        }
+        return error.localizedDescription
+    }
+    
     private func performAnalysis(_ image: UIImage, provider: AIProvider, preferences: AIProviderPreferences) async throws -> MealAnalysisResult {
+        print("🔧 performAnalysis called for \(provider.displayName)")
+        
         guard let service = services[provider] else {
+            print("❌ Service not available for \(provider.displayName)")
             throw AIServiceError.providerNotAvailable
         }
         
+        print("🔍 Checking if \(provider.displayName) service is configured...")
         guard service.isConfigured else {
+            print("❌ \(provider.displayName) service not configured")
             throw AIServiceError.notConfigured
         }
         
-        // Retry logic
+        print("✅ \(provider.displayName) service is configured, starting analysis...")
+        
+        // Enhanced retry logic with exponential backoff and jitter
         var lastError: Error?
         for attempt in 1...preferences.maxRetries {
+            print("🔄 Attempt \(attempt)/\(preferences.maxRetries) for \(provider.displayName)")
             do {
-                return try await service.analyzeMealImage(image)
+                let result = try await service.analyzeMealImage(image)
+                print("✅ \(provider.displayName) analysis successful on attempt \(attempt)")
+                return result
+            } catch AIServiceError.dailyLimitExceeded {
+                print("❌ Daily limit exceeded for \(provider.displayName) - not retrying")
+                throw AIServiceError.dailyLimitExceeded
+            } catch AIServiceError.invalidAPIKey {
+                print("❌ Invalid API key for \(provider.displayName) - not retrying")
+                throw AIServiceError.invalidAPIKey
             } catch {
+                print("❌ \(provider.displayName) attempt \(attempt) failed: \(error)")
                 lastError = error
-                if attempt < preferences.maxRetries {
-                    try await Task.sleep(nanoseconds: UInt64(attempt * 1_000_000_000)) // Exponential backoff
+                
+                // Only retry on network errors or unknown errors
+                if attempt < preferences.maxRetries && isRetryableError(error) {
+                    // Exponential backoff with jitter: base delay * 2^(attempt-1) + random jitter
+                    let baseDelay = 1.0 // 1 second
+                    let exponentialDelay = baseDelay * pow(2.0, Double(attempt - 1))
+                    let jitter = Double.random(in: 0...0.5) // Up to 500ms jitter
+                    let totalDelay = min(exponentialDelay + jitter, 10.0) // Max 10 seconds
+                    
+                    print("⏳ Waiting \(String(format: "%.1f", totalDelay)) seconds before retry...")
+                    try await Task.sleep(nanoseconds: UInt64(totalDelay * 1_000_000_000))
+                } else if !isRetryableError(error) {
+                    print("❌ Non-retryable error for \(provider.displayName): \(error)")
+                    break
                 }
             }
         }
         
+        print("❌ All attempts failed for \(provider.displayName)")
         throw lastError ?? AIServiceError.unknown
+    }
+    
+    private func isRetryableError(_ error: Error) -> Bool {
+        // Only retry on network errors and unknown errors
+        if let aiError = error as? AIServiceError {
+            switch aiError {
+            case .networkError, .unknown:
+                return true
+            case .dailyLimitExceeded, .invalidAPIKey, .notConfigured, .providerNotAvailable:
+                return false
+            }
+        }
+        
+        // For URLError, only retry on network-related issues
+        if let urlError = error as? URLError {
+            switch urlError.code {
+            case .timedOut, .cannotConnectToHost, .networkConnectionLost, .notConnectedToInternet:
+                return true
+            default:
+                return false
+            }
+        }
+        
+        return false
     }
     
     // MARK: - Testing
@@ -187,6 +306,70 @@ class AIServiceManager: ObservableObject {
         }
         
         return try await service.testConnection()
+    }
+    
+    func performSimpleTest(for provider: AIProvider) async throws -> AITestResult {
+        guard let service = services[provider] else {
+            throw AIServiceError.providerNotAvailable
+        }
+        
+        guard service.isConfigured else {
+            throw AIServiceError.notConfigured
+        }
+        
+        let startTime = Date()
+        
+        // Create a simple test image (solid color square)
+        let testImage = createTestImage()
+        
+        do {
+            _ = try await service.analyzeMealImage(testImage)
+            let responseTime = Date().timeIntervalSince(startTime)
+            
+            return AITestResult(
+                success: true,
+                provider: provider,
+                responseTime: responseTime,
+                testMessage: "テスト画像を正常に分析できました",
+                errorMessage: nil,
+                timestamp: Date()
+            )
+        } catch {
+            let responseTime = Date().timeIntervalSince(startTime)
+            return AITestResult(
+                success: false,
+                provider: provider,
+                responseTime: responseTime,
+                testMessage: nil,
+                errorMessage: error.localizedDescription,
+                timestamp: Date()
+            )
+        }
+    }
+    
+    private func createTestImage() -> UIImage {
+        let size = CGSize(width: 100, height: 100)
+        let renderer = UIGraphicsImageRenderer(size: size)
+        return renderer.image { context in
+            // Create a simple colored square for testing
+            UIColor.systemBlue.setFill()
+            context.fill(CGRect(origin: .zero, size: size))
+            
+            // Add some text to make it more recognizable as a test
+            let text = "TEST"
+            let attributes: [NSAttributedString.Key: Any] = [
+                .foregroundColor: UIColor.white,
+                .font: UIFont.systemFont(ofSize: 20, weight: .bold)
+            ]
+            let textSize = text.size(withAttributes: attributes)
+            let textRect = CGRect(
+                x: (size.width - textSize.width) / 2,
+                y: (size.height - textSize.height) / 2,
+                width: textSize.width,
+                height: textSize.height
+            )
+            text.draw(in: textRect, withAttributes: attributes)
+        }
     }
     
     func testAllConfiguredProviders() async -> [AIProvider: Bool] {
@@ -265,6 +448,19 @@ class AIServiceManager: ObservableObject {
 }
 
 // MARK: - Supporting Types
+
+struct AITestResult {
+    let success: Bool
+    let provider: AIProvider
+    let responseTime: TimeInterval
+    let testMessage: String?
+    let errorMessage: String?
+    let timestamp: Date
+    
+    var responseTimeFormatted: String {
+        return String(format: "%.2f秒", responseTime)
+    }
+}
 
 class AIUsageStats: Codable, ObservableObject {
     @Published var requestCount: Int = 0

@@ -27,6 +27,12 @@ struct ProfileEditView: View {
     @State private var showingAlert = false
     @State private var alertMessage = ""
     
+    // AI Settings state
+    @StateObject private var aiManager = AIServiceManager()
+    @State private var isTestingAI = false
+    @State private var aiTestResult: AITestResult?
+    @State private var showingAITestResult = false
+    
     private var currentUserProfile: UserProfile? {
         userProfiles.first
     }
@@ -35,6 +41,12 @@ struct ProfileEditView: View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 24) {
+                    // デバッグ情報（一時的）
+                    debugInfoSection
+                    
+                    // AI設定セクション（デバッグのため最上部に移動）
+                    aiSettingsSection
+                    
                     // 基本情報セクション
                     basicInfoSection
                     
@@ -203,6 +215,197 @@ struct ProfileEditView: View {
         }
     }
     
+    @ViewBuilder
+    private var debugInfoSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("🐛 DEBUG情報")
+                .font(.headline)
+                .foregroundColor(.red)
+            
+            Text("User Profiles Count: \(userProfiles.count)")
+                .font(.caption)
+            
+            if let profile = currentUserProfile {
+                Text("✅ Current Profile Found")
+                    .font(.caption)
+                    .foregroundColor(.green)
+                
+                Text("AI Provider: \(profile.aiProvider.displayName)")
+                    .font(.caption)
+                
+                Text("Model: \(profile.aiProvider.modelDisplayName)")
+                    .font(.caption)
+                
+                Text("AI Manager Configured: \(aiManager.hasConfiguredProvider() ? "✅" : "❌")")
+                    .font(.caption)
+                    .foregroundColor(aiManager.hasConfiguredProvider() ? .green : .red)
+            } else {
+                Text("❌ No Current Profile Found")
+                    .font(.caption)
+                    .foregroundColor(.red)
+            }
+        }
+        .padding()
+        .background(Color.yellow.opacity(0.3))
+        .cornerRadius(8)
+    }
+    
+    @ViewBuilder
+    private var aiSettingsSection: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text("AI設定")
+                .font(.headline)
+                .foregroundColor(.primary)
+                
+                // Current AI Provider display
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("使用中のAIプロバイダー")
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                    
+                    if let profile = currentUserProfile {
+                        HStack {
+                            Image(systemName: profile.aiProvider.iconName)
+                                .foregroundColor(colorFromString(profile.aiProvider.color))
+                            Text(profile.aiProvider.displayName)
+                                .font(.body)
+                                .fontWeight(.medium)
+                            Spacer()
+                        }
+                        .padding()
+                        .background(
+                            RoundedRectangle(cornerRadius: 8)
+                                .fill(colorFromString(profile.aiProvider.color).opacity(0.1))
+                        )
+                        
+                        // Model name display
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("使用モデル")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                            Text(profile.aiProvider.modelDisplayName)
+                                .font(.subheadline)
+                                .fontWeight(.medium)
+                        }
+                        .padding(.top, 8)
+                    }
+                }
+                
+                // AI Test section
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("接続テスト")
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                    
+                    Button(action: {
+                        performAITest()
+                    }) {
+                        HStack {
+                            if isTestingAI {
+                                ProgressView()
+                                    .scaleEffect(0.8)
+                                    .padding(.trailing, 4)
+                                Text("テスト中...")
+                            } else {
+                                Image(systemName: "checkmark.circle")
+                                Text("AI接続をテスト")
+                            }
+                            Spacer()
+                        }
+                        .padding()
+                        .background(
+                            RoundedRectangle(cornerRadius: 8)
+                                .fill(isTestingAI ? Color.gray.opacity(0.3) : Color.blue.opacity(0.1))
+                        )
+                        .foregroundColor(isTestingAI ? .gray : .blue)
+                    }
+                    .disabled(isTestingAI || currentUserProfile == nil)
+                    
+                    // Test result display
+                    if let testResult = aiTestResult {
+                        VStack(alignment: .leading, spacing: 8) {
+                            HStack {
+                                Image(systemName: testResult.success ? "checkmark.circle.fill" : "xmark.circle.fill")
+                                    .foregroundColor(testResult.success ? .green : .red)
+                                Text(testResult.success ? "テスト成功" : "テスト失敗")
+                                    .font(.subheadline)
+                                    .fontWeight(.medium)
+                                    .foregroundColor(testResult.success ? .green : .red)
+                                Spacer()
+                                Text(testResult.responseTimeFormatted)
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                            
+                            if let message = testResult.testMessage ?? testResult.errorMessage {
+                                Text(message)
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                                    .lineLimit(2)
+                            }
+                        }
+                        .padding(12)
+                        .background(
+                            RoundedRectangle(cornerRadius: 8)
+                                .fill((testResult.success ? Color.green : Color.red).opacity(0.1))
+                        )
+                    }
+                }
+            }
+        }
+        .padding()
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color(.systemGray6))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(Color.blue, lineWidth: 2)
+                )
+        )
+    }
+    
+    private func colorFromString(_ colorString: String) -> Color {
+        switch colorString.lowercased() {
+        case "blue": return .blue
+        case "orange": return .orange
+        case "green": return .green
+        case "purple": return .purple
+        case "red": return .red
+        default: return .gray
+        }
+    }
+    
+    private func performAITest() {
+        guard let profile = currentUserProfile else { return }
+        
+        isTestingAI = true
+        aiTestResult = nil
+        
+        Task {
+            do {
+                let testResult = try await aiManager.performSimpleTest(for: profile.aiProvider)
+                await MainActor.run {
+                    self.aiTestResult = testResult
+                }
+            } catch {
+                await MainActor.run {
+                    self.aiTestResult = AITestResult(
+                        success: false,
+                        provider: profile.aiProvider,
+                        responseTime: 0,
+                        testMessage: nil,
+                        errorMessage: error.localizedDescription,
+                        timestamp: Date()
+                    )
+                }
+            }
+            
+            await MainActor.run {
+                isTestingAI = false
+            }
+        }
+    }
+    
     private func loadCurrentProfile() {
         guard let profile = currentUserProfile else { return }
         
@@ -218,6 +421,11 @@ struct ProfileEditView: View {
     }
     
     private func saveProfile() {
+        guard validateInputs() else {
+            showingAlert = true
+            return
+        }
+
         let profile = currentUserProfile ?? UserProfile()
         
         profile.displayName = displayName.isEmpty ? nil : displayName
@@ -233,6 +441,8 @@ struct ProfileEditView: View {
         
         // 新規プロフィールの場合はmodelContextに追加
         if currentUserProfile == nil {
+            // AIプロバイダーのデフォルト値を明示的に設定
+            profile.selectedAIProvider = AIProvider.gemini.rawValue
             modelContext.insert(profile)
         }
         
@@ -245,7 +455,34 @@ struct ProfileEditView: View {
             showingAlert = true
         }
     }
-}
+
+    private func validateInputs() -> Bool {
+        if !weight.isEmpty && Double(weight) == nil {
+            alertMessage = "体重には数値を入力してください"
+            return false
+        }
+        if !height.isEmpty && Double(height) == nil {
+            alertMessage = "身長には数値を入力してください"
+            return false
+        }
+        if !age.isEmpty && Int(age) == nil {
+            alertMessage = "年齢には整数を入力してください"
+            return false
+        }
+        if !targetWeight.isEmpty && Double(targetWeight) == nil {
+            alertMessage = "目標体重には数値を入力してください"
+            return false
+        }
+        if !targetDays.isEmpty && Int(targetDays) == nil {
+            alertMessage = "達成期間には整数を入力してください"
+            return false
+        }
+        if !calorieGoal.isEmpty && Double(calorieGoal) == nil {
+            alertMessage = "目標カロリーには数値を入力してください"
+            return false
+        }
+        return true
+    }
 
 #Preview {
     ProfileEditView()

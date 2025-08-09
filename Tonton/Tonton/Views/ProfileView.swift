@@ -125,7 +125,7 @@ struct ProfileView: View {
                      unit: "kg", 
                      color: Color.green),
                     (title: "基礎代謝", 
-                     value: profile.calculateBMR() != nil ? String(format: "%.0f", profile.calculateBMR()!) : "--", 
+                     value: profile.calculateBMR() != nil ? String(format: "%.0f", Double(profile.calculateBMR()!)) : "--", 
                      unit: "kcal", 
                      color: Color.orange),
                     (title: "目標期間", 

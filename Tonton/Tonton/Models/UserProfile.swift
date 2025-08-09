@@ -62,6 +62,7 @@ class UserProfile {
         self.targetWeight = targetWeight
         self.targetDays = targetDays
         self.onboardingCompleted = onboardingCompleted
+        self.selectedAIProvider = AIProvider.gemini.rawValue // デフォルト値を明示的に設定
         self.createdAt = Date()
         self.updatedAt = Date()
         self.lastModified = Date()
@@ -92,15 +93,49 @@ class UserProfile {
         self.lastModified = Date()
     }
     
-    /// Calculate base metabolic rate (simplified calculation)
+    /// Calculate base metabolic rate using Harris-Benedict equation
     func calculateBMR() -> Double? {
         guard let weight = weight,
+              let height = height,
+              let age = age,
               let gender = gender else { return nil }
         
-        // Simplified BMR calculation
-        // In production, would use more sophisticated calculation with age and height
-        let baseBMR = weight * 22 // Basic multiplier
-        return gender == "male" ? baseBMR * 1.1 : baseBMR
+        // Harris-Benedict equation (revised)
+        if gender == "male" {
+            return 88.362 + (13.397 * weight) + (4.799 * height) - (5.677 * Double(age))
+        } else {
+            return 447.593 + (9.247 * weight) + (3.098 * height) - (4.330 * Double(age))
+        }
+    }
+    
+    /// Calculate Total Daily Energy Expenditure based on activity level
+    func calculateTDEE(activityLevel: ActivityLevel = .sedentary) -> Double? {
+        guard let bmr = calculateBMR() else { return nil }
+        return bmr * activityLevel.multiplier
+    }
+    
+    /// Calculate daily calorie goal based on diet goal
+    func calculateDailyCalorieGoal() -> Double? {
+        guard let tdee = calculateTDEE() else { return nil }
+        
+        switch dietGoal {
+        case "weight_loss":
+            return tdee * 0.85 // 15% deficit for weight loss
+        case "muscle_gain":
+            return tdee * 1.15 // 15% surplus for muscle gain
+        case "maintain":
+            return tdee
+        default:
+            return tdee
+        }
+    }
+    
+    /// Calculate expected daily calorie savings based on goals
+    func calculateTargetSavings() -> Double? {
+        guard let tdee = calculateTDEE(),
+              let calorieGoal = calorieGoal else { return nil }
+        
+        return max(0, tdee - calorieGoal) // Only positive savings
     }
     
     // MARK: - AI Settings

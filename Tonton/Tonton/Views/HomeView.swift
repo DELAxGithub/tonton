@@ -45,9 +45,6 @@ struct HomeView: View {
                     // Daily stats section
                     dailyStatsSection
                     
-                    // Quick actions section
-                    quickActionsSection
-                    
                     // Mini charts section
                     miniChartsSection
                     
@@ -97,9 +94,7 @@ struct HomeView: View {
             Spacer()
             
             // Profile image or icon
-            Button(action: {
-                // Navigate to profile
-            }) {
+            NavigationLink(destination: ProfileView()) {
                 Image(systemName: "person.crop.circle.fill")
                     .font(.title)
                     .foregroundColor(.accentColor)
@@ -261,53 +256,8 @@ struct HomeView: View {
         }
     }
     
-    @ViewBuilder
-    private var quickActionsSection: some View {
-        VStack(spacing: 12) {
-            HStack {
-                Text("クイックアクション")
-                    .font(.headline)
-                Spacer()
-            }
-            
-            LazyVGrid(columns: [
-                GridItem(.flexible()),
-                GridItem(.flexible())
-            ], spacing: 16) {
-                QuickActionButton(
-                    title: "食事を記録",
-                    icon: "camera.fill",
-                    color: .green
-                ) {
-                    // Navigate to meal logging
-                }
-                
-                QuickActionButton(
-                    title: "体重を記録",
-                    icon: "scalemass.fill",
-                    color: .blue
-                ) {
-                    // Navigate to weight logging
-                }
-                
-                QuickActionButton(
-                    title: "進捗を確認",
-                    icon: "chart.line.uptrend.xyaxis",
-                    color: .purple
-                ) {
-                    // Navigate to progress
-                }
-                
-                QuickActionButton(
-                    title: "設定",
-                    icon: "gearshape.fill",
-                    color: .gray
-                ) {
-                    // Navigate to settings
-                }
-            }
-        }
-    }
+    // Removed quick actions section as requested in issue
+    // User specifically mentioned: "ここのクイックアクションはもう表示を切っちゃっていいです"
     
     @ViewBuilder
     private var miniChartsSection: some View {

@@ -60,3 +60,9 @@ ios/fastlane/screenshots/**/screenshots.html
 # UI Test outputs
 ios/DerivedData/
 ios/test_output/
+
+# Xcode user state files
+*.xcuserstate
+*.xcworkspace/xcuserdata/
+*.xcodeproj/xcuserdata/
+*.xcodeproj/project.xcworkspace/xcuserdata/

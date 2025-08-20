@@ -14,9 +14,9 @@ struct UnifiedSettingsView: View {
     @Environment(\.dismiss) private var dismiss
     @Query private var userProfiles: [UserProfile]
     
-    @StateObject private var aiManager = AIServiceManager()
-    @StateObject private var healthKitService = HealthKitService()
-    @StateObject private var cloudKitService = CloudKitService()
+    @EnvironmentObject private var aiManager: AIServiceManager
+    @EnvironmentObject private var healthKitService: HealthKitService
+    @EnvironmentObject private var cloudKitService: CloudKitService
     
     @State private var selectedTab: SettingsTab = .overview
     @State private var showingAISettings = false
@@ -103,7 +103,9 @@ struct UnifiedSettingsView: View {
             }
         }
         .onAppear {
-            refreshServiceStatus()
+            Task {
+                await refreshServiceStatus()
+            }
         }
     }
     
@@ -295,11 +297,9 @@ struct UnifiedSettingsView: View {
         return dates.max()
     }
     
-    private func refreshServiceStatus() {
-        Task {
-            await healthKitService.initialize()
-            await cloudKitService.initialize()
-        }
+    private func refreshServiceStatus() async {
+        await healthKitService.initialize()
+        await cloudKitService.initialize()
     }
     
     private func performFullSync() {

@@ -305,7 +305,7 @@ struct OnboardingView: View {
             
             Image(systemName: "checkmark.circle.fill")
                 .font(.system(size: 100))
-                .foregroundColor(.green)
+                .foregroundColor(Color.green)
             
             VStack(spacing: 16) {
                 Text("設定完了！")

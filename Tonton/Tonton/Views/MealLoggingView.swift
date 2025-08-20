@@ -258,7 +258,7 @@ struct MealRecordRowView: View {
     
     private var mealTypeIcon: String {
         switch meal.mealTimeType {
-        case .breakfast: return "sun.rise"
+        case .breakfast: return "sunrise"
         case .lunch: return "sun.max"
         case .dinner: return "moon"
         case .snack: return "cup.and.saucer"

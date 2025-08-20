@@ -258,7 +258,7 @@ struct CurrentProviderCard: View {
             
             if isConfigured {
                 Image(systemName: "checkmark.circle.fill")
-                    .foregroundColor(.green)
+                    .foregroundColor(Color.green)
             } else {
                 Image(systemName: "exclamationmark.circle.fill")
                     .foregroundColor(.red)

@@ -124,7 +124,7 @@ struct CloudKitSettingsView: View {
                 SyncControlCard(
                     title: "全データ同期",
                     description: "プロフィール、食事記録、体重、カロリー貯金をすべて同期",
-                    icon: "icloud.and.arrow.up.and.arrow.down",
+                    icon: "arrow.triangle.2.circlepath",
                     isEnabled: cloudKitService.isSignedIn,
                     isSyncing: cloudKitService.isSyncing,
                     lastSyncDate: cloudKitService.lastSyncDate
@@ -227,7 +227,7 @@ struct CloudKitSettingsView: View {
                 }) {
                     HStack {
                         Image(systemName: "key")
-                            .foregroundColor(.blue)
+                            .foregroundColor(Color.blue)
                             .frame(width: 30)
                         
                         VStack(alignment: .leading, spacing: 4) {

@@ -228,7 +228,7 @@ struct ProfileEditView: View {
             if let profile = currentUserProfile {
                 Text("✅ Current Profile Found")
                     .font(.caption)
-                    .foregroundColor(.green)
+                    .foregroundColor(Color.green)
                 
                 Text("AI Provider: \(profile.aiProvider.displayName)")
                     .font(.caption)

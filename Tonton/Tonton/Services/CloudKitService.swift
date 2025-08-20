@@ -34,6 +34,7 @@ class CloudKitService: ObservableObject {
     init() {
         // Safe initialization - no CloudKit API calls here
         updateSyncStatus("初期化中...")
+        userAccountStatus = "確認中..."
     }
     
     // Safe initialization method - call this after UI is ready
@@ -43,6 +44,10 @@ class CloudKitService: ObservableObject {
         do {
             // Check iCloud availability first
             guard FileManager.default.ubiquityIdentityToken != nil else {
+                await MainActor.run {
+                    userAccountStatus = "iCloudが未設定"
+                    updateSyncStatus("iCloudにサインインが必要です")
+                }
                 throw CloudKitError.notSignedIn
             }
             
@@ -130,32 +135,36 @@ class CloudKitService: ObservableObject {
             guard let container = container else { return }
             let status = try await container.accountStatus()
             
-            switch status {
-            case .available:
-                userAccountStatus = "利用可能"
-                isSignedIn = true
-            case .noAccount:
-                userAccountStatus = "アカウントなし"
-                isSignedIn = false
-            case .restricted:
-                userAccountStatus = "制限中"
-                isSignedIn = false
-            case .couldNotDetermine:
-                userAccountStatus = "確認不可"
-                isSignedIn = false
-            case .temporarilyUnavailable:
-                userAccountStatus = "一時的に利用不可"
-                isSignedIn = false
-            @unknown default:
-                userAccountStatus = "不明"
-                isSignedIn = false
+            await MainActor.run {
+                switch status {
+                case .available:
+                    userAccountStatus = "利用可能"
+                    isSignedIn = true
+                case .noAccount:
+                    userAccountStatus = "アカウントなし"
+                    isSignedIn = false
+                case .restricted:
+                    userAccountStatus = "制限中"
+                    isSignedIn = false
+                case .couldNotDetermine:
+                    userAccountStatus = "確認不可"
+                    isSignedIn = false
+                case .temporarilyUnavailable:
+                    userAccountStatus = "一時的に利用不可"
+                    isSignedIn = false
+                @unknown default:
+                    userAccountStatus = "不明"
+                    isSignedIn = false
+                }
+                
+                updateSyncStatus(isSignedIn ? "認証済み" : "未認証")
             }
-            
-            updateSyncStatus(isSignedIn ? "認証済み" : "未認証")
         } catch {
-            userAccountStatus = "エラー: \(error.localizedDescription)"
-            isSignedIn = false
-            updateSyncStatus("認証エラー")
+            await MainActor.run {
+                userAccountStatus = "エラー: \(error.localizedDescription)"
+                isSignedIn = false
+                updateSyncStatus("認証エラー")
+            }
         }
     }
     

@@ -99,7 +99,7 @@ struct WeightProgressChart: View {
                         Text("\(String(format: "%.1f", latest.weight)) kg")
                             .font(.title2)
                             .fontWeight(.semibold)
-                            .foregroundColor(.blue)
+                            .foregroundColor(Color.blue)
                         
                         if filteredRecords.count > 1 {
                             let previous = filteredRecords[filteredRecords.count - 2]
@@ -187,7 +187,7 @@ struct WeightProgressChart: View {
                     .annotation(position: .trailing, alignment: .leading) {
                         Text("目標: \(String(format: "%.1f", target)) kg")
                             .font(.caption)
-                            .foregroundColor(.green)
+                            .foregroundColor(Color.green)
                             .padding(.horizontal, 8)
                             .padding(.vertical, 4)
                             .background(

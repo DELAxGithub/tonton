@@ -15,6 +15,7 @@ struct ProfileView: View {
     @State private var showingBugReport = false
     @State private var showingUnifiedSettings = false
     @State private var showingProfileEdit = false
+    @EnvironmentObject private var cloudKitService: CloudKitService
     
     private var currentUserProfile: UserProfile? {
         userProfiles.first
@@ -32,6 +33,9 @@ struct ProfileView: View {
                     
                     // Goals section
                     goalsSection
+                    
+                    // Account section
+                    accountSection
                     
                     // Settings section
                     settingsSection
@@ -180,6 +184,97 @@ struct ProfileView: View {
     }
     
     @ViewBuilder
+    private var accountSection: some View {
+        TonTonSettingsGroup("アカウント") {
+            // Account status row
+            HStack(spacing: 16) {
+                Image(systemName: cloudKitService.isSignedIn ? "icloud.fill" : "icloud.slash")
+                    .font(.title3)
+                    .foregroundColor(cloudKitService.isSignedIn ? Color.green : Color.orange)
+                    .frame(width: 30)
+                
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(cloudKitService.isSignedIn ? "Apple IDでログイン中" : "iCloudが未設定")
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                    
+                    Text(cloudKitService.userAccountStatus)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                
+                Spacer()
+                
+                if cloudKitService.isSignedIn {
+                    Image(systemName: "checkmark.circle.fill")
+                        .font(.caption)
+                        .foregroundColor(Color.green)
+                } else {
+                    Image(systemName: "exclamationmark.triangle.fill")
+                        .font(.caption)
+                        .foregroundColor(Color.orange)
+                }
+            }
+            .padding(.vertical, 12)
+            .padding(.horizontal, 16)
+            
+            // Settings button for non-signed-in users
+            if !cloudKitService.isSignedIn {
+                Divider()
+                    .padding(.leading, 44)
+                
+                TonTonSettingsRow(
+                    icon: "gear",
+                    title: "iCloud設定を開く",
+                    color: Color.blue
+                ) {
+                    openiCloudSettings()
+                }
+            }
+            
+            // Sync status section
+            if cloudKitService.isSignedIn {
+                Divider()
+                    .padding(.leading, 44)
+                
+                HStack(spacing: 16) {
+                    Image(systemName: "arrow.triangle.2.circlepath")
+                        .font(.title3)
+                        .foregroundColor(Color.blue)
+                        .frame(width: 30)
+                    
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("同期状態")
+                            .font(.subheadline)
+                            .fontWeight(.medium)
+                        
+                        HStack {
+                            Text(cloudKitService.syncStatus)
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                            
+                            if cloudKitService.isSyncing {
+                                ProgressView()
+                                    .scaleEffect(0.6)
+                            }
+                        }
+                    }
+                    
+                    Spacer()
+                    
+                    if let lastSync = cloudKitService.lastSyncDate {
+                        Text(formatLastSyncDate(lastSync))
+                            .font(.caption2)
+                            .foregroundColor(.secondary)
+                    }
+                }
+                .padding(.vertical, 12)
+                .padding(.horizontal, 16)
+            }
+        }
+    }
+    
+    @ViewBuilder
     private var settingsSection: some View {
         TonTonSettingsGroup("設定") {
             TonTonSettingsRow(
@@ -213,18 +308,23 @@ struct ProfileView: View {
             }
         }
         
-        // Logout button
-        TonTonCard {
-            Button(action: {
-                // TODO: Handle logout
-            }) {
-                Text("ログアウト")
-                    .font(.headline)
-                    .foregroundColor(.red)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 8)
+        // Account actions
+        if cloudKitService.isSignedIn {
+            TonTonCard {
+                VStack(spacing: 8) {
+                    Text("Apple IDによる認証を利用中")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
+                    
+                    Text("ログアウトするには、iOSの設定からiCloudをオフにしてください")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal)
+                }
+                .padding(.vertical, 12)
             }
-            .buttonStyle(PlainButtonStyle())
         }
     }
     
@@ -235,6 +335,18 @@ struct ProfileView: View {
         case "maintain": return "体重維持"
         default: return goal
         }
+    }
+    
+    private func openiCloudSettings() {
+        if let url = URL(string: "App-Prefs:root=CASTLE") {
+            UIApplication.shared.open(url)
+        }
+    }
+    
+    private func formatLastSyncDate(_ date: Date) -> String {
+        let formatter = RelativeDateTimeFormatter()
+        formatter.dateTimeStyle = .named
+        return formatter.localizedString(for: date, relativeTo: Date())
     }
     
     private func createHealthContext() -> HealthKitContext? {

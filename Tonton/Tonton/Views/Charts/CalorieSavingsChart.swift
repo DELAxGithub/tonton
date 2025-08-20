@@ -176,7 +176,7 @@ struct CalorieSavingsChart: View {
                     .annotation(position: .trailing, alignment: .leading) {
                         Text("平均: \(String(format: "%.0f", averageSavings)) kcal")
                             .font(.caption)
-                            .foregroundColor(.blue)
+                            .foregroundColor(Color.blue)
                             .padding(.horizontal, 8)
                             .padding(.vertical, 4)
                             .background(

@@ -52,7 +52,7 @@ struct TonTonBugReportView: View {
                                 Text(category.displayName)
                             } icon: {
                                 Image(systemName: category.icon)
-                                    .foregroundColor(.blue)
+                                    .foregroundColor(Color.blue)
                             }
                             .tag(category)
                         }

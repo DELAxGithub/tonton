@@ -278,7 +278,7 @@ struct HomeView: View {
                 VStack(spacing: 8) {
                     HStack {
                         Image(systemName: "scalemass")
-                            .foregroundColor(.blue)
+                            .foregroundColor(Color.blue)
                         Text("体重推移（1週間）")
                             .font(.subheadline)
                             .fontWeight(.medium)
@@ -303,7 +303,7 @@ struct HomeView: View {
                 VStack(spacing: 8) {
                     HStack {
                         Image(systemName: "chart.bar.fill")
-                            .foregroundColor(.green)
+                            .foregroundColor(Color.green)
                         Text("カロリー貯金（1週間）")
                             .font(.subheadline)
                             .fontWeight(.medium)

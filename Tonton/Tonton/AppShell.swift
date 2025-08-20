@@ -10,6 +10,9 @@ import SwiftUI
 
 struct AppShell: View {
     @Environment(\.modelContext) private var modelContext
+    @EnvironmentObject private var aiServiceManager: AIServiceManager
+    @EnvironmentObject private var healthKitService: HealthKitService
+    @EnvironmentObject private var cloudKitService: CloudKitService
     @State private var selectedTab = 0
     
     var body: some View {
@@ -47,6 +50,12 @@ struct AppShell: View {
                 .tag(3)
         }
         .accentColor(.pink)
+        .onAppear {
+            Task {
+                await healthKitService.initialize()
+                await cloudKitService.initialize()
+            }
+        }
     }
 }
 

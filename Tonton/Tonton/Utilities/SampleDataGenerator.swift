@@ -184,7 +184,7 @@ struct SampleDataPreview: View {
                 .cornerRadius(8)
             } else {
                 Text("サンプルデータを生成しました")
-                    .foregroundColor(.green)
+                    .foregroundColor(Color.green)
                 
                 Button("データをクリア") {
                     SampleDataGenerator.clearAllData(in: modelContext)

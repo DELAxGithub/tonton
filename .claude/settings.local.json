@@ -81,7 +81,8 @@
       "Bash(brew install:*)",
       "Bash(npx tsx:*)",
       "Bash(swift:*)",
-      "Bash(xcrun simctl install:*)"
+      "Bash(xcrun simctl install:*)",
+      "Bash(git fetch:*)"
     ],
     "deny": []
   },

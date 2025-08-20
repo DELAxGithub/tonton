@@ -137,7 +137,7 @@ enum TonTonBugCategory: String, CaseIterable, Codable {
         case .weightTracking: return "scalemass"
         case .calorieCalculation: return "flame"
         case .dataNotSaved: return "externaldrive.badge.exclamationmark"
-        case .dataSync: return "icloud.and.arrow.up"
+        case .dataSync: return "icloud"
         
         // Meal Logging
         case .mealPhotoUpload: return "camera"

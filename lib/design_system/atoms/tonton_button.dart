@@ -279,8 +279,23 @@ class _TontonButtonState extends State<TontonButton> {
         height: height,
         padding: padding,
         decoration: BoxDecoration(
-          color: backgroundColor,
+          color: widget.style == TontonButtonStyle.filled && widget.backgroundColor == null
+              ? null // Use gradient instead
+              : backgroundColor,
+          gradient: widget.style == TontonButtonStyle.filled && widget.backgroundColor == null
+              ? TontonColors.primaryGradient
+              : null,
           borderRadius: tokens.Radii.mediumBorderRadius,
+          boxShadow: widget.style == TontonButtonStyle.filled && !isDisabled
+              ? [
+                  BoxShadow(
+                    color: TontonColors.pigPink.withValues(alpha: 0.3),
+                    offset: const Offset(0, 4),
+                    blurRadius: 12,
+                    spreadRadius: 0,
+                  )
+                ]
+              : null, // Add glow to buttons
           border:
               widget.style == TontonButtonStyle.plain && !isDark
                   ? Border.all(

@@ -61,8 +61,14 @@ class TontonCardBase extends StatelessWidget {
       case 3:
         shadows = Elevation.shadowLevel3;
         break;
-      default:
+      case 4:
         shadows = Elevation.shadowLevel4;
+        break;
+      case 5: // Premium Elevation
+        shadows = Elevation.shadowPremium;
+        break;
+      default:
+        shadows = Elevation.shadowLevel1;
     }
 
     Widget card = Container(

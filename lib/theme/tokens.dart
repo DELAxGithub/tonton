@@ -119,10 +119,20 @@ class Elevation {
 
   static List<BoxShadow> shadowLevel4 = [
     BoxShadow(
-      color: Colors.black.withValues(alpha: 0.10),
+      color: Colors.black.withValues(alpha: 0.12),
       offset: const Offset(0, 8),
-      blurRadius: 16,
+      blurRadius: 20, // Increased blur for softer look
       spreadRadius: 0,
+    ),
+  ];
+
+  /// Premium Glow Shadow (Pig Pink)
+  static List<BoxShadow> shadowPremium = [
+    BoxShadow(
+      color: const Color(0xFFFF9AA2).withValues(alpha: 0.25),
+      offset: const Offset(0, 4),
+      blurRadius: 16,
+      spreadRadius: 2,
     ),
   ];
 }

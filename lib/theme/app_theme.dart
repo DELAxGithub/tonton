@@ -128,7 +128,8 @@ class TontonTheme {
     ),
     scaffoldBackgroundColor: new_colors.TontonColors.systemGroupedBackground,
     cardTheme: CardThemeData(
-      elevation: 0,
+      elevation: 4, // Increased elevation for shadow visibility
+      shadowColor: new_tokens.Elevation.shadowPremium[0].color, // Use premium pink glow
       shape: RoundedRectangleBorder(
         borderRadius: new_tokens.Radii.largeBorderRadius,
       ),

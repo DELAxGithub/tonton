@@ -9,11 +9,18 @@ class TontonColors {
   TontonColors._();
 
   // ===== Brand Colors =====
-  /// Tonton's signature pig pink color
-  static const Color pigPink = Color(0xFFF7B6B9);
+  /// Tonton's signature pig pink color - Refined for Premium Look
+  static const Color pigPink = Color(0xFFFF9AA2); // More vibrant/warm pink
 
   /// Darker variant of pig pink for emphasis
-  static const Color pigPinkDark = Color(0xFFE89B9E);
+  static const Color pigPinkDark = Color(0xFFE0576A);
+
+  /// Premium Gradient for primary actions
+  static const LinearGradient primaryGradient = LinearGradient(
+    colors: [Color(0xFFFF9AA2), Color(0xFFFFB7B2)],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
 
   // ===== System Colors (Light Mode) =====
   static const Color systemRed = Color(0xFFFF3B30);

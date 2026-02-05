@@ -60,3 +60,6 @@ ios/fastlane/screenshots/**/screenshots.html
 # UI Test outputs
 ios/DerivedData/
 ios/test_output/
+
+# Supabase CLI temp
+supabase/.temp/

@@ -24,18 +24,20 @@
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>LSApplicationContentRating</key>
+	<string>12</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>トントンアプリは食事の写真を分析してカロリーを推定するために、フォトライブラリへのアクセスを必要とします。</string>
 	<key>NSCameraUsageDescription</key>
 	<string>トントンアプリは食事の写真を撮影してカロリーを推定するために、カメラへのアクセスを必要とします。</string>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>トントンアプリは食事の動画を撮影する際に音声を録音するために、マイクへのアクセスを必要とする場合があります（現在は画像のみですが将来的な拡張のため）。</string>
 	<key>NSHealthShareUsageDescription</key>
 	<string>ワークアウトデータや健康記録を読み取るためにヘルスケアデータへのアクセスを許可してください。</string>
 	<key>NSHealthUpdateUsageDescription</key>
 	<string>健康データをヘルスケアアプリに記録するためにアクセスを許可してください。(このアプリでは書き込みは行いません)</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>トントンアプリは食事の動画を撮影する際に音声を録音するために、マイクへのアクセスを必要とする場合があります（現在は画像のみですが将来的な拡張のため）。</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>トントンアプリは食事の写真を分析してカロリーを推定するために、フォトライブラリへのアクセスを必要とします。</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
@@ -55,7 +57,5 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<key>LSApplicationContentRating</key>
-	<string>12</string>
 </dict>
 </plist>

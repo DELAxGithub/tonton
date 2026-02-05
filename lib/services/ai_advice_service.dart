@@ -52,7 +52,7 @@ class AiAdviceService {
   Future<AiAdviceResponse> getMealAdvice(AiAdviceRequest request) async {
     try {
       final response = await _supabaseClient.functions.invoke(
-        'generate-meal-advice', // Ensure this matches your Edge Function name
+        'generate-meal-advice-v2',
         body: request.toJson(),
       );
 
@@ -155,7 +155,7 @@ class AiAdviceService {
       };
 
       final response = await _supabaseClient.functions.invoke(
-        'generate-meal-advice', // v1を使用して栄養情報付きメニュー提案を取得
+        'generate-meal-advice-v2',
         body: enhancedRequest,
       );
 

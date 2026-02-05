@@ -1,173 +1,114 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../utils/icon_mapper.dart';
 import '../theme/app_theme.dart';
-
+import '../theme/colors.dart' as design_colors;
 import '../models/meal_record.dart';
 
-/// A widget that displays a meal record as a card
+/// Compact horizontal meal record card matching .pen MealRecordCard design
 class MealRecordCard extends StatelessWidget {
-  /// The meal record to display
   final MealRecord mealRecord;
-
-  /// Callback for when the card is tapped
   final VoidCallback? onTap;
 
-  /// Constructor for MealRecordCard
   const MealRecordCard({super.key, required this.mealRecord, this.onTap});
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final timeStr = DateFormat.jm().format(mealRecord.consumedAt);
+    final mealType = mealRecord.mealTimeType.displayName;
 
-    return Card(
-      clipBehavior: Clip.antiAlias,
-      margin: const EdgeInsets.only(bottom: 12),
-      child: InkWell(
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Meal type and time
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.primaryContainer,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(
-                          TontonIcons.mealTimeIcon(mealRecord.mealTimeType),
-                          size: 16,
-                          color: theme.colorScheme.onPrimaryContainer,
-                          semanticLabel: mealRecord.mealTimeType.displayName,
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          mealRecord.mealTimeType.displayName,
-                          style: TextStyle(
-                            color: theme.colorScheme.onPrimaryContainer,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(13),
+        boxShadow: const [
+          BoxShadow(
+            color: design_colors.TontonColors.shadowSubtle,
+            offset: Offset(0, 1),
+            blurRadius: 6,
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(13),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+            child: Row(
+              children: [
+                // Photo thumbnail placeholder
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: design_colors.TontonColors.borderSubtle,
+                    borderRadius: BorderRadius.circular(10),
                   ),
-                  Text(
-                    DateFormat.jm().format(mealRecord.consumedAt),
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
+                  child: Icon(
+                    Icons.restaurant,
+                    color: TontonColors.textTertiary,
+                    size: 22,
                   ),
-                ],
-              ),
-              const SizedBox(height: 12),
-
-              // Meal name
-              Text(
-                mealRecord.mealName,
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
                 ),
-              ),
+                const SizedBox(width: 12),
 
-              // Meal description (if available)
-              if (mealRecord.description.isNotEmpty) ...[
-                const SizedBox(height: 4),
-                Text(
-                  mealRecord.description,
-                  style: theme.textTheme.bodyMedium,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
+                // Info column
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        mealRecord.mealName,
+                        style: const TextStyle(
+                          color: TontonColors.textPrimary,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        '$timeStr · $mealType',
+                        style: TextStyle(
+                          color: TontonColors.textTertiary,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Calories
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      mealRecord.calories.toStringAsFixed(0),
+                      style: const TextStyle(
+                        color: design_colors.TontonColors.pigPink,
+                        fontSize: 17,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      'kcal',
+                      style: TextStyle(
+                        color: TontonColors.textTertiary,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
                 ),
               ],
-
-              const SizedBox(height: 12),
-              const Divider(),
-
-              // Nutrition information
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  // Calories
-                  _buildNutritionInfo(
-                    context,
-                    TontonIcons.energy,
-                    '${mealRecord.calories.toStringAsFixed(0)} kcal',
-                    theme.colorScheme.primary,
-                  ),
-                  // Protein
-                  _buildNutritionInfo(
-                    context,
-                    Icons.fitness_center,
-                    '${mealRecord.protein.toStringAsFixed(1)} g',
-                    TontonColors.proteinColor,
-                    label: 'Protein',
-                  ),
-                  // Fat
-                  _buildNutritionInfo(
-                    context,
-                    Icons.water_drop,
-                    '${mealRecord.fat.toStringAsFixed(1)} g',
-                    TontonColors.fatColor,
-                    label: 'Fat',
-                  ),
-                  // Carbs
-                  _buildNutritionInfo(
-                    context,
-                    Icons.grain,
-                    '${mealRecord.carbs.toStringAsFixed(1)} g',
-                    TontonColors.carbsColor,
-                    label: 'Carbs',
-                  ),
-                ],
-              ),
-            ],
+            ),
           ),
         ),
       ),
-    );
-  }
-
-  /// Helper method to build a nutrition info item
-  Widget _buildNutritionInfo(
-    BuildContext context,
-    IconData icon,
-    String value,
-    Color color, {
-    String? label,
-  }) {
-    return Column(
-      children: [
-        Row(
-          children: [
-            Icon(icon, color: color, size: 16, semanticLabel: label),
-            const SizedBox(width: 4),
-            Text(
-              value,
-              style: TextStyle(fontWeight: FontWeight.bold, color: color),
-            ),
-          ],
-        ),
-        if (label != null) ...[
-          const SizedBox(height: 2),
-          Text(
-            label,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
-            ),
-          ),
-        ],
-      ],
     );
   }
 }

@@ -1,0 +1,1432 @@
+{
+  "version": "2.7",
+  "children": [
+    {
+      "type": "frame",
+      "id": "xoquj",
+      "x": 0,
+      "y": 0,
+      "name": "Component/Button/Primary",
+      "reusable": true,
+      "height": 44,
+      "fill": "$pig-pink",
+      "cornerRadius": 13,
+      "gap": 8,
+      "padding": [
+        12,
+        24
+      ],
+      "justifyContent": "center",
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "icon_font",
+          "id": "vDknG",
+          "name": "icon",
+          "enabled": false,
+          "width": 18,
+          "height": 18,
+          "iconFontName": "plus",
+          "iconFontFamily": "lucide",
+          "fill": "#FFFFFF"
+        },
+        {
+          "type": "text",
+          "id": "M6xMb",
+          "name": "label",
+          "fill": "#FFFFFF",
+          "content": "ボタン",
+          "fontFamily": "SF Pro Display",
+          "fontSize": 17,
+          "fontWeight": "600"
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "HCDqu",
+      "x": 200,
+      "y": 0,
+      "name": "Component/Button/Secondary",
+      "reusable": true,
+      "height": 44,
+      "fill": "$bg-muted",
+      "cornerRadius": 13,
+      "gap": 8,
+      "padding": [
+        12,
+        24
+      ],
+      "justifyContent": "center",
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "icon_font",
+          "id": "qNhmI",
+          "name": "icon",
+          "enabled": false,
+          "width": 18,
+          "height": 18,
+          "iconFontName": "plus",
+          "iconFontFamily": "lucide",
+          "fill": "$pig-pink"
+        },
+        {
+          "type": "text",
+          "id": "UhPUm",
+          "name": "label",
+          "fill": "$pig-pink",
+          "content": "ボタン",
+          "fontFamily": "SF Pro Display",
+          "fontSize": 17,
+          "fontWeight": "600"
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "T7jZo",
+      "x": 0,
+      "y": 80,
+      "name": "Component/Card",
+      "reusable": true,
+      "fill": "$bg-surface",
+      "cornerRadius": 16,
+      "effect": {
+        "type": "shadow",
+        "shadowType": "outer",
+        "color": "$shadow-subtle",
+        "offset": {
+          "x": 0,
+          "y": 2
+        },
+        "blur": 12
+      },
+      "layout": "vertical",
+      "children": [
+        {
+          "type": "frame",
+          "id": "EdKlD",
+          "name": "content",
+          "slot": [],
+          "width": "fill_container",
+          "height": "fit_content(0)",
+          "layout": "vertical",
+          "gap": 12,
+          "padding": 16
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "se16S",
+      "x": 0,
+      "y": 220,
+      "name": "Component/SectionHeader",
+      "reusable": true,
+      "width": "fill_container(320)",
+      "justifyContent": "space_between",
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "text",
+          "id": "ndfg8",
+          "name": "title",
+          "fill": "$text-primary",
+          "content": "セクションタイトル",
+          "fontFamily": "SF Pro Display",
+          "fontSize": 20,
+          "fontWeight": "600"
+        },
+        {
+          "type": "text",
+          "id": "hVPe2",
+          "name": "action",
+          "fill": "$pig-pink",
+          "content": "すべて見る",
+          "fontFamily": "SF Pro Display",
+          "fontSize": 15,
+          "fontWeight": "500"
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "TANTb",
+      "x": 400,
+      "y": 0,
+      "name": "Component/IconButton",
+      "reusable": true,
+      "width": 44,
+      "height": 44,
+      "fill": "$bg-surface",
+      "cornerRadius": 999,
+      "effect": {
+        "type": "shadow",
+        "shadowType": "outer",
+        "color": "$shadow-subtle",
+        "offset": {
+          "x": 0,
+          "y": 1
+        },
+        "blur": 6
+      },
+      "justifyContent": "center",
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "icon_font",
+          "id": "0xgRX",
+          "name": "icon",
+          "width": 22,
+          "height": 22,
+          "iconFontName": "bell",
+          "iconFontFamily": "lucide",
+          "fill": "$text-primary"
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "UHzRV",
+      "x": 0,
+      "y": 280,
+      "name": "Component/MetricCard",
+      "reusable": true,
+      "fill": "$bg-surface",
+      "cornerRadius": 16,
+      "effect": {
+        "type": "shadow",
+        "shadowType": "outer",
+        "color": "$shadow-subtle",
+        "offset": {
+          "x": 0,
+          "y": 2
+        },
+        "blur": 12
+      },
+      "layout": "vertical",
+      "gap": 4,
+      "padding": 16,
+      "children": [
+        {
+          "type": "frame",
+          "id": "RsCEk",
+          "name": "iconRow",
+          "width": "fill_container",
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "RHCDZ",
+              "name": "iconBg",
+              "width": 32,
+              "height": 32,
+              "fill": "$pig-pink-light",
+              "cornerRadius": 8,
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon_font",
+                  "id": "zQ1PY",
+                  "name": "icon",
+                  "width": 18,
+                  "height": 18,
+                  "iconFontName": "flame",
+                  "iconFontFamily": "lucide",
+                  "fill": "$pig-pink"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "id": "jdenM",
+          "name": "value",
+          "fill": "$text-primary",
+          "content": "1,234",
+          "fontFamily": "SF Pro Display",
+          "fontSize": 28,
+          "fontWeight": "700"
+        },
+        {
+          "type": "text",
+          "id": "Wdna5",
+          "name": "label",
+          "fill": "$text-secondary",
+          "content": "カロリー",
+          "fontFamily": "SF Pro Display",
+          "fontSize": 13,
+          "fontWeight": "500"
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "QoY9h",
+      "x": 0,
+      "y": 430,
+      "name": "Component/MealRecordCard",
+      "reusable": true,
+      "fill": "$bg-surface",
+      "cornerRadius": 13,
+      "effect": {
+        "type": "shadow",
+        "shadowType": "outer",
+        "color": "$shadow-subtle",
+        "offset": {
+          "x": 0,
+          "y": 1
+        },
+        "blur": 6
+      },
+      "gap": 12,
+      "padding": [
+        14,
+        16
+      ],
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "frame",
+          "id": "eP4AH",
+          "name": "photo",
+          "clip": true,
+          "width": 48,
+          "height": 48,
+          "fill": "#F0E8E6",
+          "cornerRadius": 10
+        },
+        {
+          "type": "frame",
+          "id": "MzhTu",
+          "name": "info",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 2,
+          "children": [
+            {
+              "type": "text",
+              "id": "iDdlh",
+              "name": "mealName",
+              "fill": "$text-primary",
+              "content": "チキンサラダ",
+              "fontFamily": "SF Pro Display",
+              "fontSize": 15,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "oMvpy",
+              "name": "mealTime",
+              "fill": "$text-tertiary",
+              "content": "12:30 PM · 昼食",
+              "fontFamily": "SF Pro Display",
+              "fontSize": 12
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "I1yqZ",
+          "name": "caloriesWrap",
+          "layout": "vertical",
+          "gap": 2,
+          "alignItems": "end",
+          "children": [
+            {
+              "type": "text",
+              "id": "btp5t",
+              "name": "calories",
+              "fill": "$pig-pink",
+              "content": "420",
+              "fontFamily": "SF Pro Display",
+              "fontSize": 17,
+              "fontWeight": "700"
+            },
+            {
+              "type": "text",
+              "id": "agcM1",
+              "name": "unit",
+              "fill": "$text-tertiary",
+              "content": "kcal",
+              "fontFamily": "SF Pro Display",
+              "fontSize": 11,
+              "fontWeight": "500"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "U2yib",
+      "x": 0,
+      "y": 560,
+      "name": "Component/PfcBarItem",
+      "reusable": true,
+      "layout": "vertical",
+      "gap": 4,
+      "children": [
+        {
+          "type": "frame",
+          "id": "7UfoE",
+          "name": "topRow",
+          "width": "fill_container",
+          "justifyContent": "space_between",
+          "children": [
+            {
+              "type": "text",
+              "id": "MJEcE",
+              "name": "label",
+              "fill": "$text-secondary",
+              "content": "たんぱく質",
+              "fontFamily": "SF Pro Display",
+              "fontSize": 13,
+              "fontWeight": "500"
+            },
+            {
+              "type": "text",
+              "id": "REZyB",
+              "name": "value",
+              "fill": "$text-primary",
+              "content": "45 / 80g",
+              "fontFamily": "SF Pro Display",
+              "fontSize": 13,
+              "fontWeight": "600"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "H5cKE",
+          "name": "track",
+          "width": "fill_container",
+          "height": 6,
+          "fill": "#F0E8E6",
+          "cornerRadius": 3,
+          "children": [
+            {
+              "type": "frame",
+              "id": "BHoNg",
+              "name": "fill",
+              "width": 56,
+              "height": "fill_container",
+              "fill": "$protein-red",
+              "cornerRadius": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "6Jkni",
+      "x": 0,
+      "y": 650,
+      "name": "Component/CalorieSavingsHero",
+      "reusable": true,
+      "fill": {
+        "type": "gradient",
+        "gradientType": "linear",
+        "enabled": true,
+        "rotation": 180,
+        "size": {
+          "height": 1
+        },
+        "colors": [
+          {
+            "color": "#FF9AA2",
+            "position": 0
+          },
+          {
+            "color": "#FFB7BD",
+            "position": 1
+          }
+        ]
+      },
+      "cornerRadius": 20,
+      "effect": {
+        "type": "shadow",
+        "shadowType": "outer",
+        "color": "#FF9AA230",
+        "offset": {
+          "x": 0,
+          "y": 4
+        },
+        "blur": 16
+      },
+      "layout": "vertical",
+      "gap": 8,
+      "padding": 24,
+      "children": [
+        {
+          "type": "frame",
+          "id": "cMYBl",
+          "name": "headerRow",
+          "width": "fill_container",
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "Q9fgT",
+              "name": "title",
+              "fill": "#FFFFFF",
+              "content": "今日のカロリー貯金",
+              "fontFamily": "SF Pro Display",
+              "fontSize": 15,
+              "fontWeight": "600"
+            },
+            {
+              "type": "icon_font",
+              "id": "qqTfB",
+              "name": "piggy",
+              "width": 24,
+              "height": 24,
+              "iconFontName": "piggy-bank",
+              "iconFontFamily": "lucide",
+              "fill": "#FFFFFF"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "VDXkn",
+          "name": "valueRow",
+          "gap": 4,
+          "alignItems": "end",
+          "children": [
+            {
+              "type": "text",
+              "id": "Fe3fK",
+              "name": "savingsValue",
+              "fill": "#FFFFFF",
+              "content": "+320",
+              "fontFamily": "SF Pro Display",
+              "fontSize": 44,
+              "fontWeight": "700"
+            },
+            {
+              "type": "text",
+              "id": "KXygh",
+              "name": "unit",
+              "fill": "#FFFFFFCC",
+              "content": "kcal",
+              "fontFamily": "SF Pro Display",
+              "fontSize": 17,
+              "fontWeight": "500"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "Kjtwc",
+          "name": "subRow",
+          "width": "fill_container",
+          "gap": 16,
+          "children": [
+            {
+              "type": "text",
+              "id": "JDDQr",
+              "name": "intake",
+              "fill": "#FFFFFFBB",
+              "content": "摂取: 1,480",
+              "fontFamily": "SF Pro Display",
+              "fontSize": 13,
+              "fontWeight": "500"
+            },
+            {
+              "type": "text",
+              "id": "LCnUl",
+              "name": "burn",
+              "fill": "#FFFFFFBB",
+              "content": "消費: 1,800",
+              "fontFamily": "SF Pro Display",
+              "fontSize": 13,
+              "fontWeight": "500"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "ryUDA",
+      "x": 0,
+      "y": 860,
+      "name": "Component/TabBar",
+      "reusable": true,
+      "width": "fill_container(390)",
+      "height": 84,
+      "fill": "$bg-surface",
+      "effect": {
+        "type": "shadow",
+        "shadowType": "outer",
+        "color": "$shadow-subtle",
+        "offset": {
+          "x": 0,
+          "y": -1
+        },
+        "blur": 8
+      },
+      "padding": [
+        8,
+        0,
+        28,
+        0
+      ],
+      "justifyContent": "space_around",
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "frame",
+          "id": "kRGA0",
+          "name": "tabHome",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 4,
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "icon_font",
+              "id": "JfaJ2",
+              "name": "icon",
+              "width": 22,
+              "height": 22,
+              "iconFontName": "home",
+              "iconFontFamily": "Material Symbols Rounded",
+              "fill": "$pig-pink"
+            },
+            {
+              "type": "text",
+              "id": "7YQiS",
+              "name": "label",
+              "fill": "$pig-pink",
+              "content": "ホーム",
+              "fontFamily": "SF Pro Display",
+              "fontSize": 10,
+              "fontWeight": "600"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "TgbEK",
+          "name": "tabProgress",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 4,
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "icon_font",
+              "id": "5WEoU",
+              "name": "icon",
+              "width": 22,
+              "height": 22,
+              "iconFontName": "bar_chart",
+              "iconFontFamily": "Material Symbols Rounded",
+              "fill": "$text-tertiary"
+            },
+            {
+              "type": "text",
+              "id": "jtSKl",
+              "name": "label",
+              "fill": "$text-tertiary",
+              "content": "記録",
+              "fontFamily": "SF Pro Display",
+              "fontSize": 10,
+              "fontWeight": "500"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "CBJZ0",
+          "name": "tabSavings",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 4,
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "icon_font",
+              "id": "Hnqq6",
+              "name": "icon",
+              "width": 22,
+              "height": 22,
+              "iconFontName": "piggy-bank",
+              "iconFontFamily": "lucide",
+              "fill": "$text-tertiary"
+            },
+            {
+              "type": "text",
+              "id": "hxHPI",
+              "name": "label",
+              "fill": "$text-tertiary",
+              "content": "貯金",
+              "fontFamily": "SF Pro Display",
+              "fontSize": 10,
+              "fontWeight": "500"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "lJLBU",
+          "name": "tabProfile",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 4,
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "icon_font",
+              "id": "sCxKY",
+              "name": "icon",
+              "width": 22,
+              "height": 22,
+              "iconFontName": "user",
+              "iconFontFamily": "lucide",
+              "fill": "$text-tertiary"
+            },
+            {
+              "type": "text",
+              "id": "hrrao",
+              "name": "label",
+              "fill": "$text-tertiary",
+              "content": "設定",
+              "fontFamily": "SF Pro Display",
+              "fontSize": 10,
+              "fontWeight": "500"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "I3p2R",
+      "x": 544,
+      "y": 0,
+      "name": "HomeScreen",
+      "clip": true,
+      "width": 390,
+      "fill": "$bg-primary",
+      "layout": "vertical",
+      "children": [
+        {
+          "type": "frame",
+          "id": "nxV6t",
+          "name": "statusBar",
+          "width": "fill_container",
+          "height": 54,
+          "padding": [
+            14,
+            24,
+            0,
+            24
+          ],
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "WkWoC",
+              "name": "time",
+              "fill": "$text-primary",
+              "content": "9:41",
+              "fontFamily": "SF Pro Display",
+              "fontSize": 16,
+              "fontWeight": "600"
+            },
+            {
+              "type": "frame",
+              "id": "IeLzy",
+              "name": "right",
+              "gap": 6,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon_font",
+                  "id": "93wpR",
+                  "name": "sigIcon",
+                  "width": 16,
+                  "height": 16,
+                  "iconFontName": "signal_cellular_alt",
+                  "iconFontFamily": "Material Symbols Rounded",
+                  "fill": "$text-primary"
+                },
+                {
+                  "type": "icon_font",
+                  "id": "2asvt",
+                  "name": "wifiIcon",
+                  "width": 16,
+                  "height": 16,
+                  "iconFontName": "wifi",
+                  "iconFontFamily": "Material Symbols Rounded",
+                  "fill": "$text-primary"
+                },
+                {
+                  "type": "icon_font",
+                  "id": "btdAo",
+                  "name": "batIcon",
+                  "width": 22,
+                  "height": 16,
+                  "iconFontName": "battery_full",
+                  "iconFontFamily": "Material Symbols Rounded",
+                  "fill": "$text-primary"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "9wjBD",
+          "name": "content",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 20,
+          "padding": [
+            0,
+            20
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "HKEod",
+              "name": "header",
+              "width": "fill_container",
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "BsYWS",
+                  "name": "headerLeft",
+                  "layout": "vertical",
+                  "gap": 2,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "mSh4u",
+                      "name": "greeting",
+                      "fill": "$text-secondary",
+                      "content": "おはようございます！",
+                      "fontFamily": "SF Pro Display",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    },
+                    {
+                      "type": "text",
+                      "id": "YWt6L",
+                      "name": "userName",
+                      "fill": "$text-primary",
+                      "content": "Yuki",
+                      "fontFamily": "SF Pro Display",
+                      "fontSize": 28,
+                      "fontWeight": "700"
+                    }
+                  ]
+                },
+                {
+                  "id": "RpMp4",
+                  "type": "ref",
+                  "ref": "TANTb",
+                  "name": "bellBtn"
+                }
+              ]
+            },
+            {
+              "id": "uiEMn",
+              "type": "ref",
+              "ref": "6Jkni",
+              "width": "fill_container",
+              "name": "heroInstance",
+              "descendants": {
+                "Q9fgT": {
+                  "content": "今日のカロリー貯金"
+                },
+                "JDDQr": {
+                  "content": "摂取: 1,480"
+                },
+                "LCnUl": {
+                  "content": "消費: 1,800"
+                }
+              }
+            },
+            {
+              "type": "frame",
+              "id": "yfmmG",
+              "name": "summarySection",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "id": "wlpVr",
+                  "type": "ref",
+                  "ref": "se16S",
+                  "name": "summaryHeader",
+                  "descendants": {
+                    "ndfg8": {
+                      "content": "今日のサマリー"
+                    },
+                    "hVPe2": {
+                      "enabled": false
+                    }
+                  }
+                },
+                {
+                  "type": "frame",
+                  "id": "HcwPP",
+                  "name": "metricsRow",
+                  "width": "fill_container",
+                  "gap": 10,
+                  "children": [
+                    {
+                      "id": "0jCe7",
+                      "type": "ref",
+                      "ref": "UHzRV",
+                      "width": "fill_container",
+                      "name": "intakeCard",
+                      "descendants": {
+                        "RHCDZ": {
+                          "fill": "#E8F5E9"
+                        },
+                        "zQ1PY": {
+                          "iconFontFamily": "Material Symbols Rounded",
+                          "iconFontName": "restaurant",
+                          "fill": "$success"
+                        },
+                        "jdenM": {
+                          "content": "1,480"
+                        },
+                        "Wdna5": {
+                          "content": "摂取"
+                        }
+                      }
+                    },
+                    {
+                      "id": "lH7sD",
+                      "type": "ref",
+                      "ref": "UHzRV",
+                      "width": "fill_container",
+                      "name": "burnCard",
+                      "descendants": {
+                        "RHCDZ": {
+                          "fill": "#FFF3E0"
+                        },
+                        "zQ1PY": {
+                          "iconFontFamily": "Material Symbols Rounded",
+                          "iconFontName": "local_fire_department",
+                          "fill": "$warning"
+                        },
+                        "jdenM": {
+                          "content": "1,800"
+                        },
+                        "Wdna5": {
+                          "content": "消費"
+                        }
+                      }
+                    },
+                    {
+                      "id": "Oktzu",
+                      "type": "ref",
+                      "ref": "UHzRV",
+                      "width": "fill_container",
+                      "name": "savCard",
+                      "descendants": {
+                        "RHCDZ": {
+                          "fill": "$pig-pink-light"
+                        },
+                        "zQ1PY": {
+                          "iconFontFamily": "lucide",
+                          "iconFontName": "piggy-bank",
+                          "fill": "$pig-pink"
+                        },
+                        "jdenM": {
+                          "content": "+320"
+                        },
+                        "Wdna5": {
+                          "content": "貯金"
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "lOfsS",
+              "name": "pfcSection",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "id": "IbKVV",
+                  "type": "ref",
+                  "ref": "se16S",
+                  "name": "pfcHeader",
+                  "descendants": {
+                    "ndfg8": {
+                      "content": "PFCバランス",
+                      "fontSize": 20
+                    },
+                    "hVPe2": {
+                      "enabled": false
+                    }
+                  }
+                },
+                {
+                  "id": "Od2BG",
+                  "type": "ref",
+                  "ref": "T7jZo",
+                  "width": "fill_container",
+                  "name": "pfcCard",
+                  "descendants": {
+                    "EdKlD": {
+                      "gap": 14,
+                      "padding": 18,
+                      "children": [
+                        {
+                          "id": "15b46",
+                          "type": "ref",
+                          "ref": "U2yib",
+                          "name": "protBar",
+                          "width": "fill_container",
+                          "descendants": {
+                            "MJEcE": {
+                              "content": "たんぱく質"
+                            },
+                            "REZyB": {
+                              "content": "45 / 80g"
+                            },
+                            "BHoNg": {
+                              "fill": "$protein-red",
+                              "width": 56
+                            }
+                          }
+                        },
+                        {
+                          "id": "3q5uU",
+                          "type": "ref",
+                          "ref": "U2yib",
+                          "name": "fatBar",
+                          "width": "fill_container",
+                          "descendants": {
+                            "MJEcE": {
+                              "content": "脂質"
+                            },
+                            "REZyB": {
+                              "content": "30 / 55g"
+                            },
+                            "BHoNg": {
+                              "fill": "$fat-yellow",
+                              "width": 55
+                            }
+                          }
+                        },
+                        {
+                          "id": "i0faV",
+                          "type": "ref",
+                          "ref": "U2yib",
+                          "name": "carbBar",
+                          "width": "fill_container",
+                          "descendants": {
+                            "MJEcE": {
+                              "content": "炭水化物"
+                            },
+                            "REZyB": {
+                              "content": "120 / 250g"
+                            },
+                            "BHoNg": {
+                              "fill": "$carbs-blue",
+                              "width": 48
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "e8EVn",
+              "name": "mealsSection",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "id": "K3pQb",
+                  "type": "ref",
+                  "ref": "se16S",
+                  "name": "mealsHeader",
+                  "descendants": {
+                    "ndfg8": {
+                      "content": "今日の食事"
+                    },
+                    "hVPe2": {
+                      "content": "すべて見る"
+                    }
+                  }
+                },
+                {
+                  "id": "kdu25",
+                  "type": "ref",
+                  "ref": "QoY9h",
+                  "width": "fill_container",
+                  "name": "meal1",
+                  "descendants": {
+                    "eP4AH": {
+                      "fill": {
+                        "type": "image",
+                        "enabled": true,
+                        "url": "https://images.unsplash.com/photo-1623691752358-0be1e4235183?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3NzAzMDM5ODh8&ixlib=rb-4.1.0&q=80&w=1080",
+                        "mode": "fill"
+                      }
+                    },
+                    "iDdlh": {
+                      "content": "アボカドトースト"
+                    },
+                    "oMvpy": {
+                      "content": "8:15 AM · 朝食"
+                    },
+                    "btp5t": {
+                      "content": "380"
+                    }
+                  }
+                },
+                {
+                  "id": "8BbuG",
+                  "type": "ref",
+                  "ref": "QoY9h",
+                  "width": "fill_container",
+                  "name": "meal2",
+                  "descendants": {
+                    "eP4AH": {
+                      "fill": {
+                        "type": "image",
+                        "enabled": true,
+                        "url": "https://images.unsplash.com/photo-1752028935881-0674807b046c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3NzAzMDM5OTB8&ixlib=rb-4.1.0&q=80&w=1080",
+                        "mode": "fill"
+                      }
+                    },
+                    "iDdlh": {
+                      "content": "チキンサラダ"
+                    },
+                    "oMvpy": {
+                      "content": "12:30 PM · 昼食"
+                    },
+                    "btp5t": {
+                      "content": "520"
+                    }
+                  }
+                },
+                {
+                  "id": "nX3ML",
+                  "type": "ref",
+                  "ref": "QoY9h",
+                  "width": "fill_container",
+                  "name": "meal3",
+                  "descendants": {
+                    "eP4AH": {
+                      "fill": {
+                        "type": "image",
+                        "enabled": true,
+                        "url": "https://images.unsplash.com/photo-1591089398845-0dbbbdba1f75?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3NzAzMDM5OTR8&ixlib=rb-4.1.0&q=80&w=1080",
+                        "mode": "fill"
+                      }
+                    },
+                    "iDdlh": {
+                      "content": "グリーンスムージー"
+                    },
+                    "oMvpy": {
+                      "content": "3:00 PM · おやつ"
+                    },
+                    "btp5t": {
+                      "content": "180"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "89NZs",
+              "name": "aiAdviceSection",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "id": "31i8O",
+                  "type": "ref",
+                  "ref": "se16S",
+                  "name": "aiHeader",
+                  "descendants": {
+                    "ndfg8": {
+                      "content": "AIアドバイス"
+                    },
+                    "hVPe2": {
+                      "content": "もっと見る"
+                    }
+                  }
+                },
+                {
+                  "type": "frame",
+                  "id": "B92gl",
+                  "name": "aiCard",
+                  "width": "fill_container",
+                  "fill": "$bg-surface",
+                  "cornerRadius": 16,
+                  "effect": {
+                    "type": "shadow",
+                    "shadowType": "outer",
+                    "color": "$shadow-subtle",
+                    "offset": {
+                      "x": 0,
+                      "y": 2
+                    },
+                    "blur": 12
+                  },
+                  "gap": 12,
+                  "padding": 16,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "ATaPf",
+                      "name": "aiIconBg",
+                      "width": 40,
+                      "height": 40,
+                      "fill": "#F3E8FF",
+                      "cornerRadius": 10,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon_font",
+                          "id": "u1dpj",
+                          "name": "aiIcon",
+                          "width": 22,
+                          "height": 22,
+                          "iconFontName": "auto_awesome",
+                          "iconFontFamily": "Material Symbols Rounded",
+                          "fill": "#9333EA"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "VbD7s",
+                      "name": "aiContent",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 4,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "WO1V7",
+                          "name": "aiTitle",
+                          "fill": "$text-primary",
+                          "content": "たんぱく質を増やしましょう",
+                          "fontFamily": "SF Pro Display",
+                          "fontSize": 15,
+                          "fontWeight": "600"
+                        },
+                        {
+                          "type": "text",
+                          "id": "ts12Q",
+                          "name": "aiDesc",
+                          "fill": "$text-secondary",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "次の食事にたんぱく質を追加してみましょう。1日の目標まであと35g足りません。",
+                          "lineHeight": 1.4,
+                          "fontFamily": "SF Pro Display",
+                          "fontSize": 13
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "9Rs76",
+              "name": "bottomSpacer",
+              "width": "fill_container",
+              "height": 20
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "JPFXk",
+          "name": "bottomWrapper",
+          "width": "fill_container",
+          "height": 84,
+          "layout": "none",
+          "children": [
+            {
+              "id": "vZNsF",
+              "type": "ref",
+              "ref": "ryUDA",
+              "width": 390,
+              "x": 0,
+              "y": 0,
+              "name": "tabBarInst2",
+              "height": 84,
+              "descendants": {
+                "7YQiS": {
+                  "content": "ホーム"
+                },
+                "jtSKl": {
+                  "content": "記録"
+                },
+                "hxHPI": {
+                  "content": "貯金"
+                },
+                "hrrao": {
+                  "content": "設定"
+                }
+              }
+            },
+            {
+              "type": "frame",
+              "id": "BIhvY",
+              "x": 167,
+              "y": -20,
+              "name": "cameraFAB",
+              "width": 56,
+              "height": 56,
+              "fill": "$pig-pink",
+              "cornerRadius": 999,
+              "effect": {
+                "type": "shadow",
+                "shadowType": "outer",
+                "color": "#FF9AA240",
+                "offset": {
+                  "x": 0,
+                  "y": 4
+                },
+                "blur": 16
+              },
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon_font",
+                  "id": "M7irZ",
+                  "name": "fabIcon2",
+                  "width": 26,
+                  "height": 26,
+                  "iconFontName": "photo_camera",
+                  "iconFontFamily": "Material Symbols Rounded",
+                  "fill": "#FFFFFF"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variables": {
+    "bg-muted": {
+      "type": "color",
+      "value": "#FFF0EE"
+    },
+    "bg-primary": {
+      "type": "color",
+      "value": "#FFF8F6"
+    },
+    "bg-surface": {
+      "type": "color",
+      "value": "#FFFFFF"
+    },
+    "border-strong": {
+      "type": "color",
+      "value": "#D1D0CD"
+    },
+    "border-subtle": {
+      "type": "color",
+      "value": "#F0E8E6"
+    },
+    "carbs-blue": {
+      "type": "color",
+      "value": "#007AFF"
+    },
+    "error": {
+      "type": "color",
+      "value": "#FF3B30"
+    },
+    "fat-yellow": {
+      "type": "color",
+      "value": "#FFCC00"
+    },
+    "font-primary": {
+      "type": "string",
+      "value": "SF Pro Display"
+    },
+    "font-secondary": {
+      "type": "string",
+      "value": "SF Pro Display"
+    },
+    "info": {
+      "type": "color",
+      "value": "#007AFF"
+    },
+    "pig-pink": {
+      "type": "color",
+      "value": "#FF9AA2"
+    },
+    "pig-pink-dark": {
+      "type": "color",
+      "value": "#E0576A"
+    },
+    "pig-pink-light": {
+      "type": "color",
+      "value": "#FFD4D8"
+    },
+    "protein-red": {
+      "type": "color",
+      "value": "#FF3B30"
+    },
+    "shadow-subtle": {
+      "type": "color",
+      "value": "#1A191808"
+    },
+    "success": {
+      "type": "color",
+      "value": "#34C759"
+    },
+    "text-primary": {
+      "type": "color",
+      "value": "#1A1918"
+    },
+    "text-secondary": {
+      "type": "color",
+      "value": "#6D6C6A"
+    },
+    "text-tertiary": {
+      "type": "color",
+      "value": "#9C9B99"
+    },
+    "warning": {
+      "type": "color",
+      "value": "#FF9500"
+    }
+  }
+}

@@ -1,14 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
-import '../atoms/tonton_card_base.dart';
-import '../atoms/tonton_text.dart';
-import '../../theme/tokens.dart';
 import '../../theme/colors.dart';
-import '../../theme/typography.dart';
-import '../../routes/router.dart';
+import '../../theme/app_theme.dart' as app_theme;
 import '../../features/progress/providers/auto_pfc_provider.dart';
 
+/// PFC balance bars matching .pen PfcBarItem design
 class PfcBarDisplay extends ConsumerWidget {
   final double protein;
   final double fat;
@@ -27,101 +23,106 @@ class PfcBarDisplay extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // 自動計算されたPFC目標値を取得
     final autoPfc = ref.watch(autoPfcTargetProvider);
 
-    // デフォルト値（プロフィール未設定時）
     final proteinTarget = autoPfc?.protein ?? 60.0;
     final fatTarget = autoPfc?.fat ?? 70.0;
     final carbTarget = autoPfc?.carbohydrate ?? 250.0;
 
-    final proteinProgress = (protein / proteinTarget).clamp(0.0, 1.0);
-    final fatProgress = (fat / fatTarget).clamp(0.0, 1.0);
-    final carbProgress = (carbs / carbTarget).clamp(0.0, 1.0);
-
     if (protein == 0 && fat == 0 && carbs == 0) {
-      return TontonCardBase(
-        child: TontonText(
-          'データがありません',
-          style: Theme.of(context).textTheme.bodyMedium,
-          align: TextAlign.center,
-        ),
-      );
+      return const SizedBox.shrink();
     }
 
-    return InkWell(
-      onTap: onTap ?? () => context.push(TontonRoutes.aiMealCamera),
-      borderRadius: Radii.mediumBorderRadius,
-      child: TontonCardBase(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            TontonText(title, style: TontonTypography.headline),
-            const SizedBox(height: Spacing.sm),
-            _BarWithLabel(
-              label: 'P',
-              value: protein,
-              target: proteinTarget,
-              progress: proteinProgress,
-              color: TontonColors.proteinColor,
-            ),
-            const SizedBox(height: Spacing.sm),
-            _BarWithLabel(
-              label: 'F',
-              value: fat,
-              target: fatTarget,
-              progress: fatProgress,
-              color: TontonColors.fatColor,
-            ),
-            const SizedBox(height: Spacing.sm),
-            _BarWithLabel(
-              label: 'C',
-              value: carbs,
-              target: carbTarget,
-              progress: carbProgress,
-              color: TontonColors.carbsColor,
-            ),
-          ],
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _PfcBarItem(
+          label: 'たんぱく質',
+          value: protein,
+          target: proteinTarget,
+          color: TontonColors.proteinColor,
         ),
-      ),
+        const SizedBox(height: 14),
+        _PfcBarItem(
+          label: '脂質',
+          value: fat,
+          target: fatTarget,
+          color: TontonColors.fatColor,
+        ),
+        const SizedBox(height: 14),
+        _PfcBarItem(
+          label: '炭水化物',
+          value: carbs,
+          target: carbTarget,
+          color: TontonColors.carbsColor,
+        ),
+      ],
     );
   }
 }
 
-class _BarWithLabel extends StatelessWidget {
+class _PfcBarItem extends StatelessWidget {
   final String label;
   final double value;
   final double target;
-  final double progress;
   final Color color;
 
-  const _BarWithLabel({
+  const _PfcBarItem({
     required this.label,
     required this.value,
     required this.target,
-    required this.progress,
     required this.color,
   });
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final progress = (value / target).clamp(0.0, 1.0);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        TontonText(
-          '$label ${value.toStringAsFixed(0)} / ${target.toStringAsFixed(0)} g',
-          style: theme.textTheme.labelSmall?.copyWith(
-            fontSize: 11,
-            fontWeight: FontWeight.bold,
-          ),
+        // Top row: label left, value right
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              label,
+              style: TextStyle(
+                color: app_theme.TontonColors.textSecondary,
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            Text(
+              '${value.toStringAsFixed(0)} / ${target.toStringAsFixed(0)}g',
+              style: TextStyle(
+                color: app_theme.TontonColors.textPrimary,
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
         ),
         const SizedBox(height: 4),
-        LinearProgressIndicator(
-          value: progress,
-          minHeight: 8,
-          color: color,
-          backgroundColor: color.withValues(alpha: 0.2),
+
+        // Bar track (6px height)
+        Container(
+          width: double.infinity,
+          height: 6,
+          decoration: BoxDecoration(
+            color: TontonColors.borderSubtle,
+            borderRadius: BorderRadius.circular(3),
+          ),
+          child: FractionallySizedBox(
+            alignment: Alignment.centerLeft,
+            widthFactor: progress,
+            child: Container(
+              decoration: BoxDecoration(
+                color: color,
+                borderRadius: BorderRadius.circular(3),
+              ),
+            ),
+          ),
         ),
       ],
     );

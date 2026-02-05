@@ -1,73 +1,63 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../atoms/tonton_card_base.dart';
-import '../../theme/tokens.dart';
 import '../../theme/colors.dart';
-import '../../theme/typography.dart';
+import '../../theme/app_theme.dart' as app_theme;
 import '../../utils/icon_mapper.dart';
 import '../../providers/providers.dart';
 
-/// A widget that displays three horizontal cards showing calorie summary
-/// - Consumed calories (green)
-/// - Burned calories (orange)
-/// - Net savings (pink)
+/// Three horizontal MetricCards: intake, burn, savings — matching .pen design
 class CalorieSummaryRow extends ConsumerWidget {
   const CalorieSummaryRow({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Get today's meal records to calculate consumed calories
     final todayMeals = ref.watch(todaysMealRecordsProvider);
     final consumedCalories = todayMeals.fold<double>(
       0,
       (sum, meal) => sum + meal.calories,
     );
 
-    // Get burned calories from realtime summary
     final realtimeSummaryAsync = ref.watch(realtimeDailySummaryProvider);
     final burnedCalories = realtimeSummaryAsync.maybeWhen(
       data: (summary) => summary.caloriesBurned,
       orElse: () => 0.0,
     );
 
-    // Calculate net savings (consumed - burned)
-    final netSavings = consumedCalories - burnedCalories;
+    final savings = burnedCalories - consumedCalories;
+    final savingsText =
+        savings >= 0
+            ? '+${savings.toStringAsFixed(0)}'
+            : savings.toStringAsFixed(0);
 
     return Row(
       children: [
-        // Consumed Calories Card
         Expanded(
-          child: _CalorieCard(
-            icon: TontonIcons.food,
+          child: _MetricCard(
+            iconBgColor: const Color(0xFFE8F5E9),
+            icon: Icons.restaurant,
             iconColor: TontonColors.systemGreen,
-            title: '摂取',
             value: consumedCalories.toStringAsFixed(0),
-            unit: 'kcal',
+            label: '摂取',
           ),
         ),
-        const SizedBox(width: Spacing.sm),
-
-        // Burned Calories Card
+        const SizedBox(width: 10),
         Expanded(
-          child: _CalorieCard(
-            icon: TontonIcons.workout,
+          child: _MetricCard(
+            iconBgColor: const Color(0xFFFFF3E0),
+            icon: Icons.local_fire_department,
             iconColor: TontonColors.systemOrange,
-            title: '消費',
             value: burnedCalories.toStringAsFixed(0),
-            unit: 'kcal',
+            label: '消費',
           ),
         ),
-        const SizedBox(width: Spacing.sm),
-
-        // Net Savings Card
+        const SizedBox(width: 10),
         Expanded(
-          child: _CalorieCard(
+          child: _MetricCard(
+            iconBgColor: TontonColors.pigPinkLight,
             icon: TontonIcons.piggybank,
             iconColor: TontonColors.pigPink,
-            title: '貯金',
-            value: netSavings.toStringAsFixed(0),
-            unit: 'kcal',
-            isHighlighted: true,
+            value: savingsText,
+            label: '貯金',
           ),
         ),
       ],
@@ -75,67 +65,68 @@ class CalorieSummaryRow extends ConsumerWidget {
   }
 }
 
-/// Individual calorie card widget
-class _CalorieCard extends StatelessWidget {
+class _MetricCard extends StatelessWidget {
+  final Color iconBgColor;
   final IconData icon;
   final Color iconColor;
-  final String title;
   final String value;
-  final String unit;
-  final bool isHighlighted;
+  final String label;
 
-  const _CalorieCard({
+  const _MetricCard({
+    required this.iconBgColor,
     required this.icon,
     required this.iconColor,
-    required this.title,
     required this.value,
-    required this.unit,
-    this.isHighlighted = false,
+    required this.label,
   });
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return TontonCardBase(
-      elevation: Elevation.level1,
-      padding: const EdgeInsets.all(Spacing.sm),
-      backgroundColor:
-          isHighlighted ? TontonColors.pigPink.withValues(alpha: 0.1) : null,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Icon and Title Row
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(icon, size: IconSize.small, color: iconColor),
-              const SizedBox(width: Spacing.xxs),
-              Text(
-                title,
-                style: TontonTypography.caption1.copyWith(
-                  color: TontonColors.secondaryLabelColor(context),
-                ),
-              ),
-            ],
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: const [
+          BoxShadow(
+            color: TontonColors.shadowSubtle,
+            offset: Offset(0, 2),
+            blurRadius: 12,
           ),
-          const SizedBox(height: Spacing.xs),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Icon with background
+          Container(
+            width: 32,
+            height: 32,
+            decoration: BoxDecoration(
+              color: iconBgColor,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(icon, size: 18, color: iconColor),
+          ),
+          const SizedBox(height: 4),
 
           // Value
           Text(
             value,
-            style: TontonTypography.title3.copyWith(
-              fontWeight: FontWeight.bold,
-              color:
-                  isHighlighted ? iconColor : TontonColors.labelColor(context),
+            style: TextStyle(
+              color: app_theme.TontonColors.textPrimary,
+              fontSize: 28,
+              fontWeight: FontWeight.w700,
             ),
           ),
 
-          // Unit
+          // Label
           Text(
-            unit,
-            style: TontonTypography.caption2.copyWith(
-              color: TontonColors.tertiaryLabelColor(context),
+            label,
+            style: TextStyle(
+              color: app_theme.TontonColors.textSecondary,
+              fontSize: 13,
+              fontWeight: FontWeight.w500,
             ),
           ),
         ],

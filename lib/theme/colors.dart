@@ -15,12 +15,31 @@ class TontonColors {
   /// Darker variant of pig pink for emphasis
   static const Color pigPinkDark = Color(0xFFE0576A);
 
+  /// Light variant of pig pink for subtle backgrounds
+  static const Color pigPinkLight = Color(0xFFFFD4D8);
+
   /// Premium Gradient for primary actions
   static const LinearGradient primaryGradient = LinearGradient(
     colors: [Color(0xFFFF9AA2), Color(0xFFFFB7B2)],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
+
+  // ===== Design Token Colors =====
+  /// Warm primary background
+  static const Color bgPrimary = Color(0xFFFFF8F6);
+
+  /// Muted warm background
+  static const Color bgMuted = Color(0xFFFFF0EE);
+
+  /// Subtle shadow color (8% opacity warm black)
+  static const Color shadowSubtle = Color(0x081A1918);
+
+  /// Subtle border color
+  static const Color borderSubtle = Color(0xFFF0E8E6);
+
+  /// Strong border color
+  static const Color borderStrong = Color(0xFFD1D0CD);
 
   // ===== System Colors (Light Mode) =====
   static const Color systemRed = Color(0xFFFF3B30);

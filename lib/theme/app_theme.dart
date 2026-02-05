@@ -39,9 +39,10 @@ class TontonColors {
   static const Color carbsColor = new_colors.TontonColors.carbsColor;
   static const Color fatColor = new_colors.TontonColors.fatColor;
 
-  // Semantic colors
-  static const Color textPrimary = new_colors.TontonColors.label;
-  static const Color textSecondary = new_colors.TontonColors.secondaryLabel;
+  // Semantic colors (warm tones from .pen design)
+  static const Color textPrimary = Color(0xFF1A1918);
+  static const Color textSecondary = Color(0xFF6D6C6A);
+  static const Color textTertiary = Color(0xFF9C9B99);
   static const Color surfaceGrey = new_colors.TontonColors.systemGray6;
   static const Color borderGrey = new_colors.TontonColors.systemGray4;
 }
@@ -126,10 +127,10 @@ class TontonTheme {
       ),
       iconTheme: const IconThemeData(color: new_colors.TontonColors.label),
     ),
-    scaffoldBackgroundColor: new_colors.TontonColors.systemGroupedBackground,
+    scaffoldBackgroundColor: new_colors.TontonColors.bgPrimary,
     cardTheme: CardThemeData(
-      elevation: 4, // Increased elevation for shadow visibility
-      shadowColor: new_tokens.Elevation.shadowPremium[0].color, // Use premium pink glow
+      elevation: 0,
+      shadowColor: new_colors.TontonColors.shadowSubtle,
       shape: RoundedRectangleBorder(
         borderRadius: new_tokens.Radii.largeBorderRadius,
       ),

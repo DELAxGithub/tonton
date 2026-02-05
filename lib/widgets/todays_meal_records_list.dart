@@ -20,11 +20,6 @@ class TodaysMealRecordsList extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          l10n?.todaysMeals ?? "Today's Meals",
-          style: typography.TontonTypography.headline,
-        ),
-        const SizedBox(height: tokens.Spacing.sm),
         if (meals.isEmpty)
           EmptyState(
             title: l10n?.noMealsRecorded ?? '食事の記録がありません',

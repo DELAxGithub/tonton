@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../theme/colors.dart';
 
 /// A simple scaffold wrapper that provides a consistent page layout.
 class AppShell extends StatelessWidget {
@@ -31,7 +32,7 @@ class AppShell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: backgroundColor,
+      backgroundColor: backgroundColor ?? TontonColors.bgPrimary,
       appBar: appBar,
       body: SafeArea(child: body),
       bottomNavigationBar: bottomNavigationBar,

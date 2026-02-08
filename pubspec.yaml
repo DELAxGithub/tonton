@@ -53,6 +53,7 @@ dev_dependencies:
     sdk: flutter
   widgetbook: ^3.9.0     # Component catalog
   widgetbook_annotation: ^3.2.0  # Annotations for widgetbook
+  flutter_launcher_icons: ^0.14.3
 
 flutter:
   uses-material-design: true
@@ -68,3 +69,9 @@ flutter:
       fonts:
         - asset: assets/fonts/TontonIcons.ttf
           weight: 400
+
+flutter_launcher_icons:
+  ios: true
+  android: false
+  image_path: "docs/design/トントンicon.png"
+  remove_alpha_ios: true

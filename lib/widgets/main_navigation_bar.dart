@@ -77,7 +77,7 @@ class MainNavigationBar extends StatelessWidget {
                 // Spacer for FAB
                 const SizedBox(width: 56),
                 _TabItem(
-                  icon: TontonIcons.piggybank,
+                  icon: Icons.savings_outlined,
                   label: '貯金',
                   isSelected: currentIndex == 2,
                   onTap: () => _onTap(2, context),
@@ -99,7 +99,7 @@ class MainNavigationBar extends StatelessWidget {
             right: 0,
             child: Center(
               child: GestureDetector(
-                onTap: () => context.push(TontonRoutes.aiMealCamera),
+                onTap: () => context.go(TontonRoutes.aiMealCamera),
                 child: Container(
                   width: 56,
                   height: 56,

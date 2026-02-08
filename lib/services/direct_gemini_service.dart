@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'dart:developer' as developer;
+import 'package:path/path.dart' as p;
 
 import '../models/estimated_meal_nutrition.dart';
 import '../models/nutrient_info.dart';
@@ -26,7 +27,7 @@ class DirectGeminiService {
     return _apiKey!;
   }
 
-  Future<EstimatedMealNutrition?> analyzeImage(Uint8List imageBytes) async {
+  Future<EstimatedMealNutrition?> analyzeImage(Uint8List imageBytes, {String mimeType = 'image/jpeg'}) async {
     try {
       developer.log(
         'Starting Gemini image analysis',
@@ -34,7 +35,7 @@ class DirectGeminiService {
       );
 
       final model = GenerativeModel(
-        model: 'gemini-2.0-flash-exp',
+        model: 'gemini-2.0-flash',
         apiKey: apiKey,
       );
 
@@ -64,7 +65,7 @@ class DirectGeminiService {
 ''';
 
       final content = [
-        Content.multi([TextPart(prompt), DataPart('image/jpeg', imageBytes)]),
+        Content.multi([TextPart(prompt), DataPart(mimeType, imageBytes)]),
       ];
 
       developer.log('Calling Gemini API', name: 'TonTon.DirectGeminiService');
@@ -158,7 +159,12 @@ class DirectGeminiService {
   Future<EstimatedMealNutrition?> analyzeImageFile(File imageFile) async {
     try {
       final imageBytes = await imageFile.readAsBytes();
-      return await analyzeImage(imageBytes);
+      final mimeType = _detectMimeType(imageFile.path);
+      developer.log(
+        'Image file: ${imageFile.path}, size: ${imageBytes.length} bytes, mime: $mimeType',
+        name: 'TonTon.DirectGeminiService',
+      );
+      return await analyzeImage(imageBytes, mimeType: mimeType);
     } catch (e, stackTrace) {
       developer.log(
         'Error reading image file: $e',
@@ -167,6 +173,23 @@ class DirectGeminiService {
         stackTrace: stackTrace,
       );
       rethrow;
+    }
+  }
+
+  String _detectMimeType(String filePath) {
+    final ext = p.extension(filePath).toLowerCase();
+    switch (ext) {
+      case '.png':
+        return 'image/png';
+      case '.heic':
+      case '.heif':
+        return 'image/heic';
+      case '.webp':
+        return 'image/webp';
+      case '.gif':
+        return 'image/gif';
+      default:
+        return 'image/jpeg';
     }
   }
 }

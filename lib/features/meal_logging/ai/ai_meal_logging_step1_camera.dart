@@ -10,13 +10,27 @@ class AIMealLoggingStep1Camera extends ConsumerWidget {
   const AIMealLoggingStep1Camera({super.key});
 
   Future<void> _pickImage(BuildContext context, ImageSource source) async {
-    final picker = ImagePicker();
-    final XFile? file = await picker.pickImage(
-      source: source,
-      imageQuality: 100,
-    );
-    if (file != null && context.mounted) {
-      context.go(TontonRoutes.aiMealAnalyzing, extra: file.path);
+    try {
+      final picker = ImagePicker();
+      final XFile? file = await picker.pickImage(
+        source: source,
+        imageQuality: 80,
+      );
+      if (file != null && context.mounted) {
+        context.go(TontonRoutes.aiMealAnalyzing, extra: file.path);
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              source == ImageSource.camera
+                  ? 'カメラを起動できません。設定でカメラの許可を確認してください。'
+                  : '写真を取得できません。設定でフォトライブラリの許可を確認してください。',
+            ),
+          ),
+        );
+      }
     }
   }
 

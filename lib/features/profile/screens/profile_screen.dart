@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:go_router/go_router.dart';
 import '../../../design_system/templates/standard_page_layout.dart';
 import '../../../design_system/atoms/tonton_card_base.dart';
 import '../../../design_system/atoms/tonton_button.dart';
@@ -13,6 +14,8 @@ import '../../../services/health_service.dart';
 import '../../../theme/tokens.dart';
 import '../../../theme/app_theme.dart';
 import '../../progress/providers/auto_pfc_provider.dart';
+import '../../../routes/router.dart';
+import '../../../core/providers/auth_provider.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
@@ -29,6 +32,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
   bool _isEditing = false;
   String? _savingField;
+
+  // 性別・年齢層の編集用
+  String? _selectedGender;
+  String? _selectedAgeGroup;
+  bool _profileFieldsInitialized = false;
 
   @override
   void initState() {
@@ -147,6 +155,46 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     }
   }
 
+  Future<void> _saveGender(String? value) async {
+    if (value == null) return;
+
+    setState(() {
+      _isEditing = true;
+      _savingField = 'gender';
+    });
+    await ref.read(userProfileProvider.notifier).updateGender(value);
+    setState(() {
+      _isEditing = false;
+      _savingField = null;
+    });
+
+    if (mounted) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('性別を更新しました')));
+    }
+  }
+
+  Future<void> _saveAgeGroup(String? value) async {
+    if (value == null) return;
+
+    setState(() {
+      _isEditing = true;
+      _savingField = 'ageGroup';
+    });
+    await ref.read(userProfileProvider.notifier).updateAgeGroup(value);
+    setState(() {
+      _isEditing = false;
+      _savingField = null;
+    });
+
+    if (mounted) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('体の変化を更新しました')));
+    }
+  }
+
   Future<void> _pickStartDate() async {
     final current = ref.read(onboardingStartDateProvider) ?? DateTime.now();
     final picked = await showDatePicker(
@@ -199,6 +247,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       _weightController.text = userWeightRecord.weight.toString();
     }
 
+    // 性別・年齢層の初期値を設定（一度だけ）
+    if (!_profileFieldsInitialized) {
+      _selectedGender = userProfile.gender;
+      _selectedAgeGroup = userProfile.ageGroup;
+      _profileFieldsInitialized = true;
+    }
+
     return GestureDetector(
       onTap: () {
         // 画面タップでキーボードを閉じる
@@ -243,51 +298,59 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   ),
                   const SizedBox(height: Spacing.md),
 
-                  // 性別と年齢層の表示
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '性別',
-                              style: Theme.of(context).textTheme.bodySmall,
-                            ),
-                            Text(
-                              userProfile.gender == 'male'
-                                  ? '男性'
-                                  : userProfile.gender == 'female'
-                                  ? '女性'
-                                  : '未設定',
-                              style: Theme.of(context).textTheme.bodyMedium,
-                            ),
-                          ],
-                        ),
-                      ),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '体の変化',
-                              style: Theme.of(context).textTheme.bodySmall,
-                            ),
-                            Text(
-                              userProfile.ageGroup == 'young'
-                                  ? '若い頃と変わらない'
-                                  : userProfile.ageGroup == 'middle'
-                                  ? '脂肪が増えやすくなった'
-                                  : userProfile.ageGroup == 'senior'
-                                  ? '健康が気になってきた'
-                                  : '未設定',
-                              style: Theme.of(context).textTheme.bodyMedium,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+                  // 性別選択
+                  Text(
+                    '性別',
+                    style: Theme.of(context).textTheme.bodySmall,
                   ),
+                  const SizedBox(height: 8),
+                  SegmentedButton<String>(
+                    segments: const [
+                      ButtonSegment(value: 'male', label: Text('男性')),
+                      ButtonSegment(value: 'female', label: Text('女性')),
+                    ],
+                    selected: _selectedGender != null ? {_selectedGender!} : {},
+                    emptySelectionAllowed: true,
+                    onSelectionChanged: (Set<String> newSelection) {
+                      final newValue = newSelection.isEmpty ? null : newSelection.first;
+                      if (newValue != _selectedGender) {
+                        setState(() {
+                          _selectedGender = newValue;
+                        });
+                        _saveGender(newValue);
+                      }
+                    },
+                  ),
+                  const SizedBox(height: Spacing.md),
+
+                  // 年齢層選択
+                  Text(
+                    '体の変化',
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                  const SizedBox(height: 8),
+                  ...['young', 'middle', 'senior'].map((value) {
+                    final label = value == 'young'
+                        ? '若い頃と変わらない'
+                        : value == 'middle'
+                        ? '脂肪が増えやすくなった'
+                        : '健康が気になってきた';
+                    return RadioListTile<String>(
+                      title: Text(label),
+                      value: value,
+                      groupValue: _selectedAgeGroup,
+                      dense: true,
+                      contentPadding: EdgeInsets.zero,
+                      onChanged: (newValue) {
+                        if (newValue != _selectedAgeGroup) {
+                          setState(() {
+                            _selectedAgeGroup = newValue;
+                          });
+                          _saveAgeGroup(newValue);
+                        }
+                      },
+                    );
+                  }),
                   const SizedBox(height: Spacing.md),
 
                   Text('メール: ${user?.email ?? "未設定"}'),
@@ -429,50 +492,93 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     '※ HealthKitから最新データを取得して再計算します',
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
-                  const SizedBox(height: Spacing.md),
-                  Text(
-                    'その他の機能は開発中です',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ],
+              ),
+            ),
+            const SizedBox(height: Spacing.lg),
+
+            // アカウント設定カード
+            TontonCardBase(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('アカウント', style: Theme.of(context).textTheme.titleMedium),
+                  const SizedBox(height: Spacing.sm),
+                  // 匿名ユーザーの場合は連携ボタンを表示
+                  if (ref.watch(isAnonymousProvider)) ...[
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: TontonColors.warning.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(Icons.warning_amber, color: TontonColors.warning, size: 20),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              'ゲストモードで利用中\nログアウトするとデータが消えます',
+                              style: Theme.of(context).textTheme.bodySmall,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
+                    const SizedBox(height: Spacing.md),
+                    TontonButton.primary(
+                      label: 'Apple IDで連携',
+                      icon: Icons.apple,
+                      onPressed: () async {
+                        // TODO: Apple連携実装
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Apple連携は準備中です')),
+                        );
+                      },
+                    ),
+                  ] else ...[
+                    Text(
+                      'メール: ${user?.email ?? "未設定"}',
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                  ],
+                  const SizedBox(height: Spacing.md),
+                  TontonButton.secondary(
+                    label: 'ログアウト',
+                    icon: Icons.logout,
+                    onPressed: () async {
+                      final confirmed = await showDialog<bool>(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: const Text('ログアウト'),
+                          content: Text(
+                            ref.read(isAnonymousProvider)
+                                ? 'ゲストモードでログアウトすると、すべてのデータが消去されます。本当にログアウトしますか？'
+                                : 'ログアウトしますか？',
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context, false),
+                              child: const Text('キャンセル'),
+                            ),
+                            TextButton(
+                              onPressed: () => Navigator.pop(context, true),
+                              child: const Text('ログアウト'),
+                            ),
+                          ],
+                        ),
+                      );
+                      if (confirmed == true && context.mounted) {
+                        await ref.read(authServiceProvider).signOut();
+                        if (context.mounted) {
+                          context.go(TontonRoutes.login);
+                        }
+                      }
+                    },
                   ),
                 ],
               ),
             ),
-
-            // 将来実装用のコメント
-            // TODO: 年齢層選択UI
-            // DropdownButtonFormField<String>(
-            //   decoration: const InputDecoration(
-            //     labelText: '年齢層',
-            //     border: OutlineInputBorder(),
-            //   ),
-            //   items: const [
-            //     DropdownMenuItem(value: '20s', child: Text('20代')),
-            //     DropdownMenuItem(value: '30s', child: Text('30代')),
-            //     DropdownMenuItem(value: '40s', child: Text('40代')),
-            //     DropdownMenuItem(value: '50s', child: Text('50代以上')),
-            //   ],
-            //   onChanged: (_) {},
-            // ),
-
-            // TODO: 性別選択UI
-            // SegmentedButton<String>(
-            //   segments: const [
-            //     ButtonSegment(value: 'male', label: Text('男性')),
-            //     ButtonSegment(value: 'female', label: Text('女性')),
-            //   ],
-            //   selected: const {'male'},
-            //   onSelectionChanged: (_) {},
-            // ),
-
-            // TODO: ログアウトボタン
-            // TontonButton.secondary(
-            //   label: 'ログアウト',
-            //   onPressed: () async {
-            //     await ref.read(authServiceProvider).signOut();
-            //   },
-            // ),
           ],
         ),
       ),

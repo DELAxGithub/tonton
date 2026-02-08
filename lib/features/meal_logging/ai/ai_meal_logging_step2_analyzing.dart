@@ -29,20 +29,29 @@ class _State extends ConsumerState<AIMealLoggingStep2Analyzing> {
         final result = await ref
             .read(aiEstimationProvider.notifier)
             .estimateNutritionFromImageFile(widget.imageFile)
-            .timeout(const Duration(seconds: 20));
+            .timeout(const Duration(seconds: 30));
         if (result != null && mounted) {
           context.go(
             TontonRoutes.aiMealConfirm,
             extra: {'image': widget.imageFile.path, 'nutrition': result},
           );
+        } else if (mounted) {
+          setState(() => _error = '解析結果が空でした');
         }
       } on TimeoutException {
         if (mounted) {
-          setState(() => _error = 'タイムアウトしました');
+          setState(() => _error = 'タイムアウトしました（30秒）');
         }
-      } catch (_) {
+      } catch (e) {
         if (mounted) {
-          setState(() => _error = '解析に失敗しました');
+          final message = e.toString();
+          if (message.contains('API key')) {
+            setState(() => _error = 'APIキーが設定されていません\n.envにGEMINI_API_KEYを追加してください');
+          } else if (message.contains('SocketException') || message.contains('ClientException')) {
+            setState(() => _error = 'ネットワークエラー\nインターネット接続を確認してください');
+          } else {
+            setState(() => _error = '解析に失敗しました\n$message');
+          }
         }
       }
     });
@@ -54,16 +63,25 @@ class _State extends ConsumerState<AIMealLoggingStep2Analyzing> {
 
     Widget content;
     if (_error != null) {
-      content = Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(_error!),
-          const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: () => context.go(TontonRoutes.aiMealCamera),
-            child: const Text('戻る'),
-          ),
-        ],
+      content = Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 32),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.error_outline, size: 48, color: Colors.red),
+            const SizedBox(height: 16),
+            Text(
+              _error!,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 15),
+            ),
+            const SizedBox(height: 24),
+            ElevatedButton(
+              onPressed: () => context.go(TontonRoutes.aiMealCamera),
+              child: const Text('やり直す'),
+            ),
+          ],
+        ),
       );
     } else {
       content = estimation.when(

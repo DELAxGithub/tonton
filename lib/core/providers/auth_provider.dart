@@ -33,3 +33,9 @@ final isLoggedInProvider = Provider<bool>((ref) {
   final user = ref.watch(currentUserProvider);
   return user != null;
 });
+
+// Provider to check if the current user is anonymous
+final isAnonymousProvider = Provider<bool>((ref) {
+  final user = ref.watch(currentUserProvider);
+  return user?.isAnonymous ?? false;
+});

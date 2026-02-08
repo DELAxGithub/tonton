@@ -57,48 +57,30 @@ class TontonRoutes {
 /// Provider for the router configuration
 final routerProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authStateChangesProvider);
-  final onboardingCompleted = ref.watch(onboardingCompletedProvider);
 
   return GoRouter(
     initialLocation: TontonRoutes.home,
     debugLogDiagnostics: true,
     redirect: (context, state) {
-      // Check if the user is logged in
+      // Check if the user is logged in (includes anonymous users)
       final isLoggedIn = authState.when(
         data: (state) => state.session?.user != null,
-        loading: () => false,
+        loading: () => true, // Assume logged in while loading to avoid flash
         error: (_, __) => false,
       );
 
-      // Determine if the user is going to an auth or onboarding page
+      // Auth pages (login/signup) - only needed if anonymous auth fails
       final isAuthRoute =
           state.matchedLocation == TontonRoutes.login ||
           state.matchedLocation == TontonRoutes.signup;
-      final isOnboardingRoute =
-          state.matchedLocation == TontonRoutes.onboardingBasicInfo ||
-          // state.matchedLocation == TontonRoutes.onboardingHealthKit ||
-          state.matchedLocation == TontonRoutes.onboardingIntro ||
-          state.matchedLocation == TontonRoutes.onboardingStartDate ||
-          state.matchedLocation == TontonRoutes.onboardingWeight;
 
-      // If the user is not logged in and trying to access a protected page
+      // If not logged in and not on auth page, redirect to login
+      // This should rarely happen since we auto sign-in anonymously
       if (!isLoggedIn && !isAuthRoute) {
         return TontonRoutes.login;
       }
 
-      // Skip onboarding flow - it's now completed automatically on login/signup
-      // This block is commented out to bypass the profile setup requirement
-      // if (isLoggedIn && !onboardingCompleted && !isOnboardingRoute) {
-      //   print('Redirecting to onboarding basic info (onboarding incomplete)');
-      //   return TontonRoutes.onboardingBasicInfo;
-      // }
-
-      // Prevent accessing onboarding again once completed
-      if (isLoggedIn && onboardingCompleted && isOnboardingRoute) {
-        return TontonRoutes.home;
-      }
-
-      // If the user is logged in and trying to access an auth page
+      // If logged in and trying to access auth page, redirect to home
       if (isLoggedIn && isAuthRoute) {
         return TontonRoutes.home;
       }
@@ -162,11 +144,6 @@ final routerProvider = Provider<GoRouter>((ref) {
             path: TontonRoutes.home,
             name: 'home',
             builder: (context, state) => const HomeScreen(),
-          ),
-          GoRoute(
-            path: TontonRoutes.aiMealCamera,
-            name: 'aiMealCamera',
-            builder: (context, state) => const AIMealLoggingStep1Camera(),
           ),
           GoRoute(
             path: TontonRoutes.savingsTrend,
@@ -239,6 +216,11 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
 
       // AI meal logging flow
+      GoRoute(
+        path: TontonRoutes.aiMealCamera,
+        name: 'aiMealCamera',
+        builder: (context, state) => const AIMealLoggingStep1Camera(),
+      ),
       GoRoute(
         path: TontonRoutes.aiMealAnalyzing,
         name: 'aiMealAnalyzing',

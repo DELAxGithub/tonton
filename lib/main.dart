@@ -9,6 +9,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'services/auth_service.dart';
 import 'models/meal_record.dart';
 import 'models/daily_summary.dart';
 import 'enums/meal_time_type.dart';
@@ -126,6 +127,33 @@ void main() async {
       'Supabase initialized successfully with URL: $supabaseUrl',
       name: 'TonTon.SupabaseInit',
     );
+
+    // Auto sign-in anonymously if no user is logged in
+    final authService = AuthService();
+    if (authService.currentUser == null) {
+      developer.log(
+        'No user logged in, signing in anonymously...',
+        name: 'TonTon.Auth',
+      );
+      try {
+        await authService.signInAnonymously();
+        developer.log(
+          'Anonymous sign-in successful',
+          name: 'TonTon.Auth',
+        );
+      } catch (e) {
+        developer.log(
+          'Anonymous sign-in failed: $e (will show login screen)',
+          name: 'TonTon.Auth.Error',
+        );
+        // If anonymous sign-in fails, user will see login screen
+      }
+    } else {
+      developer.log(
+        'User already logged in: ${authService.currentUser!.id} (anonymous: ${authService.isAnonymous})',
+        name: 'TonTon.Auth',
+      );
+    }
   } catch (e, stack) {
     developer.log(
       'Error initializing Supabase: $e',

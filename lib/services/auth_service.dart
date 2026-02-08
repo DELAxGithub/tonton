@@ -122,4 +122,77 @@ class AuthService {
 
   // Stream of authentication state changes
   Stream<AuthState> get authStateChanges => _supabase.auth.onAuthStateChange;
+
+  /// Returns true if the current user is an anonymous user
+  bool get isAnonymous => currentUser?.isAnonymous ?? false;
+
+  /// Sign in anonymously - creates a new anonymous user
+  Future<void> signInAnonymously() async {
+    try {
+      developer.log(
+        'Attempting anonymous sign in',
+        name: 'TonTon.AuthService',
+      );
+      final AuthResponse res = await _supabase.auth.signInAnonymously();
+      if (res.user == null) {
+        developer.log(
+          'Anonymous sign in failed: No user returned',
+          name: 'TonTon.AuthService.Error',
+        );
+        throw Exception('Anonymous sign in failed');
+      }
+      developer.log(
+        'Anonymous sign in successful: ${res.user!.id}',
+        name: 'TonTon.AuthService',
+      );
+    } on AuthException catch (e) {
+      developer.log(
+        'AuthException during anonymous sign in: ${e.message}',
+        name: 'TonTon.AuthService.Error',
+        error: e,
+      );
+      throw Exception('Anonymous sign in failed: ${e.message}');
+    } catch (e, stackTrace) {
+      developer.log(
+        'Error during anonymous sign in: $e',
+        name: 'TonTon.AuthService.Exception',
+        error: e,
+        stackTrace: stackTrace,
+      );
+      rethrow;
+    }
+  }
+
+  /// Link Apple ID to the current anonymous user (future implementation)
+  Future<void> linkWithApple() async {
+    try {
+      developer.log(
+        'Attempting to link Apple ID',
+        name: 'TonTon.AuthService',
+      );
+      await _supabase.auth.signInWithOAuth(
+        OAuthProvider.apple,
+        redirectTo: 'io.supabase.tonton://login-callback/',
+      );
+      developer.log(
+        'Apple ID link initiated',
+        name: 'TonTon.AuthService',
+      );
+    } on AuthException catch (e) {
+      developer.log(
+        'AuthException during Apple link: ${e.message}',
+        name: 'TonTon.AuthService.Error',
+        error: e,
+      );
+      throw Exception('Apple link failed: ${e.message}');
+    } catch (e, stackTrace) {
+      developer.log(
+        'Error during Apple link: $e',
+        name: 'TonTon.AuthService.Exception',
+        error: e,
+        stackTrace: stackTrace,
+      );
+      rethrow;
+    }
+  }
 }

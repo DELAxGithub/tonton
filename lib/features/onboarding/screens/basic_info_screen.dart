@@ -7,8 +7,7 @@ import '../../../design_system/templates/standard_page_layout.dart';
 import '../../../design_system/atoms/tonton_button.dart';
 import '../../../design_system/atoms/tonton_labeled_text_field.dart';
 import '../../../routes/router.dart';
-import '../../profile/providers/user_profile_provider.dart';
-import '../providers/onboarding_providers.dart';
+import '../../../providers/providers.dart';
 
 class BasicInfoScreen extends ConsumerStatefulWidget {
   const BasicInfoScreen({super.key});
@@ -105,10 +104,9 @@ class _BasicInfoScreenState extends ConsumerState<BasicInfoScreen> {
         if (!mounted) return;
 
         // デフォルトの開始日を設定
-        // TODO: onboardingStartDateProviderのインポートを修正する必要あり
-        // if (ref.read(onboardingStartDateProvider) == null) {
-        //   await ref.read(onboardingStartDateProvider.notifier).setDate(DateTime.now());
-        // }
+        if (ref.read(onboardingStartDateProvider) == null) {
+          await ref.read(onboardingStartDateProvider.notifier).setDate(DateTime.now());
+        }
 
         // 次の画面へ遷移（暫定的に直接ホーム画面へ）
         if (mounted) {

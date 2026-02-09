@@ -22,6 +22,8 @@ import '../features/profile/screens/profile_screen.dart';
 import '../features/meal_logging/ai/ai_meal_logging_step1_camera.dart';
 import '../features/meal_logging/ai/ai_meal_logging_step2_analyzing.dart';
 import '../features/meal_logging/ai/ai_meal_logging_step3_confirm_edit.dart';
+import '../features/meal_logging/screens/edit_meal_screen.dart';
+import '../models/meal_record.dart';
 import '../widgets/main_navigation_bar.dart';
 import 'app_page.dart';
 import '../design_system/templates/app_shell.dart';
@@ -178,20 +180,15 @@ final routerProvider = Provider<GoRouter>((ref) {
         ],
       ),
 
-      // Meal routes (temporarily disabled)
-      // GoRoute(
-      //   path: TontonRoutes.addMeal,
-      //   name: 'addMeal',
-      //   builder: (context, state) => const MealInputScreenNew(),
-      // ),
-      // GoRoute(
-      //   path: TontonRoutes.editMeal,
-      //   name: 'editMeal',
-      //   builder: (context, state) {
-      //     final MealRecord mealRecord = state.extra as MealRecord;
-      //     return MealInputScreenNew(mealRecord: mealRecord);
-      //   },
-      // ),
+      // Edit meal route
+      GoRoute(
+        path: TontonRoutes.editMeal,
+        name: 'editMeal',
+        builder: (context, state) {
+          final mealRecord = state.extra as MealRecord;
+          return EditMealScreen(mealRecord: mealRecord);
+        },
+      ),
       GoRoute(
         path: TontonRoutes.useSavings,
         name: 'useSavings',

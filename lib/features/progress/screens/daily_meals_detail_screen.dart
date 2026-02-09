@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../../../models/meal_record.dart';
 import '../../../features/meal_logging/providers/meal_records_provider.dart';
+import '../../../routes/router.dart';
 import '../../../design_system/templates/standard_page_layout.dart';
 import '../../../widgets/meal_record_card.dart';
 import '../../../design_system/molecules/feedback/empty_state.dart';
@@ -95,10 +97,7 @@ class DailyMealsDetailScreen extends ConsumerWidget {
                     return MealRecordCard(
                       mealRecord: meal,
                       onTap: () {
-                        // TODO: Implement edit functionality
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('編集機能は準備中です')),
-                        );
+                        context.push(TontonRoutes.editMeal, extra: meal);
                       },
                     );
                   },

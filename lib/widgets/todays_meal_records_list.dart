@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../l10n/app_localizations.dart';
 import '../providers/providers.dart';
+import '../routes/router.dart';
 import 'meal_record_card.dart';
 import '../design_system/molecules/feedback/empty_state.dart';
 import '../features/progress/providers/meal_score_provider.dart';
@@ -37,8 +39,7 @@ class TodaysMealRecordsList extends ConsumerWidget {
                 key: Key(meal.id),
                 direction: DismissDirection.endToStart,
                 confirmDismiss: (direction) async {
-                  // 削除確認ダイアログを表示
-                  return await showDialog<bool>(
+                  final confirmed = await showDialog<bool>(
                     context: context,
                     builder:
                         (context) => AlertDialog(
@@ -59,27 +60,28 @@ class TodaysMealRecordsList extends ConsumerWidget {
                           ],
                         ),
                   );
-                },
-                onDismissed: (direction) async {
-                  // 削除処理
-                  await ref
-                      .read(mealRecordsProvider.notifier)
-                      .deleteMealRecord(meal.id);
-
-                  // SnackBarで通知
-                  if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('${meal.mealName}を削除しました'),
-                        action: SnackBarAction(
-                          label: '元に戻す',
-                          onPressed: () {
-                            // TODO: 削除の取り消し機能を実装
-                          },
+                  if (confirmed == true) {
+                    await ref
+                        .read(mealRecordsProvider.notifier)
+                        .deleteMealRecord(meal.id);
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('${meal.mealName}を削除しました'),
+                          action: SnackBarAction(
+                            label: '元に戻す',
+                            onPressed: () async {
+                              await ref
+                                  .read(mealRecordsProvider.notifier)
+                                  .addMealRecord(meal);
+                            },
+                          ),
                         ),
-                      ),
-                    );
+                      );
+                    }
+                    return true;
                   }
+                  return false;
                 },
                 background: Container(
                   color: Colors.red,
@@ -94,10 +96,7 @@ class TodaysMealRecordsList extends ConsumerWidget {
                       mealRecord: meal,
                       scoreGrade: score?.grade,
                       onTap: () {
-                        // TODO: 編集画面への遷移を実装
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('編集機能は準備中です')),
-                        );
+                        context.push(TontonRoutes.editMeal, extra: meal);
                       },
                     );
                   },

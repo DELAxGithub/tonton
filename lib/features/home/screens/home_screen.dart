@@ -12,6 +12,7 @@ import '../../../design_system/molecules/pfc_bar_display.dart';
 import '../../../widgets/todays_meal_records_list.dart';
 import '../../../widgets/ai_advice_card_compact.dart';
 import '../../../routes/router.dart';
+import '../../progress/providers/meal_score_provider.dart';
 
 /// Main home screen matching .pen HomeScreen design
 class HomeScreen extends ConsumerWidget {
@@ -122,27 +123,7 @@ class HomeScreen extends ConsumerWidget {
               // PFC Balance section
               _SectionHeader(title: 'PFCバランス'),
               const SizedBox(height: 12),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(18),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: const [
-                    BoxShadow(
-                      color: TontonColors.shadowSubtle,
-                      offset: Offset(0, 2),
-                      blurRadius: 12,
-                    ),
-                  ],
-                ),
-                child: PfcBarDisplay(
-                  title: '',
-                  protein: protein,
-                  fat: fat,
-                  carbs: carbs,
-                ),
-              ),
+              _PfcBalanceCard(protein: protein, fat: fat, carbs: carbs),
               const SizedBox(height: 20),
 
               // Meals section
@@ -200,6 +181,144 @@ class _SectionHeader extends StatelessWidget {
             ),
           ),
       ],
+    );
+  }
+}
+
+/// PFC Balance card with integrated meal score display
+class _PfcBalanceCard extends ConsumerWidget {
+  final double protein;
+  final double fat;
+  final double carbs;
+
+  const _PfcBalanceCard({
+    required this.protein,
+    required this.fat,
+    required this.carbs,
+  });
+
+  Color _gradeColor(String grade) {
+    switch (grade) {
+      case 'A':
+        return TontonColors.systemGreen;
+      case 'B':
+        return TontonColors.systemBlue;
+      case 'C':
+        return TontonColors.systemOrange;
+      default:
+        return TontonColors.systemRed;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final score = ref.watch(dailyMealScoreProvider);
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: const [
+          BoxShadow(
+            color: TontonColors.shadowSubtle,
+            offset: Offset(0, 2),
+            blurRadius: 12,
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Score row (only shown when meals exist)
+          if (score != null) ...[
+            Row(
+              children: [
+                // Score circle
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: _gradeColor(score.grade).withValues(alpha: 0.12),
+                  ),
+                  alignment: Alignment.center,
+                  child: Text(
+                    '${score.score}',
+                    style: TextStyle(
+                      color: _gradeColor(score.grade),
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                // Grade + label
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      score.grade,
+                      style: TextStyle(
+                        color: _gradeColor(score.grade),
+                        fontSize: 17,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    Text(
+                      score.label,
+                      style: TextStyle(
+                        color: app_theme.TontonColors.textSecondary,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            const SizedBox(height: 14),
+            Divider(color: TontonColors.borderSubtle, height: 1),
+            const SizedBox(height: 14),
+          ],
+
+          // PFC bars
+          PfcBarDisplay(
+            title: '',
+            protein: protein,
+            fat: fat,
+            carbs: carbs,
+          ),
+
+          // Feedback text
+          if (score != null) ...[
+            const SizedBox(height: 14),
+            Divider(color: TontonColors.borderSubtle, height: 1),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Icon(
+                  Icons.lightbulb_outline,
+                  size: 16,
+                  color: TontonColors.systemOrange,
+                ),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: Text(
+                    score.feedback,
+                    style: TextStyle(
+                      color: app_theme.TontonColors.textSecondary,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ],
+      ),
     );
   }
 }

@@ -4,9 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/providers.dart';
 import 'meal_record_card.dart';
-import '../theme/tokens.dart' as tokens;
-import '../theme/typography.dart' as typography;
 import '../design_system/molecules/feedback/empty_state.dart';
+import '../features/progress/providers/meal_score_provider.dart';
 
 /// Displays a list of today's meal records using [todaysMealRecordsProvider].
 class TodaysMealRecordsList extends ConsumerWidget {
@@ -88,13 +87,19 @@ class TodaysMealRecordsList extends ConsumerWidget {
                   padding: const EdgeInsets.only(right: 20),
                   child: const Icon(Icons.delete, color: Colors.white),
                 ),
-                child: MealRecordCard(
-                  mealRecord: meal,
-                  onTap: () {
-                    // TODO: 編集画面への遷移を実装
-                    ScaffoldMessenger.of(
-                      context,
-                    ).showSnackBar(const SnackBar(content: Text('編集機能は準備中です')));
+                child: Consumer(
+                  builder: (context, ref, _) {
+                    final score = ref.watch(mealScoreProvider(meal));
+                    return MealRecordCard(
+                      mealRecord: meal,
+                      scoreGrade: score?.grade,
+                      onTap: () {
+                        // TODO: 編集画面への遷移を実装
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('編集機能は準備中です')),
+                        );
+                      },
+                    );
                   },
                 ),
               );

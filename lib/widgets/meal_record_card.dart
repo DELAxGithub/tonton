@@ -8,8 +8,27 @@ import '../models/meal_record.dart';
 class MealRecordCard extends StatelessWidget {
   final MealRecord mealRecord;
   final VoidCallback? onTap;
+  final String? scoreGrade;
 
-  const MealRecordCard({super.key, required this.mealRecord, this.onTap});
+  const MealRecordCard({
+    super.key,
+    required this.mealRecord,
+    this.onTap,
+    this.scoreGrade,
+  });
+
+  static Color _gradeColor(String grade) {
+    switch (grade) {
+      case 'A':
+        return design_colors.TontonColors.systemGreen;
+      case 'B':
+        return design_colors.TontonColors.systemBlue;
+      case 'C':
+        return design_colors.TontonColors.systemOrange;
+      default:
+        return design_colors.TontonColors.systemRed;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -80,6 +99,28 @@ class MealRecordCard extends StatelessWidget {
                     ],
                   ),
                 ),
+
+                // Score badge
+                if (scoreGrade != null) ...[
+                  Container(
+                    width: 26,
+                    height: 26,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: _gradeColor(scoreGrade!).withValues(alpha: 0.12),
+                    ),
+                    alignment: Alignment.center,
+                    child: Text(
+                      scoreGrade!,
+                      style: TextStyle(
+                        color: _gradeColor(scoreGrade!),
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                ],
 
                 // Calories
                 Column(

@@ -1,12 +1,12 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:tonton/main.dart';
 import 'package:tonton/features/onboarding/screens/onboarding_screen.dart';
-import 'package:tonton/features/home/screens/home_screen.dart';
 import 'package:tonton/routes/router.dart';
-import 'package:tonton/providers/onboarding_completion_provider.dart';
+import 'package:tonton/features/onboarding/providers/onboarding_completion_provider.dart';
 
 class TestOnboardingCompletionNotifier extends OnboardingCompletionNotifier {
   TestOnboardingCompletionNotifier(bool value) : super() {
@@ -23,7 +23,7 @@ void main() {
       routes: [
         GoRoute(
           path: TontonRoutes.home,
-          builder: (_, __) => const HomeScreen(),
+          builder: (_, __) => const Scaffold(body: Text('Home Screen Test Mock')),
         ),
         GoRoute(
           path: TontonRoutes.onboardingIntro,
@@ -68,6 +68,6 @@ void main() {
     );
 
     await tester.pumpAndSettle();
-    expect(find.byType(HomeScreen), findsOneWidget);
+    expect(find.text('Home Screen Test Mock'), findsOneWidget);
   });
 }

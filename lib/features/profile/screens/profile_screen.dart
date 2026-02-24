@@ -526,15 +526,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       ),
                     ),
                     const SizedBox(height: Spacing.md),
-                    TontonButton.primary(
-                      label: 'Apple IDで連携',
-                      icon: Icons.apple,
-                      onPressed: () async {
-                        // TODO: Apple連携実装
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Apple連携は準備中です')),
-                        );
-                      },
+                    TontonButton.secondary(
+                      label: 'メールで連携する',
+                      icon: Icons.email,
+                      onPressed: () => context.go(TontonRoutes.signup),
                     ),
                   ] else ...[
                     Text(
@@ -572,6 +567,52 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         await ref.read(authServiceProvider).signOut();
                         if (context.mounted) {
                           context.go(TontonRoutes.login);
+                        }
+                      }
+                    },
+                  ),
+                  const SizedBox(height: Spacing.md),
+                  TontonButton(
+                    label: 'アカウントを削除する',
+                    icon: Icons.delete_forever,
+                    style: TontonButtonStyle.destructive,
+                    onPressed: () async {
+                      final confirmed = await showDialog<bool>(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: const Text('アカウントの削除'),
+                          content: const Text(
+                            '本当にお客様のアカウントと、保存されているすべてのデータを削除してもよろしいですか？\nこの操作は取り消すことができません。',
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context, false),
+                              child: const Text('キャンセル'),
+                            ),
+                            TextButton(
+                              onPressed: () => Navigator.pop(context, true),
+                              style: TextButton.styleFrom(
+                                foregroundColor: Colors.red,
+                              ),
+                              child: const Text('削除する'),
+                            ),
+                          ],
+                        ),
+                      );
+                      if (confirmed == true && context.mounted) {
+                        try {
+                          await ref.read(authServiceProvider).deleteAccount();
+                          if (context.mounted) {
+                            context.go(TontonRoutes.welcome);
+                          }
+                        } catch (e) {
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(e.toString().replaceFirst('Exception: ', '')),
+                              ),
+                            );
+                          }
                         }
                       }
                     },

@@ -1,142 +1,88 @@
-# Fastlane for TonTon iOS
+fastlane documentation
+----
 
-This directory contains the Fastlane configuration for automating iOS builds and deployments.
+# Installation
 
-## Setup
+Make sure you have the latest version of the Xcode command line tools installed:
 
-### 1. Install Fastlane
-
-```bash
-cd ios
-bundle install
+```sh
+xcode-select --install
 ```
 
-If you haven't installed bundler:
-```bash
-gem install bundler
+For _fastlane_ installation instructions, see [Installing _fastlane_](https://docs.fastlane.tools/#installing-fastlane)
+
+# Available Actions
+
+## iOS
+
+### ios beta
+
+```sh
+[bundle exec] fastlane ios beta
 ```
 
-### 2. Configure Environment Variables
+Build and upload to TestFlight
 
-Copy the default environment file and fill in your values:
+### ios screenshots
 
-```bash
-cp fastlane/.env.default fastlane/.env
+```sh
+[bundle exec] fastlane ios screenshots
 ```
 
-Edit `.env` with your Apple Developer credentials and other settings.
+Create screenshots
 
-### 3. Set up Code Signing (Match)
+### ios create_app_store_screenshots
 
-Initialize Match with your certificates repository:
-
-```bash
-bundle exec fastlane match init
+```sh
+[bundle exec] fastlane ios create_app_store_screenshots
 ```
 
-Then download existing certificates or create new ones:
+Create localized App Store screenshots
 
-```bash
-# Download existing certificates (recommended)
-bundle exec fastlane certificates
+### ios beta_with_screenshots
 
-# Or create new certificates (requires admin access)
-bundle exec fastlane create_certificates
+```sh
+[bundle exec] fastlane ios beta_with_screenshots
 ```
 
-## Available Lanes
+Build, screenshot, and deploy to TestFlight
 
-### Beta Release
+### ios test
 
-Build and upload to TestFlight:
-
-```bash
-bundle exec fastlane beta
+```sh
+[bundle exec] fastlane ios test
 ```
 
-This will:
-1. Check git status is clean
-2. Increment build number
-3. Sync certificates via Match
-4. Build the app
-5. Upload to TestFlight
-6. Commit version changes
-7. Tag the release
-8. Push to git
+Run tests
 
-### Run Tests
+### ios certificates
 
-```bash
-bundle exec fastlane test
+```sh
+[bundle exec] fastlane ios certificates
 ```
 
-### Create Screenshots
+Download certificates and profiles
 
-```bash
-bundle exec fastlane screenshots
+### ios create_certificates
+
+```sh
+[bundle exec] fastlane ios create_certificates
 ```
 
-### Increment Version
+Create new certificates and profiles
 
-```bash
-# Increment patch version (1.0.0 -> 1.0.1)
-bundle exec fastlane bump_version type:patch
+### ios bump_version
 
-# Increment minor version (1.0.0 -> 1.1.0)
-bundle exec fastlane bump_version type:minor
-
-# Increment major version (1.0.0 -> 2.0.0)
-bundle exec fastlane bump_version type:major
+```sh
+[bundle exec] fastlane ios bump_version
 ```
 
-## CI/CD Integration
+Increment version number
 
-For GitHub Actions or other CI systems:
+----
 
-1. Set up environment variables as secrets
-2. Create a temporary keychain for certificates
-3. Use the read-only mode for Match
+This README.md is auto-generated and will be re-generated every time [_fastlane_](https://fastlane.tools) is run.
 
-Example GitHub Actions step:
+More information about _fastlane_ can be found on [fastlane.tools](https://fastlane.tools).
 
-```yaml
-- name: Build and Deploy to TestFlight
-  env:
-    APPLE_ID: ${{ secrets.APPLE_ID }}
-    TEAM_ID: ${{ secrets.TEAM_ID }}
-    MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
-    MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}
-  run: |
-    cd ios
-    bundle exec fastlane beta
-```
-
-## Troubleshooting
-
-### Code Signing Issues
-
-If you encounter code signing errors:
-1. Ensure your Apple ID has proper access
-2. Check that Match repository is accessible
-3. Try running with `--verbose` flag
-4. Clear derived data: `rm -rf ~/Library/Developer/Xcode/DerivedData`
-
-### Build Failures
-
-1. Clean build folder: `flutter clean`
-2. Update pods: `cd ios && pod update`
-3. Check Xcode project settings match Fastlane config
-
-### Match Issues
-
-If Match can't find or create certificates:
-1. Verify git repository access
-2. Check Apple Developer Portal for existing certificates
-3. Ensure proper team selection in Xcode
-
-## Security Notes
-
-- Never commit `.env` file
-- Use App Store Connect API keys instead of password for CI
-- Rotate Match password regularly
-- Use separate certificates repository with restricted access
+The documentation of _fastlane_ can be found on [docs.fastlane.tools](https://docs.fastlane.tools).

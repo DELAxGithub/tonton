@@ -17,16 +17,14 @@ class AuthService {
       final AuthResponse res = await _supabase.auth.signUp(
         email: email,
         password: password,
-        // emailRedirectTo: 'io.supabase.flutterquickstart://login-callback/', // Optional: For email confirmation deep link
       );
       if (res.user == null) {
         developer.log(
           'Sign up failed: No user returned, but no Supabase error.',
           name: 'TonTon.AuthService.Error',
         );
-        throw Exception('Sign up failed: An unknown error occurred.');
+        throw Exception('アカウント作成に失敗しました。');
       }
-      // Note: If email confirmation is enabled in Supabase, res.user will exist but session might be null until confirmed.
       developer.log(
         'Sign up successful for user: ${res.user!.id}',
         name: 'TonTon.AuthService',
@@ -37,7 +35,7 @@ class AuthService {
         name: 'TonTon.AuthService.Error',
         error: e,
       );
-      throw Exception('Sign up failed: ${e.message}');
+      throw Exception('アカウント作成に失敗しました: ${e.message}');
     } catch (e, stackTrace) {
       developer.log(
         'Unexpected error during sign up: $e',
@@ -45,7 +43,7 @@ class AuthService {
         error: e,
         stackTrace: stackTrace,
       );
-      throw Exception('Sign up failed: An unexpected error occurred.');
+      throw Exception('アカウント作成に失敗しました。');
     }
   }
 
@@ -65,7 +63,7 @@ class AuthService {
           'Sign in failed: No user returned, but no Supabase error.',
           name: 'TonTon.AuthService.Error',
         );
-        throw Exception('Sign in failed: An unknown error occurred.');
+        throw Exception('ログインに失敗しました。');
       }
       developer.log(
         'Sign in successful for user: ${res.user!.id}',
@@ -77,11 +75,10 @@ class AuthService {
         name: 'TonTon.AuthService.Error',
         error: e,
       );
-      // Provide more specific error messages based on common Supabase errors
       if (e.message.toLowerCase().contains('invalid login credentials')) {
-        throw Exception('Invalid email or password.');
+        throw Exception('メールアドレスまたはパスワードが正しくありません。');
       }
-      throw Exception('Sign in failed: ${e.message}');
+      throw Exception('ログインに失敗しました: ${e.message}');
     } catch (e, stackTrace) {
       developer.log(
         'Unexpected error during sign in: $e',
@@ -89,7 +86,7 @@ class AuthService {
         error: e,
         stackTrace: stackTrace,
       );
-      throw Exception('Sign in failed: An unexpected error occurred.');
+      throw Exception('ログインに失敗しました。');
     }
   }
 
@@ -108,7 +105,7 @@ class AuthService {
         name: 'TonTon.AuthService.Error',
         error: e,
       );
-      throw Exception('Sign out failed: ${e.message}');
+      throw Exception('ログアウトに失敗しました: ${e.message}');
     } catch (e, stackTrace) {
       developer.log(
         'Unexpected error during sign out: $e',
@@ -116,7 +113,7 @@ class AuthService {
         error: e,
         stackTrace: stackTrace,
       );
-      throw Exception('Sign out failed: An unexpected error occurred.');
+      throw Exception('ログアウトに失敗しました。');
     }
   }
 
@@ -139,7 +136,7 @@ class AuthService {
           'Anonymous sign in failed: No user returned',
           name: 'TonTon.AuthService.Error',
         );
-        throw Exception('Anonymous sign in failed');
+        throw Exception('ゲストモードの開始に失敗しました。');
       }
       developer.log(
         'Anonymous sign in successful: ${res.user!.id}',
@@ -151,7 +148,7 @@ class AuthService {
         name: 'TonTon.AuthService.Error',
         error: e,
       );
-      throw Exception('Anonymous sign in failed: ${e.message}');
+      throw Exception('ゲストモードの開始に失敗しました: ${e.message}');
     } catch (e, stackTrace) {
       developer.log(
         'Error during anonymous sign in: $e',
@@ -163,36 +160,72 @@ class AuthService {
     }
   }
 
-  /// Link Apple ID to the current anonymous user (future implementation)
-  Future<void> linkWithApple() async {
+  Future<void> deleteAccount() async {
     try {
       developer.log(
-        'Attempting to link Apple ID',
+        'Attempting to delete account',
         name: 'TonTon.AuthService',
       );
-      await _supabase.auth.signInWithOAuth(
-        OAuthProvider.apple,
-        redirectTo: 'io.supabase.tonton://login-callback/',
-      );
+      final user = _supabase.auth.currentUser;
+      if (user == null) {
+        throw Exception('ログインしていません。');
+      }
+
+      // Edge Function または DB内の RPC ('delete_user') を呼び出してユーザーを削除する
+      // ※Supabaseクライアントから自分自身を削除するには、通常セキュリティ・ディファイナーのRPCかEdge Functionが必要です。
+      await _supabase.rpc('delete_user');
+      
+      // 削除後、ログアウト処理を行う
+      await signOut();
+      
       developer.log(
-        'Apple ID link initiated',
+        'Account deleted successfully',
         name: 'TonTon.AuthService',
       );
     } on AuthException catch (e) {
       developer.log(
-        'AuthException during Apple link: ${e.message}',
+        'AuthException during account deletion: ${e.message}',
         name: 'TonTon.AuthService.Error',
         error: e,
       );
-      throw Exception('Apple link failed: ${e.message}');
+      throw Exception('アカウント削除に失敗しました: ${e.message}');
     } catch (e, stackTrace) {
       developer.log(
-        'Error during Apple link: $e',
+        'Error during account deletion: $e',
         name: 'TonTon.AuthService.Exception',
         error: e,
         stackTrace: stackTrace,
       );
-      rethrow;
+      throw Exception('アカウント削除に失敗しました。');
+    }
+  }
+
+  Future<void> resetPassword(String email) async {
+    try {
+      developer.log(
+        'Attempting to send password reset email',
+        name: 'TonTon.AuthService',
+      );
+      await _supabase.auth.resetPasswordForEmail(email);
+      developer.log(
+        'Password reset email sent to $email',
+        name: 'TonTon.AuthService',
+      );
+    } on AuthException catch (e) {
+      developer.log(
+        'AuthException during password reset: ${e.message}',
+        name: 'TonTon.AuthService.Error',
+        error: e,
+      );
+      throw Exception('パスワードリセットメールの送信に失敗しました: ${e.message}');
+    } catch (e, stackTrace) {
+      developer.log(
+        'Error during password reset: $e',
+        name: 'TonTon.AuthService.Exception',
+        error: e,
+        stackTrace: stackTrace,
+      );
+      throw Exception('パスワードリセットメールの送信に失敗しました。');
     }
   }
 }

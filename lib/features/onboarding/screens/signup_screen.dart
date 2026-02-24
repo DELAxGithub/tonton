@@ -1,28 +1,26 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart'; // Import Riverpod
-
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../routes/router.dart';
 import '../../../design_system/templates/standard_page_layout.dart';
 import '../../../design_system/atoms/tonton_button.dart';
 import '../../../providers/providers.dart';
+import '../../../theme/colors.dart';
 
 class SignupScreen extends ConsumerStatefulWidget {
-  // Changed to ConsumerStatefulWidget
   const SignupScreen({super.key});
 
   @override
-  ConsumerState<SignupScreen> createState() => _SignupScreenState(); // Changed to ConsumerState
+  ConsumerState<SignupScreen> createState() => _SignupScreenState();
 }
 
 class _SignupScreenState extends ConsumerState<SignupScreen> {
-  // Changed to ConsumerState
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
-  bool _isLoading = false; // For loading indicator
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -34,9 +32,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
 
   Future<void> _signup() async {
     if (_formKey.currentState!.validate()) {
-      setState(() {
-        _isLoading = true;
-      });
+      setState(() => _isLoading = true);
 
       final authService = ref.read(authServiceProvider);
       try {
@@ -45,47 +41,55 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
           password: _passwordController.text.trim(),
         );
         if (!mounted) return;
-
-        // Immediately complete onboarding after successful signup
-        await ref.read(onboardingCompletedProvider.notifier).complete();
-        if (!mounted) return;
-
-        await ref.read(userProfileProvider.notifier).completeOnboarding();
-        if (!mounted) return;
-
-        final service = ref.read(onboardingServiceProvider);
-        await service.completeOnboarding();
-        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Welcome to Tonton! Account created successfully.'),
+            content: Text('アカウントを作成しました！'),
           ),
         );
+        // Router redirect will handle onboarding
         context.go(TontonRoutes.home);
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
-                'Signup failed: ${e.toString().replaceFirst("Exception: ", "")}',
+                e.toString().replaceFirst('Exception: ', ''),
               ),
             ),
           );
         }
       } finally {
-        if (mounted) {
-          setState(() {
-            _isLoading = false;
-          });
-        }
+        if (mounted) setState(() => _isLoading = false);
       }
+    }
+  }
+
+  Future<void> _signInAsGuest() async {
+    setState(() => _isLoading = true);
+    try {
+      final authService = ref.read(authServiceProvider);
+      await authService.signInAnonymously();
+      if (!mounted) return;
+      context.go(TontonRoutes.home);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              e.toString().replaceFirst('Exception: ', ''),
+            ),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Sign Up')),
+      appBar: AppBar(title: const Text('アカウント作成')),
       body: StandardPageLayout(
         children: [
           Form(
@@ -94,7 +98,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text(
-                  'Create your Tonton Account',
+                  'TonTonをはじめよう！',
                   style: Theme.of(context).textTheme.headlineSmall,
                   textAlign: TextAlign.center,
                 ),
@@ -102,17 +106,17 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                 TextFormField(
                   controller: _emailController,
                   decoration: const InputDecoration(
-                    labelText: 'Email Address',
+                    labelText: 'メールアドレス',
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.email),
                   ),
                   keyboardType: TextInputType.emailAddress,
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
-                      return 'Please enter your email';
+                      return 'メールアドレスを入力してください';
                     }
                     if (!value.contains('@') || !value.contains('.')) {
-                      return 'Please enter a valid email address';
+                      return '正しいメールアドレスを入力してください';
                     }
                     return null;
                   },
@@ -121,17 +125,17 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                 TextFormField(
                   controller: _passwordController,
                   decoration: const InputDecoration(
-                    labelText: 'Password',
+                    labelText: 'パスワード',
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.lock),
                   ),
                   obscureText: true,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter your password';
+                      return 'パスワードを入力してください';
                     }
                     if (value.length < 6) {
-                      return 'Password must be at least 6 characters';
+                      return 'パスワードは6文字以上にしてください';
                     }
                     return null;
                   },
@@ -140,17 +144,17 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                 TextFormField(
                   controller: _confirmPasswordController,
                   decoration: const InputDecoration(
-                    labelText: 'Confirm Password',
+                    labelText: 'パスワード（確認）',
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.lock_outline),
                   ),
                   obscureText: true,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please confirm your password';
+                      return 'パスワードを再入力してください';
                     }
                     if (value != _passwordController.text) {
-                      return 'Passwords do not match';
+                      return 'パスワードが一致しません';
                     }
                     return null;
                   },
@@ -159,22 +163,34 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                 _isLoading
                     ? const Center(child: CircularProgressIndicator())
                     : TontonButton.primary(
-                      label: 'Sign Up',
-                      onPressed: _signup,
-                    ),
+                        label: 'アカウント作成',
+                        onPressed: _isLoading ? null : _signup,
+                      ),
                 const SizedBox(height: 16.0),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text("Already have an account?"),
+                    const Text('アカウントをお持ちの方'),
                     TextButton(
-                      onPressed: () {
-                        // Navigate directly to the login screen using GoRouter
-                        context.go(TontonRoutes.login);
-                      },
-                      child: const Text('Login'),
+                      onPressed: _isLoading
+                          ? null
+                          : () => context.go(TontonRoutes.login),
+                      child: const Text('ログイン'),
                     ),
                   ],
+                ),
+                const SizedBox(height: 8.0),
+                Center(
+                  child: TextButton(
+                    onPressed: _isLoading ? null : _signInAsGuest,
+                    child: Text(
+                      'ゲストではじめる',
+                      style: TextStyle(
+                        color: TontonColors.secondaryLabel,
+                        fontSize: 15,
+                      ),
+                    ),
+                  ),
                 ),
               ],
             ),

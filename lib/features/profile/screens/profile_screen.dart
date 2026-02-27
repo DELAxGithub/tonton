@@ -529,7 +529,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     TontonButton.secondary(
                       label: 'メールで連携する',
                       icon: Icons.email,
-                      onPressed: () => context.go(TontonRoutes.signup),
+                      onPressed: () => context.push(TontonRoutes.signup),
                     ),
                   ] else ...[
                     Text(

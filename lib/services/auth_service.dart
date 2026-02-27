@@ -8,27 +8,59 @@ class AuthService {
   User? get currentUser => _supabase.auth.currentUser;
 
   // Sign up with email and password
+  // If the current user is anonymous, links email+password to the existing account
+  // via updateUser (preserving user ID and data). Otherwise creates a new account.
   Future<void> signUp({required String email, required String password}) async {
     try {
-      developer.log(
-        'Attempting to sign up user: $email',
-        name: 'TonTon.AuthService',
-      );
-      final AuthResponse res = await _supabase.auth.signUp(
-        email: email,
-        password: password,
-      );
-      if (res.user == null) {
+      final currentUser = _supabase.auth.currentUser;
+
+      if (currentUser?.isAnonymous == true) {
+        // Anonymous → email linking
         developer.log(
-          'Sign up failed: No user returned, but no Supabase error.',
-          name: 'TonTon.AuthService.Error',
+          'Linking anonymous user ${currentUser!.id} to email: $email',
+          name: 'TonTon.AuthService',
         );
-        throw Exception('アカウント作成に失敗しました。');
+        final UserResponse res = await _supabase.auth.updateUser(
+          UserAttributes(
+            email: email,
+            password: password,
+          ),
+        );
+        if (res.user == null) {
+          developer.log(
+            'Anonymous linking failed: No user returned.',
+            name: 'TonTon.AuthService.Error',
+          );
+          throw Exception('アカウント連携に失敗しました。');
+        }
+        // Refresh session to get a new JWT with is_anonymous: false
+        await _supabase.auth.refreshSession();
+        developer.log(
+          'Anonymous user linked successfully: ${res.user!.id}, isAnonymous: ${_supabase.auth.currentUser?.isAnonymous}',
+          name: 'TonTon.AuthService',
+        );
+      } else {
+        // Normal sign up for non-anonymous (or no session)
+        developer.log(
+          'Attempting to sign up user: $email',
+          name: 'TonTon.AuthService',
+        );
+        final AuthResponse res = await _supabase.auth.signUp(
+          email: email,
+          password: password,
+        );
+        if (res.user == null) {
+          developer.log(
+            'Sign up failed: No user returned, but no Supabase error.',
+            name: 'TonTon.AuthService.Error',
+          );
+          throw Exception('アカウント作成に失敗しました。');
+        }
+        developer.log(
+          'Sign up successful for user: ${res.user!.id}',
+          name: 'TonTon.AuthService',
+        );
       }
-      developer.log(
-        'Sign up successful for user: ${res.user!.id}',
-        name: 'TonTon.AuthService',
-      );
     } on AuthException catch (e) {
       developer.log(
         'Supabase AuthException during sign up: ${e.message}',
@@ -120,8 +152,14 @@ class AuthService {
   // Stream of authentication state changes
   Stream<AuthState> get authStateChanges => _supabase.auth.onAuthStateChange;
 
-  /// Returns true if the current user is an anonymous user
-  bool get isAnonymous => currentUser?.isAnonymous ?? false;
+  /// Returns true if the current user is an anonymous user.
+  /// Checks email as fallback since Supabase may not flip is_anonymous after linking.
+  bool get isAnonymous {
+    final user = currentUser;
+    if (user == null) return false;
+    if (user.email != null && user.email!.isNotEmpty) return false;
+    return user.isAnonymous;
+  }
 
   /// Sign in anonymously - creates a new anonymous user
   Future<void> signInAnonymously() async {

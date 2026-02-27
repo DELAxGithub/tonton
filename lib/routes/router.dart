@@ -73,7 +73,9 @@ const _onboardingRoutes = {
 /// Provider for the router configuration
 final routerProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authStateChangesProvider);
-  final onboardingCompleted = ref.watch(onboardingCompletedProvider);
+  // Read (not watch) onboarding state to avoid router rebuild loop.
+  // The router redirect reads current value on each navigation event.
+  final onboardingNotifier = ref.read(onboardingCompletedProvider.notifier);
 
   return GoRouter(
     initialLocation: TontonRoutes.home,
@@ -88,6 +90,9 @@ final routerProvider = Provider<GoRouter>((ref) {
       // While auth state is loading, don't redirect
       if (isLoggedIn == null) return null;
 
+      // Read current onboarding state (not watched, avoids rebuild loop)
+      final onboardingCompleted = ref.read(onboardingCompletedProvider);
+
       final currentPath = state.matchedLocation;
       final isPublicRoute = _publicRoutes.contains(currentPath);
       final isOnboardingRoute = _onboardingRoutes.contains(currentPath);
@@ -98,7 +103,8 @@ final routerProvider = Provider<GoRouter>((ref) {
       }
 
       // Logged in but on a public route → redirect based on onboarding
-      if (isPublicRoute) {
+      // Exception: allow /signup for anonymous users linking their email
+      if (isPublicRoute && currentPath != TontonRoutes.signup) {
         return onboardingCompleted
             ? TontonRoutes.home
             : TontonRoutes.onboardingBasicInfo;

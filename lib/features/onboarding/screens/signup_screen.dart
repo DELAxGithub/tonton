@@ -22,6 +22,8 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
   final _confirmPasswordController = TextEditingController();
   bool _isLoading = false;
 
+  bool get _isLinkingAnonymous => ref.read(isAnonymousProvider);
+
   @override
   void dispose() {
     _emailController.dispose();
@@ -35,6 +37,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
       setState(() => _isLoading = true);
 
       final authService = ref.read(authServiceProvider);
+      final isLinking = _isLinkingAnonymous;
       try {
         await authService.signUp(
           email: _emailController.text.trim(),
@@ -42,11 +45,12 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
         );
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('アカウントを作成しました！'),
+          SnackBar(
+            content: Text(
+              isLinking ? 'メールアドレスを連携しました！' : 'アカウントを作成しました！',
+            ),
           ),
         );
-        // Router redirect will handle onboarding
         context.go(TontonRoutes.home);
       } catch (e) {
         if (mounted) {
@@ -88,8 +92,9 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isLinking = _isLinkingAnonymous;
     return Scaffold(
-      appBar: AppBar(title: const Text('アカウント作成')),
+      appBar: AppBar(title: Text(isLinking ? 'メール連携' : 'アカウント作成')),
       body: StandardPageLayout(
         children: [
           Form(
@@ -98,10 +103,20 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text(
-                  'TonTonをはじめよう！',
+                  isLinking ? 'メールアドレスで連携' : 'TonTonをはじめよう！',
                   style: Theme.of(context).textTheme.headlineSmall,
                   textAlign: TextAlign.center,
                 ),
+                if (isLinking) ...[
+                  const SizedBox(height: 8.0),
+                  Text(
+                    'データを引き継いだまま\nメールアドレスでログインできるようになります',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: TontonColors.secondaryLabel,
+                        ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
                 const SizedBox(height: 32.0),
                 TextFormField(
                   controller: _emailController,
@@ -163,35 +178,37 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                 _isLoading
                     ? const Center(child: CircularProgressIndicator())
                     : TontonButton.primary(
-                        label: 'アカウント作成',
+                        label: isLinking ? 'メールで連携する' : 'アカウント作成',
                         onPressed: _isLoading ? null : _signup,
                       ),
-                const SizedBox(height: 16.0),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text('アカウントをお持ちの方'),
-                    TextButton(
-                      onPressed: _isLoading
-                          ? null
-                          : () => context.go(TontonRoutes.login),
-                      child: const Text('ログイン'),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8.0),
-                Center(
-                  child: TextButton(
-                    onPressed: _isLoading ? null : _signInAsGuest,
-                    child: Text(
-                      'ゲストではじめる',
-                      style: TextStyle(
-                        color: TontonColors.secondaryLabel,
-                        fontSize: 15,
+                if (!isLinking) ...[
+                  const SizedBox(height: 16.0),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text('アカウントをお持ちの方'),
+                      TextButton(
+                        onPressed: _isLoading
+                            ? null
+                            : () => context.go(TontonRoutes.login),
+                        child: const Text('ログイン'),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8.0),
+                  Center(
+                    child: TextButton(
+                      onPressed: _isLoading ? null : _signInAsGuest,
+                      child: Text(
+                        'ゲストではじめる',
+                        style: TextStyle(
+                          color: TontonColors.secondaryLabel,
+                          fontSize: 15,
+                        ),
                       ),
                     ),
                   ),
-                ),
+                ],
               ],
             ),
           ),

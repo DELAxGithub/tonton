@@ -34,8 +34,12 @@ final isLoggedInProvider = Provider<bool>((ref) {
   return user != null;
 });
 
-// Provider to check if the current user is anonymous
+// Provider to check if the current user is anonymous.
+// Supabase may not flip is_anonymous to false after updateUser with email,
+// so we also check whether the user has an email set as a fallback.
 final isAnonymousProvider = Provider<bool>((ref) {
   final user = ref.watch(currentUserProvider);
-  return user?.isAnonymous ?? false;
+  if (user == null) return false;
+  if (user.email != null && user.email!.isNotEmpty) return false;
+  return user.isAnonymous;
 });

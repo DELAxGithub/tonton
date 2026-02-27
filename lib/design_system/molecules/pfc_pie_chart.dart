@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import '../../theme/colors.dart';
 
 class PfcPieChart extends StatelessWidget {
   final double protein;
@@ -18,24 +19,33 @@ class PfcPieChart extends StatelessWidget {
     final sections = [
       PieChartSectionData(
         value: protein,
-        color: Theme.of(context).colorScheme.primary,
+        color: TontonColors.proteinColor,
         title: 'P',
         radius: 30,
-        titleStyle: Theme.of(context).textTheme.labelSmall,
+        titleStyle: Theme.of(context).textTheme.labelSmall?.copyWith(
+              color: Colors.white,
+              fontWeight: FontWeight.w600,
+            ),
       ),
       PieChartSectionData(
         value: fat,
-        color: Theme.of(context).colorScheme.secondary,
+        color: TontonColors.fatColor,
         title: 'F',
         radius: 30,
-        titleStyle: Theme.of(context).textTheme.labelSmall,
+        titleStyle: Theme.of(context).textTheme.labelSmall?.copyWith(
+              color: Colors.white,
+              fontWeight: FontWeight.w600,
+            ),
       ),
       PieChartSectionData(
         value: carbs,
-        color: Theme.of(context).colorScheme.tertiary,
+        color: TontonColors.carbsColor,
         title: 'C',
         radius: 30,
-        titleStyle: Theme.of(context).textTheme.labelSmall,
+        titleStyle: Theme.of(context).textTheme.labelSmall?.copyWith(
+              color: Colors.white,
+              fontWeight: FontWeight.w600,
+            ),
       ),
     ];
 

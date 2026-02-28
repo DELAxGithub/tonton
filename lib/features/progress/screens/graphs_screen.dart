@@ -15,7 +15,7 @@ class GraphsScreen extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             ElevatedButton.icon(
-              onPressed: () => context.push(TontonRoutes.savingsTrend),
+              onPressed: () => context.go(TontonRoutes.savings),
               icon: Icon(TontonIcons.trend),
               label: const Text('貯金ダイアリー'),
             ),

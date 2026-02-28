@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../providers/providers.dart';
 import '../models/monthly_progress_summary.dart';
 import '../models/daily_calorie_summary.dart';
-import '../features/savings/screens/savings_trend_screen.dart';
 
 class MonthlyProgressWidget extends ConsumerWidget {
   const MonthlyProgressWidget({super.key});
@@ -57,11 +57,7 @@ class MonthlyProgressWidget extends ConsumerWidget {
                 const SizedBox(width: 8),
                 IconButton(
                   onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => const SavingsTrendScreen(),
-                      ),
-                    );
+                    GoRouter.of(context).go('/savings');
                   },
                   icon: const Icon(Icons.trending_up),
                   tooltip: 'View Calorie Savings Trend',

@@ -8,7 +8,6 @@ import '../features/onboarding/screens/welcome_screen.dart';
 import '../features/onboarding/screens/login_screen.dart';
 import '../features/onboarding/screens/signup_screen.dart';
 import '../features/savings/screens/savings_screen.dart';
-import '../features/savings/screens/savings_trend_screen.dart';
 import '../features/savings/screens/use_savings_screen.dart';
 import '../features/onboarding/screens/onboarding_screen.dart';
 import '../features/onboarding/screens/basic_info_screen.dart';
@@ -39,7 +38,6 @@ class TontonRoutes {
   static const String addMeal = '/add-meal';
   static const String editMeal = '/edit-meal';
   static const String savings = '/savings';
-  static const String savingsTrend = '/savings-trend';
   static const String progress = '/progress';
   static const String useSavings = '/use-savings';
   static const String onboardingBasicInfo = '/onboarding/basic-info';
@@ -212,11 +210,6 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
 
       // Standalone detail routes (pushed over tabs)
-      GoRoute(
-        path: TontonRoutes.savingsTrend,
-        name: 'savingsTrend',
-        builder: (context, state) => const SavingsTrendScreen(),
-      ),
       GoRoute(
         path: TontonRoutes.progressAchievements,
         name: 'progressAchievements',

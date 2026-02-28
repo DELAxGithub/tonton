@@ -18,13 +18,13 @@ enum MealTimeType {
   String get displayName {
     switch (this) {
       case MealTimeType.breakfast:
-        return 'Breakfast';
+        return '朝食';
       case MealTimeType.lunch:
-        return 'Lunch';
+        return '昼食';
       case MealTimeType.dinner:
-        return 'Dinner';
+        return '夕食';
       case MealTimeType.snack:
-        return 'Snack';
+        return '間食';
     }
   }
 

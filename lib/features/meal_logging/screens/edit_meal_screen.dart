@@ -309,6 +309,7 @@ class _EditMealScreenState extends ConsumerState<EditMealScreen> {
 
                   // 食事タイプ
                   SegmentedButton<MealTimeType>(
+                    showSelectedIcon: false,
                     segments: MealTimeType.values
                         .map(
                           (e) => ButtonSegment(

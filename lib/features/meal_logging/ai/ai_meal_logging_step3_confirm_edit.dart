@@ -39,7 +39,6 @@ class _State extends ConsumerState<AIMealLoggingStep3ConfirmEdit> {
   double _quantityMultiplier = 1.0;
   late MealTimeType _mealTime;
   DateTime _selectedDate = DateTime.now();
-  TimeOfDay _selectedTime = TimeOfDay.now();
   bool _isSaving = false;
 
   @override
@@ -82,14 +81,13 @@ class _State extends ConsumerState<AIMealLoggingStep3ConfirmEdit> {
     }
   }
 
-  Future<void> _pickTime() async {
-    final picked = await showTimePicker(
-      context: context,
-      initialTime: _selectedTime,
-    );
-    if (picked != null) {
-      setState(() => _selectedTime = picked);
-    }
+  TimeOfDay _timeForMealType(MealTimeType type) {
+    return switch (type) {
+      MealTimeType.breakfast => const TimeOfDay(hour: 7, minute: 30),
+      MealTimeType.lunch => const TimeOfDay(hour: 12, minute: 0),
+      MealTimeType.dinner => const TimeOfDay(hour: 18, minute: 0),
+      MealTimeType.snack => const TimeOfDay(hour: 15, minute: 0),
+    };
   }
 
   void _updateQuantity(double multiplier) {
@@ -135,8 +133,8 @@ class _State extends ConsumerState<AIMealLoggingStep3ConfirmEdit> {
           _selectedDate.year,
           _selectedDate.month,
           _selectedDate.day,
-          _selectedTime.hour,
-          _selectedTime.minute,
+          _timeForMealType(_mealTime).hour,
+          _timeForMealType(_mealTime).minute,
         ),
       );
 
@@ -341,46 +339,41 @@ class _State extends ConsumerState<AIMealLoggingStep3ConfirmEdit> {
 
                 const SizedBox(height: TontonSpacing.lg),
 
-                // Date and time selection
+                // Meal type & date selection
                 Card(
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
+                        child: SegmentedButton<MealTimeType>(
+                          showSelectedIcon: false,
+                          segments:
+                              MealTimeType.values
+                                  .map(
+                                    (e) => ButtonSegment(
+                                      value: e,
+                                      label: Text(e.displayName),
+                                    ),
+                                  )
+                                  .toList(),
+                          selected: {_mealTime},
+                          onSelectionChanged: (set) {
+                            if (set.isNotEmpty) {
+                              setState(() => _mealTime = set.first);
+                            }
+                          },
+                        ),
+                      ),
+                      const Divider(height: 1),
                       ListTile(
                         leading: const Icon(Icons.calendar_today),
                         title: const Text('いつ食べた？'),
                         subtitle: Text(DateFormat.yMd().format(_selectedDate)),
                         onTap: _pickDate,
                       ),
-                      const Divider(height: 1),
-                      ListTile(
-                        leading: const Icon(Icons.access_time),
-                        title: const Text('何時に食べた？'),
-                        subtitle: Text(_selectedTime.format(context)),
-                        onTap: _pickTime,
-                      ),
                     ],
                   ),
-                ),
-
-                const SizedBox(height: TontonSpacing.md),
-
-                // Meal type selection
-                SegmentedButton<MealTimeType>(
-                  segments:
-                      MealTimeType.values
-                          .map(
-                            (e) => ButtonSegment(
-                              value: e,
-                              label: Text(e.displayName),
-                            ),
-                          )
-                          .toList(),
-                  selected: {_mealTime},
-                  onSelectionChanged: (set) {
-                    if (set.isNotEmpty) {
-                      setState(() => _mealTime = set.first);
-                    }
-                  },
                 ),
               ],
             ),

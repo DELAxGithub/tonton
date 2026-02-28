@@ -7,6 +7,7 @@ import '../features/home/screens/home_screen.dart';
 import '../features/onboarding/screens/welcome_screen.dart';
 import '../features/onboarding/screens/login_screen.dart';
 import '../features/onboarding/screens/signup_screen.dart';
+import '../features/savings/screens/savings_screen.dart';
 import '../features/savings/screens/savings_trend_screen.dart';
 import '../features/savings/screens/use_savings_screen.dart';
 import '../features/onboarding/screens/onboarding_screen.dart';
@@ -28,7 +29,6 @@ import '../widgets/main_navigation_bar.dart';
 import '../design_system/templates/app_shell.dart';
 import 'dart:io';
 import '../models/estimated_meal_nutrition.dart';
-import '../models/calorie_savings_record.dart';
 
 /// Route names for named navigation
 class TontonRoutes {
@@ -38,6 +38,7 @@ class TontonRoutes {
   static const String signup = '/signup';
   static const String addMeal = '/add-meal';
   static const String editMeal = '/edit-meal';
+  static const String savings = '/savings';
   static const String savingsTrend = '/savings-trend';
   static const String progress = '/progress';
   static const String useSavings = '/use-savings';
@@ -187,7 +188,17 @@ final routerProvider = Provider<GoRouter>((ref) {
               ),
             ],
           ),
-          // Branch 2: プロフィール
+          // Branch 2: 貯金
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: TontonRoutes.savings,
+                name: 'savings',
+                builder: (context, state) => const SavingsScreen(),
+              ),
+            ],
+          ),
+          // Branch 3: プロフィール
           StatefulShellBranch(
             routes: [
               GoRoute(
@@ -240,11 +251,8 @@ final routerProvider = Provider<GoRouter>((ref) {
           final Map<String, dynamic>? extra =
               state.extra as Map<String, dynamic>?;
           final date = extra?['date'] as DateTime? ?? DateTime.now();
-          final savingsRecord =
-              extra?['savingsRecord'] as CalorieSavingsRecord?;
           return DailyMealsDetailScreen(
             date: date,
-            savingsRecord: savingsRecord,
           );
         },
       ),

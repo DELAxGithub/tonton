@@ -15,12 +15,14 @@ class MainNavigationBar extends StatelessWidget {
     // Map visual tab index to branch index:
     // visual 0 → branch 0 (home)
     // visual 1 → branch 1 (progress)
-    // visual 2 → spacer (not tappable, but guard just in case)
-    // visual 3 → branch 2 (profile)
+    // visual 2 → spacer (FAB, not tappable)
+    // visual 3 → branch 2 (savings)
+    // visual 4 → branch 3 (profile)
     final branchIndex = switch (index) {
       0 => 0,
       1 => 1,
       3 => 2,
+      4 => 3,
       _ => navigationShell.currentIndex,
     };
     navigationShell.goBranch(
@@ -33,7 +35,8 @@ class MainNavigationBar extends StatelessWidget {
     return switch (branch) {
       0 => 0, // home
       1 => 1, // progress
-      2 => 3, // profile
+      2 => 3, // savings
+      3 => 4, // profile
       _ => 0,
     };
   }
@@ -143,14 +146,14 @@ class MainNavigationBar extends StatelessWidget {
                 _TabItem(
                   icon: Icons.savings_outlined,
                   label: '貯金',
-                  isSelected: currentVisualIndex == 2,
-                  onTap: () => _onTap(1, context), // 貯金 → progress branch
+                  isSelected: currentVisualIndex == 3,
+                  onTap: () => _onTap(3, context),
                 ),
                 _TabItem(
                   icon: Icons.person_outline,
                   label: '設定',
-                  isSelected: currentVisualIndex == 3,
-                  onTap: () => _onTap(3, context),
+                  isSelected: currentVisualIndex == 4,
+                  onTap: () => _onTap(4, context),
                 ),
               ],
             ),

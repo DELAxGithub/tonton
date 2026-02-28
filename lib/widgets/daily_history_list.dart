@@ -74,7 +74,7 @@ class DailyHistoryList extends StatelessWidget {
             onTap: () {
               context.push(
                 TontonRoutes.dailyMealsDetail,
-                extra: {'date': record.date, 'savingsRecord': record},
+                extra: {'date': record.date},
               );
             },
             child: Padding(

@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
-import '../../../models/meal_record.dart';
 import '../../../features/meal_logging/providers/meal_records_provider.dart';
 import '../../../routes/router.dart';
 import '../../../design_system/templates/standard_page_layout.dart';
@@ -12,20 +10,28 @@ import '../../../utils/date_formatter.dart';
 import '../../../theme/tokens.dart' as tokens;
 import '../../../models/calorie_savings_record.dart';
 import '../../../theme/app_theme.dart';
+import '../../../core/providers/realtime_calories_provider.dart';
+
+/// Fetches HealthKit burned calories for a specific date.
+final _dailyBurnedCaloriesProvider =
+    FutureProvider.family<double, DateTime>((ref, date) async {
+  final service = ref.watch(dailySummaryServiceProvider);
+  final summary = await service.getDailySummary(date);
+  return summary.caloriesBurned;
+});
 
 class DailyMealsDetailScreen extends ConsumerWidget {
   final DateTime date;
-  final CalorieSavingsRecord? savingsRecord;
 
   const DailyMealsDetailScreen({
     super.key,
     required this.date,
-    this.savingsRecord,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final mealRecordsAsync = ref.watch(mealRecordsProvider);
+    final burnedAsync = ref.watch(_dailyBurnedCaloriesProvider(date));
 
     return Scaffold(
       appBar: AppBar(title: Text(DateFormatter.formatLongDate(date))),
@@ -33,7 +39,6 @@ class DailyMealsDetailScreen extends ConsumerWidget {
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stack) => Center(child: Text('エラーが発生しました: $error')),
         data: (mealRecordsState) {
-          // Directly filter meals from the state instead of using the notifier methods
           final meals =
               mealRecordsState.records.where((record) {
                 final consumed = record.consumedAt.toLocal();
@@ -42,28 +47,20 @@ class DailyMealsDetailScreen extends ConsumerWidget {
                     consumed.day == date.day;
               }).toList();
 
-          // Calculate calories directly from filtered meals
           final totalCalories = meals.fold<double>(
             0.0,
             (sum, record) => sum + record.calories,
           );
 
-          // Manual calculation
-          double manualTotalCalories = 0.0;
-          for (final meal in meals) {
-            manualTotalCalories += meal.calories;
-          }
-
-          // Always use our calculated calories, override the savings record if needed
-          final effectiveCalories =
-              manualTotalCalories; // Always use our calculation!
+          final burnedCalories = burnedAsync.maybeWhen(
+            data: (v) => v,
+            orElse: () => 0.0,
+          );
 
           final displayRecord = CalorieSavingsRecord.fromRaw(
             date: date,
-            caloriesConsumed: effectiveCalories, // Use our calculated value
-            caloriesBurned:
-                savingsRecord?.caloriesBurned ??
-                0.0, // Keep HealthKit data if available
+            caloriesConsumed: totalCalories,
+            caloriesBurned: burnedCalories,
           );
 
           return StandardPageLayout(

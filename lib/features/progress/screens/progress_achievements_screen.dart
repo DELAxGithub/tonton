@@ -108,7 +108,7 @@ class ProgressAchievementsScreen extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'カロリー貯金と体重の推移',
+                        '摂取・消費カロリーの推移',
                         style: Theme.of(context).textTheme.titleMedium
                             ?.copyWith(fontWeight: FontWeight.bold),
                       ),

@@ -142,8 +142,6 @@ class _State extends ConsumerState<AIMealLoggingStep3ConfirmEdit> {
 
       final notifier = ref.read(mealRecordsProvider.notifier);
       await notifier.addMealRecord(record);
-      ref.invalidate(mealRecordsProvider);
-      ref.invalidate(todaysMealRecordsProvider);
 
       if (!mounted) {
         return;

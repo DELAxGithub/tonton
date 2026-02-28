@@ -38,7 +38,6 @@ class DailySummaryDataService {
     }
     final key = summary.date.toIso8601String();
     await _box!.put(key, summary);
-    await _box!.flush();
   }
 
   DailySummary? getSummary(DateTime date) {
@@ -58,6 +57,5 @@ class DailySummaryDataService {
       await init();
     }
     await _box!.clear();
-    await _box!.flush();
   }
 }

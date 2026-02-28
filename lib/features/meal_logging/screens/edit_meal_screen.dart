@@ -117,8 +117,6 @@ class _EditMealScreenState extends ConsumerState<EditMealScreen> {
       );
 
       await ref.read(mealRecordsProvider.notifier).updateMealRecord(updated);
-      ref.invalidate(mealRecordsProvider);
-      ref.invalidate(todaysMealRecordsProvider);
 
       if (!mounted) return;
 

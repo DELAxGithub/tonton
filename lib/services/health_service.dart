@@ -66,15 +66,34 @@ class HealthService {
     );
 
     try {
-      // Get workout data
-      developer.log('Fetching workout data', name: 'TonTon.HealthService');
-      final workoutsData = await _health.getHealthDataFromTypes(
-        startTime: startTime,
-        endTime: endTime,
-        types: [HealthDataType.WORKOUT],
-      );
+      // Fetch all 4 HealthKit data types in parallel
+      developer.log('Fetching HealthKit data in parallel', name: 'TonTon.HealthService');
+      final results = await Future.wait([
+        _health.getHealthDataFromTypes(
+          startTime: startTime, endTime: endTime,
+          types: [HealthDataType.WORKOUT],
+        ),
+        _health.getHealthDataFromTypes(
+          startTime: startTime, endTime: endTime,
+          types: [HealthDataType.ACTIVE_ENERGY_BURNED],
+        ),
+        _health.getHealthDataFromTypes(
+          startTime: startTime, endTime: endTime,
+          types: [HealthDataType.BASAL_ENERGY_BURNED],
+        ),
+        _health.getHealthDataFromTypes(
+          startTime: startTime, endTime: endTime,
+          types: [HealthDataType.BODY_FAT_PERCENTAGE],
+        ),
+      ]);
+
+      final workoutsData = results[0];
+      final activeEnergyData = results[1];
+      final basalEnergyData = results[2];
+      final bodyFatData = results[3];
+
       developer.log(
-        'Fetched ${workoutsData.length} workout records',
+        'Fetched ${workoutsData.length} workouts, ${activeEnergyData.length} active, ${basalEnergyData.length} basal, ${bodyFatData.length} bodyFat',
         name: 'TonTon.HealthService',
       );
 
@@ -101,28 +120,6 @@ class HealthService {
         }
       }
 
-      // Get active and basal energy data
-      developer.log('Fetching energy data', name: 'TonTon.HealthService');
-      final activeEnergyData = await _health.getHealthDataFromTypes(
-        startTime: startTime,
-        endTime: endTime,
-        types: [HealthDataType.ACTIVE_ENERGY_BURNED],
-      );
-      developer.log(
-        'Fetched ${activeEnergyData.length} active energy records',
-        name: 'TonTon.HealthService',
-      );
-
-      final basalEnergyData = await _health.getHealthDataFromTypes(
-        startTime: startTime,
-        endTime: endTime,
-        types: [HealthDataType.BASAL_ENERGY_BURNED],
-      );
-      developer.log(
-        'Fetched ${basalEnergyData.length} basal energy records',
-        name: 'TonTon.HealthService',
-      );
-
       // Calculate total energy
       double totalActiveEnergy = activeEnergyData.fold(0, (prev, e) {
         final val = e.value;
@@ -135,18 +132,6 @@ class HealthService {
         return prev +
             (val is NumericHealthValue ? val.numericValue.toDouble() : 0.0);
       });
-
-      // Get body fat percentage
-      developer.log('Fetching body fat data', name: 'TonTon.HealthService');
-      final bodyFatData = await _health.getHealthDataFromTypes(
-        startTime: startTime,
-        endTime: endTime,
-        types: [HealthDataType.BODY_FAT_PERCENTAGE],
-      );
-      developer.log(
-        'Fetched ${bodyFatData.length} body fat records',
-        name: 'TonTon.HealthService',
-      );
 
       double? bodyFatPercentage;
       if (bodyFatData.isNotEmpty) {
@@ -203,15 +188,24 @@ class HealthService {
         999,
       );
 
-      // Get weight data
-      developer.log('Fetching weight data', name: 'TonTon.HealthService');
-      final weightData = await _health.getHealthDataFromTypes(
-        startTime: startTime,
-        endTime: endTime,
-        types: [HealthDataType.WEIGHT],
-      );
+      // Fetch weight and body fat in parallel
+      developer.log('Fetching weight & body fat in parallel', name: 'TonTon.HealthService');
+      final results = await Future.wait([
+        _health.getHealthDataFromTypes(
+          startTime: startTime, endTime: endTime,
+          types: [HealthDataType.WEIGHT],
+        ),
+        _health.getHealthDataFromTypes(
+          startTime: startTime, endTime: endTime,
+          types: [HealthDataType.BODY_FAT_PERCENTAGE],
+        ),
+      ]);
+
+      final weightData = results[0];
+      final bodyFatData = results[1];
+
       developer.log(
-        'Fetched ${weightData.length} weight records',
+        'Fetched ${weightData.length} weight, ${bodyFatData.length} bodyFat records',
         name: 'TonTon.HealthService',
       );
 
@@ -234,18 +228,6 @@ class HealthService {
       }
 
       double weightInKg = weightValue.numericValue.toDouble();
-
-      // Get body fat percentage
-      developer.log('Fetching body fat data', name: 'TonTon.HealthService');
-      final bodyFatData = await _health.getHealthDataFromTypes(
-        startTime: startTime,
-        endTime: endTime,
-        types: [HealthDataType.BODY_FAT_PERCENTAGE],
-      );
-      developer.log(
-        'Fetched ${bodyFatData.length} body fat records',
-        name: 'TonTon.HealthService',
-      );
 
       double? bodyFatPercentage;
       if (bodyFatData.isNotEmpty) {

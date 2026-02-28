@@ -159,24 +159,27 @@ final weeklyAchievementTrendProvider = Provider<Map<String, dynamic>>((ref) {
     };
   }
 
-  // 過去7日間の日付リストを作成
+  // Single pass: group meals by date key
   final now = DateTime.now();
-  final dates = List.generate(
-    7,
-    (i) => DateTime(now.year, now.month, now.day - i),
-  );
+  final today = DateTime(now.year, now.month, now.day);
+  final sixDaysAgo = today.subtract(const Duration(days: 6));
+
+  final grouped = <String, List<MealRecord>>{};
+  for (final meal in meals) {
+    final d = meal.consumedAt;
+    final dateOnly = DateTime(d.year, d.month, d.day);
+    if (dateOnly.isBefore(sixDaysAgo) || dateOnly.isAfter(today)) continue;
+    final key = '${d.year}-${d.month}-${d.day}';
+    (grouped[key] ??= []).add(meal);
+  }
 
   // 各日の達成率を計算
   final dailyAchievements = <Map<String, double>>[];
 
-  for (final date in dates) {
-    final dayMeals =
-        meals.where((meal) {
-          final mealDate = meal.consumedAt;
-          return mealDate.year == date.year &&
-              mealDate.month == date.month &&
-              mealDate.day == date.day;
-        }).toList();
+  for (int i = 0; i < 7; i++) {
+    final date = DateTime(now.year, now.month, now.day - i);
+    final key = '${date.year}-${date.month}-${date.day}';
+    final dayMeals = grouped[key] ?? [];
 
     if (dayMeals.isNotEmpty) {
       final protein = dayMeals.fold<double>(0, (sum, m) => sum + m.protein);

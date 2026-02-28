@@ -62,7 +62,6 @@ class MealRecords extends _$MealRecords {
       state = AsyncValue.data(
         MealRecordsState(records: newRecords, isLoading: false),
       );
-      ref.invalidateSelf();
     } catch (e, stack) {
       state = AsyncValue.error(e, stack);
     }
@@ -73,10 +72,10 @@ class MealRecords extends _$MealRecords {
     // Modified to be async
     state = AsyncValue.data(state.value!.copyWith(isLoading: true));
     try {
-      await _mealDataService.saveMealRecord(
-        record,
-      ); // saveMealRecord handles both create and update
-      final updatedRecords = await _mealDataService.getAllMealRecords();
+      await _mealDataService.saveMealRecord(record);
+      final updatedRecords = state.value!.records.map((r) {
+        return r.id == record.id ? record : r;
+      }).toList();
       state = AsyncValue.data(
         MealRecordsState(records: updatedRecords, isLoading: false),
       );
@@ -91,7 +90,9 @@ class MealRecords extends _$MealRecords {
     state = AsyncValue.data(state.value!.copyWith(isLoading: true));
     try {
       await _mealDataService.deleteMealRecord(id);
-      final updatedRecords = await _mealDataService.getAllMealRecords();
+      final updatedRecords = state.value!.records
+          .where((r) => r.id != id)
+          .toList();
       state = AsyncValue.data(
         MealRecordsState(records: updatedRecords, isLoading: false),
       );

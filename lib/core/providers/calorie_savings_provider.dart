@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../models/calorie_savings_record.dart';
 import '../../models/daily_summary.dart';
+import '../../providers/providers.dart';
 import 'onboarding_start_date_provider.dart';
 import 'realtime_calories_provider.dart';
 import '../../features/meal_logging/providers/meal_records_provider.dart';
@@ -36,15 +37,37 @@ final calorieSavingsDataProvider = FutureProvider<List<CalorieSavingsRecord>>((
   if (!mealRecordsAsync.hasValue) return [];
 
   final service = ref.watch(dailySummaryServiceProvider);
+  final dataService = ref.read(dailySummaryDataServiceProvider);
   final endDate = DateTime.now();
+  final today = DateTime(endDate.year, endDate.month, endDate.day);
   final summaries = <DailySummary>[];
   var current = DateTime(startDate.year, startDate.month, startDate.day);
 
+  // Collect uncached days (typically just today + any missing)
+  final uncachedDays = <DateTime>[];
+
   while (!current.isAfter(endDate)) {
-    final summary = await service.getDailySummary(current);
-    summaries.add(summary);
+    final cached = dataService.getSummary(current);
+    final isToday = current.year == today.year &&
+        current.month == today.month &&
+        current.day == today.day;
+    if (cached != null && !isToday) {
+      // Past days with cache: use directly (skip HealthKit)
+      summaries.add(cached);
+    } else {
+      uncachedDays.add(DateTime(current.year, current.month, current.day));
+    }
     current = current.add(const Duration(days: 1));
   }
+
+  // Only compute uncached days
+  for (final day in uncachedDays) {
+    final summary = await service.getDailySummary(day);
+    summaries.add(summary);
+  }
+
+  // Sort by date to ensure correct order
+  summaries.sort((a, b) => a.date.compareTo(b.date));
 
   double runningTotal = 0;
   return summaries.map((summary) {

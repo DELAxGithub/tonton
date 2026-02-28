@@ -83,9 +83,8 @@ class MealDataService {
       name: 'TonTon.MealDataService',
     );
     await _mealRecordsBox!.put(record.id, record);
-    await _mealRecordsBox!.flush(); // Ensure data is written to disk
     developer.log(
-      'MealDataService: Meal record saved and flushed. ID: ${record.id}',
+      'MealDataService: Meal record saved. ID: ${record.id}',
       name: 'TonTon.MealDataService',
     );
   }
@@ -136,9 +135,8 @@ class MealDataService {
       name: 'TonTon.MealDataService',
     );
     await _mealRecordsBox!.delete(id);
-    await _mealRecordsBox!.flush(); // Ensure data is written to disk
     developer.log(
-      'MealDataService: Meal record deleted and flushed. ID: $id',
+      'MealDataService: Meal record deleted. ID: $id',
       name: 'TonTon.MealDataService',
     );
   }

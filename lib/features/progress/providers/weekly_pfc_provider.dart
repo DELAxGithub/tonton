@@ -33,14 +33,23 @@ List<DailyPfcSummary> buildWeeklySummary(
 ) {
   final now = DateTime.now();
   final today = DateTime(now.year, now.month, now.day);
-  final result = <DailyPfcSummary>[];
+  final sixDaysAgo = today.subtract(const Duration(days: 6));
 
+  // Single pass: group records by date key
+  final grouped = <String, List<MealRecord>>{};
+  for (final r in allRecords) {
+    final d = r.consumedAt;
+    final dateOnly = DateTime(d.year, d.month, d.day);
+    if (dateOnly.isBefore(sixDaysAgo) || dateOnly.isAfter(today)) continue;
+    final key = '${d.year}-${d.month}-${d.day}';
+    (grouped[key] ??= []).add(r);
+  }
+
+  final result = <DailyPfcSummary>[];
   for (int i = 6; i >= 0; i--) {
     final date = today.subtract(Duration(days: i));
-    final dayRecords = allRecords.where((r) {
-      final d = r.consumedAt;
-      return d.year == date.year && d.month == date.month && d.day == date.day;
-    }).toList();
+    final key = '${date.year}-${date.month}-${date.day}';
+    final dayRecords = grouped[key] ?? [];
 
     double protein = 0, fat = 0, carbs = 0;
     for (final meal in dayRecords) {

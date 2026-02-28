@@ -7,19 +7,10 @@ import '../../../providers/providers.dart';
 import '../../../models/calorie_savings_record.dart';
 import '../../../models/weight_record.dart';
 import '../../../design_system/templates/standard_page_layout.dart';
-import '../../../routes/app_page.dart';
 import '../../../widgets/daily_history_list.dart';
 
-class ProgressAchievementsScreen extends ConsumerWidget implements AppPage {
+class ProgressAchievementsScreen extends ConsumerWidget {
   const ProgressAchievementsScreen({super.key});
-
-  @override
-  PreferredSizeWidget? buildAppBar(BuildContext context) {
-    return AppBar(title: const Text('トントンヒストリー'));
-  }
-
-  @override
-  Widget? buildFloatingActionButton(BuildContext context) => null;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -62,10 +53,18 @@ class ProgressAchievementsScreen extends ConsumerWidget implements AppPage {
                 '過去30日間', // Fallback to month if quarter is somehow selected
               SelectedPeriod.all => '全期間',
             };
-            return StandardPageLayout(
+            return SafeArea(
+              child: StandardPageLayout(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
               children: [
-                // Add top spacing for the period selector
+                const SizedBox(height: 16),
+                // Screen title
+                Text(
+                  'トントンヒストリー',
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 const SizedBox(height: 16),
                 // Period selector
                 Center(
@@ -248,6 +247,7 @@ class ProgressAchievementsScreen extends ConsumerWidget implements AppPage {
                 ),
                 const SizedBox(height: 80), // Bottom padding for navigation bar
               ],
+            ),
             );
           },
         );

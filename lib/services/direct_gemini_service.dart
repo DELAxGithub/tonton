@@ -156,6 +156,88 @@ class DirectGeminiService {
     );
   }
 
+  /// テキスト入力から栄養情報を推定する
+  Future<EstimatedMealNutrition?> analyzeTextDescription(String mealDescription) async {
+    try {
+      developer.log(
+        'Starting Gemini text analysis: $mealDescription',
+        name: 'TonTon.DirectGeminiService',
+      );
+
+      final model = GenerativeModel(
+        model: 'gemini-2.0-flash',
+        apiKey: apiKey,
+      );
+
+      final prompt = '''
+あなたは専門の栄養士です。
+以下の食事の説明を分析し、含まれている食品を特定して、各食品の栄養情報を推定してください。
+
+食事の説明: $mealDescription
+
+応答は以下のJSON形式で厳密に出力してください：
+{
+  "items": [
+    {
+      "name": "食品名",
+      "calories": 100,
+      "protein_g": 10,
+      "fat_g": 5,
+      "carbs_g": 5
+    }
+  ],
+  "total_calories": 100
+}
+
+注意事項：
+- 食品名は日本語で記載
+- カロリーと栄養素は整数値
+- total_caloriesは全食品のカロリーの合計値
+- 分量が明記されていない場合は一般的な1食分の量で推定
+- JSONのみを出力し、他の説明文は含めない
+''';
+
+      final content = [Content.text(prompt)];
+
+      developer.log('Calling Gemini API (text)', name: 'TonTon.DirectGeminiService');
+      final response = await model.generateContent(content);
+      final responseText = response.text;
+
+      if (responseText != null) {
+        developer.log(
+          'Received text response from Gemini',
+          name: 'TonTon.DirectGeminiService',
+        );
+
+        final jsonMatch = RegExp(r'\{[\s\S]*\}').firstMatch(responseText);
+        if (jsonMatch != null) {
+          final jsonString = jsonMatch.group(0)!;
+          final result = json.decode(jsonString);
+          final nutrition = convertToEstimatedMealNutrition(result);
+          // テキスト入力の場合、descriptionを変更
+          return EstimatedMealNutrition(
+            mealName: nutrition.mealName,
+            description: 'テキスト入力から推定: $mealDescription',
+            calories: nutrition.calories,
+            nutrients: nutrition.nutrients,
+          );
+        } else {
+          throw Exception('JSONレスポンスが見つかりませんでした');
+        }
+      } else {
+        throw Exception('レスポンスが空でした');
+      }
+    } catch (e, stackTrace) {
+      developer.log(
+        'Error in DirectGeminiService (text): $e',
+        name: 'TonTon.DirectGeminiService.Exception',
+        error: e,
+        stackTrace: stackTrace,
+      );
+      rethrow;
+    }
+  }
+
   Future<EstimatedMealNutrition?> analyzeImageFile(File imageFile) async {
     try {
       final imageBytes = await imageFile.readAsBytes();

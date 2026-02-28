@@ -259,10 +259,18 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         // 画面タップでキーボードを閉じる
         FocusScope.of(context).unfocus();
       },
-      child: Scaffold(
-        appBar: AppBar(title: const Text('プロフィール')),
-        body: StandardPageLayout(
+      child: SafeArea(
+        child: StandardPageLayout(
           children: [
+            const SizedBox(height: 16),
+            // Screen title
+            Text(
+              'プロフィール',
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 16),
             // ユーザー情報カード
             TontonCardBase(
               child: Column(

@@ -2,42 +2,31 @@ import 'package:flutter/material.dart';
 import '../../theme/colors.dart';
 
 /// A simple scaffold wrapper that provides a consistent page layout.
+/// Used as the shell for StatefulShellRoute — the body is the navigation shell
+/// (IndexedStack) which preserves tab state across switches.
 class AppShell extends StatelessWidget {
-  /// Optional app bar widget.
-  final PreferredSizeWidget? appBar;
-
-  /// Main content of the page.
+  /// Main content of the page (typically StatefulNavigationShell).
   final Widget body;
 
   /// Optional bottom navigation bar.
   final Widget? bottomNavigationBar;
-
-  /// Optional floating action button.
-  final Widget? floatingActionButton;
-  final FloatingActionButtonLocation? floatingActionButtonLocation;
 
   /// Background color for the scaffold.
   final Color? backgroundColor;
 
   const AppShell({
     super.key,
-    this.appBar,
     required this.body,
     this.bottomNavigationBar,
-    this.floatingActionButton,
     this.backgroundColor,
-    this.floatingActionButtonLocation,
   });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: backgroundColor ?? TontonColors.bgPrimary,
-      appBar: appBar,
-      body: SafeArea(child: body),
+      body: body,
       bottomNavigationBar: bottomNavigationBar,
-      floatingActionButton: floatingActionButton,
-      floatingActionButtonLocation: floatingActionButtonLocation,
     );
   }
 }

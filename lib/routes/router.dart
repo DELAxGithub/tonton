@@ -22,9 +22,9 @@ import '../features/meal_logging/ai/ai_meal_logging_step1_camera.dart';
 import '../features/meal_logging/ai/ai_meal_logging_step2_analyzing.dart';
 import '../features/meal_logging/ai/ai_meal_logging_step3_confirm_edit.dart';
 import '../features/meal_logging/screens/edit_meal_screen.dart';
+import '../features/meal_logging/screens/text_meal_input_screen.dart';
 import '../models/meal_record.dart';
 import '../widgets/main_navigation_bar.dart';
-import 'app_page.dart';
 import '../design_system/templates/app_shell.dart';
 import 'dart:io';
 import '../models/estimated_meal_nutrition.dart';
@@ -53,6 +53,7 @@ class TontonRoutes {
   static const String aiMealAnalyzing = '/ai-meal/analyzing';
   static const String aiMealConfirm = '/ai-meal/confirm';
   static const String dailyMealsDetail = '/daily-meals-detail';
+  static const String textMealInput = '/text-meal-input';
 }
 
 /// Auth/onboarding routes that don't require login
@@ -73,10 +74,6 @@ const _onboardingRoutes = {
 /// Provider for the router configuration
 final routerProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authStateChangesProvider);
-  // Read (not watch) onboarding state to avoid router rebuild loop.
-  // The router redirect reads current value on each navigation event.
-  final onboardingNotifier = ref.read(onboardingCompletedProvider.notifier);
-
   return GoRouter(
     initialLocation: TontonRoutes.home,
     debugLogDiagnostics: true,
@@ -158,51 +155,66 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const WeightInputScreen(),
       ),
 
-      // Shell route with bottom navigation
-      ShellRoute(
-        builder: (context, state, child) {
-          final appPage = child is AppPage ? child as AppPage : null;
-          final appBar = appPage?.buildAppBar(context);
+      // Stateful shell route with bottom navigation — preserves tab state
+      StatefulShellRoute.indexedStack(
+        builder: (context, state, navigationShell) {
           return AppShell(
-            appBar: appBar,
             bottomNavigationBar: MainNavigationBar(
-              location: state.matchedLocation,
+              navigationShell: navigationShell,
             ),
-            body: child,
+            body: navigationShell,
           );
         },
-        routes: [
-          GoRoute(
-            path: TontonRoutes.home,
-            name: 'home',
-            builder: (context, state) => const HomeScreen(),
+        branches: [
+          // Branch 0: ホーム
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: TontonRoutes.home,
+                name: 'home',
+                builder: (context, state) => const HomeScreen(),
+              ),
+            ],
           ),
-          GoRoute(
-            path: TontonRoutes.savingsTrend,
-            name: 'savingsTrend',
-            builder: (context, state) => const SavingsTrendScreen(),
+          // Branch 1: 記録（進捗）
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: TontonRoutes.progress,
+                name: 'progress',
+                builder: (context, state) =>
+                    const ProgressAchievementsScreen(),
+              ),
+            ],
           ),
-          GoRoute(
-            path: TontonRoutes.progressAchievements,
-            name: 'progressAchievements',
-            builder: (context, state) => const ProgressAchievementsScreen(),
-          ),
-          GoRoute(
-            path: TontonRoutes.progress,
-            name: 'progress',
-            builder: (context, state) => const ProgressAchievementsScreen(),
-          ),
-          GoRoute(
-            path: TontonRoutes.settings,
-            name: 'settings',
-            builder: (context, state) => const SettingsScreen(),
-          ),
-          GoRoute(
-            path: TontonRoutes.profile,
-            name: 'profile',
-            builder: (context, state) => const ProfileScreen(),
+          // Branch 2: プロフィール
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: TontonRoutes.profile,
+                name: 'profile',
+                builder: (context, state) => const ProfileScreen(),
+              ),
+            ],
           ),
         ],
+      ),
+
+      // Standalone detail routes (pushed over tabs)
+      GoRoute(
+        path: TontonRoutes.savingsTrend,
+        name: 'savingsTrend',
+        builder: (context, state) => const SavingsTrendScreen(),
+      ),
+      GoRoute(
+        path: TontonRoutes.progressAchievements,
+        name: 'progressAchievements',
+        builder: (context, state) => const ProgressAchievementsScreen(),
+      ),
+      GoRoute(
+        path: TontonRoutes.settings,
+        name: 'settings',
+        builder: (context, state) => const SettingsScreen(),
       ),
 
       // Edit meal route
@@ -258,11 +270,19 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) {
           final Map<String, dynamic>? extra =
               state.extra as Map<String, dynamic>?;
+          final imagePath = extra?['image'] as String?;
           return AIMealLoggingStep3ConfirmEdit(
-            imageFile: File(extra?['image'] as String),
+            imageFile: imagePath != null ? File(imagePath) : null,
             nutrition: extra?['nutrition'] as EstimatedMealNutrition,
           );
         },
+      ),
+
+      // Text-based meal input
+      GoRoute(
+        path: TontonRoutes.textMealInput,
+        name: 'textMealInput',
+        builder: (context, state) => const TextMealInputScreen(),
       ),
     ],
   );

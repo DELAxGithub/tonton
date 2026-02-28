@@ -39,7 +39,8 @@ class HomeScreen extends ConsumerWidget {
     final greeting = _greetingFor(DateTime.now());
     final userName = _displayName(user);
 
-    return SingleChildScrollView(
+    return SafeArea(
+      child: SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -136,7 +137,8 @@ class HomeScreen extends ConsumerWidget {
               const SizedBox(height: 20),
             ],
           ),
-        );
+        ),
+    );
   }
 }
 

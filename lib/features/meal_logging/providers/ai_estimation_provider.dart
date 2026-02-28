@@ -44,6 +44,33 @@ class AIEstimationNotifier
     }
   }
 
+  /// テキスト入力からDirectGeminiServiceで栄養推定
+  Future<EstimatedMealNutrition?> estimateNutritionFromText(
+    String mealDescription,
+  ) async {
+    if (mealDescription.isEmpty) return null;
+
+    state = const AsyncValue.loading();
+    try {
+      final result = await _directGeminiService.analyzeTextDescription(
+        mealDescription,
+      );
+      if (result != null) {
+        state = AsyncValue.data(result);
+        return result;
+      } else {
+        state = AsyncValue.error(
+          '栄養情報を推定できませんでした',
+          StackTrace.current,
+        );
+        return null;
+      }
+    } catch (e, stackTrace) {
+      state = AsyncValue.error(e, stackTrace);
+      return null;
+    }
+  }
+
   void reset() {
     state = const AsyncValue.data(null);
   }

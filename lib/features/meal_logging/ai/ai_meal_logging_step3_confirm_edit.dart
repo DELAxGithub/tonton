@@ -18,11 +18,11 @@ import '../../../features/progress/providers/auto_pfc_provider.dart';
 import '../../../theme/app_theme.dart';
 
 class AIMealLoggingStep3ConfirmEdit extends ConsumerStatefulWidget {
-  final File imageFile;
+  final File? imageFile;
   final EstimatedMealNutrition nutrition;
   const AIMealLoggingStep3ConfirmEdit({
     super.key,
-    required this.imageFile,
+    this.imageFile,
     required this.nutrition,
   });
 
@@ -200,7 +200,13 @@ class _State extends ConsumerState<AIMealLoggingStep3ConfirmEdit> {
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.go(TontonRoutes.aiMealCamera),
+          onPressed: () {
+            if (widget.imageFile != null) {
+              context.go(TontonRoutes.aiMealCamera);
+            } else {
+              context.pop();
+            }
+          },
         ),
         title: const Text('これで合ってる？'),
         elevation: 0,
@@ -217,24 +223,25 @@ class _State extends ConsumerState<AIMealLoggingStep3ConfirmEdit> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Image preview card
+                // Image preview card (or name-only card for text input)
                 Card(
                   elevation: 2,
                   child: Column(
                     children: [
-                      ClipRRect(
-                        borderRadius: const BorderRadius.vertical(
-                          top: Radius.circular(12),
-                        ),
-                        child: AspectRatio(
-                          aspectRatio: 16 / 9,
-                          child: Image.file(
-                            widget.imageFile,
-                            fit: BoxFit.cover,
-                            filterQuality: FilterQuality.high,
+                      if (widget.imageFile != null)
+                        ClipRRect(
+                          borderRadius: const BorderRadius.vertical(
+                            top: Radius.circular(12),
+                          ),
+                          child: AspectRatio(
+                            aspectRatio: 16 / 9,
+                            child: Image.file(
+                              widget.imageFile!,
+                              fit: BoxFit.cover,
+                              filterQuality: FilterQuality.high,
+                            ),
                           ),
                         ),
-                      ),
                       Padding(
                         padding: const EdgeInsets.all(16),
                         child: TextField(

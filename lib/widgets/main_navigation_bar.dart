@@ -5,40 +5,104 @@ import '../theme/app_theme.dart' as app_theme;
 import '../utils/icon_mapper.dart';
 import '../routes/router.dart';
 
-/// Bottom navigation bar matching .pen TabBar design with camera FAB overlay
+/// Bottom navigation bar matching .pen TabBar design with camera FAB overlay.
+/// Uses StatefulNavigationShell.goBranch() for state-preserving tab switches.
 class MainNavigationBar extends StatelessWidget {
-  final String location;
-  const MainNavigationBar({super.key, required this.location});
-
-  int _locationToIndex(String loc) {
-    if (loc.startsWith(TontonRoutes.progress) ||
-        loc.startsWith(TontonRoutes.progressAchievements))
-      return 1;
-    if (loc.startsWith(TontonRoutes.profile)) return 3;
-    return 0;
-  }
+  final StatefulNavigationShell navigationShell;
+  const MainNavigationBar({super.key, required this.navigationShell});
 
   void _onTap(int index, BuildContext context) {
-    switch (index) {
-      case 0:
-        context.go(TontonRoutes.home);
-        break;
-      case 1:
-        context.go(TontonRoutes.progress);
-        break;
-      case 2:
-        // 貯金 tab — navigate to progress for now
-        context.go(TontonRoutes.progress);
-        break;
-      case 3:
-        context.go(TontonRoutes.profile);
-        break;
-    }
+    // Map visual tab index to branch index:
+    // visual 0 → branch 0 (home)
+    // visual 1 → branch 1 (progress)
+    // visual 2 → spacer (not tappable, but guard just in case)
+    // visual 3 → branch 2 (profile)
+    final branchIndex = switch (index) {
+      0 => 0,
+      1 => 1,
+      3 => 2,
+      _ => navigationShell.currentIndex,
+    };
+    navigationShell.goBranch(
+      branchIndex,
+      initialLocation: branchIndex == navigationShell.currentIndex,
+    );
+  }
+
+  int _branchToVisualIndex(int branch) {
+    return switch (branch) {
+      0 => 0, // home
+      1 => 1, // progress
+      2 => 3, // profile
+      _ => 0,
+    };
+  }
+
+  void _showMealInputOptions(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const SizedBox(height: 16),
+              ListTile(
+                leading: Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: TontonColors.pigPink.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(Icons.photo_camera, color: TontonColors.pigPink),
+                ),
+                title: const Text('写真で記録'),
+                subtitle: const Text('食事を撮影してAIが栄養素を分析'),
+                onTap: () {
+                  Navigator.pop(ctx);
+                  context.go(TontonRoutes.aiMealCamera);
+                },
+              ),
+              ListTile(
+                leading: Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: TontonColors.pigPink.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(Icons.edit_note, color: TontonColors.pigPink),
+                ),
+                title: const Text('テキストで記録'),
+                subtitle: const Text('料理名を入力してAIが栄養素を推定'),
+                onTap: () {
+                  Navigator.pop(ctx);
+                  context.push(TontonRoutes.textMealInput);
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final currentIndex = _locationToIndex(location);
+    final currentVisualIndex = _branchToVisualIndex(navigationShell.currentIndex);
 
     return SizedBox(
       height: 84,
@@ -65,13 +129,13 @@ class MainNavigationBar extends StatelessWidget {
                 _TabItem(
                   icon: TontonIcons.home,
                   label: 'ホーム',
-                  isSelected: currentIndex == 0,
+                  isSelected: currentVisualIndex == 0,
                   onTap: () => _onTap(0, context),
                 ),
                 _TabItem(
                   icon: Icons.bar_chart,
                   label: '記録',
-                  isSelected: currentIndex == 1,
+                  isSelected: currentVisualIndex == 1,
                   onTap: () => _onTap(1, context),
                 ),
                 // Spacer for FAB
@@ -79,20 +143,20 @@ class MainNavigationBar extends StatelessWidget {
                 _TabItem(
                   icon: Icons.savings_outlined,
                   label: '貯金',
-                  isSelected: currentIndex == 2,
-                  onTap: () => _onTap(2, context),
+                  isSelected: currentVisualIndex == 2,
+                  onTap: () => _onTap(1, context), // 貯金 → progress branch
                 ),
                 _TabItem(
                   icon: Icons.person_outline,
                   label: '設定',
-                  isSelected: currentIndex == 3,
+                  isSelected: currentVisualIndex == 3,
                   onTap: () => _onTap(3, context),
                 ),
               ],
             ),
           ),
 
-          // Camera FAB — overlapping at center top
+          // Meal logging FAB — tap for camera, long-press for text input
           Positioned(
             top: -20,
             left: 0,
@@ -100,6 +164,7 @@ class MainNavigationBar extends StatelessWidget {
             child: Center(
               child: GestureDetector(
                 onTap: () => context.go(TontonRoutes.aiMealCamera),
+                onLongPress: () => _showMealInputOptions(context),
                 child: Container(
                   width: 56,
                   height: 56,
@@ -115,9 +180,9 @@ class MainNavigationBar extends StatelessWidget {
                     ],
                   ),
                   child: const Icon(
-                    Icons.photo_camera,
+                    Icons.add,
                     color: Colors.white,
-                    size: 26,
+                    size: 28,
                   ),
                 ),
               ),

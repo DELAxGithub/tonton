@@ -16,12 +16,14 @@ class DailySummaryService {
     required this.dataService,
   });
 
-  Future<DailySummary> getDailySummary(DateTime date) async {
+  Future<DailySummary> getDailySummary(DateTime date, {bool forceRefresh = false}) async {
     final normalized = DateTime(date.year, date.month, date.day);
 
-    // Return cached summary if available
-    final cached = dataService.getSummary(normalized);
-    if (cached != null) return cached;
+    // Return cached summary only when not forcing a refresh
+    if (!forceRefresh) {
+      final cached = dataService.getSummary(normalized);
+      if (cached != null) return cached;
+    }
 
     // Get meals for this date
     final meals = mealRecords.getMealRecordsForDate(normalized);

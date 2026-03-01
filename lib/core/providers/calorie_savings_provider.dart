@@ -43,8 +43,8 @@ final calorieSavingsDataProvider = FutureProvider<List<CalorieSavingsRecord>>((
   final summaries = <DailySummary>[];
   var current = DateTime(startDate.year, startDate.month, startDate.day);
 
-  // Collect uncached days (typically just today + any missing)
-  final uncachedDays = <DateTime>[];
+  // Collect days that need (re)computation
+  final staleDays = <DateTime>[];
 
   while (!current.isAfter(endDate)) {
     final cached = dataService.getSummary(current);
@@ -52,17 +52,23 @@ final calorieSavingsDataProvider = FutureProvider<List<CalorieSavingsRecord>>((
         current.month == today.month &&
         current.day == today.day;
     if (cached != null && !isToday) {
-      // Past days with cache: use directly (skip HealthKit)
-      summaries.add(cached);
+      // Verify cached consumed calories still match meal records
+      final meals = service.mealRecords.getMealRecordsForDate(current);
+      final currentConsumed = meals.fold<double>(0.0, (sum, m) => sum + m.calories);
+      if ((cached.caloriesConsumed - currentConsumed).abs() < 1.0) {
+        summaries.add(cached);
+      } else {
+        staleDays.add(DateTime(current.year, current.month, current.day));
+      }
     } else {
-      uncachedDays.add(DateTime(current.year, current.month, current.day));
+      staleDays.add(DateTime(current.year, current.month, current.day));
     }
     current = current.add(const Duration(days: 1));
   }
 
-  // Only compute uncached days
-  for (final day in uncachedDays) {
-    final summary = await service.getDailySummary(day);
+  // Recompute stale and uncached days
+  for (final day in staleDays) {
+    final summary = await service.getDailySummary(day, forceRefresh: true);
     summaries.add(summary);
   }
 

@@ -92,32 +92,32 @@ void main() async {
     developer.log('.env file loaded successfully', name: 'TonTon.EnvLoad');
   } catch (e) {
     developer.log(
-      'Could not load .env file. Using compile-time variables if available. Error: $e',
-      name: 'TonTon.EnvLoad.Error',
-    );
-    // エラーが発生しても継続できるように、デフォルト値を設定
-    dotenv.testLoad(
-      fileInput: '''
-      SUPABASE_URL=default_url
-      SUPABASE_ANON_KEY=default_key
-    ''',
+      'Could not load .env file, falling back to compile-time variables: $e',
+      name: 'TonTon.EnvLoad',
     );
   }
 
-  // Initialize Supabase using environment variables
+  // Initialize Supabase
+  // Priority: --dart-define (release) > .env (development) > Platform.environment
   try {
-    final supabaseUrl =
-        dotenv.env['SUPABASE_URL'] ??
-        Platform.environment['SUPABASE_URL'] ??
-        const String.fromEnvironment('SUPABASE_URL');
-    final supabaseAnonKey =
-        dotenv.env['SUPABASE_ANON_KEY'] ??
-        Platform.environment['SUPABASE_ANON_KEY'] ??
-        const String.fromEnvironment('SUPABASE_ANON_KEY');
+    const compileTimeUrl = String.fromEnvironment('SUPABASE_URL');
+    const compileTimeKey = String.fromEnvironment('SUPABASE_ANON_KEY');
+
+    final supabaseUrl = compileTimeUrl.isNotEmpty
+        ? compileTimeUrl
+        : dotenv.env['SUPABASE_URL'] ??
+            Platform.environment['SUPABASE_URL'] ??
+            '';
+    final supabaseAnonKey = compileTimeKey.isNotEmpty
+        ? compileTimeKey
+        : dotenv.env['SUPABASE_ANON_KEY'] ??
+            Platform.environment['SUPABASE_ANON_KEY'] ??
+            '';
 
     if (supabaseUrl.isEmpty || supabaseAnonKey.isEmpty) {
       throw Exception(
-        'Supabase URL or Anon Key is missing. Ensure .env file is set up or variables are passed via --dart-define.',
+        'Supabase credentials missing. '
+        'Set via --dart-define, .env file, or environment variables.',
       );
     }
 

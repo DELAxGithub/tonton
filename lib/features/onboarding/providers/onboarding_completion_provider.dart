@@ -1,8 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class OnboardingCompletionNotifier extends StateNotifier<bool> {
-  OnboardingCompletionNotifier() : super(false) {
+class OnboardingCompletionNotifier extends StateNotifier<bool?> {
+  OnboardingCompletionNotifier() : super(null) {
     _load();
   }
 
@@ -32,6 +32,6 @@ class OnboardingCompletionNotifier extends StateNotifier<bool> {
 }
 
 final onboardingCompletedProvider =
-    StateNotifierProvider<OnboardingCompletionNotifier, bool>(
+    StateNotifierProvider<OnboardingCompletionNotifier, bool?>(
       (ref) => OnboardingCompletionNotifier(),
     );

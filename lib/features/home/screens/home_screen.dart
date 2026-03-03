@@ -131,7 +131,7 @@ class HomeScreen extends ConsumerWidget {
               const SizedBox(height: 20),
 
               // AI Advice section
-              _SectionHeader(title: 'AIアドバイス', actionText: 'もっと見る'),
+              _SectionHeader(title: 'AIアドバイス'),
               const SizedBox(height: 12),
               const AiAdviceCardCompact(),
               const SizedBox(height: 20),

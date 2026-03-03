@@ -87,7 +87,9 @@ final routerProvider = Provider<GoRouter>((ref) {
       if (isLoggedIn == null) return null;
 
       // Read current onboarding state (not watched, avoids rebuild loop)
+      // null means still loading from SharedPreferences — don't redirect yet
       final onboardingCompleted = ref.read(onboardingCompletedProvider);
+      if (onboardingCompleted == null) return null;
 
       final currentPath = state.matchedLocation;
       final isPublicRoute = _publicRoutes.contains(currentPath);

@@ -1,6 +1,9 @@
+import 'dart:async';
+
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../providers/providers.dart';
 import '../features/home/screens/home_screen.dart';
@@ -70,21 +73,39 @@ const _onboardingRoutes = {
   TontonRoutes.onboardingWeight,
 };
 
+/// Converts a Stream into a ChangeNotifier for GoRouter's refreshListenable.
+/// This allows GoRouter to re-evaluate redirects when the auth state changes
+/// without recreating the entire GoRouter instance.
+class _GoRouterRefreshStream extends ChangeNotifier {
+  _GoRouterRefreshStream(Stream<dynamic> stream) {
+    _subscription = stream.listen((_) => notifyListeners());
+  }
+  late final StreamSubscription<dynamic> _subscription;
+
+  @override
+  void dispose() {
+    _subscription.cancel();
+    super.dispose();
+  }
+}
+
 /// Provider for the router configuration
 final routerProvider = Provider<GoRouter>((ref) {
-  final authState = ref.watch(authStateChangesProvider);
+  // Use refreshListenable instead of ref.watch to avoid recreating GoRouter
+  // on every auth state change. This prevents the StatefulShellRoute from
+  // resetting and briefly flashing the wrong tab (e.g. profile) on startup.
+  final authService = ref.watch(authServiceProvider);
+  final refreshNotifier =
+      _GoRouterRefreshStream(authService.authStateChanges);
+  ref.onDispose(() => refreshNotifier.dispose());
+
   return GoRouter(
     initialLocation: TontonRoutes.home,
     debugLogDiagnostics: true,
+    refreshListenable: refreshNotifier,
     redirect: (context, state) {
-      final isLoggedIn = authState.when(
-        data: (state) => state.session?.user != null,
-        loading: () => null, // Unknown state during loading
-        error: (_, __) => false,
-      );
-
-      // While auth state is loading, don't redirect
-      if (isLoggedIn == null) return null;
+      final user = Supabase.instance.client.auth.currentUser;
+      final isLoggedIn = user != null;
 
       // Read current onboarding state (not watched, avoids rebuild loop)
       // null means still loading from SharedPreferences — don't redirect yet

@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 import '../theme/colors.dart';
 import '../theme/app_theme.dart' as app_theme;
 import '../utils/icon_mapper.dart';
-import '../routes/router.dart';
+import '../features/meal_logging/meal_entry_actions.dart';
 
 /// Bottom navigation bar matching .pen TabBar design with camera FAB overlay.
 /// Uses StatefulNavigationShell.goBranch() for state-preserving tab switches.
@@ -39,68 +39,6 @@ class MainNavigationBar extends StatelessWidget {
       3 => 4, // profile
       _ => 0,
     };
-  }
-
-  void _showMealInputOptions(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (ctx) => SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 40,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: Colors.grey[300],
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-              const SizedBox(height: 16),
-              ListTile(
-                leading: Container(
-                  width: 44,
-                  height: 44,
-                  decoration: BoxDecoration(
-                    color: TontonColors.pigPink.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Icon(Icons.photo_camera, color: TontonColors.pigPink),
-                ),
-                title: const Text('写真で記録'),
-                subtitle: const Text('食事を撮影してAIが栄養素を分析'),
-                onTap: () {
-                  Navigator.pop(ctx);
-                  context.go(TontonRoutes.aiMealCamera);
-                },
-              ),
-              ListTile(
-                leading: Container(
-                  width: 44,
-                  height: 44,
-                  decoration: BoxDecoration(
-                    color: TontonColors.pigPink.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Icon(Icons.edit_note, color: TontonColors.pigPink),
-                ),
-                title: const Text('テキストで記録'),
-                subtitle: const Text('料理名を入力してAIが栄養素を推定'),
-                onTap: () {
-                  Navigator.pop(ctx);
-                  context.push(TontonRoutes.textMealInput);
-                },
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
   }
 
   @override
@@ -159,15 +97,15 @@ class MainNavigationBar extends StatelessWidget {
             ),
           ),
 
-          // Meal logging FAB — tap for camera, long-press for text input
+          // Meal logging FAB — tap for picker modal, long-press for camera
           Positioned(
             top: -20,
             left: 0,
             right: 0,
             child: Center(
               child: GestureDetector(
-                onTap: () => context.go(TontonRoutes.aiMealCamera),
-                onLongPress: () => _showMealInputOptions(context),
+                onTap: () => showMealInputOptions(context),
+                onLongPress: () => goToMealCamera(context),
                 child: Container(
                   width: 56,
                   height: 56,

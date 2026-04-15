@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../features/meal_logging/providers/meal_records_provider.dart';
+import '../../../features/meal_logging/meal_entry_actions.dart';
 import '../../../routes/router.dart';
+import '../../../theme/colors.dart' as theme_colors;
 import '../../../design_system/templates/standard_page_layout.dart';
 import '../../../widgets/meal_record_card.dart';
 import '../../../design_system/molecules/feedback/empty_state.dart';
@@ -35,6 +37,26 @@ class DailyMealsDetailScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(title: Text(DateFormatter.formatLongDate(date))),
+      floatingActionButton: GestureDetector(
+        onTap: () => showMealInputOptions(context),
+        onLongPress: () => goToMealCamera(context),
+        child: Container(
+          width: 56,
+          height: 56,
+          decoration: BoxDecoration(
+            color: theme_colors.TontonColors.pigPink,
+            shape: BoxShape.circle,
+            boxShadow: const [
+              BoxShadow(
+                color: Color(0x40FF9AA2),
+                offset: Offset(0, 4),
+                blurRadius: 16,
+              ),
+            ],
+          ),
+          child: const Icon(Icons.add, color: Colors.white, size: 28),
+        ),
+      ),
       body: mealRecordsAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stack) => Center(child: Text('エラーが発生しました: $error')),

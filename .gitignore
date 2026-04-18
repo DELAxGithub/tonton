@@ -63,3 +63,6 @@ ios/test_output/
 
 # Supabase CLI temp
 supabase/.temp/
+
+# agent-harness work dir
+.auto-fix/

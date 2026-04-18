@@ -1,0 +1,31 @@
+project:
+  name: "tonton"
+
+build:
+  command: "flutter pub get && flutter analyze && flutter test"
+  max_attempts: 5
+  timeout_seconds: 600
+
+claude:
+  model: "claude-sonnet-4-6"
+
+watch:
+  directories:
+    - "lib"
+    - "test"
+  debounce_seconds: 3
+  include_patterns:
+    - "*.dart"
+  exclude_patterns:
+    - ".dart_tool/*"
+    - "build/*"
+
+error_detection:
+  critical_patterns:
+    - "error •.*"
+    - "Error:.*"
+    - "FAILED:"
+
+github:
+  auto_commit: true
+  commit_message_prefix: "🔧 Auto-fix:"

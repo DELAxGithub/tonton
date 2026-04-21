@@ -24,16 +24,12 @@ final monthlyCalorieGoalProvider =
       (ref) => MonthlyCalorieGoalNotifier(),
     );
 
-// Provider for calorie savings data
-final calorieSavingsDataProvider = FutureProvider<List<CalorieSavingsRecord>>((
-  ref,
-) async {
-  // Watch meal records so savings data updates when meals change.
+/// Ordered list of [DailySummary] from onboarding start through today.
+/// Shared by [calorieSavingsDataProvider] and the diagnosis layer.
+final dailySummariesProvider = FutureProvider<List<DailySummary>>((ref) async {
   final mealRecordsAsync = ref.watch(mealRecordsProvider);
   final startDate = ref.watch(onboardingStartDateProvider);
   if (startDate == null) return [];
-
-  // Only proceed if meal records are loaded
   if (!mealRecordsAsync.hasValue) return [];
 
   final service = ref.watch(dailySummaryServiceProvider);
@@ -43,7 +39,6 @@ final calorieSavingsDataProvider = FutureProvider<List<CalorieSavingsRecord>>((
   final summaries = <DailySummary>[];
   var current = DateTime(startDate.year, startDate.month, startDate.day);
 
-  // Collect days that need (re)computation
   final staleDays = <DateTime>[];
 
   while (!current.isAfter(endDate)) {
@@ -52,9 +47,9 @@ final calorieSavingsDataProvider = FutureProvider<List<CalorieSavingsRecord>>((
         current.month == today.month &&
         current.day == today.day;
     if (cached != null && !isToday) {
-      // Verify cached consumed calories still match meal records
       final meals = service.mealRecords.getMealRecordsForDate(current);
-      final currentConsumed = meals.fold<double>(0.0, (sum, m) => sum + m.calories);
+      final currentConsumed =
+          meals.fold<double>(0.0, (sum, m) => sum + m.calories);
       if ((cached.caloriesConsumed - currentConsumed).abs() < 1.0) {
         summaries.add(cached);
       } else {
@@ -66,14 +61,21 @@ final calorieSavingsDataProvider = FutureProvider<List<CalorieSavingsRecord>>((
     current = current.add(const Duration(days: 1));
   }
 
-  // Recompute stale and uncached days
   for (final day in staleDays) {
     final summary = await service.getDailySummary(day, forceRefresh: true);
     summaries.add(summary);
   }
 
-  // Sort by date to ensure correct order
   summaries.sort((a, b) => a.date.compareTo(b.date));
+  return summaries;
+});
+
+// Provider for calorie savings data
+final calorieSavingsDataProvider = FutureProvider<List<CalorieSavingsRecord>>((
+  ref,
+) async {
+  final summariesAsync = await ref.watch(dailySummariesProvider.future);
+  final summaries = summariesAsync;
 
   double runningTotal = 0;
   return summaries.map((summary) {

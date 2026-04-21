@@ -16,6 +16,7 @@ import '../../../theme/app_theme.dart';
 import '../../progress/providers/auto_pfc_provider.dart';
 import '../../../routes/router.dart';
 import '../../../core/providers/auth_provider.dart';
+import '../widgets/pace_selector_card.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
@@ -478,6 +479,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 ],
               ),
             ),
+            const SizedBox(height: Spacing.lg),
+
+            // 減量ペース設定カード
+            const PaceSelectorCard(),
             const SizedBox(height: Spacing.lg),
 
             // 栄養バランスカード

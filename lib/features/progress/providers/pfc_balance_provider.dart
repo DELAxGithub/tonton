@@ -34,13 +34,51 @@ class UserGoalsNotifier extends StateNotifier<UserGoals> {
   }
 
   Future<void> setPfcRatio(PfcRatio ratio) async {
-    state = UserGoals(pfcRatio: ratio, bodyWeightKg: state.bodyWeightKg);
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('user_goals', jsonEncode(state.toJson()));
+    state = state.copyWith(pfcRatio: ratio);
+    await _persist();
   }
 
   Future<void> setBodyWeight(double weight) async {
-    state = UserGoals(pfcRatio: state.pfcRatio, bodyWeightKg: weight);
+    state = state.copyWith(bodyWeightKg: weight);
+    await _persist();
+  }
+
+  Future<void> setTargetWeeklyPercentLoss(double percent) async {
+    state = state.copyWith(targetWeeklyPercentLoss: percent);
+    await _persist();
+  }
+
+  /// Convenience: pick a pace and auto-align the current daily deficit goal to it.
+  Future<void> applyPacePreset(double percent) async {
+    final newState = state.copyWith(targetWeeklyPercentLoss: percent);
+    final required = newState.requiredDailyDeficitKcal;
+    state = required != null
+        ? newState.copyWith(dailyDeficitGoalKcal: required.roundToDouble())
+        : newState;
+    await _persist();
+  }
+
+  Future<void> setDailyDeficitGoalKcal(double kcal) async {
+    state = state.copyWith(dailyDeficitGoalKcal: kcal);
+    await _persist();
+  }
+
+  Future<void> setBodyProfile({
+    double? heightCm,
+    int? age,
+    bool? isMale,
+    double? activityFactor,
+  }) async {
+    state = state.copyWith(
+      heightCm: heightCm,
+      age: age,
+      isMale: isMale,
+      activityFactor: activityFactor,
+    );
+    await _persist();
+  }
+
+  Future<void> _persist() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('user_goals', jsonEncode(state.toJson()));
   }

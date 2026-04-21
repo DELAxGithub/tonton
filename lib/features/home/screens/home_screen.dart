@@ -12,6 +12,7 @@ import '../../../widgets/todays_meal_records_list.dart';
 import '../../../widgets/ai_advice_card_compact.dart';
 import '../../../routes/router.dart';
 import '../../../design_system/organisms/pfc_dashboard_card.dart';
+import '../widgets/diagnosis_card.dart';
 
 /// Main home screen matching .pen HomeScreen design
 class HomeScreen extends ConsumerWidget {
@@ -106,6 +107,10 @@ class HomeScreen extends ConsumerWidget {
 
               // CalorieSavingsHero
               const HeroPiggyBankDisplay(),
+              const SizedBox(height: 20),
+
+              // Diagnosis (離脱防止のための診断カード)
+              const DiagnosisCard(),
               const SizedBox(height: 20),
 
               // Summary section

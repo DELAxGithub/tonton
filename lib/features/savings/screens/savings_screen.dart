@@ -10,8 +10,8 @@ import '../../../design_system/organisms/hero_piggy_bank_display.dart';
 import '../../../design_system/atoms/tonton_button.dart';
 import '../../../widgets/calorie_weight_chart.dart';
 import '../../../widgets/daily_history_list.dart';
+import '../widgets/expected_vs_actual_card.dart';
 import '../../../routes/router.dart';
-import '../../../theme/colors.dart';
 import '../../../utils/icon_mapper.dart';
 
 /// 貯金タブのメイン画面
@@ -84,6 +84,10 @@ class SavingsScreen extends ConsumerWidget {
                       weeklyAvg: weeklyAvg,
                       periodText: periodText,
                     ),
+                    const SizedBox(height: 20),
+
+                    // 理論値 vs 実測
+                    const ExpectedVsActualCard(),
                     const SizedBox(height: 20),
 
                     // 期間セレクター

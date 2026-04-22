@@ -5,33 +5,46 @@ import '../../../enums/meal_time_type.dart';
 import '../../../models/meal_record.dart';
 import '../../../providers/providers.dart';
 import '../estimation_preset.dart';
-import '../providers/estimation_base_provider.dart';
 
 /// 日別履歴で食事記録が空の日に表示するボトムシート。
 /// 少なめ / 普通 / 多め から選ぶと、その日に合成 MealRecord を1件追加する。
+///
+/// 基準は「その日の消費カロリー (burned)」。普通 (×1.0) を選ぶと黒字0、
+/// 少なめ (×0.9) は軽い赤字、多め (×1.1) は軽い黒字になる。
 class EstimationBottomSheet extends ConsumerWidget {
   final DateTime targetDate;
+  final double burnedKcal;
 
-  const EstimationBottomSheet({super.key, required this.targetDate});
+  const EstimationBottomSheet({
+    super.key,
+    required this.targetDate,
+    required this.burnedKcal,
+  });
 
-  static Future<void> show(BuildContext context, DateTime date) {
+  static Future<void> show(
+    BuildContext context, {
+    required DateTime date,
+    required double burnedKcal,
+  }) {
     return showModalBottomSheet(
       context: context,
       showDragHandle: true,
-      builder: (_) => EstimationBottomSheet(targetDate: date),
+      builder: (_) => EstimationBottomSheet(
+        targetDate: date,
+        burnedKcal: burnedKcal,
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final base = ref.watch(estimationBaseCaloriesProvider);
     final goals = ref.watch(userGoalsProvider);
     final ratio = goals.pfcRatio;
 
     final presets = EstimationLevel.values
         .map((level) => buildEstimationPreset(
               level: level,
-              baseDailyCalories: base,
+              baseDailyCalories: burnedKcal,
               pfcRatio: ratio,
             ))
         .toList();
@@ -52,7 +65,8 @@ class EstimationBottomSheet extends ConsumerWidget {
             ),
             const SizedBox(height: 4),
             Text(
-              '直近の記録からざっくり推定します。あとで編集も可能です。',
+              'その日の消費 ${burnedKcal.round()} kcal を基準に埋めます。'
+              '「普通」で黒字0（累積に影響しない公平な埋め方）。',
               style: Theme.of(context).textTheme.bodySmall,
             ),
             const SizedBox(height: 16),

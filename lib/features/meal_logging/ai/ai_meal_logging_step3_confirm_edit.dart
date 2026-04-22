@@ -16,6 +16,7 @@ import '../../../widgets/nutrition_summary_card.dart';
 import '../../../design_system/molecules/pfc_pie_chart.dart';
 import '../../../features/progress/providers/auto_pfc_provider.dart';
 import '../../../theme/app_theme.dart';
+import '../providers/meal_entry_target_date_provider.dart';
 
 class AIMealLoggingStep3ConfirmEdit extends ConsumerStatefulWidget {
   final File? imageFile;
@@ -49,6 +50,12 @@ class _State extends ConsumerState<AIMealLoggingStep3ConfirmEdit> {
     _protein = widget.nutrition.nutrients.protein;
     _fat = widget.nutrition.nutrients.fat;
     _carbs = widget.nutrition.nutrients.carbs;
+
+    // Default date: target date from the entry flow if set, else today.
+    final target = ref.read(mealEntryTargetDateProvider);
+    if (target != null) {
+      _selectedDate = DateTime(target.year, target.month, target.day);
+    }
 
     // Set meal time based on current time
     final hour = DateTime.now().hour;

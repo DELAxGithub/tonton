@@ -21,11 +21,11 @@ extension EstimationLevelX on EstimationLevel {
   double get multiplier {
     switch (this) {
       case EstimationLevel.light:
-        return 0.8;
+        return 0.9;
       case EstimationLevel.normal:
         return 1.0;
       case EstimationLevel.heavy:
-        return 1.3;
+        return 1.1;
     }
   }
 }

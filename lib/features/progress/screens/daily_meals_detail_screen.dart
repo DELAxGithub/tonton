@@ -38,8 +38,8 @@ class DailyMealsDetailScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(title: Text(DateFormatter.formatLongDate(date))),
       floatingActionButton: GestureDetector(
-        onTap: () => showMealInputOptions(context),
-        onLongPress: () => goToMealCamera(context),
+        onTap: () => showMealInputOptions(context, targetDate: date),
+        onLongPress: () => goToMealCamera(context, targetDate: date),
         child: Container(
           width: 56,
           height: 56,

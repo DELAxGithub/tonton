@@ -20,22 +20,22 @@ void main() {
     expect(p.carbs, closeTo(250, 0.1));
   });
 
-  test('light preset scales by 0.8', () {
+  test('light preset scales by 0.9 (slight deficit vs burn)', () {
     final p = buildEstimationPreset(
       level: EstimationLevel.light,
       baseDailyCalories: 2000,
       pfcRatio: ratio,
     );
-    expect(p.calories, closeTo(1600, 0.01));
+    expect(p.calories, closeTo(1800, 0.01));
   });
 
-  test('heavy preset scales by 1.3', () {
+  test('heavy preset scales by 1.1 (slight surplus vs burn)', () {
     final p = buildEstimationPreset(
       level: EstimationLevel.heavy,
       baseDailyCalories: 2000,
       pfcRatio: ratio,
     );
-    expect(p.calories, closeTo(2600, 0.01));
+    expect(p.calories, closeTo(2200, 0.01));
   });
 
   test('labels are 少なめ / 普通 / 多め', () {

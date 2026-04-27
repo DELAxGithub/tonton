@@ -66,3 +66,7 @@ supabase/.temp/
 
 # agent-harness work dir
 .auto-fix/
+
+# macOS metadata
+.DS_Store
+**/.DS_Store

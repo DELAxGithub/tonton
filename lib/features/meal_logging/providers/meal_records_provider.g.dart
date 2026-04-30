@@ -14,18 +14,15 @@ String _$todaysMealRecordsHash() => r'd71862c67ce261201e8e8e36476d4edbde375942';
 @ProviderFor(todaysMealRecords)
 final todaysMealRecordsProvider =
     AutoDisposeProvider<List<MealRecord>>.internal(
-      todaysMealRecords,
-      name: r'todaysMealRecordsProvider',
-      debugGetCreateSourceHash:
-          const bool.fromEnvironment('dart.vm.product')
-              ? null
-              : _$todaysMealRecordsHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
+  todaysMealRecords,
+  name: r'todaysMealRecordsProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$todaysMealRecordsHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
 typedef TodaysMealRecordsRef = AutoDisposeProviderRef<List<MealRecord>>;
 String _$todaysTotalCaloriesHash() =>
     r'b05adb788ab0cc7aa4a0909e5bb807c08924f870';
@@ -37,16 +34,13 @@ String _$todaysTotalCaloriesHash() =>
 final todaysTotalCaloriesProvider = AutoDisposeProvider<double>.internal(
   todaysTotalCalories,
   name: r'todaysTotalCaloriesProvider',
-  debugGetCreateSourceHash:
-      const bool.fromEnvironment('dart.vm.product')
-          ? null
-          : _$todaysTotalCaloriesHash,
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$todaysTotalCaloriesHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
 typedef TodaysTotalCaloriesRef = AutoDisposeProviderRef<double>;
 String _$mealRecordHash() => r'b3880493539cf94a1f78f95561f351cf72c59c01';
 
@@ -89,15 +83,21 @@ class MealRecordFamily extends Family<MealRecord?> {
   /// Provider for accessing a specific meal record by ID
   ///
   /// Copied from [mealRecord].
-  MealRecordProvider call(String id) {
-    return MealRecordProvider(id);
+  MealRecordProvider call(
+    String id,
+  ) {
+    return MealRecordProvider(
+      id,
+    );
   }
 
   @override
   MealRecordProvider getProviderOverride(
     covariant MealRecordProvider provider,
   ) {
-    return call(provider.id);
+    return call(
+      provider.id,
+    );
   }
 
   static const Iterable<ProviderOrFamily>? _dependencies = null;
@@ -122,19 +122,24 @@ class MealRecordProvider extends AutoDisposeProvider<MealRecord?> {
   /// Provider for accessing a specific meal record by ID
   ///
   /// Copied from [mealRecord].
-  MealRecordProvider(String id)
-    : this._internal(
-        (ref) => mealRecord(ref as MealRecordRef, id),
-        from: mealRecordProvider,
-        name: r'mealRecordProvider',
-        debugGetCreateSourceHash:
-            const bool.fromEnvironment('dart.vm.product')
-                ? null
-                : _$mealRecordHash,
-        dependencies: MealRecordFamily._dependencies,
-        allTransitiveDependencies: MealRecordFamily._allTransitiveDependencies,
-        id: id,
-      );
+  MealRecordProvider(
+    String id,
+  ) : this._internal(
+          (ref) => mealRecord(
+            ref as MealRecordRef,
+            id,
+          ),
+          from: mealRecordProvider,
+          name: r'mealRecordProvider',
+          debugGetCreateSourceHash:
+              const bool.fromEnvironment('dart.vm.product')
+                  ? null
+                  : _$mealRecordHash,
+          dependencies: MealRecordFamily._dependencies,
+          allTransitiveDependencies:
+              MealRecordFamily._allTransitiveDependencies,
+          id: id,
+        );
 
   MealRecordProvider._internal(
     super._createNotifier, {
@@ -149,7 +154,9 @@ class MealRecordProvider extends AutoDisposeProvider<MealRecord?> {
   final String id;
 
   @override
-  Override overrideWith(MealRecord? Function(MealRecordRef provider) create) {
+  Override overrideWith(
+    MealRecord? Function(MealRecordRef provider) create,
+  ) {
     return ProviderOverride(
       origin: this,
       override: MealRecordProvider._internal(
@@ -183,8 +190,6 @@ class MealRecordProvider extends AutoDisposeProvider<MealRecord?> {
   }
 }
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
 mixin MealRecordRef on AutoDisposeProviderRef<MealRecord?> {
   /// The parameter `id` of this provider.
   String get id;
@@ -198,7 +203,7 @@ class _MealRecordProviderElement extends AutoDisposeProviderElement<MealRecord?>
   String get id => (origin as MealRecordProvider).id;
 }
 
-String _$mealRecordsHash() => r'fcbc38950435213ff194584eb8f6f4df33fddd6a';
+String _$mealRecordsHash() => r'297c728111960ee7db35228ac185aba936dc4a8d';
 
 /// Provider for managing meal records state
 ///
@@ -206,16 +211,14 @@ String _$mealRecordsHash() => r'fcbc38950435213ff194584eb8f6f4df33fddd6a';
 @ProviderFor(MealRecords)
 final mealRecordsProvider =
     AutoDisposeAsyncNotifierProvider<MealRecords, MealRecordsState>.internal(
-      MealRecords.new,
-      name: r'mealRecordsProvider',
-      debugGetCreateSourceHash:
-          const bool.fromEnvironment('dart.vm.product')
-              ? null
-              : _$mealRecordsHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
+  MealRecords.new,
+  name: r'mealRecordsProvider',
+  debugGetCreateSourceHash:
+      const bool.fromEnvironment('dart.vm.product') ? null : _$mealRecordsHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
 
 typedef _$MealRecords = AutoDisposeAsyncNotifier<MealRecordsState>;
 // ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

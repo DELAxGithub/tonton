@@ -5,46 +5,57 @@ import '../../../enums/meal_time_type.dart';
 import '../../../models/meal_record.dart';
 import '../../../providers/providers.dart';
 import '../estimation_preset.dart';
+import '../providers/recent_intake_average_provider.dart';
 
-/// 日別履歴で食事記録が空の日に表示するボトムシート。
-/// 少なめ / 普通 / 多め から選ぶと、その日に合成 MealRecord を1件追加する。
+/// 食事記録ゼロの日に「食べてない方 / いつも通り / 食べすぎた」の3択で推定値を埋めるシート。
 ///
-/// 基準は「その日の消費カロリー (burned)」。普通 (×1.0) を選ぶと黒字0、
-/// 少なめ (×0.9) は軽い赤字、多め (×1.1) は軽い黒字になる。
+/// 基準値の優先順位:
+///   1. 過去14日の摂取平均（[recentIntakeAverageProvider]）
+///   2. プロフィール由来の目標摂取値 = TDEE − 日次赤字目標
+///   3. ハードコードのデフォルト 1800 kcal
 class EstimationBottomSheet extends ConsumerWidget {
   final DateTime targetDate;
-  final double burnedKcal;
 
   const EstimationBottomSheet({
     super.key,
     required this.targetDate,
-    required this.burnedKcal,
   });
 
   static Future<void> show(
     BuildContext context, {
     required DateTime date,
-    required double burnedKcal,
   }) {
     return showModalBottomSheet(
       context: context,
       showDragHandle: true,
-      builder: (_) => EstimationBottomSheet(
-        targetDate: date,
-        burnedKcal: burnedKcal,
-      ),
+      builder: (_) => EstimationBottomSheet(targetDate: date),
     );
   }
+
+  static const double _hardcodedFallbackKcal = 1800;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final goals = ref.watch(userGoalsProvider);
     final ratio = goals.pfcRatio;
+    final recentAvg = ref.watch(recentIntakeAverageProvider);
+
+    final tdee = goals.estimatedTdee;
+    final profileTarget =
+        tdee != null ? tdee - goals.dailyDeficitGoalKcal : null;
+
+    final baselineKcal =
+        recentAvg ?? profileTarget ?? _hardcodedFallbackKcal;
+    final source = recentAvg != null
+        ? _BaselineSource.recentAverage
+        : profileTarget != null
+            ? _BaselineSource.profileTarget
+            : _BaselineSource.fallback;
 
     final presets = EstimationLevel.values
         .map((level) => buildEstimationPreset(
               level: level,
-              baseDailyCalories: burnedKcal,
+              baselineKcal: baselineKcal,
               pfcRatio: ratio,
             ))
         .toList();
@@ -65,8 +76,7 @@ class EstimationBottomSheet extends ConsumerWidget {
             ),
             const SizedBox(height: 4),
             Text(
-              'その日の消費 ${burnedKcal.round()} kcal を基準に埋めます。'
-              '「普通」で黒字0（累積に影響しない公平な埋め方）。',
+              source.captionFor(baselineKcal),
               style: Theme.of(context).textTheme.bodySmall,
             ),
             const SizedBox(height: 16),
@@ -114,6 +124,22 @@ class EstimationBottomSheet extends ConsumerWidget {
     await ref.read(mealRecordsProvider.notifier).addMealRecord(record);
     // Force recalculation of daily summary / savings
     ref.invalidate(dailySummariesProvider);
+  }
+}
+
+enum _BaselineSource { recentAverage, profileTarget, fallback }
+
+extension on _BaselineSource {
+  String captionFor(double kcal) {
+    final rounded = kcal.round();
+    switch (this) {
+      case _BaselineSource.recentAverage:
+        return '直近14日の摂取平均 ${rounded} kcal を「いつも通り」として推定します。';
+      case _BaselineSource.profileTarget:
+        return '過去の記録が少ないため、プロフィールの目標摂取 ${rounded} kcal を基準にします。';
+      case _BaselineSource.fallback:
+        return '過去の記録もプロフィールも未設定のため、暫定 ${rounded} kcal を基準にします。';
+    }
   }
 }
 

@@ -8,6 +8,7 @@ import '../../../models/calorie_savings_record.dart';
 import '../../../models/weight_record.dart';
 import '../../../design_system/templates/standard_page_layout.dart';
 import '../../../widgets/daily_history_list.dart';
+import '../widgets/monthly_goal_progress_card.dart';
 
 class ProgressAchievementsScreen extends ConsumerWidget {
   const ProgressAchievementsScreen({super.key});
@@ -92,139 +93,145 @@ class ProgressAchievementsScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: 24),
 
-                // Chart section
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: Theme.of(
-                        context,
-                      ).colorScheme.outline.withValues(alpha: 0.2),
-                    ),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        '摂取・消費カロリーの推移',
-                        style: Theme.of(context).textTheme.titleMedium
-                            ?.copyWith(fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(height: 16),
-                      SizedBox(
-                        height: 240,
-                        child: CalorieWeightChart(
-                          records: records,
-                          weightRecords: weightRecords,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Card(
-                  elevation: 2,
-                  color: Theme.of(context).colorScheme.primaryContainer,
-                  child: Padding(
+                // 週/月: 今月の目標達成度を主役に。
+                // 全期間: 累積カロリー貯金グラフ + 期間平均カード（履歴閲覧用）。
+                if (period == SelectedPeriod.all) ...[
+                  Container(
                     padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.outline.withValues(alpha: 0.2),
+                      ),
+                    ),
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.primary.withValues(alpha: 0.1),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Icon(
-                                Icons.analytics_outlined,
-                                color: Theme.of(context).colorScheme.primary,
-                                size: 24,
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    '期間平均',
-                                    style: Theme.of(
-                                      context,
-                                    ).textTheme.labelMedium?.copyWith(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onPrimaryContainer
-                                          .withValues(alpha: 0.7),
-                                    ),
-                                  ),
-                                  const SizedBox(height: 2),
-                                  Text(
-                                    '${weeklyAvg > 0 ? "+" : ""}${weeklyAvg.toStringAsFixed(0)} kcal/日',
-                                    style: Theme.of(
-                                      context,
-                                    ).textTheme.titleLarge?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      color:
-                                          Theme.of(
-                                            context,
-                                          ).colorScheme.onPrimaryContainer,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
+                        Text(
+                          '摂取・消費カロリーの推移',
+                          style: Theme.of(context).textTheme.titleMedium
+                              ?.copyWith(fontWeight: FontWeight.bold),
                         ),
-                        const SizedBox(height: 12),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 8,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.surface,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Row(
-                            children: [
-                              Icon(
-                                weeklyAvg > 0
-                                    ? Icons.thumb_up_outlined
-                                    : Icons.info_outline,
-                                size: 16,
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.onSurface.withValues(alpha: 0.7),
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Text(
-                                  weeklyAvg > 0
-                                      ? '$periodTextで順調にカロリー貯金ができています！'
-                                      : '$periodTextの貯金を確認してみましょう',
-                                  style: Theme.of(
-                                    context,
-                                  ).textTheme.bodyMedium?.copyWith(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onSurface
-                                        .withValues(alpha: 0.8),
-                                  ),
-                                ),
-                              ),
-                            ],
+                        const SizedBox(height: 16),
+                        SizedBox(
+                          height: 240,
+                          child: CalorieWeightChart(
+                            records: records,
+                            weightRecords: weightRecords,
                           ),
                         ),
                       ],
                     ),
                   ),
-                ),
+                  const SizedBox(height: 16),
+                  Card(
+                    elevation: 2,
+                    color: Theme.of(context).colorScheme.primaryContainer,
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        children: [
+                          Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.primary.withValues(alpha: 0.1),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Icon(
+                                  Icons.analytics_outlined,
+                                  color: Theme.of(context).colorScheme.primary,
+                                  size: 24,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      '期間平均',
+                                      style: Theme.of(
+                                        context,
+                                      ).textTheme.labelMedium?.copyWith(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onPrimaryContainer
+                                            .withValues(alpha: 0.7),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 2),
+                                    Text(
+                                      '${weeklyAvg > 0 ? "+" : ""}${weeklyAvg.toStringAsFixed(0)} kcal/日',
+                                      style: Theme.of(
+                                        context,
+                                      ).textTheme.titleLarge?.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                        color:
+                                            Theme.of(
+                                              context,
+                                            ).colorScheme.onPrimaryContainer,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 8,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).colorScheme.surface,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  weeklyAvg > 0
+                                      ? Icons.thumb_up_outlined
+                                      : Icons.info_outline,
+                                  size: 16,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurface.withValues(alpha: 0.7),
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    weeklyAvg > 0
+                                        ? '$periodTextで順調にカロリー貯金ができています！'
+                                        : '$periodTextの貯金を確認してみましょう',
+                                    style: Theme.of(
+                                      context,
+                                    ).textTheme.bodyMedium?.copyWith(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSurface
+                                          .withValues(alpha: 0.8),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ] else ...[
+                  const MonthlyGoalProgressCard(),
+                ],
                 const SizedBox(height: 24),
 
                 // Daily history section

@@ -5,10 +5,10 @@ import 'package:tonton/models/pfc_breakdown.dart';
 void main() {
   const ratio = PfcRatio(protein: 0.3, fat: 0.2, carbohydrate: 0.5);
 
-  test('normal preset returns baseDailyCalories', () {
+  test('usual preset returns baselineKcal as-is', () {
     final p = buildEstimationPreset(
-      level: EstimationLevel.normal,
-      baseDailyCalories: 2000,
+      level: EstimationLevel.usual,
+      baselineKcal: 2000,
       pfcRatio: ratio,
     );
     expect(p.calories, 2000);
@@ -20,27 +20,33 @@ void main() {
     expect(p.carbs, closeTo(250, 0.1));
   });
 
-  test('light preset scales by 0.9 (slight deficit vs burn)', () {
+  test('lessThanUsual preset scales by 0.8', () {
     final p = buildEstimationPreset(
-      level: EstimationLevel.light,
-      baseDailyCalories: 2000,
+      level: EstimationLevel.lessThanUsual,
+      baselineKcal: 2000,
       pfcRatio: ratio,
     );
-    expect(p.calories, closeTo(1800, 0.01));
+    expect(p.calories, closeTo(1600, 0.01));
   });
 
-  test('heavy preset scales by 1.1 (slight surplus vs burn)', () {
+  test('moreThanUsual preset scales by 1.2', () {
     final p = buildEstimationPreset(
-      level: EstimationLevel.heavy,
-      baseDailyCalories: 2000,
+      level: EstimationLevel.moreThanUsual,
+      baselineKcal: 2000,
       pfcRatio: ratio,
     );
-    expect(p.calories, closeTo(2200, 0.01));
+    expect(p.calories, closeTo(2400, 0.01));
   });
 
-  test('labels are 少なめ / 普通 / 多め', () {
-    expect(EstimationLevel.light.label, '少なめ');
-    expect(EstimationLevel.normal.label, '普通');
-    expect(EstimationLevel.heavy.label, '多め');
+  test('labels are 食べてない方 / いつも通り / 食べすぎた', () {
+    expect(EstimationLevel.lessThanUsual.label, '食べてない方');
+    expect(EstimationLevel.usual.label, 'いつも通り');
+    expect(EstimationLevel.moreThanUsual.label, '食べすぎた');
+  });
+
+  test('multipliers are 0.8 / 1.0 / 1.2 (±20%)', () {
+    expect(EstimationLevel.lessThanUsual.multiplier, 0.8);
+    expect(EstimationLevel.usual.multiplier, 1.0);
+    expect(EstimationLevel.moreThanUsual.multiplier, 1.2);
   });
 }

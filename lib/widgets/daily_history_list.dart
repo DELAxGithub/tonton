@@ -112,10 +112,7 @@ class DailyHistoryList extends ConsumerWidget {
                   // Daily savings / empty meals estimate button
                   Expanded(
                     child: hasNoMeals
-                        ? _EstimateCta(
-                            date: record.date,
-                            burnedKcal: record.caloriesBurned,
-                          )
+                        ? _EstimateCta(date: record.date)
                         : Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -182,9 +179,8 @@ class DailyHistoryList extends ConsumerWidget {
 /// 食事記録ゼロの日に出す「推定」CTA。
 class _EstimateCta extends StatelessWidget {
   final DateTime date;
-  final double burnedKcal;
 
-  const _EstimateCta({required this.date, required this.burnedKcal});
+  const _EstimateCta({required this.date});
 
   @override
   Widget build(BuildContext context) {
@@ -203,11 +199,7 @@ class _EstimateCta extends StatelessWidget {
         ),
         TextButton.icon(
           onPressed: () {
-            EstimationBottomSheet.show(
-              context,
-              date: date,
-              burnedKcal: burnedKcal,
-            );
+            EstimationBottomSheet.show(context, date: date);
           },
           icon: const Icon(Icons.auto_fix_high, size: 18),
           label: const Text('推定で埋める'),

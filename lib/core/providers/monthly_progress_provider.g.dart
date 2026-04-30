@@ -13,16 +13,13 @@ String _$healthServiceHash() => r'98289cee4406da156329508b9bf2f4bbee2d0cca';
 final healthServiceProvider = AutoDisposeProvider<HealthService>.internal(
   healthService,
   name: r'healthServiceProvider',
-  debugGetCreateSourceHash:
-      const bool.fromEnvironment('dart.vm.product')
-          ? null
-          : _$healthServiceHash,
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$healthServiceHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
 typedef HealthServiceRef = AutoDisposeProviderRef<HealthService>;
 String _$userSettingsRepositoryHash() =>
     r'424cb5921e77c54f5273ee3b165ec3a761d77ca7';
@@ -31,20 +28,17 @@ String _$userSettingsRepositoryHash() =>
 @ProviderFor(userSettingsRepository)
 final userSettingsRepositoryProvider =
     AutoDisposeProvider<UserSettingsRepository>.internal(
-      userSettingsRepository,
-      name: r'userSettingsRepositoryProvider',
-      debugGetCreateSourceHash:
-          const bool.fromEnvironment('dart.vm.product')
-              ? null
-              : _$userSettingsRepositoryHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
+  userSettingsRepository,
+  name: r'userSettingsRepositoryProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$userSettingsRepositoryHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef UserSettingsRepositoryRef =
-    AutoDisposeProviderRef<UserSettingsRepository>;
+typedef UserSettingsRepositoryRef
+    = AutoDisposeProviderRef<UserSettingsRepository>;
 String _$calorieCalculationServiceHash() =>
     r'a018d85ef762deda669aadae0194476c1c2ccb20';
 
@@ -52,20 +46,17 @@ String _$calorieCalculationServiceHash() =>
 @ProviderFor(calorieCalculationService)
 final calorieCalculationServiceProvider =
     AutoDisposeProvider<CalorieCalculationService>.internal(
-      calorieCalculationService,
-      name: r'calorieCalculationServiceProvider',
-      debugGetCreateSourceHash:
-          const bool.fromEnvironment('dart.vm.product')
-              ? null
-              : _$calorieCalculationServiceHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
+  calorieCalculationService,
+  name: r'calorieCalculationServiceProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$calorieCalculationServiceHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef CalorieCalculationServiceRef =
-    AutoDisposeProviderRef<CalorieCalculationService>;
+typedef CalorieCalculationServiceRef
+    = AutoDisposeProviderRef<CalorieCalculationService>;
 String _$monthlyTargetHash() => r'b9917e474cf6fa58f02216a90d891d01a61bf4a2';
 
 /// See also [monthlyTarget].
@@ -73,16 +64,13 @@ String _$monthlyTargetHash() => r'b9917e474cf6fa58f02216a90d891d01a61bf4a2';
 final monthlyTargetProvider = AutoDisposeFutureProvider<double>.internal(
   monthlyTarget,
   name: r'monthlyTargetProvider',
-  debugGetCreateSourceHash:
-      const bool.fromEnvironment('dart.vm.product')
-          ? null
-          : _$monthlyTargetHash,
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$monthlyTargetHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
 typedef MonthlyTargetRef = AutoDisposeFutureProviderRef<double>;
 String _$dailyCalorieSummaryHash() =>
     r'107eb43a7ffb75b74c8d10c7f0a7a1dd6d1ab7c8';
@@ -119,15 +107,21 @@ class DailyCalorieSummaryFamily
   const DailyCalorieSummaryFamily();
 
   /// See also [dailyCalorieSummary].
-  DailyCalorieSummaryProvider call(DateTime date) {
-    return DailyCalorieSummaryProvider(date);
+  DailyCalorieSummaryProvider call(
+    DateTime date,
+  ) {
+    return DailyCalorieSummaryProvider(
+      date,
+    );
   }
 
   @override
   DailyCalorieSummaryProvider getProviderOverride(
     covariant DailyCalorieSummaryProvider provider,
   ) {
-    return call(provider.date);
+    return call(
+      provider.date,
+    );
   }
 
   static const Iterable<ProviderOrFamily>? _dependencies = null;
@@ -149,20 +143,24 @@ class DailyCalorieSummaryFamily
 class DailyCalorieSummaryProvider
     extends AutoDisposeFutureProvider<DailyCalorieSummary> {
   /// See also [dailyCalorieSummary].
-  DailyCalorieSummaryProvider(DateTime date)
-    : this._internal(
-        (ref) => dailyCalorieSummary(ref as DailyCalorieSummaryRef, date),
-        from: dailyCalorieSummaryProvider,
-        name: r'dailyCalorieSummaryProvider',
-        debugGetCreateSourceHash:
-            const bool.fromEnvironment('dart.vm.product')
-                ? null
-                : _$dailyCalorieSummaryHash,
-        dependencies: DailyCalorieSummaryFamily._dependencies,
-        allTransitiveDependencies:
-            DailyCalorieSummaryFamily._allTransitiveDependencies,
-        date: date,
-      );
+  DailyCalorieSummaryProvider(
+    DateTime date,
+  ) : this._internal(
+          (ref) => dailyCalorieSummary(
+            ref as DailyCalorieSummaryRef,
+            date,
+          ),
+          from: dailyCalorieSummaryProvider,
+          name: r'dailyCalorieSummaryProvider',
+          debugGetCreateSourceHash:
+              const bool.fromEnvironment('dart.vm.product')
+                  ? null
+                  : _$dailyCalorieSummaryHash,
+          dependencies: DailyCalorieSummaryFamily._dependencies,
+          allTransitiveDependencies:
+              DailyCalorieSummaryFamily._allTransitiveDependencies,
+          date: date,
+        );
 
   DailyCalorieSummaryProvider._internal(
     super._createNotifier, {
@@ -179,7 +177,7 @@ class DailyCalorieSummaryProvider
   @override
   Override overrideWith(
     FutureOr<DailyCalorieSummary> Function(DailyCalorieSummaryRef provider)
-    create,
+        create,
   ) {
     return ProviderOverride(
       origin: this,
@@ -214,8 +212,6 @@ class DailyCalorieSummaryProvider
   }
 }
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
 mixin DailyCalorieSummaryRef
     on AutoDisposeFutureProviderRef<DailyCalorieSummary> {
   /// The parameter `date` of this provider.
@@ -238,20 +234,17 @@ String _$todayCalorieSummaryHash() =>
 @ProviderFor(todayCalorieSummary)
 final todayCalorieSummaryProvider =
     AutoDisposeFutureProvider<DailyCalorieSummary>.internal(
-      todayCalorieSummary,
-      name: r'todayCalorieSummaryProvider',
-      debugGetCreateSourceHash:
-          const bool.fromEnvironment('dart.vm.product')
-              ? null
-              : _$todayCalorieSummaryHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
+  todayCalorieSummary,
+  name: r'todayCalorieSummaryProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$todayCalorieSummaryHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef TodayCalorieSummaryRef =
-    AutoDisposeFutureProviderRef<DailyCalorieSummary>;
+typedef TodayCalorieSummaryRef
+    = AutoDisposeFutureProviderRef<DailyCalorieSummary>;
 String _$monthlyProgressSummaryHash() =>
     r'6fb8dd5568c6329ef45d89bf24f4087536cbb687';
 
@@ -259,20 +252,17 @@ String _$monthlyProgressSummaryHash() =>
 @ProviderFor(monthlyProgressSummary)
 final monthlyProgressSummaryProvider =
     AutoDisposeFutureProvider<MonthlyProgressSummary>.internal(
-      monthlyProgressSummary,
-      name: r'monthlyProgressSummaryProvider',
-      debugGetCreateSourceHash:
-          const bool.fromEnvironment('dart.vm.product')
-              ? null
-              : _$monthlyProgressSummaryHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
+  monthlyProgressSummary,
+  name: r'monthlyProgressSummaryProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$monthlyProgressSummaryHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef MonthlyProgressSummaryRef =
-    AutoDisposeFutureProviderRef<MonthlyProgressSummary>;
+typedef MonthlyProgressSummaryRef
+    = AutoDisposeFutureProviderRef<MonthlyProgressSummary>;
 String _$monthlyTargetNotifierHash() =>
     r'50120c7401b8b9e2fa833db1778300290f7b8af1';
 
@@ -280,16 +270,15 @@ String _$monthlyTargetNotifierHash() =>
 @ProviderFor(MonthlyTargetNotifier)
 final monthlyTargetNotifierProvider =
     AutoDisposeAsyncNotifierProvider<MonthlyTargetNotifier, double>.internal(
-      MonthlyTargetNotifier.new,
-      name: r'monthlyTargetNotifierProvider',
-      debugGetCreateSourceHash:
-          const bool.fromEnvironment('dart.vm.product')
-              ? null
-              : _$monthlyTargetNotifierHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
+  MonthlyTargetNotifier.new,
+  name: r'monthlyTargetNotifierProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$monthlyTargetNotifierHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
 
 typedef _$MonthlyTargetNotifier = AutoDisposeAsyncNotifier<double>;
 // ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

@@ -1,31 +1,35 @@
 import '../../models/pfc_breakdown.dart';
 
+/// 食事記録ゼロの日に「いつも通り食べた／食べてない／食べすぎた」のニュアンスで
+/// 推定カロリーを埋めるための区分。
+///
+/// 倍率は基準値（過去 N 日の摂取平均など）に乗じる係数。
 enum EstimationLevel {
-  light, // 少なめ
-  normal, // 普通
-  heavy, // 多め
+  lessThanUsual, // 食べてない方
+  usual,         // いつも通り
+  moreThanUsual, // 食べすぎた
 }
 
 extension EstimationLevelX on EstimationLevel {
   String get label {
     switch (this) {
-      case EstimationLevel.light:
-        return '少なめ';
-      case EstimationLevel.normal:
-        return '普通';
-      case EstimationLevel.heavy:
-        return '多め';
+      case EstimationLevel.lessThanUsual:
+        return '食べてない方';
+      case EstimationLevel.usual:
+        return 'いつも通り';
+      case EstimationLevel.moreThanUsual:
+        return '食べすぎた';
     }
   }
 
   double get multiplier {
     switch (this) {
-      case EstimationLevel.light:
-        return 0.9;
-      case EstimationLevel.normal:
+      case EstimationLevel.lessThanUsual:
+        return 0.8;
+      case EstimationLevel.usual:
         return 1.0;
-      case EstimationLevel.heavy:
-        return 1.1;
+      case EstimationLevel.moreThanUsual:
+        return 1.2;
     }
   }
 }
@@ -47,13 +51,16 @@ class EstimationPreset {
   });
 }
 
-/// 指定したベースカロリー + PFC比率からプリセットを生成する。
+/// 指定した基準カロリー + PFC比率からプリセットを生成する。
+///
+/// [baselineKcal] は「ユーザーが普段（いつも通り）食べているとみなすカロリー」を指す。
+/// 過去 N 日の摂取平均、または cold start 時はプロフィール由来の目標値などを渡す。
 EstimationPreset buildEstimationPreset({
   required EstimationLevel level,
-  required double baseDailyCalories,
+  required double baselineKcal,
   required PfcRatio pfcRatio,
 }) {
-  final kcal = baseDailyCalories * level.multiplier;
+  final kcal = baselineKcal * level.multiplier;
   final protein = (kcal * pfcRatio.protein) / 4; // 4 kcal/g
   final fat = (kcal * pfcRatio.fat) / 9; // 9 kcal/g
   final carbs = (kcal * pfcRatio.carbohydrate) / 4; // 4 kcal/g

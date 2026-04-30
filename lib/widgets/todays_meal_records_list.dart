@@ -65,19 +65,22 @@ class TodaysMealRecordsList extends ConsumerWidget {
                         .read(mealRecordsProvider.notifier)
                         .deleteMealRecord(meal.id);
                     if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('${meal.mealName}を削除しました'),
-                          action: SnackBarAction(
-                            label: '元に戻す',
-                            onPressed: () async {
-                              await ref
-                                  .read(mealRecordsProvider.notifier)
-                                  .addMealRecord(meal);
-                            },
+                      ScaffoldMessenger.of(context)
+                        ..clearSnackBars()
+                        ..showSnackBar(
+                          SnackBar(
+                            content: Text('${meal.mealName}を削除しました'),
+                            duration: const Duration(seconds: 3),
+                            action: SnackBarAction(
+                              label: '元に戻す',
+                              onPressed: () async {
+                                await ref
+                                    .read(mealRecordsProvider.notifier)
+                                    .addMealRecord(meal);
+                              },
+                            ),
                           ),
-                        ),
-                      );
+                        );
                     }
                     return true;
                   }

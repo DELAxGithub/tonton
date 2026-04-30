@@ -642,25 +642,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   }
 
   Widget _buildNutritionBalanceCard(BuildContext context, WidgetRef ref) {
-    final userProfile = ref.watch(userProfileProvider);
     final autoPfc = ref.watch(autoPfcTargetProvider);
     final dailyTarget = ref.watch(dailyCalorieTargetProvider);
-
-    // 性別と年齢層の表示テキスト
-    final genderText =
-        userProfile.gender == 'male'
-            ? '男性'
-            : userProfile.gender == 'female'
-            ? '女性'
-            : '未設定';
-    final ageGroupText =
-        userProfile.ageGroup == 'young'
-            ? '若い頃と変わらない'
-            : userProfile.ageGroup == 'middle'
-            ? '脂肪が増えやすくなった'
-            : userProfile.ageGroup == 'senior'
-            ? '健康が気になってきた'
-            : '未設定';
 
     return TontonCardBase(
       child: Column(
@@ -677,44 +660,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           const SizedBox(height: Spacing.sm),
 
           if (autoPfc != null) ...[
-            // ユーザー情報表示
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Theme.of(
-                  context,
-                ).colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      const Icon(Icons.person, size: 16),
-                      const SizedBox(width: 4),
-                      Text(
-                        '$genderText / $ageGroupText',
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      const Icon(Icons.fitness_center, size: 16),
-                      const SizedBox(width: 4),
-                      Text(
-                        '体重: ${userProfile.weight?.toStringAsFixed(1) ?? "未設定"} kg',
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: Spacing.md),
-
             // 自動計算されたPFC値
             Text(
               '目標カロリー: $dailyTarget kcal/日',

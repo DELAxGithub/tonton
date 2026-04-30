@@ -70,17 +70,12 @@ platform :ios do
     end
 
     # Flutter build (no codesign; fastlane が後で署名)
-    # vendor/bundle の cocoapods が PATH 先頭で壊れているため Bundler env を外し、
-    # Flutter サブプロセスに brew の pod を拾わせる。Gemfile から cocoapods を外せば
-    # この回避策は不要になる (TODO)。
-    Bundler.with_clean_env do
-      sh(
-        "cd ../.. && flutter build ios --release --no-codesign " \
-        "--dart-define=SUPABASE_URL=#{supabase_url} " \
-        "--dart-define=SUPABASE_ANON_KEY=#{supabase_anon_key} " \
-        "--dart-define=GEMINI_API_KEY=#{gemini_api_key}"
-      )
-    end
+    sh(
+      "cd ../.. && flutter build ios --release --no-codesign " \
+      "--dart-define=SUPABASE_URL=#{supabase_url} " \
+      "--dart-define=SUPABASE_ANON_KEY=#{supabase_anon_key} " \
+      "--dart-define=GEMINI_API_KEY=#{gemini_api_key}"
+    )
 
     build_app(
       workspace: "Runner.xcworkspace",

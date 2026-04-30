@@ -5,15 +5,19 @@ import '../models/calorie_savings_record.dart';
 import '../models/weight_record.dart';
 import '../theme/app_theme.dart';
 
-/// カロリー貯金と体重を表示するデュアルアクシスチャート
+/// カロリー貯金と体重を表示するデュアルアクシスチャート。
+/// [idealWeightsKg] が与えられたら、実測体重ラインに重ねて理想ペース trajectory を
+/// 薄い色で描画する。インデックスは [records] と同じ並び。
 class CalorieWeightChart extends StatelessWidget {
   final List<CalorieSavingsRecord> records;
   final List<WeightRecord?> weightRecords;
+  final List<double?>? idealWeightsKg;
 
   const CalorieWeightChart({
     super.key,
     required this.records,
     required this.weightRecords,
+    this.idealWeightsKg,
   });
 
   @override
@@ -30,15 +34,28 @@ class CalorieWeightChart extends StatelessWidget {
       }
     }
 
-    if (validWeights.isEmpty) {
+    final validIdeals = <int, double>{};
+    if (idealWeightsKg != null) {
+      for (int i = 0; i < idealWeightsKg!.length && i < records.length; i++) {
+        final v = idealWeightsKg![i];
+        if (v != null) validIdeals[i] = v;
+      }
+    }
+
+    if (validWeights.isEmpty && validIdeals.isEmpty) {
       // If no weight data, show only calorie savings as bar chart
       return _buildCaloriesOnlyChart(context);
     }
 
-    // Calculate ranges
+    // Calculate ranges from both actual and ideal weights so neither
+    // line is clipped at the edges.
     final maxSavings = records.map((r) => r.cumulativeSavings).reduce(math.max);
-    final minWeight = validWeights.values.reduce(math.min) - 2; // Add padding
-    final maxWeight = validWeights.values.reduce(math.max) + 2;
+    final allWeights = <double>[
+      ...validWeights.values,
+      ...validIdeals.values,
+    ];
+    final minWeight = allWeights.reduce(math.min) - 2; // Add padding
+    final maxWeight = allWeights.reduce(math.max) + 2;
 
     return LineChart(
       LineChartData(
@@ -170,6 +187,23 @@ class CalorieWeightChart extends StatelessWidget {
                   );
                 },
               ),
+            ),
+          // Ideal weight trajectory (if provided)
+          if (validIdeals.isNotEmpty)
+            LineChartBarData(
+              spots: [
+                for (final entry in validIdeals.entries)
+                  FlSpot(
+                    entry.key.toDouble(),
+                    ((entry.value - minWeight) / (maxWeight - minWeight)) *
+                        maxSavings,
+                  ),
+              ],
+              isCurved: false,
+              color: TontonColors.primary.withValues(alpha: 0.4),
+              barWidth: 2,
+              dashArray: const [6, 4],
+              dotData: const FlDotData(show: false),
             ),
         ],
         lineTouchData: LineTouchData(

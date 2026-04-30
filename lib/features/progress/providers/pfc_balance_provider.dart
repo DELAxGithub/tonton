@@ -63,6 +63,20 @@ class UserGoalsNotifier extends StateNotifier<UserGoals> {
     await _persist();
   }
 
+  /// Snapshot the starting body weight + date that anchor the ideal-pace
+  /// trajectory. Called when the user (re)sets the diet start date and we
+  /// have a current weight to capture.
+  Future<void> setStartingBodyWeight({
+    required double weight,
+    required DateTime date,
+  }) async {
+    state = state.copyWith(
+      startingBodyWeightKg: weight,
+      startingBodyWeightDate: date,
+    );
+    await _persist();
+  }
+
   Future<void> setBodyProfile({
     double? heightCm,
     int? age,

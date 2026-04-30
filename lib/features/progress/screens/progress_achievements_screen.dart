@@ -8,6 +8,8 @@ import '../../../models/calorie_savings_record.dart';
 import '../../../models/weight_record.dart';
 import '../../../design_system/templates/standard_page_layout.dart';
 import '../../../widgets/daily_history_list.dart';
+import '../../health/providers/weight_history_provider.dart';
+import '../providers/ideal_weight_trajectory_provider.dart';
 import '../widgets/monthly_goal_progress_card.dart';
 
 class ProgressAchievementsScreen extends ConsumerWidget {
@@ -39,12 +41,33 @@ class ProgressAchievementsScreen extends ConsumerWidget {
 
         return provider_pkg.Consumer<HealthProvider>(
           builder: (context, hp, child) {
-            // Get weight records - for now, we'll use empty list
-            // TODO: Implement weight history fetching
-            final weightRecords = List.generate(
-              records.length,
-              (index) => null as WeightRecord?,
+            final weightHistoryAsync = ref.watch(weightHistoryProvider);
+            final ideal = ref.watch(idealWeightTrajectoryProvider);
+
+            // loading / error 時は空リスト扱いで描画（実測ラインだけ消えて
+            // 累積カロリー + 理想ラインは表示される、フェイルセーフ）
+            final weightHistory = weightHistoryAsync.maybeWhen(
+              data: (list) => list,
+              orElse: () => const <WeightRecord>[],
             );
+
+            // 日付キーで weight / ideal を records と align する
+            String dayKey(DateTime d) =>
+                '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
+            final weightByDay = <String, WeightRecord>{};
+            for (final w in weightHistory) {
+              weightByDay[dayKey(w.date)] = w;
+            }
+            final idealByDay = <String, double>{};
+            for (final p in ideal) {
+              idealByDay[dayKey(p.date)] = p.idealKg;
+            }
+            final weightRecords = <WeightRecord?>[
+              for (final r in records) weightByDay[dayKey(r.date)],
+            ];
+            final idealWeightsKg = <double?>[
+              for (final r in records) idealByDay[dayKey(r.date)],
+            ];
 
             final weeklyAvg = ref.watch(weeklyAverageSavingsProvider);
             final periodText = switch (period) {
@@ -121,6 +144,7 @@ class ProgressAchievementsScreen extends ConsumerWidget {
                           child: CalorieWeightChart(
                             records: records,
                             weightRecords: weightRecords,
+                            idealWeightsKg: idealWeightsKg,
                           ),
                         ),
                       ],

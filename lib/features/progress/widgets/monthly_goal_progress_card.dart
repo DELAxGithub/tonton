@@ -2,7 +2,10 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../health/providers/weight_history_provider.dart';
+import '../providers/ideal_weight_trajectory_provider.dart';
 import '../providers/monthly_goal_progress_provider.dart';
+import '../providers/pfc_balance_provider.dart';
 
 /// トントンヒストリー画面の主役カード。
 /// 「今月の目標達成度」をドーナツ + 数値 + ペース判定で見せる。
@@ -101,6 +104,7 @@ class MonthlyGoalProgressCard extends ConsumerWidget {
             ),
             const SizedBox(height: 12),
             _PaceBadge(pace: progress.pace, color: paceColor),
+            const _WeightProgressRow(),
           ],
         ),
       ),
@@ -190,5 +194,118 @@ class _PaceBadge extends StatelessWidget {
       case MonthlyPace.notStarted:
         return (Icons.hourglass_empty, '今月はこれから。記録を続けていきましょう。');
     }
+  }
+}
+
+/// 「体重: 現在 -X.Xkg / 理想 -X.Xkg」行。
+/// 開始時体重が未スナップ or 体重履歴ゼロ件のときは表示しない。
+class _WeightProgressRow extends ConsumerWidget {
+  const _WeightProgressRow();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final goals = ref.watch(userGoalsProvider);
+    final start = goals.startingBodyWeightKg;
+    final startDate = goals.startingBodyWeightDate;
+    if (start == null) return const SizedBox.shrink();
+
+    final historyAsync = ref.watch(weightHistoryProvider);
+    final ideal = ref.watch(idealWeightTrajectoryProvider);
+
+    return historyAsync.when(
+      loading: () => const SizedBox.shrink(),
+      error: (_, __) => const SizedBox.shrink(),
+      data: (history) {
+        final theme = Theme.of(context);
+
+        // startDate より前の履歴は「前のダイエット期間」のデータなので
+        // 今回の差分計算からは除外する。
+        final eligible = startDate == null
+            ? history
+            : history.where((w) => !w.date.isBefore(startDate)).toList();
+        final latest = eligible.isNotEmpty ? eligible.last : null;
+        final actualDelta =
+            latest != null ? (latest.weight - start) : null;
+
+        // 「今日 (現在より過去最大の理想点)」を取り出す
+        final now = DateTime.now();
+        final today = DateTime(now.year, now.month, now.day);
+        IdealWeightPoint? idealToday;
+        for (final p in ideal) {
+          if (!p.date.isAfter(today)) {
+            idealToday = p;
+          } else {
+            break;
+          }
+        }
+        final idealDelta =
+            idealToday != null ? (idealToday.idealKg - start) : null;
+
+        return Padding(
+          padding: const EdgeInsets.only(top: 12),
+          child: Row(
+            children: [
+              Expanded(
+                child: _DeltaTile(
+                  label: '体重実績',
+                  delta: actualDelta,
+                  emptyHint: latest == null ? '体重データなし' : null,
+                ),
+              ),
+              Expanded(
+                child: _DeltaTile(
+                  label: '理想ペース',
+                  delta: idealDelta,
+                  emptyHint: idealDelta == null ? '未設定' : null,
+                  color: theme.colorScheme.outline,
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _DeltaTile extends StatelessWidget {
+  final String label;
+  final double? delta;
+  final String? emptyHint;
+  final Color? color;
+  const _DeltaTile({
+    required this.label,
+    required this.delta,
+    this.emptyHint,
+    this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final textColor = color ?? theme.colorScheme.onSurface;
+
+    final String valueText;
+    if (delta == null) {
+      valueText = emptyHint ?? '-';
+    } else {
+      final sign = delta! < 0 ? '−' : (delta! > 0 ? '+' : '±');
+      valueText = '$sign${delta!.abs().toStringAsFixed(1)} kg';
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: theme.textTheme.bodySmall),
+        const SizedBox(height: 2),
+        Text(
+          valueText,
+          style: theme.textTheme.titleSmall?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: textColor,
+          ),
+        ),
+      ],
+    );
   }
 }

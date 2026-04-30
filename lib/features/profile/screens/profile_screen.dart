@@ -209,6 +209,28 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     if (!mounted) return;
     if (picked != null) {
       await ref.read(onboardingStartDateProvider.notifier).setDate(picked);
+      // Snapshot the current weight as the starting weight, so the
+      // ideal-pace trajectory anchors to today's value (the user's
+      // intent when (re)starting the diet).
+      final latest = ref.read(latestWeightRecordProvider);
+      if (latest != null) {
+        await ref.read(userGoalsProvider.notifier).setStartingBodyWeight(
+              weight: latest.weight,
+              date: picked,
+            );
+      } else if (mounted) {
+        ScaffoldMessenger.of(context)
+          ..clearSnackBars()
+          ..showSnackBar(
+            const SnackBar(
+              content: Text(
+                '体重データが見つからないため、理想ペースは未設定です。'
+                '体重を記録してから「データを再計算」を押してください。',
+              ),
+              duration: Duration(seconds: 5),
+            ),
+          );
+      }
     }
   }
 

@@ -265,4 +265,88 @@ class HealthService {
       return null;
     }
   }
+
+  /// Fetches every weight measurement between [start] (inclusive) and
+  /// [end] (inclusive) as ordered ascending by date. Multiple measurements
+  /// on the same day are kept; deduplication is left to the caller.
+  Future<List<WeightRecord>> getWeightHistory(
+    DateTime start,
+    DateTime end,
+  ) async {
+    developer.log(
+      'Getting weight history from $start to $end',
+      name: 'TonTon.HealthService',
+    );
+
+    try {
+      final startTime = DateTime(start.year, start.month, start.day, 0, 0, 0);
+      final endTime = DateTime(
+        end.year,
+        end.month,
+        end.day,
+        23,
+        59,
+        59,
+        999,
+      );
+
+      final results = await Future.wait([
+        _health.getHealthDataFromTypes(
+          startTime: startTime,
+          endTime: endTime,
+          types: [HealthDataType.WEIGHT],
+        ),
+        _health.getHealthDataFromTypes(
+          startTime: startTime,
+          endTime: endTime,
+          types: [HealthDataType.BODY_FAT_PERCENTAGE],
+        ),
+      ]);
+
+      final weightData = results[0]..sort((a, b) => a.dateFrom.compareTo(b.dateFrom));
+      final bodyFatData = results[1];
+
+      // Build a same-day body-fat lookup so each weight can pick the
+      // closest body-fat record from the same calendar day if any.
+      final fatByDay = <String, double>{};
+      for (final d in bodyFatData) {
+        final v = d.value;
+        if (v is NumericHealthValue) {
+          final key = '${d.dateFrom.year}-${d.dateFrom.month}-${d.dateFrom.day}';
+          fatByDay[key] = v.numericValue.toDouble();
+        }
+      }
+
+      final records = <WeightRecord>[];
+      for (final d in weightData) {
+        final v = d.value;
+        if (v is! NumericHealthValue) continue;
+        final weightKg = v.numericValue.toDouble();
+        final key = '${d.dateFrom.year}-${d.dateFrom.month}-${d.dateFrom.day}';
+        final fatPct = fatByDay[key];
+        records.add(
+          WeightRecord(
+            weight: weightKg,
+            date: d.dateFrom,
+            bodyFatPercentage: fatPct,
+            bodyFatMass: fatPct != null ? weightKg * fatPct : null,
+          ),
+        );
+      }
+
+      developer.log(
+        'Built ${records.length} weight history records',
+        name: 'TonTon.HealthService',
+      );
+      return records;
+    } catch (e, stack) {
+      developer.log(
+        'Error in getWeightHistory: $e',
+        name: 'TonTon.HealthService.error',
+        error: e,
+        stackTrace: stack,
+      );
+      return [];
+    }
+  }
 }

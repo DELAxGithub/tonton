@@ -37,6 +37,15 @@ class UserGoals {
   /// Tapping a pace preset in Profile updates this to match the required deficit.
   final double dailyDeficitGoalKcal;
 
+  /// Body weight (kg) at the moment the user (re)started the diet
+  /// (= when onboardingStartDate was set). Used as the anchor for ideal-pace
+  /// trajectories. Null when no snapshot has been taken yet.
+  final double? startingBodyWeightKg;
+
+  /// Date that [startingBodyWeightKg] was captured. Drives the elapsed-week
+  /// term in the ideal-weight calculation.
+  final DateTime? startingBodyWeightDate;
+
   /// Legacy default goal that matches the pre-pace experience.
   static const double legacyDailyDeficitGoalKcal = 240;
 
@@ -50,6 +59,8 @@ class UserGoals {
     this.targetWeeklyPercentLoss =
         WeightLossCalculator.defaultWeeklyPercent,
     this.dailyDeficitGoalKcal = legacyDailyDeficitGoalKcal,
+    this.startingBodyWeightKg,
+    this.startingBodyWeightDate,
   });
 
   UserGoals copyWith({
@@ -61,6 +72,8 @@ class UserGoals {
     double? activityFactor,
     double? targetWeeklyPercentLoss,
     double? dailyDeficitGoalKcal,
+    double? startingBodyWeightKg,
+    DateTime? startingBodyWeightDate,
   }) {
     return UserGoals(
       pfcRatio: pfcRatio ?? this.pfcRatio,
@@ -73,6 +86,10 @@ class UserGoals {
           targetWeeklyPercentLoss ?? this.targetWeeklyPercentLoss,
       dailyDeficitGoalKcal:
           dailyDeficitGoalKcal ?? this.dailyDeficitGoalKcal,
+      startingBodyWeightKg:
+          startingBodyWeightKg ?? this.startingBodyWeightKg,
+      startingBodyWeightDate:
+          startingBodyWeightDate ?? this.startingBodyWeightDate,
     );
   }
 
@@ -85,6 +102,8 @@ class UserGoals {
     'activityFactor': activityFactor,
     'targetWeeklyPercentLoss': targetWeeklyPercentLoss,
     'dailyDeficitGoalKcal': dailyDeficitGoalKcal,
+    'startingBodyWeightKg': startingBodyWeightKg,
+    'startingBodyWeightDate': startingBodyWeightDate?.toIso8601String(),
   };
 
   factory UserGoals.fromJson(Map<String, dynamic> json) {
@@ -104,6 +123,12 @@ class UserGoals {
       dailyDeficitGoalKcal:
           (json['dailyDeficitGoalKcal'] as num?)?.toDouble() ??
               legacyDailyDeficitGoalKcal,
+      startingBodyWeightKg:
+          (json['startingBodyWeightKg'] as num?)?.toDouble(),
+      startingBodyWeightDate:
+          json['startingBodyWeightDate'] is String
+              ? DateTime.parse(json['startingBodyWeightDate'] as String)
+              : null,
     );
   }
 

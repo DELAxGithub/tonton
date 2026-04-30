@@ -202,7 +202,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       context: context,
       initialDate: current,
       firstDate: DateTime.now().subtract(const Duration(days: 365)),
-      lastDate: DateTime.now(),
+      // 仕切り直し用に未来日付も選べるようにする。未来 start に設定すると
+      // dailySummariesProvider は当日に達するまで空になり、累積 0 で待機。
+      lastDate: DateTime.now().add(const Duration(days: 365)),
     );
     if (!mounted) return;
     if (picked != null) {

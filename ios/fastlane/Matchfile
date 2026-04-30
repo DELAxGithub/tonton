@@ -1,5 +1,7 @@
-git_url("https://github.com/DELAxGithub/tonton-match.git")
+git_url("https://github.com/DELAxGithub/fastlane-match")
 storage_mode("git")
-type("development")
+
+type("appstore")
+
 app_identifier(["com.HiroshiKodera.tonton"])
-username("notheshow@mac.com")
+team_id("Z88477N5ZU")

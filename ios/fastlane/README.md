@@ -15,6 +15,14 @@ For _fastlane_ installation instructions, see [Installing _fastlane_](https://do
 
 ## iOS
 
+### ios sync_certs
+
+```sh
+[bundle exec] fastlane ios sync_certs
+```
+
+Sync App Store Distribution cert + provisioning profile via match
+
 ### ios beta
 
 ```sh

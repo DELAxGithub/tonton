@@ -1,0 +1,1680 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>tonton chart iteration v2 — 実体重kg軸・3線並走</title>
+<style>
+  :root {
+    --pigPink: #FF9AA2;
+    --pigPinkDark: #E0576A;
+    --bgPrimary: #FFF8F6;
+    --borderSubtle: #F0E8E6;
+    --surface: #FFFFFF;
+    --text: #1C1B1F;
+    --textMuted: #6B6469;
+    --success: #34C759;
+    --successDark: #1F8A3E;
+    --error: #FF3B30;
+    --info: #4A90E2;
+    --infoDark: #2A6BB0;
+    --planGray: #888888;
+    --surfaceContainerHighest: #F4ECEA;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 28px 24px 60px;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Hiragino Sans",
+                 "Yu Gothic", sans-serif;
+    background: linear-gradient(135deg, #f5f0ee 0%, #e8e2e0 100%);
+    color: var(--text);
+    min-height: 100vh;
+  }
+  .wrap { max-width: 480px; margin: 0 auto; }
+  h1 { margin: 0 0 6px 0; font-size: 22px; font-weight: 700; }
+  .subtitle { margin: 0 0 20px 0; color: var(--textMuted); font-size: 14px; line-height: 1.5; }
+
+  .insight {
+    background: var(--surface);
+    border: 1px solid var(--borderSubtle);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 20px;
+    font-size: 13px;
+    line-height: 1.7;
+  }
+  .insight strong { color: var(--text); }
+  .insight code {
+    background: var(--surfaceContainerHighest);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-family: "SF Mono", Menlo, monospace;
+  }
+  .insight .formula {
+    margin-top: 8px;
+    padding: 10px 12px;
+    background: linear-gradient(135deg, #FFE3DD, #FFF0EE);
+    border-radius: 8px;
+    font-family: "SF Mono", Menlo, monospace;
+    font-size: 12px;
+    color: var(--pigPinkDark);
+    line-height: 1.7;
+  }
+
+  /* pace selector pill (settings reference) */
+  .pace-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface);
+    border: 1px solid var(--borderSubtle);
+    border-radius: 14px;
+    padding: 6px 12px;
+    font-size: 12px;
+    margin-bottom: 16px;
+  }
+  .pace-pill .lbl { color: var(--textMuted); }
+  .pace-pill .val { font-weight: 700; color: var(--planGray); }
+  .pace-pill .chev { color: #C9C2BF; font-size: 14px; }
+
+  .chart-card {
+    background: var(--surface);
+    border: 1px solid var(--borderSubtle);
+    border-radius: 14px;
+    padding: 18px 18px 14px;
+    margin-bottom: 20px;
+  }
+  .chart-head {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin-bottom: 4px;
+  }
+  .chart-title { font-size: 15px; font-weight: 700; }
+  .chart-pill {
+    background: var(--surfaceContainerHighest);
+    border-radius: 10px;
+    padding: 2px 10px;
+    font-size: 11px;
+    color: var(--textMuted);
+    font-weight: 600;
+  }
+  .chart-sub { font-size: 11px; color: var(--textMuted); margin-bottom: 10px; }
+
+  .chart-area {
+    position: relative;
+    height: 200px;
+    background: white;
+  }
+  .chart-area svg { width: 100%; height: 100%; display: block; overflow: visible; }
+  .y-axis-label-top {
+    position: absolute;
+    top: -2px;
+    right: 4px;
+    font-size: 10px;
+    color: var(--textMuted);
+    background: white;
+    padding: 0 3px;
+    font-weight: 600;
+  }
+  .y-axis-label-bottom {
+    position: absolute;
+    bottom: 18px;
+    right: 4px;
+    font-size: 10px;
+    color: var(--textMuted);
+    background: white;
+    padding: 0 3px;
+  }
+
+  .readout {
+    margin-top: 12px;
+    background: var(--bgPrimary);
+    border-radius: 10px;
+    padding: 10px 12px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+  }
+  .readout .cell { text-align: center; }
+  .readout .cell .lbl {
+    font-size: 10px;
+    color: var(--textMuted);
+    font-weight: 600;
+  }
+  .readout .cell .val {
+    font-size: 15px;
+    font-weight: 800;
+    margin-top: 2px;
+  }
+  .readout .cell .val.plan { color: var(--planGray); }
+  .readout .cell .val.theory { color: var(--pigPinkDark); }
+  .readout .cell .val.actual { color: var(--infoDark); }
+  .readout .verdict {
+    grid-column: 1 / -1;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px dashed var(--borderSubtle);
+    font-size: 11px;
+    text-align: center;
+    line-height: 1.5;
+  }
+  .readout .verdict.win { color: var(--successDark); }
+  .readout .verdict.lose { color: var(--error); }
+  .readout .verdict.neutral { color: var(--textMuted); }
+
+  .legend {
+    display: flex; gap: 10px; font-size: 11px; color: var(--textMuted);
+    margin-top: 8px; flex-wrap: wrap;
+  }
+  .legend .lg::before {
+    content: ""; display: inline-block; width: 14px; height: 3px;
+    margin-right: 4px; vertical-align: middle; border-radius: 2px;
+  }
+  .lg-plan::before {
+    background: transparent;
+    border-top: 2px dashed var(--planGray);
+    height: 0;
+  }
+  .lg-theory::before { background: var(--pigPink); }
+  .lg-actual::before { background: var(--info); }
+
+  .note {
+    font-size: 11px; color: #888;
+    margin-top: 14px; line-height: 1.6;
+  }
+  .seg-row { display: flex; justify-content: center; margin-bottom: 16px; }
+  .seg {
+    display: inline-flex;
+    background: var(--surfaceContainerHighest);
+    border-radius: 10px;
+    padding: 3px;
+  }
+  .seg button {
+    border: 0;
+    background: transparent;
+    padding: 6px 18px;
+    font-size: 13px;
+    border-radius: 8px;
+    color: var(--textMuted);
+    font-family: inherit;
+    cursor: pointer;
+    font-weight: 600;
+  }
+  .seg button.on {
+    background: white;
+    color: var(--text);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  }
+
+  /* ---- variation grid ---- */
+  .var-section-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 32px 0 4px;
+  }
+  .var-section-sub {
+    font-size: 13px;
+    color: var(--textMuted);
+    margin-bottom: 16px;
+    line-height: 1.5;
+  }
+  .var-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  @media (max-width: 720px) { .var-grid { grid-template-columns: 1fr; } }
+
+  .var-card {
+    background: var(--surface);
+    border: 1px solid var(--borderSubtle);
+    border-radius: 12px;
+    padding: 12px 12px 10px;
+  }
+  .var-card.win    { border-left: 3px solid var(--success); }
+  .var-card.wait   { border-left: 3px solid var(--warning, #FF9500); }
+  .var-card.off    { border-left: 3px solid var(--pigPink); }
+  .var-card.lose   { border-left: 3px solid var(--error); }
+
+  .var-head {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 4px;
+  }
+  .var-title { font-size: 13px; font-weight: 700; }
+  .var-tag {
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 8px;
+    font-weight: 700;
+    color: white;
+  }
+  .var-tag.win  { background: var(--success); }
+  .var-tag.wait { background: #FF9500; }
+  .var-tag.off  { background: var(--pigPink); }
+  .var-tag.lose { background: var(--error); }
+
+  .var-narr {
+    font-size: 11px;
+    color: var(--textMuted);
+    margin-bottom: 8px;
+    line-height: 1.5;
+  }
+
+  .var-chart {
+    position: relative;
+    height: 130px;
+    background: white;
+    border-radius: 6px;
+  }
+  .var-chart svg { width: 100%; height: 100%; display: block; overflow: visible; }
+
+  .var-mini-readout {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4px;
+    margin-top: 8px;
+    font-size: 10px;
+  }
+  .var-mini-readout .vc {
+    text-align: center;
+    background: var(--bgPrimary);
+    padding: 4px 2px;
+    border-radius: 6px;
+  }
+  .var-mini-readout .vc .vl {
+    color: var(--textMuted);
+    font-size: 9px;
+  }
+  .var-mini-readout .vc .vv {
+    font-weight: 800;
+    margin-top: 1px;
+  }
+  .var-mini-readout .vc .vv.plan   { color: var(--planGray); }
+  .var-mini-readout .vc .vv.theory { color: var(--pigPinkDark); }
+  .var-mini-readout .vc .vv.actual { color: var(--infoDark); }
+
+  .var-verdict {
+    margin-top: 6px;
+    font-size: 11px;
+    line-height: 1.4;
+  }
+  .var-verdict.win  { color: var(--successDark); }
+  .var-verdict.wait { color: #B26600; }
+  .var-verdict.off  { color: var(--pigPinkDark); }
+  .var-verdict.lose { color: var(--error); }
+  .var-verdict.weird { color: #6B4FB8; }
+
+  .var-card.weird { border-left: 3px solid #8B5CF6; }
+  .var-tag.weird { background: #8B5CF6; }
+
+  .role-callout {
+    background: linear-gradient(135deg, #FFF0EE, #F0F4FF);
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin: 24px 0 16px;
+    font-size: 13px;
+    line-height: 1.7;
+    border: 1px solid var(--borderSubtle);
+  }
+  .role-callout strong { color: var(--text); }
+  .role-callout .role-row {
+    display: flex;
+    gap: 16px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+  }
+  .role-callout .role {
+    flex: 1;
+    min-width: 140px;
+    background: rgba(255,255,255,0.7);
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+  }
+  .role-callout .role .ic {
+    font-size: 18px;
+    margin-right: 6px;
+  }
+  .role-callout .role .who {
+    font-weight: 700;
+    margin-bottom: 2px;
+  }
+  .role-callout .role .what {
+    color: var(--textMuted);
+    font-size: 11px;
+  }
+  .role-callout .role.dt .who { color: #FF9500; }
+  .role-callout .role.tr .who { color: #34C759; }
+  .role-callout .role.bd .who { color: #4A90E2; }
+
+  /* ---- AI Analysis Card ---- */
+  .ai-card {
+    background: linear-gradient(135deg, #F5EDFF 0%, #FFF0F5 100%);
+    border: 1px solid #DCC9F0;
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 14px;
+    position: relative;
+  }
+  .ai-card .ai-head {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 10px;
+  }
+  .ai-card .ai-title {
+    font-size: 13px; font-weight: 700;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .ai-card .ai-pill {
+    background: linear-gradient(135deg, #b08aff, #7eaaff);
+    color: white;
+    font-size: 9px;
+    padding: 2px 7px;
+    border-radius: 6px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+  }
+  .ai-card .ai-meta { font-size: 10px; color: var(--textMuted); }
+  .ai-card .pattern-badge {
+    display: inline-block;
+    background: white;
+    border: 1px solid #DCC9F0;
+    padding: 4px 10px;
+    border-radius: 14px;
+    font-size: 11px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: #6B4FB8;
+  }
+  .ai-card .pattern-badge .conf {
+    color: var(--textMuted);
+    font-weight: 500;
+    font-size: 10px;
+    margin-left: 4px;
+  }
+  .ai-card .ai-body {
+    background: rgba(255,255,255,0.7);
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 12px;
+    line-height: 1.6;
+    margin-bottom: 8px;
+  }
+  .ai-card .ai-body strong { color: var(--text); }
+  .ai-card .action-list {
+    background: rgba(255,255,255,0.5);
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 12px;
+    line-height: 1.7;
+  }
+  .ai-card .action-list .action-row {
+    display: flex; gap: 8px; align-items: flex-start;
+    padding: 3px 0;
+  }
+  .ai-card .action-list .icon {
+    flex-shrink: 0;
+    width: 18px;
+    text-align: center;
+  }
+  .ai-card .action-list .text { flex: 1; }
+  .ai-card .ai-foot {
+    display: flex; gap: 8px;
+    margin-top: 10px;
+  }
+  .ai-card .ai-btn {
+    flex: 1;
+    padding: 8px 12px;
+    border-radius: 10px;
+    border: 1px solid #DCC9F0;
+    background: white;
+    font-size: 12px;
+    font-weight: 600;
+    color: #6B4FB8;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .ai-card .ai-btn.primary {
+    background: linear-gradient(135deg, #b08aff, #7eaaff);
+    color: white;
+    border: 0;
+  }
+
+  /* AI button on chart card (call-to-trigger) */
+  .chart-ai-row {
+    display: flex; gap: 8px;
+    margin-top: 10px;
+  }
+  .chart-ai-row .chart-ai-btn {
+    flex: 1;
+    background: linear-gradient(135deg, #b08aff, #7eaaff);
+    color: white;
+    border: 0;
+    border-radius: 10px;
+    padding: 10px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    box-shadow: 0 2px 8px rgba(176,138,255,0.25);
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+  }
+  .chart-ai-row .chart-ai-btn .ai-pill-sm {
+    background: rgba(255,255,255,0.3);
+    font-size: 9px;
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+<h1>tonton — 体重kg軸・3線並走チャート v2</h1>
+<p class="subtitle">
+  縦軸 = 実体重 (kg)、初期体重から下に向かって描く。<br>
+  3 線並走: <strong>理想ペース</strong> (環境設定で選ぶ3パターンのうちの1つ) /
+  <strong>理論</strong> (カロリー貯金 ÷ 7.7) / <strong>実測</strong> (HealthKit 毎日)。
+</p>
+
+<div class="insight">
+  <strong>3 線が答える問い:</strong>
+  <div class="formula">
+    🎯 理想 = 設定で選んだペース ("ふつう -0.5kg/週" 等)<br>
+    📊 理論 = 累積カロリー貯金 [kcal] ÷ 7.7 [kcal/g]<br>
+    ⚖️ 実測 = HealthKit 体重 (毎朝の自動取得)
+  </div>
+  <div style="margin-top:10px; font-size:12px;">
+    <strong>理論 &lt; 理想</strong> → カロリー赤字が足りない（食べすぎ or 運動不足）<br>
+    <strong>実測 &gt; 理論</strong> → 水分・グリコーゲン or TDEE 過大評価<br>
+    <strong>実測 &lt; 理想</strong> → 計画ペースを上回って順調
+  </div>
+</div>
+
+<!-- pace setting reference (env settings) -->
+<div class="pace-pill">
+  <span class="lbl">⚙️ 痩せ方ペース:</span>
+  <span class="val">ふつう (−0.5 kg/週)</span>
+  <span class="chev">›</span>
+</div>
+
+<div class="seg-row">
+  <div class="seg">
+    <button class="on">週</button>
+    <button>月</button>
+    <button>3ヶ月</button>
+  </div>
+</div>
+
+<!-- ========================================== -->
+<!-- WEEK (7 days) — y軸 67.5 - 68.5 kg, 100g刻み -->
+<!-- ========================================== -->
+<div class="chart-card">
+  <div class="chart-head">
+    <div class="chart-title">体重トレンド</div>
+    <div class="chart-pill">過去 7日</div>
+  </div>
+  <div class="chart-sub">縦軸: 体重 (kg) ・ 100 g 刻み</div>
+
+  <div class="chart-area">
+    <span class="y-axis-label-top">68.5kg</span>
+    <span class="y-axis-label-bottom">67.5kg</span>
+    <svg viewBox="0 0 320 200" preserveAspectRatio="none">
+      <!-- gridlines: 68.5, 68.4, 68.3 ... 67.5 (10 ticks, 100g each) -->
+      <g stroke="rgba(0,0,0,0.06)" stroke-width="1">
+        <line x1="40" y1="20"  x2="320" y2="20"/>
+        <line x1="40" y1="38"  x2="320" y2="38"/>
+        <line x1="40" y1="56"  x2="320" y2="56"/>
+        <line x1="40" y1="74"  x2="320" y2="74"/>
+        <line x1="40" y1="92"  x2="320" y2="92"/>
+        <line x1="40" y1="110" x2="320" y2="110"/>
+        <line x1="40" y1="128" x2="320" y2="128"/>
+        <line x1="40" y1="146" x2="320" y2="146"/>
+        <line x1="40" y1="164" x2="320" y2="164"/>
+        <line x1="40" y1="182" x2="320" y2="182" stroke="rgba(0,0,0,0.18)"/>
+      </g>
+      <!-- y axis ticks (full kg labels) -->
+      <g font-size="9" fill="#999" text-anchor="end">
+        <text x="38" y="23">68.5</text>
+        <text x="38" y="59">68.2</text>
+        <text x="38" y="95">67.9</text>
+        <text x="38" y="131">67.6</text>
+        <text x="38" y="167">67.3</text>
+      </g>
+
+      <!-- 理想ペース (plan) — straight dashed line: -0.5kg/week = -71g/day = -500g over 7 days -->
+      <!-- 68.5 → 68.0 over 7 days. 68.5=y20, 68.0=y110 -->
+      <line x1="40" y1="20" x2="320" y2="110"
+            stroke="#888" stroke-width="1.8" stroke-dasharray="5 4" fill="none"/>
+
+      <!-- 理論 (calorie deficit) — slightly faster than plan
+           Day 0: 68.5 (y=20)
+           Day 1: 68.45 (-50g) → y=29
+           Day 2: 68.36 (-140g) → y=45
+           Day 3: 68.28 (-220g) → y=60
+           Day 4: 68.24 (-260g) → y=67
+           Day 5: 68.16 (-340g) → y=81
+           Day 6: 68.10 (-400g) → y=92
+           Day 7: 68.01 (-490g) → y=108
+       -->
+      <polyline points="40,20 87,29 133,45 180,60 226,67 273,81 320,108"
+                stroke="#FF9AA2" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <g fill="#FF9AA2">
+        <circle cx="40"  cy="20" r="3"/>
+        <circle cx="87"  cy="29" r="3"/>
+        <circle cx="133" cy="45" r="3"/>
+        <circle cx="180" cy="60" r="3"/>
+        <circle cx="226" cy="67" r="3"/>
+        <circle cx="273" cy="81" r="3"/>
+        <circle cx="320" cy="108" r="3.5" stroke="white" stroke-width="1.5"/>
+      </g>
+
+      <!-- 実測 (HealthKit daily) — slightly slower than theory, with daily noise
+           Day 0: 68.50 → y=20
+           Day 1: 68.48 → y=23 (water +20g)
+           Day 2: 68.42 → y=34 (caught up)
+           Day 3: 68.38 → y=42
+           Day 4: 68.30 → y=56
+           Day 5: 68.26 → y=64
+           Day 6: 68.22 → y=72
+           Day 7: 68.10 → y=92
+       -->
+      <polyline points="40,20 87,23 133,34 180,42 226,56 273,72 320,92"
+                stroke="#4A90E2" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <g fill="#4A90E2">
+        <circle cx="40"  cy="20" r="3"/>
+        <circle cx="87"  cy="23" r="3"/>
+        <circle cx="133" cy="34" r="3"/>
+        <circle cx="180" cy="42" r="3"/>
+        <circle cx="226" cy="56" r="3"/>
+        <circle cx="273" cy="72" r="3"/>
+        <circle cx="320" cy="92" r="3.5" stroke="white" stroke-width="1.5"/>
+      </g>
+
+      <!-- x-axis labels -->
+      <g font-size="9" fill="#999" text-anchor="middle">
+        <text x="40"  y="198">5/3</text>
+        <text x="87"  y="198">5/4</text>
+        <text x="133" y="198">5/5</text>
+        <text x="180" y="198">5/6</text>
+        <text x="226" y="198">5/7</text>
+        <text x="273" y="198">5/8</text>
+        <text x="320" y="198">5/9</text>
+      </g>
+    </svg>
+  </div>
+
+  <div class="legend">
+    <span class="lg lg-plan">理想ペース</span>
+    <span class="lg lg-theory">理論 (貯金÷7.7)</span>
+    <span class="lg lg-actual">実測</span>
+  </div>
+
+  <div class="readout">
+    <div class="cell">
+      <div class="lbl">計画</div>
+      <div class="val plan">−500g</div>
+    </div>
+    <div class="cell">
+      <div class="lbl">理論</div>
+      <div class="val theory">−490g</div>
+    </div>
+    <div class="cell">
+      <div class="lbl">実測</div>
+      <div class="val actual">−400g</div>
+    </div>
+    <div class="verdict win">
+      📊 理論はほぼ計画通り (−10g)・⚖️ 実測は理論より <strong>+90g</strong> 上振れ。<br>
+      水分/グリコーゲン誤差の範囲、来週見直し。
+    </div>
+  </div>
+</div>
+
+<!-- ========================================== -->
+<!-- MONTH (30 days) — y軸 66.5 - 68.5 kg, 250g刻み -->
+<!-- ========================================== -->
+<div class="chart-card">
+  <div class="chart-head">
+    <div class="chart-title">体重トレンド</div>
+    <div class="chart-pill">過去 30日</div>
+  </div>
+  <div class="chart-sub">縦軸: 体重 (kg) ・ 250 g 刻み</div>
+
+  <div class="chart-area">
+    <span class="y-axis-label-top">68.5kg</span>
+    <span class="y-axis-label-bottom">66.5kg</span>
+    <svg viewBox="0 0 320 200" preserveAspectRatio="none">
+      <!-- 8 ticks, 250g each: 68.5, 68.25, 68.0, 67.75, 67.5, 67.25, 67.0, 66.75, 66.5
+           y range 20 → 182, step ≈ 20.25 -->
+      <g stroke="rgba(0,0,0,0.06)" stroke-width="1">
+        <line x1="40" y1="20"  x2="320" y2="20"/>
+        <line x1="40" y1="40"  x2="320" y2="40"/>
+        <line x1="40" y1="60"  x2="320" y2="60"/>
+        <line x1="40" y1="80"  x2="320" y2="80"/>
+        <line x1="40" y1="101" x2="320" y2="101"/>
+        <line x1="40" y1="121" x2="320" y2="121"/>
+        <line x1="40" y1="141" x2="320" y2="141"/>
+        <line x1="40" y1="162" x2="320" y2="162"/>
+        <line x1="40" y1="182" x2="320" y2="182" stroke="rgba(0,0,0,0.18)"/>
+      </g>
+      <g font-size="9" fill="#999" text-anchor="end">
+        <text x="38" y="23">68.5</text>
+        <text x="38" y="63">68.0</text>
+        <text x="38" y="104">67.5</text>
+        <text x="38" y="144">67.0</text>
+        <text x="38" y="185">66.5</text>
+      </g>
+
+      <!-- 理想ペース: -0.5kg/week × ~4.3 weeks = -2.15kg, but goal is -1.5kg/month per spec
+           Use -1.5kg over 30 days from 68.5 → 67.0 (y=20 → y=141) -->
+      <line x1="40" y1="20" x2="320" y2="141"
+            stroke="#888" stroke-width="1.8" stroke-dasharray="5 4" fill="none"/>
+
+      <!-- 理論 (calorie-based, smooth curve, slightly overachieving plan)
+           goes from 68.5 (y=20) to ~66.55 (y=178), -1.95kg
+       -->
+      <path d="M 40,20 C 80,28 130,55 200,100 S 290,165 320,178"
+            stroke="#FF9AA2" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <!-- weekly milestone dots -->
+      <g fill="#FF9AA2">
+        <circle cx="40"  cy="20"  r="3"/>
+        <circle cx="110" cy="48"  r="2.5"/>
+        <circle cx="180" cy="92"  r="2.5"/>
+        <circle cx="250" cy="143" r="2.5"/>
+        <circle cx="320" cy="178" r="3.5" stroke="white" stroke-width="1.5"/>
+      </g>
+
+      <!-- 実測: 30 daily points, with noise. Net -1.6kg → y=20 to y=149
+           Plateau in week 2 (days 7-14)
+       -->
+      <path d="M 40,20
+               C 50,24 60,30 75,32
+               C 90,34 100,36 115,38
+               C 125,40 135,42 145,44
+               C 155,46 160,46 170,46
+               C 180,48 190,52 205,60
+               C 220,68 235,80 250,92
+               C 265,104 280,116 295,128
+               C 305,135 315,145 320,149"
+            stroke="#4A90E2" stroke-width="2" fill="none" stroke-linecap="round"/>
+
+      <!-- daily HealthKit dots (subtle) -->
+      <g fill="#4A90E2" opacity="0.4">
+        <circle cx="50"  cy="22" r="1.5"/>
+        <circle cx="60"  cy="26" r="1.5"/>
+        <circle cx="70"  cy="30" r="1.5"/>
+        <circle cx="80"  cy="33" r="1.5"/>
+        <circle cx="90"  cy="35" r="1.5"/>
+        <circle cx="100" cy="37" r="1.5"/>
+        <circle cx="110" cy="40" r="1.5"/>
+        <circle cx="120" cy="41" r="1.5"/>
+        <circle cx="130" cy="42" r="1.5"/>
+        <circle cx="140" cy="43" r="1.5"/>
+        <circle cx="150" cy="45" r="1.5"/>
+        <circle cx="160" cy="44" r="1.5"/>
+        <circle cx="170" cy="46" r="1.5"/>
+        <circle cx="190" cy="55" r="1.5"/>
+        <circle cx="200" cy="58" r="1.5"/>
+        <circle cx="210" cy="62" r="1.5"/>
+        <circle cx="225" cy="72" r="1.5"/>
+        <circle cx="240" cy="84" r="1.5"/>
+        <circle cx="255" cy="96" r="1.5"/>
+        <circle cx="270" cy="108" r="1.5"/>
+        <circle cx="285" cy="120" r="1.5"/>
+        <circle cx="300" cy="132" r="1.5"/>
+        <circle cx="310" cy="142" r="1.5"/>
+      </g>
+      <!-- weekly emphasized -->
+      <g fill="#4A90E2">
+        <circle cx="40"  cy="20"  r="3"/>
+        <circle cx="110" cy="40"  r="3"/>
+        <circle cx="180" cy="46"  r="3"/>
+        <circle cx="250" cy="92"  r="3"/>
+        <circle cx="320" cy="149" r="3.5" stroke="white" stroke-width="1.5"/>
+      </g>
+
+      <!-- plateau annotation -->
+      <text x="155" y="35" font-size="9" fill="#888" text-anchor="middle">2週目 停滞</text>
+      <line x1="140" y1="40" x2="170" y2="46" stroke="#bbb" stroke-width="1" stroke-dasharray="2,2"/>
+
+      <!-- x-axis labels -->
+      <g font-size="9" fill="#999" text-anchor="middle">
+        <text x="40"  y="198">4/10</text>
+        <text x="110" y="198">4/17</text>
+        <text x="180" y="198">4/24</text>
+        <text x="250" y="198">5/1</text>
+        <text x="320" y="198">5/9</text>
+      </g>
+    </svg>
+  </div>
+
+  <div class="legend">
+    <span class="lg lg-plan">理想ペース</span>
+    <span class="lg lg-theory">理論 (貯金÷7.7)</span>
+    <span class="lg lg-actual">実測 (毎朝)</span>
+  </div>
+
+  <div class="readout">
+    <div class="cell">
+      <div class="lbl">計画</div>
+      <div class="val plan">−1.5kg</div>
+    </div>
+    <div class="cell">
+      <div class="lbl">理論</div>
+      <div class="val theory">−1.95kg</div>
+    </div>
+    <div class="cell">
+      <div class="lbl">実測</div>
+      <div class="val actual">−1.6kg</div>
+    </div>
+    <div class="verdict win">
+      📊 理論は計画を <strong>450g 上回る</strong>・⚖️ 実測は計画通り (+100g 上振れ)。<br>
+      食事ログ＋運動はほぼ完璧、体組成はそのまま追従中。
+    </div>
+  </div>
+</div>
+
+<!-- ========================================== -->
+<!-- 3 MONTHS (90 days) — y軸 64.0 - 68.5 kg, 500g刻み -->
+<!-- ========================================== -->
+<div class="chart-card">
+  <div class="chart-head">
+    <div class="chart-title">体重トレンド</div>
+    <div class="chart-pill">過去 3ヶ月</div>
+  </div>
+  <div class="chart-sub">縦軸: 体重 (kg) ・ 500 g 刻み</div>
+
+  <div class="chart-area">
+    <span class="y-axis-label-top">68.5kg</span>
+    <span class="y-axis-label-bottom">64.0kg</span>
+    <svg viewBox="0 0 320 200" preserveAspectRatio="none">
+      <!-- 10 ticks, 500g each: 68.5 → 64.0 (4.5kg span)
+           y 20 → 182, step ≈ 18 -->
+      <g stroke="rgba(0,0,0,0.06)" stroke-width="1">
+        <line x1="40" y1="20"  x2="320" y2="20"/>
+        <line x1="40" y1="38"  x2="320" y2="38"/>
+        <line x1="40" y1="56"  x2="320" y2="56"/>
+        <line x1="40" y1="74"  x2="320" y2="74"/>
+        <line x1="40" y1="92"  x2="320" y2="92"/>
+        <line x1="40" y1="110" x2="320" y2="110"/>
+        <line x1="40" y1="128" x2="320" y2="128"/>
+        <line x1="40" y1="146" x2="320" y2="146"/>
+        <line x1="40" y1="164" x2="320" y2="164"/>
+        <line x1="40" y1="182" x2="320" y2="182" stroke="rgba(0,0,0,0.18)"/>
+      </g>
+      <g font-size="9" fill="#999" text-anchor="end">
+        <text x="38" y="23">68.5</text>
+        <text x="38" y="59">67.5</text>
+        <text x="38" y="95">66.5</text>
+        <text x="38" y="131">65.5</text>
+        <text x="38" y="167">64.5</text>
+      </g>
+
+      <!-- target marker line at 66.0kg (shown as small target band) -->
+      <line x1="40" y1="110" x2="320" y2="110"
+            stroke="#E0576A" stroke-width="1.5" stroke-dasharray="2 4" opacity="0.5"/>
+      <text x="296" y="106" font-size="9" fill="#E0576A">🎯 66.0</text>
+
+      <!-- 理想ペース: -0.5kg/week × 12 weeks = -6kg full plan, but truncated at goal at week 9
+           From 68.5 (y=20) to 64.0 in straight line by end (y=182) -->
+      <line x1="40" y1="20" x2="320" y2="182"
+            stroke="#888" stroke-width="1.8" stroke-dasharray="5 4" fill="none"/>
+
+      <!-- 理論: stronger than plan, faster early then slowing
+           ends around 63.24 → past target. Use curve.
+           Going from y=20 to y=170 (-5.26kg)
+       -->
+      <path d="M 40,20 C 90,40 150,90 220,140 S 290,168 320,170"
+            stroke="#FF9AA2" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <!-- monthly milestone -->
+      <g fill="#FF9AA2">
+        <circle cx="40"  cy="20"  r="3"/>
+        <circle cx="135" cy="65"  r="3"/>
+        <circle cx="225" cy="140" r="3"/>
+        <circle cx="320" cy="170" r="3.5" stroke="white" stroke-width="1.5"/>
+      </g>
+
+      <!-- 実測: tracks plan more closely, -4.5kg total → y=182 - some
+           From y=20 to y=182 - 18*9 = roughly y=182*0.94 ≈ y=180? actually -4.5kg / 4.5 = full range
+           So actual lands almost at y=182. Let's land at y=183 (approx).
+           Wait, y range is 20 to 182 for 4.5kg span. -4.5 from 68.5 = 64.0 = y=182.
+           Use -4.5kg target → y=182.
+       -->
+      <path d="M 40,20 C 70,28 100,42 130,60
+               C 160,80 190,100 220,118
+               C 250,140 280,158 320,178"
+            stroke="#4A90E2" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <!-- weekly dots subtle -->
+      <g fill="#4A90E2" opacity="0.35">
+        <circle cx="60"  cy="24" r="1.5"/>
+        <circle cx="80"  cy="32" r="1.5"/>
+        <circle cx="100" cy="42" r="1.5"/>
+        <circle cx="120" cy="55" r="1.5"/>
+        <circle cx="140" cy="68" r="1.5"/>
+        <circle cx="160" cy="80" r="1.5"/>
+        <circle cx="180" cy="93" r="1.5"/>
+        <circle cx="200" cy="105" r="1.5"/>
+        <circle cx="220" cy="118" r="1.5"/>
+        <circle cx="240" cy="130" r="1.5"/>
+        <circle cx="260" cy="143" r="1.5"/>
+        <circle cx="280" cy="156" r="1.5"/>
+        <circle cx="300" cy="168" r="1.5"/>
+      </g>
+      <!-- monthly emphasized -->
+      <g fill="#4A90E2">
+        <circle cx="40"  cy="20"  r="3"/>
+        <circle cx="135" cy="63"  r="3"/>
+        <circle cx="225" cy="120" r="3"/>
+        <circle cx="320" cy="178" r="3.5" stroke="white" stroke-width="1.5"/>
+      </g>
+
+      <!-- x-axis labels -->
+      <g font-size="9" fill="#999" text-anchor="middle">
+        <text x="40"  y="198">2/9</text>
+        <text x="135" y="198">3/9</text>
+        <text x="225" y="198">4/9</text>
+        <text x="320" y="198">5/9</text>
+      </g>
+    </svg>
+  </div>
+
+  <div class="legend">
+    <span class="lg lg-plan">理想ペース</span>
+    <span class="lg lg-theory">理論 (貯金÷7.7)</span>
+    <span class="lg lg-actual">実測 (毎朝)</span>
+  </div>
+
+  <div class="readout">
+    <div class="cell">
+      <div class="lbl">計画</div>
+      <div class="val plan">−4.5kg</div>
+    </div>
+    <div class="cell">
+      <div class="lbl">理論</div>
+      <div class="val theory">−5.26kg</div>
+    </div>
+    <div class="cell">
+      <div class="lbl">実測</div>
+      <div class="val actual">−4.5kg</div>
+    </div>
+    <div class="verdict win">
+      🎯 計画ペース達成！実測は <strong>目標 66.0 kg まで残り 2.0 kg</strong>。<br>
+      理論は若干オーバー (−760g) だが体組成変化や気温・水分で平滑化される。
+    </div>
+  </div>
+</div>
+
+<!-- ========================================== -->
+<!-- TEST DATA VARIATIONS — 実データ想定4パターン -->
+<!-- ========================================== -->
+<div class="var-section-title">実データ想定 4 パターン</div>
+<p class="var-section-sub">
+  全部右肩下がりは現実離れ。「理論↓ なのに実測→」「理論↑ で実測も↑」など
+  乖離パターンをチャートが視覚化できるか検証。
+  すべて 30 日 / 開始体重 68.5kg / ペース「ふつう -1.5kg/月」前提。
+</p>
+
+<div class="var-grid">
+
+<!-- Pattern 1: 順調 (win) -->
+<div class="var-card win">
+  <div class="var-head">
+    <div class="var-title">① 順調</div>
+    <div class="var-tag win">理論↓ 実測↓</div>
+  </div>
+  <div class="var-narr">
+    食事 OK、体も追従。3 線がほぼ重なる教科書ケース。
+  </div>
+  <div class="var-chart">
+    <svg viewBox="0 0 320 130" preserveAspectRatio="none">
+      <g stroke="rgba(0,0,0,0.06)" stroke-width="1">
+        <line x1="32" y1="15"  x2="320" y2="15"/>
+        <line x1="32" y1="40"  x2="320" y2="40"/>
+        <line x1="32" y1="65"  x2="320" y2="65"/>
+        <line x1="32" y1="90"  x2="320" y2="90"/>
+        <line x1="32" y1="115" x2="320" y2="115" stroke="rgba(0,0,0,0.18)"/>
+      </g>
+      <g font-size="8" fill="#999" text-anchor="end">
+        <text x="30" y="18">68.5</text>
+        <text x="30" y="43">68.0</text>
+        <text x="30" y="68">67.5</text>
+        <text x="30" y="93">67.0</text>
+      </g>
+      <!-- plan: 68.5 → 67.0 -->
+      <line x1="32" y1="15" x2="320" y2="90"
+            stroke="#888" stroke-width="1.5" stroke-dasharray="4 3"/>
+      <!-- theory: tracks plan very closely -->
+      <path d="M 32,15 C 80,28 160,55 240,75 L 320,92"
+            stroke="#FF9AA2" stroke-width="2" fill="none"/>
+      <!-- actual: noisy but tracking -->
+      <path d="M 32,15 C 60,18 90,30 120,40 C 150,52 180,62 210,70
+               C 240,78 270,85 320,93"
+            stroke="#4A90E2" stroke-width="2" fill="none"/>
+      <g fill="#4A90E2" opacity="0.4">
+        <circle cx="50" cy="17" r="1.2"/>
+        <circle cx="80" cy="24" r="1.2"/>
+        <circle cx="110" cy="36" r="1.2"/>
+        <circle cx="140" cy="48" r="1.2"/>
+        <circle cx="170" cy="58" r="1.2"/>
+        <circle cx="200" cy="66" r="1.2"/>
+        <circle cx="230" cy="74" r="1.2"/>
+        <circle cx="260" cy="82" r="1.2"/>
+        <circle cx="290" cy="88" r="1.2"/>
+      </g>
+    </svg>
+  </div>
+  <div class="var-mini-readout">
+    <div class="vc"><div class="vl">計画</div><div class="vv plan">−1.5</div></div>
+    <div class="vc"><div class="vl">理論</div><div class="vv theory">−1.5</div></div>
+    <div class="vc"><div class="vl">実測</div><div class="vv actual">−1.5</div></div>
+  </div>
+  <div class="var-verdict win">✓ 計画通り。このまま継続でOK。</div>
+</div>
+
+<!-- Pattern 2: 体は止まってる (wait — 黒字なのに実測下がらない) -->
+<div class="var-card wait">
+  <div class="var-head">
+    <div class="var-title">② 体側で停滞</div>
+    <div class="var-tag wait">理論↓ 実測→</div>
+  </div>
+  <div class="var-narr">
+    食事は完璧 (理論はガンガン下がる) なのに体重が動かない。<br>
+    水分・塩分・グリコーゲン保持・便秘・生理周期。
+  </div>
+  <div class="var-chart">
+    <svg viewBox="0 0 320 130" preserveAspectRatio="none">
+      <g stroke="rgba(0,0,0,0.06)" stroke-width="1">
+        <line x1="32" y1="15"  x2="320" y2="15"/>
+        <line x1="32" y1="40"  x2="320" y2="40"/>
+        <line x1="32" y1="65"  x2="320" y2="65"/>
+        <line x1="32" y1="90"  x2="320" y2="90"/>
+        <line x1="32" y1="115" x2="320" y2="115" stroke="rgba(0,0,0,0.18)"/>
+      </g>
+      <g font-size="8" fill="#999" text-anchor="end">
+        <text x="30" y="18">68.5</text>
+        <text x="30" y="43">68.0</text>
+        <text x="30" y="68">67.5</text>
+      </g>
+      <!-- divergence band (theory below, actual above = pain) -->
+      <path d="M 32,15 L 110,40 L 200,65 L 320,90
+               L 320,30 L 200,28 L 110,22 L 32,15 Z"
+            fill="rgba(255,149,0,0.12)"/>
+      <!-- plan -->
+      <line x1="32" y1="15" x2="320" y2="90"
+            stroke="#888" stroke-width="1.5" stroke-dasharray="4 3"/>
+      <!-- theory: solid downward -->
+      <path d="M 32,15 C 80,28 160,55 240,75 L 320,90"
+            stroke="#FF9AA2" stroke-width="2" fill="none"/>
+      <!-- actual: stuck around 68.4 the whole time -->
+      <path d="M 32,15 C 60,18 110,22 160,25 C 220,28 270,28 320,30"
+            stroke="#4A90E2" stroke-width="2" fill="none"/>
+      <g fill="#4A90E2" opacity="0.4">
+        <circle cx="60" cy="20" r="1.2"/>
+        <circle cx="90" cy="22" r="1.2"/>
+        <circle cx="120" cy="20" r="1.2"/>
+        <circle cx="150" cy="24" r="1.2"/>
+        <circle cx="180" cy="26" r="1.2"/>
+        <circle cx="210" cy="22" r="1.2"/>
+        <circle cx="240" cy="29" r="1.2"/>
+        <circle cx="270" cy="27" r="1.2"/>
+        <circle cx="300" cy="30" r="1.2"/>
+      </g>
+    </svg>
+  </div>
+  <div class="var-mini-readout">
+    <div class="vc"><div class="vl">計画</div><div class="vv plan">−1.5</div></div>
+    <div class="vc"><div class="vl">理論</div><div class="vv theory">−1.6</div></div>
+    <div class="vc"><div class="vl">実測</div><div class="vv actual">−0.3</div></div>
+  </div>
+  <div class="var-verdict wait">⚠ 食事は◎、体側の保持。塩分・水分・睡眠を見直し、もう1週待つ。</div>
+</div>
+
+<!-- Pattern 3: 食事側で逸脱 (off — 理論も止まる) -->
+<div class="var-card off">
+  <div class="var-head">
+    <div class="var-title">③ 食事側で逸脱</div>
+    <div class="var-tag off">理論→ 実測→</div>
+  </div>
+  <div class="var-narr">
+    最初の週は順調、その後カロリー収支がほぼゼロに。<br>
+    理論も実測も停滞 = 計画通り食べてない。
+  </div>
+  <div class="var-chart">
+    <svg viewBox="0 0 320 130" preserveAspectRatio="none">
+      <g stroke="rgba(0,0,0,0.06)" stroke-width="1">
+        <line x1="32" y1="15"  x2="320" y2="15"/>
+        <line x1="32" y1="40"  x2="320" y2="40"/>
+        <line x1="32" y1="65"  x2="320" y2="65"/>
+        <line x1="32" y1="90"  x2="320" y2="90"/>
+        <line x1="32" y1="115" x2="320" y2="115" stroke="rgba(0,0,0,0.18)"/>
+      </g>
+      <g font-size="8" fill="#999" text-anchor="end">
+        <text x="30" y="18">68.5</text>
+        <text x="30" y="43">68.0</text>
+        <text x="30" y="68">67.5</text>
+      </g>
+      <!-- gap from plan (calorie failure) -->
+      <path d="M 32,15 L 90,32 L 320,46
+               L 320,90 L 90,40 L 32,15 Z"
+            fill="rgba(255,154,162,0.10)"/>
+      <!-- plan -->
+      <line x1="32" y1="15" x2="320" y2="90"
+            stroke="#888" stroke-width="1.5" stroke-dasharray="4 3"/>
+      <!-- theory: starts down then plateaus -->
+      <path d="M 32,15 C 50,22 70,30 90,35 C 130,40 200,42 320,46"
+            stroke="#FF9AA2" stroke-width="2" fill="none"/>
+      <!-- actual: follows theory -->
+      <path d="M 32,15 C 50,20 70,32 95,38 C 140,42 220,46 320,48"
+            stroke="#4A90E2" stroke-width="2" fill="none"/>
+      <g fill="#4A90E2" opacity="0.4">
+        <circle cx="60" cy="22" r="1.2"/>
+        <circle cx="90" cy="35" r="1.2"/>
+        <circle cx="120" cy="40" r="1.2"/>
+        <circle cx="150" cy="42" r="1.2"/>
+        <circle cx="180" cy="44" r="1.2"/>
+        <circle cx="210" cy="46" r="1.2"/>
+        <circle cx="240" cy="46" r="1.2"/>
+        <circle cx="270" cy="48" r="1.2"/>
+        <circle cx="300" cy="48" r="1.2"/>
+      </g>
+    </svg>
+  </div>
+  <div class="var-mini-readout">
+    <div class="vc"><div class="vl">計画</div><div class="vv plan">−1.5</div></div>
+    <div class="vc"><div class="vl">理論</div><div class="vv theory">−0.6</div></div>
+    <div class="vc"><div class="vl">実測</div><div class="vv actual">−0.5</div></div>
+  </div>
+  <div class="var-verdict off">⚠ 計画と理論が乖離。食事ログを見直し、カロリー赤字を作り直す。</div>
+</div>
+
+<!-- Pattern 4: 完全リバウンド (lose — 食べすぎて理論も実測も上がる) -->
+<div class="var-card lose">
+  <div class="var-head">
+    <div class="var-title">④ 食べすぎリバウンド</div>
+    <div class="var-tag lose">理論↑ 実測↑</div>
+  </div>
+  <div class="var-narr">
+    後半カロリー収支が赤字 (黒字を食い潰し) →<br>
+    体重も素直に増加。両線とも一致して納得。
+  </div>
+  <div class="var-chart">
+    <svg viewBox="0 0 320 130" preserveAspectRatio="none">
+      <g stroke="rgba(0,0,0,0.06)" stroke-width="1">
+        <line x1="32" y1="15"  x2="320" y2="15"/>
+        <line x1="32" y1="40"  x2="320" y2="40"/>
+        <line x1="32" y1="65"  x2="320" y2="65"/>
+        <line x1="32" y1="90"  x2="320" y2="90"/>
+        <line x1="32" y1="115" x2="320" y2="115" stroke="rgba(0,0,0,0.18)"/>
+      </g>
+      <g font-size="8" fill="#999" text-anchor="end">
+        <text x="30" y="18">68.5</text>
+        <text x="30" y="43">68.0</text>
+        <text x="30" y="68">67.5</text>
+      </g>
+      <!-- plan -->
+      <line x1="32" y1="15" x2="320" y2="90"
+            stroke="#888" stroke-width="1.5" stroke-dasharray="4 3"/>
+      <!-- theory: dropped then bounced up -->
+      <path d="M 32,15 C 70,30 110,42 150,38 C 190,30 230,18 270,8 C 290,4 310,-2 320,-4"
+            stroke="#FF9AA2" stroke-width="2" fill="none"/>
+      <!-- actual: follows close -->
+      <path d="M 32,15 C 70,28 110,40 150,38 C 190,30 230,20 270,10 C 290,6 310,0 320,-2"
+            stroke="#4A90E2" stroke-width="2" fill="none"/>
+      <g fill="#4A90E2" opacity="0.4">
+        <circle cx="60" cy="25" r="1.2"/>
+        <circle cx="90" cy="35" r="1.2"/>
+        <circle cx="120" cy="40" r="1.2"/>
+        <circle cx="150" cy="38" r="1.2"/>
+        <circle cx="180" cy="30" r="1.2"/>
+        <circle cx="210" cy="22" r="1.2"/>
+        <circle cx="240" cy="14" r="1.2"/>
+        <circle cx="270" cy="10" r="1.2"/>
+        <circle cx="300" cy="2"  r="1.2"/>
+      </g>
+      <!-- annotation: 上抜けエリア -->
+      <text x="280" y="13" font-size="8" fill="#FF3B30">↑68.7kg</text>
+    </svg>
+  </div>
+  <div class="var-mini-readout">
+    <div class="vc"><div class="vl">計画</div><div class="vv plan">−1.5</div></div>
+    <div class="vc"><div class="vl">理論</div><div class="vv theory">+0.2</div></div>
+    <div class="vc"><div class="vl">実測</div><div class="vv actual">+0.2</div></div>
+  </div>
+  <div class="var-verdict lose">✗ 食べすぎ確定。理論と実測一致なので体側のせいではない、食事を立て直す。</div>
+</div>
+
+</div>
+
+<div class="role-callout">
+  <strong>このチャートの正体 = 管理栄養士 × パーソナルトレーナー × 体の声、3 視点の同時可視化</strong><br>
+  <div class="role-row">
+    <div class="role dt">
+      <div class="who"><span class="ic">🍱</span>管理栄養士</div>
+      <div class="what">摂取カロリーが計画を満たしてるか<br>(計画 vs 理論)</div>
+    </div>
+    <div class="role tr">
+      <div class="who"><span class="ic">🏃</span>パーソナルトレーナー</div>
+      <div class="what">活動量で消費が積めてるか<br>(理論=赤字÷7700)</div>
+    </div>
+    <div class="role bd">
+      <div class="who"><span class="ic">⚖️</span>体の声</div>
+      <div class="what">理屈どおり脂肪が減ってるか<br>(実測=HealthKit)</div>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================== -->
+<!-- エグい現実パターン -->
+<!-- ========================================== -->
+<div class="var-section-title">エグい現実パターン</div>
+<p class="var-section-sub">
+  実際のダイエットで「なんで?」となる理不尽なパターン。
+  3 線あれば「これは体の生理現象」「これは記録のせい」と分解できるか検証。
+</p>
+
+<div class="var-grid">
+
+<!-- Pattern 5: Whoosh effect -->
+<div class="var-card weird">
+  <div class="var-head">
+    <div class="var-title">⑤ Whoosh 効果</div>
+    <div class="var-tag weird">3 週停滞 → 突然 1kg 落ち</div>
+  </div>
+  <div class="var-narr">
+    Lyle McDonald の有名仮説。脂肪細胞が水で膨らんだまま 2-3 週、<br>
+    あるとき水が抜けて急に体重が <strong>理論線まで一気に追いつく</strong>。
+  </div>
+  <div class="var-chart">
+    <svg viewBox="0 0 320 130" preserveAspectRatio="none">
+      <g stroke="rgba(0,0,0,0.06)" stroke-width="1">
+        <line x1="32" y1="15"  x2="320" y2="15"/>
+        <line x1="32" y1="40"  x2="320" y2="40"/>
+        <line x1="32" y1="65"  x2="320" y2="65"/>
+        <line x1="32" y1="90"  x2="320" y2="90"/>
+        <line x1="32" y1="115" x2="320" y2="115" stroke="rgba(0,0,0,0.18)"/>
+      </g>
+      <g font-size="8" fill="#999" text-anchor="end">
+        <text x="30" y="18">68.5</text>
+        <text x="30" y="68">67.5</text>
+        <text x="30" y="115">66.5</text>
+      </g>
+      <!-- plan -->
+      <line x1="32" y1="15" x2="320" y2="90"
+            stroke="#888" stroke-width="1.5" stroke-dasharray="4 3"/>
+      <!-- theory: smooth steady decline (food on point) -->
+      <path d="M 32,15 C 80,30 160,55 240,75 L 320,90"
+            stroke="#FF9AA2" stroke-width="2" fill="none"/>
+      <!-- actual: flat for 21 days, then sharp drop, then continues at theory rate -->
+      <path d="M 32,15
+               C 60,18 100,20 140,22 C 180,24 200,25 215,26
+               L 230,26
+               C 235,40 245,60 260,75
+               L 270,80
+               C 290,84 310,88 320,90"
+            stroke="#4A90E2" stroke-width="2" fill="none"/>
+      <g fill="#4A90E2" opacity="0.4">
+        <circle cx="60" cy="18" r="1.2"/>
+        <circle cx="90" cy="20" r="1.2"/>
+        <circle cx="120" cy="21" r="1.2"/>
+        <circle cx="150" cy="23" r="1.2"/>
+        <circle cx="180" cy="24" r="1.2"/>
+        <circle cx="210" cy="26" r="1.2"/>
+        <circle cx="225" cy="27" r="1.2"/>
+        <circle cx="240" cy="55" r="1.2"/>
+        <circle cx="260" cy="74" r="1.2"/>
+        <circle cx="280" cy="82" r="1.2"/>
+        <circle cx="300" cy="86" r="1.2"/>
+      </g>
+      <text x="225" y="50" font-size="8" fill="#8B5CF6" text-anchor="middle">whoosh!</text>
+      <line x1="225" y1="46" x2="240" y2="58" stroke="#8B5CF6" stroke-width="1" stroke-dasharray="2,2"/>
+    </svg>
+  </div>
+  <div class="var-mini-readout">
+    <div class="vc"><div class="vl">計画</div><div class="vv plan">−1.5</div></div>
+    <div class="vc"><div class="vl">理論</div><div class="vv theory">−1.5</div></div>
+    <div class="vc"><div class="vl">実測</div><div class="vv actual">−1.4</div></div>
+  </div>
+  <div class="var-verdict weird">⚡ 一見停滞 → 突然解放。<strong>理論と最終一致するから諦めずに済む</strong>のがチャートの価値。</div>
+</div>
+
+<!-- Pattern 6: Hormonal cycle (period zigzag) -->
+<div class="var-card weird">
+  <div class="var-head">
+    <div class="var-title">⑥ ホルモン周期</div>
+    <div class="var-tag weird">月内 ±1kg ジグザグ</div>
+  </div>
+  <div class="var-narr">
+    生理前後で水分保持が ±1kg 変動。<br>
+    実測がジグザグ波形 = 体重ベースの目標管理が壊れる。<strong>理論線が「真の進捗」</strong>として機能。
+  </div>
+  <div class="var-chart">
+    <svg viewBox="0 0 320 130" preserveAspectRatio="none">
+      <g stroke="rgba(0,0,0,0.06)" stroke-width="1">
+        <line x1="32" y1="15"  x2="320" y2="15"/>
+        <line x1="32" y1="40"  x2="320" y2="40"/>
+        <line x1="32" y1="65"  x2="320" y2="65"/>
+        <line x1="32" y1="90"  x2="320" y2="90"/>
+        <line x1="32" y1="115" x2="320" y2="115" stroke="rgba(0,0,0,0.18)"/>
+      </g>
+      <g font-size="8" fill="#999" text-anchor="end">
+        <text x="30" y="18">68.5</text>
+        <text x="30" y="68">67.5</text>
+      </g>
+      <!-- plan -->
+      <line x1="32" y1="15" x2="320" y2="90"
+            stroke="#888" stroke-width="1.5" stroke-dasharray="4 3"/>
+      <!-- theory: smooth -->
+      <path d="M 32,15 C 80,28 160,55 240,75 L 320,90"
+            stroke="#FF9AA2" stroke-width="2" fill="none"/>
+      <!-- actual: sine wave on smooth decline; +/- 30 around theory
+           Theory at x=32: y=15, x=110: y=40, x=190: y=58, x=270: y=80, x=320: y=90
+           Add sine ±30 from theory baseline.
+       -->
+      <path d="M 32,15
+               C 50,5 70,-15 90,0
+               C 110,15 130,35 150,40
+               C 170,45 180,30 200,38
+               C 220,46 240,68 260,80
+               C 280,92 290,68 310,80
+               C 318,86 320,90 320,90"
+            stroke="#4A90E2" stroke-width="2" fill="none"/>
+      <g fill="#4A90E2" opacity="0.4">
+        <circle cx="50"  cy="5"  r="1.2"/>
+        <circle cx="70"  cy="-8" r="1.2"/>
+        <circle cx="90"  cy="0"  r="1.2"/>
+        <circle cx="110" cy="20" r="1.2"/>
+        <circle cx="140" cy="38" r="1.2"/>
+        <circle cx="170" cy="40" r="1.2"/>
+        <circle cx="190" cy="35" r="1.2"/>
+        <circle cx="210" cy="42" r="1.2"/>
+        <circle cx="240" cy="65" r="1.2"/>
+        <circle cx="270" cy="85" r="1.2"/>
+        <circle cx="290" cy="72" r="1.2"/>
+        <circle cx="310" cy="82" r="1.2"/>
+      </g>
+      <text x="80" y="-12" font-size="8" fill="#8B5CF6">水分↑</text>
+      <text x="270" y="100" font-size="8" fill="#8B5CF6">水分↓</text>
+    </svg>
+  </div>
+  <div class="var-mini-readout">
+    <div class="vc"><div class="vl">計画</div><div class="vv plan">−1.5</div></div>
+    <div class="vc"><div class="vl">理論</div><div class="vv theory">−1.5</div></div>
+    <div class="vc"><div class="vl">実測</div><div class="vv actual">−1.5±0.8</div></div>
+  </div>
+  <div class="var-verdict weird">⚡ 体重で一喜一憂しない。<strong>理論線を信じて食事を継続</strong>。月跨ぎで実測も追従。</div>
+</div>
+
+<!-- Pattern 7: Initial water shed -->
+<div class="var-card weird">
+  <div class="var-head">
+    <div class="var-title">⑦ 初期の水分抜け</div>
+    <div class="var-tag weird">最初の 1 週で −2kg</div>
+  </div>
+  <div class="var-narr">
+    糖質制限・低カロリー開始時、グリコーゲン枯渇で水分が一気に抜ける。<br>
+    実測が <strong>理論を大きく追い越す</strong> → 数週かけて実測が止まり理論に追いつかれる。
+  </div>
+  <div class="var-chart">
+    <svg viewBox="0 0 320 130" preserveAspectRatio="none">
+      <g stroke="rgba(0,0,0,0.06)" stroke-width="1">
+        <line x1="32" y1="15"  x2="320" y2="15"/>
+        <line x1="32" y1="40"  x2="320" y2="40"/>
+        <line x1="32" y1="65"  x2="320" y2="65"/>
+        <line x1="32" y1="90"  x2="320" y2="90"/>
+        <line x1="32" y1="115" x2="320" y2="115" stroke="rgba(0,0,0,0.18)"/>
+      </g>
+      <g font-size="8" fill="#999" text-anchor="end">
+        <text x="30" y="18">68.5</text>
+        <text x="30" y="68">67.5</text>
+        <text x="30" y="115">66.5</text>
+      </g>
+      <!-- plan -->
+      <line x1="32" y1="15" x2="320" y2="90"
+            stroke="#888" stroke-width="1.5" stroke-dasharray="4 3"/>
+      <!-- theory: smooth -->
+      <path d="M 32,15 C 80,28 160,55 240,75 L 320,90"
+            stroke="#FF9AA2" stroke-width="2" fill="none"/>
+      <!-- actual: drops fast first 7 days, then plateaus, theory catches up -->
+      <path d="M 32,15
+               C 45,40 60,70 80,80
+               C 100,85 130,87 160,86
+               C 190,85 220,86 250,87
+               C 280,88 305,89 320,90"
+            stroke="#4A90E2" stroke-width="2" fill="none"/>
+      <g fill="#4A90E2" opacity="0.4">
+        <circle cx="50"  cy="45" r="1.2"/>
+        <circle cx="70"  cy="68" r="1.2"/>
+        <circle cx="90"  cy="80" r="1.2"/>
+        <circle cx="110" cy="84" r="1.2"/>
+        <circle cx="140" cy="86" r="1.2"/>
+        <circle cx="170" cy="86" r="1.2"/>
+        <circle cx="200" cy="86" r="1.2"/>
+        <circle cx="230" cy="87" r="1.2"/>
+        <circle cx="260" cy="88" r="1.2"/>
+        <circle cx="290" cy="89" r="1.2"/>
+      </g>
+      <text x="58" y="35" font-size="8" fill="#8B5CF6">水分抜け</text>
+      <text x="240" y="80" font-size="8" fill="#FF9AA2">理論が追いついた</text>
+    </svg>
+  </div>
+  <div class="var-mini-readout">
+    <div class="vc"><div class="vl">計画</div><div class="vv plan">−1.5</div></div>
+    <div class="vc"><div class="vl">理論</div><div class="vv theory">−1.5</div></div>
+    <div class="vc"><div class="vl">実測</div><div class="vv actual">−1.6</div></div>
+  </div>
+  <div class="var-verdict weird">⚡ 初週の急落は脂肪じゃない。<strong>第2週以降の停滞を「失敗」と誤認しない</strong>のが重要。</div>
+</div>
+
+<!-- Pattern 8: Holiday weekend spike -->
+<div class="var-card weird">
+  <div class="var-head">
+    <div class="var-title">⑧ 連休の塩分スパイク</div>
+    <div class="var-tag weird">3 日で +2kg → 1 週で戻る</div>
+  </div>
+  <div class="var-narr">
+    旅行・外食・寿司の 3 日。<br>
+    理論は +400g (実食ベース)、実測は <strong>+2kg 跳ね</strong> = ナトリウム+糖質で水分。1 週で蒸発。
+  </div>
+  <div class="var-chart">
+    <svg viewBox="0 0 320 130" preserveAspectRatio="none">
+      <g stroke="rgba(0,0,0,0.06)" stroke-width="1">
+        <line x1="32" y1="15"  x2="320" y2="15"/>
+        <line x1="32" y1="40"  x2="320" y2="40"/>
+        <line x1="32" y1="65"  x2="320" y2="65"/>
+        <line x1="32" y1="90"  x2="320" y2="90"/>
+        <line x1="32" y1="115" x2="320" y2="115" stroke="rgba(0,0,0,0.18)"/>
+      </g>
+      <g font-size="8" fill="#999" text-anchor="end">
+        <text x="30" y="18">68.5</text>
+        <text x="30" y="68">67.5</text>
+      </g>
+      <!-- plan -->
+      <line x1="32" y1="15" x2="320" y2="90"
+            stroke="#888" stroke-width="1.5" stroke-dasharray="4 3"/>
+      <!-- theory: declining, small bump up at days 14-17 (holiday), then resume
+           x=120 → x=160 is 4-day window
+       -->
+      <path d="M 32,15 C 60,25 90,40 120,50
+               C 130,40 150,30 165,35
+               C 180,40 200,55 230,65
+               C 260,75 290,82 320,90"
+            stroke="#FF9AA2" stroke-width="2" fill="none"/>
+      <!-- actual: bigger bump, takes longer to recover -->
+      <path d="M 32,15 C 60,28 90,42 120,52
+               C 130,30 145,8 160,8
+               C 175,12 190,28 210,42
+               C 235,55 265,72 290,82
+               C 305,86 315,89 320,90"
+            stroke="#4A90E2" stroke-width="2" fill="none"/>
+      <g fill="#4A90E2" opacity="0.4">
+        <circle cx="60"  cy="25" r="1.2"/>
+        <circle cx="90"  cy="40" r="1.2"/>
+        <circle cx="120" cy="52" r="1.2"/>
+        <circle cx="135" cy="20" r="1.2"/>
+        <circle cx="150" cy="10" r="1.2"/>
+        <circle cx="165" cy="10" r="1.2"/>
+        <circle cx="180" cy="20" r="1.2"/>
+        <circle cx="200" cy="35" r="1.2"/>
+        <circle cx="220" cy="48" r="1.2"/>
+        <circle cx="250" cy="65" r="1.2"/>
+        <circle cx="280" cy="78" r="1.2"/>
+        <circle cx="310" cy="88" r="1.2"/>
+      </g>
+      <text x="150" y="3" font-size="8" fill="#8B5CF6" text-anchor="middle">塩分+糖質</text>
+      <text x="150" y="40" font-size="8" fill="#FF9AA2" text-anchor="middle">理論小さく</text>
+    </svg>
+  </div>
+  <div class="var-mini-readout">
+    <div class="vc"><div class="vl">計画</div><div class="vv plan">−1.5</div></div>
+    <div class="vc"><div class="vl">理論</div><div class="vv theory">−1.3</div></div>
+    <div class="vc"><div class="vl">実測</div><div class="vv actual">−1.2</div></div>
+  </div>
+  <div class="var-verdict weird">⚡ ピーク時 +2kg でも理論は +400g だけ。<strong>「太った」じゃなく「水分」</strong>と即断できる。</div>
+</div>
+
+</div>
+
+<p class="note" style="margin-top:16px;">
+  <strong>エグい4パターンの共通点:</strong> どれも<strong>理論線が「真の進捗」のアンカー</strong>として機能する。
+  実測だけだと「なぜ?」のループに入って挫折するが、理論線があれば
+  「これは体側の生理現象 (whoosh / 水分 / 周期 / 塩分)」と判定でき、
+  食事を継続できる。<strong>= 中長期ダイエット最大の障壁である "メンタル離脱" を技術で防ぐ</strong>。
+</p>
+
+<!-- ========================================== -->
+<!-- パターン辞典マッチング — App Store-safe version -->
+<!-- ========================================== -->
+<div class="var-section-title">📚 挫折パターン辞典マッチング</div>
+
+<div style="background:#FFF7E6; border:1px solid #FFD89B; border-radius:10px; padding:12px 16px; margin-bottom:16px; font-size:12px; line-height:1.7;">
+  <strong style="color:#B26600;">⚠️ App Store 審査リスクへの対応</strong><br>
+  「AI が個人にダイエット指導/医療アドバイスをする」と判定されると <strong>Guideline 1.4.1 / 5.1.1</strong> で蹴られる。
+  なので「<strong>個別アドバイス</strong>」ではなく <strong>「あなたのデータがこの<u>一般パターン</u>に当てはまります」</strong> という辞典マッチング型にリフレーム。
+</div>
+
+<p class="var-section-sub">
+  チャート + 直近 30 日の食事ログ + 体重を context に LLM に渡し、
+  <strong>事前に書かれた 8 パターン解説の中からどれに当てはまるか判定</strong>するだけ。
+  解説本文・対処の例示はすべて<strong>事前審査済みのテンプレ</strong>から選ぶ (free-form 生成しない)。
+  数字だけ user data で穴埋め → 医療アドバイスではなく「情報提示 + 自己振り返り促し」になる。
+</p>
+
+<!-- Example A: 順調パターン (safe wording) -->
+<div class="ai-card">
+  <div class="ai-head">
+    <div class="ai-title">
+      <span class="ai-pill">📚</span>
+      パターン辞典マッチング
+    </div>
+    <div class="ai-meta">2分前 / 過去30日</div>
+  </div>
+  <div class="pattern-badge">
+    ① 順調パターン
+    <span class="conf">類似度 92%</span>
+  </div>
+  <div class="ai-body">
+    あなたの過去 30 日のデータは、辞典の「① 順調パターン」と高い類似度です。
+    計画 (-1.5kg) と理論 (-1.5kg) と実測 (-1.5kg) の <strong>3 線がほぼ重なる</strong>状態として
+    一般に紹介されているパターンに当てはまります。
+  </div>
+  <div class="action-list" style="font-size:11px;">
+    <div style="font-weight:700; margin-bottom:6px; color:var(--textMuted);">📖 一般的にこのパターンで知られていること</div>
+    <div class="action-row">
+      <div class="icon">📊</div>
+      <div class="text">食事ログと体重ログの整合がとれている期間と言われている</div>
+    </div>
+    <div class="action-row">
+      <div class="icon">📅</div>
+      <div class="text">この後の振り返りタイミング: 6/9 (中間チェック) を提案</div>
+    </div>
+    <div style="font-weight:700; margin-top:10px; margin-bottom:4px; color:var(--textMuted);">💭 振り返りメモ</div>
+    <div class="action-row">
+      <div class="icon">📝</div>
+      <div class="text">この期間うまくいった食事/運動の習慣を記録しておく？</div>
+    </div>
+  </div>
+  <div class="ai-foot">
+    <button class="ai-btn primary">↻ もう一度判定</button>
+    <button class="ai-btn">📖 辞典を読む</button>
+  </div>
+  <div style="font-size:9px; color:#999; margin-top:10px; line-height:1.5; text-align:center;">
+    ※ 一般情報の提示です。医療判断は専門家にご相談ください。
+  </div>
+</div>
+
+<!-- Example B: ホルモン周期パターン (safe wording) -->
+<div class="ai-card">
+  <div class="ai-head">
+    <div class="ai-title">
+      <span class="ai-pill">📚</span>
+      パターン辞典マッチング
+    </div>
+    <div class="ai-meta">5時間前 / 過去30日</div>
+  </div>
+  <div class="pattern-badge">
+    ⑥ ジグザグパターン
+    <span class="conf">類似度 78%</span>
+  </div>
+  <div class="ai-body">
+    あなたの実測体重が <strong>±0.8kg のジグザグ</strong>を描いており、理論線は steady decline。
+    辞典の「⑥ ジグザグパターン」(理論↓ 実測ジグザグ) に類似度 78% で当てはまります。
+  </div>
+  <div class="action-list" style="font-size:11px;">
+    <div style="font-weight:700; margin-bottom:6px; color:var(--textMuted);">📖 一般的にこのパターンで知られていること</div>
+    <div class="action-row">
+      <div class="icon">💧</div>
+      <div class="text">体重ジグザグは水分・グリコーゲン・ホルモン周期などで起きると一般に言われている</div>
+    </div>
+    <div class="action-row">
+      <div class="icon">⏱</div>
+      <div class="text">3-5 日で平準化するケースが多いと紹介されている</div>
+    </div>
+    <div class="action-row">
+      <div class="icon">📊</div>
+      <div class="text">理論線がトレンドの目安として使われることが多い</div>
+    </div>
+    <div style="font-weight:700; margin-top:10px; margin-bottom:4px; color:var(--textMuted);">💭 振り返りメモ</div>
+    <div class="action-row">
+      <div class="icon">📝</div>
+      <div class="text">最近、塩分が多い食事や生活変化はありましたか？</div>
+    </div>
+  </div>
+  <div class="ai-foot">
+    <button class="ai-btn primary">↻ もう一度判定</button>
+    <button class="ai-btn">📖 辞典を読む</button>
+  </div>
+  <div style="font-size:9px; color:#999; margin-top:10px; line-height:1.5; text-align:center;">
+    ※ 一般情報の提示です。医療判断は専門家にご相談ください。
+  </div>
+</div>
+
+<!-- Example C: 食事側で逸脱パターン (safe wording) -->
+<div class="ai-card">
+  <div class="ai-head">
+    <div class="ai-title">
+      <span class="ai-pill">📚</span>
+      パターン辞典マッチング
+    </div>
+    <div class="ai-meta">1時間前 / 過去30日</div>
+  </div>
+  <div class="pattern-badge">
+    ③ 食事側乖離パターン
+    <span class="conf">類似度 85%</span>
+  </div>
+  <div class="ai-body">
+    あなたの理論 (-0.6kg) が計画 (-1.5kg) を大きく下回り、実測も追従しています。
+    辞典の「③ 食事側乖離パターン」(計画↓ 理論→ 実測→) に類似度 85% で当てはまります。
+  </div>
+  <div class="action-list" style="font-size:11px;">
+    <div style="font-weight:700; margin-bottom:6px; color:var(--textMuted);">📖 一般的にこのパターンで知られていること</div>
+    <div class="action-row">
+      <div class="icon">🍱</div>
+      <div class="text">理論線が計画から離れると、食事の記録漏れや量の変化が背景にある場合が多い</div>
+    </div>
+    <div class="action-row">
+      <div class="icon">📷</div>
+      <div class="text">写真ログでの記録の取り直しが選択肢として知られている</div>
+    </div>
+    <div style="font-weight:700; margin-top:10px; margin-bottom:4px; color:var(--textMuted);">💭 振り返りメモ (あなたのデータから)</div>
+    <div class="action-row">
+      <div class="icon">📊</div>
+      <div class="text">過去30日: 夕食タンパク質週次平均 22g / 間食記録 +250kcal/日 (前月比)</div>
+    </div>
+    <div class="action-row">
+      <div class="icon">📝</div>
+      <div class="text">最近の食事スタイルや忙しさで変わったことを書き残しますか？</div>
+    </div>
+  </div>
+  <div class="ai-foot">
+    <button class="ai-btn primary">↻ もう一度判定</button>
+    <button class="ai-btn">📖 辞典を読む</button>
+  </div>
+  <div style="font-size:9px; color:#999; margin-top:10px; line-height:1.5; text-align:center;">
+    ※ 一般情報の提示です。医療判断は専門家にご相談ください。
+  </div>
+</div>
+
+<p class="note" style="margin-top:16px;">
+  <strong>App Store 安全側の設計原則:</strong><br>
+  ・LLM は <strong>パターン分類だけ</strong>担当 (free-form generation はしない)<br>
+  ・解説本文・「一般的に〜」「〜と言われている」「〜が知られている」テキストは<strong>事前審査済みテンプレ</strong>。LLM は数字穴埋めのみ<br>
+  ・命令形/指示形を避け、<strong>「振り返りメモ」</strong>として疑問形で問いかける<br>
+  ・タイトルは <code>📚 パターン辞典マッチング</code> (医療AI ではなく辞書ツール)<br>
+  ・各カード末尾にディスクレーマー: <code>※ 一般情報の提示です。医療判断は専門家にご相談ください。</code><br>
+  ・「アクション/対処」ではなく「📖 知られていること / 💭 振り返りメモ」と表現<br><br>
+  <strong>LLM プロンプト設計案 (revised):</strong><br>
+  入力: <code>{ pattern_definitions: 8パターン定義 (テンプレ), recent_30days: { plan_kg, theory_kg_series, actual_kg_series, summary_stats } }</code><br>
+  出力 (JSON): <code>{ pattern_id, similarity_score, data_observation: "数値の客観記述のみ" }</code><br>
+  → アプリ側でテンプレ (事前審査済) と数字を結合してカード描画。<strong>LLM 出力は構造化フィールドのみ</strong>、自然文の生成はテンプレで完結
+</p>
+
+<!-- Example chart with AI trigger button -->
+<div class="chart-card">
+  <div class="chart-head">
+    <div class="chart-title">体重トレンド (AI 分析ボタン付き)</div>
+    <div class="chart-pill">過去 30日</div>
+  </div>
+  <div class="chart-sub">縦軸: 体重 (kg) ・ チャート直下にトリガー配置</div>
+  <div class="chart-area" style="height:140px;">
+    <span class="y-axis-label-top">68.5kg</span>
+    <span class="y-axis-label-bottom">66.5kg</span>
+    <svg viewBox="0 0 320 140" preserveAspectRatio="none">
+      <g stroke="rgba(0,0,0,0.06)" stroke-width="1">
+        <line x1="40" y1="15" x2="320" y2="15"/>
+        <line x1="40" y1="45" x2="320" y2="45"/>
+        <line x1="40" y1="75" x2="320" y2="75"/>
+        <line x1="40" y1="105" x2="320" y2="105"/>
+        <line x1="40" y1="125" x2="320" y2="125" stroke="rgba(0,0,0,0.18)"/>
+      </g>
+      <line x1="40" y1="15" x2="320" y2="105"
+            stroke="#888" stroke-width="1.5" stroke-dasharray="4 3"/>
+      <path d="M 40,15 C 100,40 200,80 320,115"
+            stroke="#FF9AA2" stroke-width="2" fill="none"/>
+      <path d="M 40,15
+               C 60,18 80,22 100,25 C 120,28 140,30 160,32
+               C 175,35 190,42 210,55
+               C 230,68 250,82 270,93
+               C 290,103 310,108 320,108"
+            stroke="#4A90E2" stroke-width="2" fill="none"/>
+    </svg>
+  </div>
+  <div class="readout">
+    <div class="cell">
+      <div class="lbl">計画</div><div class="val plan">−1.5kg</div>
+    </div>
+    <div class="cell">
+      <div class="lbl">理論</div><div class="val theory">−1.95kg</div>
+    </div>
+    <div class="cell">
+      <div class="lbl">実測</div><div class="val actual">−1.6kg</div>
+    </div>
+  </div>
+  <div class="chart-ai-row">
+    <button class="chart-ai-btn">
+      📚 挫折パターン辞典で照合
+      <span class="ai-pill-sm">辞典</span>
+    </button>
+  </div>
+</div>
+
+<p class="note">
+  <strong>設計の決定事項:</strong><br>
+  ・縦軸 = 体重 (kg)、上端 = 開始体重 (Profile.startingBodyWeightKg)、下端 = 期間に応じて調整<br>
+  ・3 線並走: <strong>計画 (灰破線) / 理論 (ピンク) / 実測 (青)</strong>。dual-axis 不要、すべて kg 軸<br>
+  ・体重は HealthKit 毎日取得、週/月/3ヶ月で日次の細点 + 週/月の太点を出し分け<br>
+  ・「理論 vs 実測カード」は完全削除、チャート直下の <strong>3 セル数値リードアウト</strong> で代替<br>
+  ・痩せ方ペース pill (上部) は環境設定 (Profile) へのショートカット — タップで切替モーダル<br><br>
+
+  <strong>実装メモ:</strong><br>
+  ・痩せ方の3パターン (memory 要確認): ゆるやか / ふつう / ハード で kg/週レートを変える設定<br>
+  ・<code>UserGoals.startingBodyWeightKg</code> + 痩せ方レート → 理想ペース直線を計算<br>
+  ・累積カロリー貯金 ÷ 7700 → 理論減量 g、開始体重から引いて kg にして描画<br>
+  ・<code>weightHistoryProvider</code> (HealthKit) を毎日値で取って実測線、移動平均は別途検討<br>
+  ・期間切替で y-axis tick interval を自動調整 (週=100g / 月=250g / 3ヶ月=500g)<br>
+  ・<code>fl_chart</code> の LineChart に 3 系列 + 共通 kg 軸で実装可能
+</p>
+
+</div>
+</body>
+</html>

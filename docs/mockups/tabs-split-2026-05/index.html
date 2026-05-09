@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>tonton tabs split — ver.2</title>
+<style>
+  :root {
+    --pigPink: #FF9AA2;
+    --pigPinkDark: #E0576A;
+    --pigPinkLight: #FFD4D8;
+    --bgPrimary: #FFF8F6;
+    --bgMuted: #FFF0EE;
+    --borderSubtle: #F0E8E6;
+    --shadowSubtle: rgba(26, 25, 24, 0.08);
+    --surface: #FFFFFF;
+    --text: #1C1B1F;
+    --textMuted: #6B6469;
+    --success: #34C759;
+    --successDark: #1F8A3E;
+    --error: #FF3B30;
+    --warning: #FF9500;
+    --info: #4A90E2;
+    --primaryContainer: #FFE3DD;
+    --onPrimaryContainer: #3A1A19;
+    --surfaceContainerHighest: #F4ECEA;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 28px 24px 60px;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Hiragino Sans",
+                 "ヒラギノ角ゴシック", "Yu Gothic", sans-serif;
+    background: linear-gradient(135deg, #f5f0ee 0%, #e8e2e0 100%);
+    color: var(--text);
+    min-height: 100vh;
+  }
+  h1 {
+    margin: 0 0 6px 0;
+    font-size: 22px;
+    font-weight: 700;
+  }
+  .subtitle {
+    margin: 0 0 24px 0;
+    color: var(--textMuted);
+    font-size: 14px;
+    max-width: 1200px;
+  }
+  .row {
+    display: flex;
+    gap: 28px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 24px;
+  }
+  .frame-wrapper { text-align: center; }
+  .frame-wrapper h2 {
+    margin: 0 0 12px 0;
+    font-size: 16px;
+    font-weight: 600;
+  }
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    margin-left: 8px;
+    background: var(--pigPinkLight);
+    color: var(--pigPinkDark);
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .badge.v2 { background: #d6efff; color: #0860a8; }
+  .phone {
+    width: 380px;
+    height: 800px;
+    background: var(--bgPrimary);
+    border: 10px solid #1a1a1a;
+    border-radius: 40px;
+    overflow: hidden;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
+    display: flex;
+    flex-direction: column;
+  }
+  .status-bar {
+    height: 28px;
+    background: var(--bgPrimary);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 22px;
+    font-size: 11px;
+    color: var(--text);
+    font-weight: 600;
+  }
+  .scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px 16px 84px;
+  }
+  .tab-bar {
+    height: 64px;
+    background: rgba(255, 248, 246, 0.96);
+    border-top: 1px solid var(--borderSubtle);
+    display: flex;
+    flex-shrink: 0;
+  }
+  .tab {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    color: var(--textMuted);
+    gap: 2px;
+  }
+  .tab.active { color: var(--pigPink); }
+  .tab .ic { font-size: 20px; }
+
+  /* App-bar (modal-style screens) */
+  .app-bar {
+    height: 44px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    border-bottom: 1px solid var(--borderSubtle);
+    background: var(--bgPrimary);
+    font-size: 16px;
+    font-weight: 600;
+  }
+  .app-bar .back { margin-right: 10px; color: var(--pigPinkDark); font-size: 18px; }
+
+  /* ---- typography helpers ---- */
+  .h-screen { font-size: 22px; font-weight: 700; margin: 12px 0 4px; }
+  .h-section { font-size: 16px; font-weight: 700; margin: 8px 0 8px; }
+  .body-muted { color: var(--textMuted); font-size: 13px; }
+  .body-sm { font-size: 12px; }
+  .text-l { text-align: left; }
+
+  /* ---- segmented period selector ---- */
+  .seg {
+    display: inline-flex;
+    background: var(--surfaceContainerHighest);
+    border-radius: 10px;
+    padding: 3px;
+    margin: 12px auto 18px;
+  }
+  .seg-row { display: flex; justify-content: center; }
+  .seg button {
+    border: 0;
+    background: transparent;
+    padding: 6px 16px;
+    font-size: 13px;
+    border-radius: 8px;
+    color: var(--textMuted);
+    font-family: inherit;
+    cursor: pointer;
+  }
+  .seg button.on {
+    background: white;
+    color: var(--text);
+    font-weight: 600;
+    box-shadow: 0 1px 3px var(--shadowSubtle);
+  }
+
+  /* ---- generic cards ---- */
+  .card {
+    background: var(--surface);
+    border-radius: 12px;
+    border: 1px solid var(--borderSubtle);
+    padding: 14px;
+    margin-bottom: 10px;
+    text-align: left;
+  }
+
+  /* ---- daily history card (記録 main) ---- */
+  .day-card { padding: 14px 16px; }
+  .day-row { display: flex; align-items: flex-start; gap: 14px; }
+  .day-date { width: 56px; flex-shrink: 0; }
+  .day-date .md { font-size: 16px; font-weight: 700; }
+  .day-date .wd { font-size: 11px; color: var(--textMuted); }
+  .day-body { flex: 1; }
+  .day-balance {
+    display: flex; align-items: center; gap: 4px;
+    font-size: 15px; font-weight: 700;
+  }
+  .day-balance.pos { color: var(--success); }
+  .day-balance.neg { color: var(--error); }
+  .day-cum { font-size: 11px; color: var(--textMuted); margin-top: 2px; }
+  .chev { color: #C9C2BF; font-size: 18px; }
+  .chip-row {
+    display: flex; flex-wrap: wrap; gap: 6px;
+    margin-top: 10px; margin-left: 70px;
+  }
+  .chip {
+    background: var(--surfaceContainerHighest);
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    color: var(--text);
+    max-width: 160px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .chip .kcal { color: var(--textMuted); margin-left: 4px; font-weight: 600; }
+  .chip.more { color: var(--textMuted); font-weight: 600; }
+  .estimate-cta {
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .estimate-cta button {
+    background: transparent;
+    border: 0;
+    color: var(--pigPinkDark);
+    font-size: 13px;
+    font-weight: 600;
+    padding: 4px 8px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+
+  /* ---- C案: Bank balance hero gauge ---- */
+  .bank-hero {
+    background: linear-gradient(135deg, #FFD4D8 0%, #FFE6E0 100%);
+    border-radius: 18px;
+    padding: 18px 16px 16px;
+    margin-bottom: 14px;
+    box-shadow: 0 4px 14px rgba(255, 154, 162, 0.25);
+    position: relative;
+  }
+  .bank-hero .ring {
+    width: 200px;
+    height: 200px;
+    display: block;
+    margin: 0 auto;
+  }
+  .bank-hero .ring-center {
+    position: absolute;
+    top: 18px;
+    left: 0; right: 0;
+    height: 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+  }
+  .bank-hero .pig-sm { font-size: 32px; line-height: 1; margin-bottom: 4px; }
+  .bank-hero .bal-label {
+    font-size: 10px;
+    color: var(--pigPinkDark);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    margin-bottom: 2px;
+  }
+  .bank-hero .bal-value {
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--pigPinkDark);
+    line-height: 1.1;
+  }
+  .bank-hero .bal-value .unit {
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .bank-hero .bal-sub {
+    font-size: 10px;
+    color: var(--textMuted);
+    margin-top: 4px;
+  }
+  .bank-hero .txn-strip {
+    margin-top: 12px;
+    display: flex;
+    background: rgba(255,255,255,0.7);
+    border-radius: 10px;
+    padding: 8px 4px;
+    align-items: center;
+  }
+  .bank-hero .txn {
+    flex: 1;
+    text-align: center;
+  }
+  .bank-hero .txn-when {
+    font-size: 10px;
+    color: var(--textMuted);
+    font-weight: 600;
+  }
+  .bank-hero .txn-amt {
+    font-size: 12px;
+    font-weight: 700;
+    margin-top: 2px;
+  }
+  .bank-hero .txn-amt.pos { color: var(--successDark); }
+  .bank-hero .txn-amt.neg { color: var(--error); }
+  .bank-hero .txn-divider {
+    width: 1px;
+    height: 24px;
+    background: rgba(0,0,0,0.08);
+  }
+
+  /* weight chart */
+  .weight-chart {
+    height: 150px;
+    background: white;
+    border-radius: 6px;
+    overflow: hidden;
+    position: relative;
+    margin-top: 4px;
+  }
+  .weight-chart svg { width: 100%; height: 100%; display: block; }
+  .axis-label.tr { top: 4px; right: 6px; }
+  .axis-label.br { bottom: 4px; right: 6px; }
+  .lg-scatter::before { background: #A0C4E8; height: 6px; width: 6px; border-radius: 50%; }
+
+  /* sparkline + KPI */
+  .spark {
+    height: 50px;
+    background: white;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-top: 8px;
+  }
+  .spark svg { width: 100%; height: 100%; display: block; }
+  .spark-kpi {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-top: 12px;
+  }
+  .sk-cell {
+    background: var(--bgMuted);
+    border-radius: 8px;
+    padding: 8px 10px;
+    text-align: center;
+  }
+  .sk-label { font-size: 10px; color: var(--textMuted); }
+  .sk-val { font-size: 16px; font-weight: 700; margin-top: 2px; }
+  .sk-val.pos { color: var(--successDark); }
+  .sk-val.neg { color: var(--error); }
+
+  /* ---- hero piggy v2 (主役 + 補足帯) ---- */
+  .hero-v2 {
+    background: linear-gradient(135deg, #FFD4D8 0%, #FFE6E0 100%);
+    border-radius: 18px;
+    padding: 22px 18px 16px;
+    margin-bottom: 14px;
+    text-align: center;
+    box-shadow: 0 4px 14px rgba(255, 154, 162, 0.25);
+  }
+  .hero-v2 .pig { font-size: 56px; line-height: 1; }
+  .hero-v2 .label { font-size: 11px; color: var(--pigPinkDark); margin-top: 4px; font-weight: 600; letter-spacing: 0.04em; }
+  .hero-v2 .value { font-size: 38px; font-weight: 800; color: var(--pigPinkDark); line-height: 1.1; }
+  .hero-v2 .sub-band {
+    margin-top: 12px;
+    background: rgba(255,255,255,0.6);
+    border-radius: 10px;
+    padding: 6px 12px;
+    font-size: 12px;
+    color: var(--text);
+    display: inline-block;
+  }
+
+  /* ---- monthly goal card (with ExpectedVsActual integrated) ---- */
+  .mg-head {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin-bottom: 4px;
+  }
+  .mg-head .h-section { margin: 0; }
+  .mg-head .pct { font-size: 22px; font-weight: 800; color: var(--success); }
+  .mg-bar {
+    margin-top: 6px;
+    height: 8px;
+    background: var(--surfaceContainerHighest);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .mg-bar > div {
+    height: 100%;
+    background: linear-gradient(90deg, var(--pigPink), #FFB7B2);
+  }
+  .mg-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-top: 14px;
+  }
+  .mg-cell {
+    background: var(--bgMuted);
+    border-radius: 8px;
+    padding: 8px 10px;
+    text-align: left;
+  }
+  .mg-cell .label { font-size: 10px; color: var(--textMuted); }
+  .mg-cell .val { font-size: 16px; font-weight: 700; margin-top: 2px; }
+  .mg-cell .val.actual { color: var(--info); }
+  .mg-cell .val.expected { color: var(--text); }
+  .mg-cell .val.target { color: var(--pigPinkDark); }
+
+  /* ---- chart (上下分割) ---- */
+  .chart-card {
+    background: white;
+    border: 1px solid var(--borderSubtle);
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 12px;
+    text-align: left;
+  }
+  .chart-title { font-size: 14px; font-weight: 700; }
+  .chart-sub { font-size: 11px; color: var(--textMuted); margin-bottom: 10px; }
+  .chart-top {
+    height: 130px;
+    background:
+      linear-gradient(to right, transparent, transparent),
+      repeating-linear-gradient(to top, transparent, transparent 32px,
+        rgba(0,0,0,0.04) 32px, rgba(0,0,0,0.04) 33px);
+    border-radius: 6px;
+    overflow: hidden;
+    position: relative;
+  }
+  .chart-bottom {
+    height: 80px;
+    margin-top: 6px;
+    background:
+      linear-gradient(to top, transparent, transparent 50%, rgba(0,0,0,0.04) 50%, rgba(0,0,0,0.04) 51%, transparent 51%);
+    border-radius: 6px;
+    overflow: hidden;
+    position: relative;
+  }
+  .chart-top svg, .chart-bottom svg { width: 100%; height: 100%; display: block; }
+  .axis-label {
+    position: absolute; font-size: 10px; color: var(--textMuted);
+  }
+  .axis-label.tl { top: 4px; left: 6px; }
+  .axis-label.bl { bottom: 4px; left: 6px; }
+  .chart-legend {
+    display: flex; gap: 14px; font-size: 11px; color: var(--textMuted);
+    margin-top: 10px; flex-wrap: wrap;
+  }
+  .chart-legend span::before {
+    content: ""; display: inline-block; width: 10px; height: 3px;
+    margin-right: 4px; vertical-align: middle; border-radius: 2px;
+  }
+  .lg-weight::before { background: var(--info); }
+  .lg-ideal::before { background: #B0B0B0; }
+  .lg-pos::before { background: var(--success); }
+  .lg-neg::before { background: var(--error); }
+
+  /* ---- reward CTA ---- */
+  .reward-btn {
+    display: block;
+    width: 100%;
+    margin: 14px 0 8px;
+    padding: 14px;
+    background: linear-gradient(135deg, var(--pigPink), #FFB7B2);
+    color: white;
+    font-weight: 700;
+    font-size: 15px;
+    border: 0;
+    border-radius: 14px;
+    box-shadow: 0 4px 12px rgba(255, 154, 162, 0.35);
+    cursor: pointer;
+    font-family: inherit;
+  }
+
+  /* ---- ご褒美画面 ---- */
+  .reward-balance {
+    background: var(--primaryContainer);
+    border-radius: 14px;
+    padding: 16px;
+    text-align: center;
+    margin: 8px 0 16px;
+  }
+  .reward-balance .lbl { font-size: 11px; color: var(--pigPinkDark); font-weight: 600; }
+  .reward-balance .val { font-size: 32px; font-weight: 800; color: var(--pigPinkDark); }
+  .reward-balance .hint { font-size: 11px; color: var(--textMuted); margin-top: 2px; }
+
+  .slider-row { margin: 12px 0 4px; text-align: left; }
+  .slider-row .label { display: flex; justify-content: space-between; font-size: 13px; }
+  .slider-row .label .v { font-weight: 700; color: var(--pigPinkDark); }
+  .slider-track {
+    height: 4px; background: var(--surfaceContainerHighest);
+    border-radius: 2px; margin: 8px 0; position: relative;
+  }
+  .slider-fill {
+    position: absolute; top: 0; left: 0; height: 100%;
+    background: var(--pigPink); border-radius: 2px;
+  }
+  .slider-knob {
+    position: absolute; top: 50%; transform: translate(-50%, -50%);
+    width: 18px; height: 18px; border-radius: 50%;
+    background: white; box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    border: 2px solid var(--pigPink);
+  }
+
+  .llm-section { margin-top: 18px; text-align: left; }
+  .llm-head {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 13px; font-weight: 700; margin-bottom: 8px;
+  }
+  .llm-head .ai-pill {
+    background: linear-gradient(135deg, #b08aff, #7eaaff);
+    color: white;
+    font-size: 9px;
+    padding: 2px 6px;
+    border-radius: 6px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+  }
+  .llm-card {
+    background: var(--surface);
+    border: 1px solid var(--borderSubtle);
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .llm-card .em { font-size: 28px; line-height: 1; }
+  .llm-card .body { flex: 1; }
+  .llm-card .name {
+    font-size: 14px; font-weight: 700;
+    display: flex; justify-content: space-between; gap: 8px;
+  }
+  .llm-card .kc { color: var(--textMuted); font-size: 12px; font-weight: 600; }
+  .llm-card .reason { font-size: 11px; color: var(--textMuted); margin-top: 4px; }
+  .llm-card.selected { border-color: var(--pigPink); background: var(--bgMuted); }
+
+  .llm-foot {
+    margin-top: 6px;
+    font-size: 11px;
+    color: var(--textMuted);
+    line-height: 1.5;
+  }
+
+  /* ---- annotations ---- */
+  .note {
+    margin-top: 10px;
+    font-size: 11px;
+    color: #888;
+    max-width: 380px;
+    line-height: 1.5;
+    text-align: left;
+  }
+  .note strong { color: #444; }
+  .note .ok { color: var(--successDark); font-weight: 600; }
+  .note .del { color: var(--error); font-weight: 600; text-decoration: line-through; text-decoration-color: rgba(255,59,48,0.5); }
+
+  .legend-row {
+    margin: 0 auto 28px;
+    max-width: 1200px;
+    background: white;
+    border-radius: 12px;
+    padding: 14px 18px;
+    border: 1px solid var(--borderSubtle);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .legend-row code {
+    background: var(--surfaceContainerHighest);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+  }
+</style>
+</head>
+<body>
+
+<h1>tonton — ver.3 (C案: Banking Metaphor 全振り)</h1>
+<p class="subtitle">
+  リサーチ知見を反映: <strong>dual-axis 重ね描きはプロアプリ誰もやってない</strong>ので捨てる。
+  tonton の差別化軸「カロリー貯金 = ダイエット銀行」を UI の主役にして、
+  Deficitly / Happy Scale / MacroFactor の良いとこ取り。
+</p>
+
+<div class="legend-row">
+  <strong>ver.3 (C案) の設計思想:</strong><br>
+  &nbsp;・<strong>Hero = 銀行残高ゲージ</strong>: 円形プログレスリング + 累計貯金 + 今日の入出金（取引メタファ）<br>
+  &nbsp;・<strong>体重チャート = kg軸単独</strong>（Happy Scale 流）: 実測折線 + 理想ペース破線 + 目標水平線。kcalは混ぜない<br>
+  &nbsp;・<strong>日別収支スパークライン</strong>: 棒グラフを小さく置く。+ / − / 純貯金の3KPIだけ添える<br>
+  &nbsp;・月次目標達成度カードは ver.2 と同じ（目標/理論/実測 3セル）<br>
+  &nbsp;・ご褒美画面は LLM 提案版（変更なし）
+</div>
+
+<div class="row">
+
+<!-- ============================================== -->
+<!-- 記録タブ (NEW) -->
+<!-- ============================================== -->
+<div class="frame-wrapper">
+  <h2>① 記録タブ <span class="badge">食事寄せ</span></h2>
+  <div class="phone">
+    <div class="status-bar"><span>9:41</span><span>● ● ●</span></div>
+    <div class="scroll">
+      <div class="h-screen text-l">食事の記録</div>
+      <div class="body-muted text-l">日々の食事を振り返ってみましょう</div>
+
+      <div class="seg-row">
+        <div class="seg">
+          <button>週</button>
+          <button class="on">月</button>
+          <button>全期間</button>
+        </div>
+      </div>
+
+      <div class="h-section text-l">日別履歴</div>
+
+      <!-- Day card with 4+ chips -->
+      <div class="card day-card">
+        <div class="day-row">
+          <div class="day-date">
+            <div class="md">5/8</div>
+            <div class="wd">木</div>
+          </div>
+          <div class="day-body">
+            <div class="day-balance pos">↗ +420 kcal</div>
+            <div class="day-cum">累積: +3,210 kcal</div>
+          </div>
+          <div class="chev">›</div>
+        </div>
+        <div class="chip-row">
+          <div class="chip">目玉焼き<span class="kcal">180kcal</span></div>
+          <div class="chip">サバ味噌定食<span class="kcal">650kcal</span></div>
+          <div class="chip">クッキー<span class="kcal">120kcal</span></div>
+          <div class="chip more">+1品</div>
+        </div>
+      </div>
+
+      <!-- Day card with 2 chips -->
+      <div class="card day-card">
+        <div class="day-row">
+          <div class="day-date">
+            <div class="md">5/7</div>
+            <div class="wd">水</div>
+          </div>
+          <div class="day-body">
+            <div class="day-balance neg">↘ -180 kcal</div>
+            <div class="day-cum">累積: +2,790 kcal</div>
+          </div>
+          <div class="chev">›</div>
+        </div>
+        <div class="chip-row">
+          <div class="chip">カレーライス<span class="kcal">720kcal</span></div>
+          <div class="chip">ハンバーグ<span class="kcal">580kcal</span></div>
+        </div>
+      </div>
+
+      <!-- Day card with no meals -->
+      <div class="card day-card">
+        <div class="day-row">
+          <div class="day-date">
+            <div class="md">5/6</div>
+            <div class="wd">火</div>
+          </div>
+          <div class="day-body estimate-cta">
+            <div class="body-muted">食事記録なし</div>
+            <button>✦ 推定で埋める</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Day card with 3 chips -->
+      <div class="card day-card">
+        <div class="day-row">
+          <div class="day-date">
+            <div class="md">5/5</div>
+            <div class="wd">月</div>
+          </div>
+          <div class="day-body">
+            <div class="day-balance pos">↗ +320 kcal</div>
+            <div class="day-cum">累積: +2,970 kcal</div>
+          </div>
+          <div class="chev">›</div>
+        </div>
+        <div class="chip-row">
+          <div class="chip">トースト<span class="kcal">220kcal</span></div>
+          <div class="chip">親子丼<span class="kcal">680kcal</span></div>
+          <div class="chip">鶏の照り焼き<span class="kcal">450kcal</span></div>
+        </div>
+      </div>
+
+    </div>
+    <div class="tab-bar">
+      <div class="tab"><div class="ic">🏠</div>ホーム</div>
+      <div class="tab active"><div class="ic">📋</div>記録</div>
+      <div class="tab"><div class="ic">🐷</div>貯金</div>
+      <div class="tab"><div class="ic">👤</div>プロフィール</div>
+    </div>
+  </div>
+  <p class="note">
+    <strong>変更点:</strong> 絵文字削除・<strong>kcal併記</strong>に統一（例: <code>サバ味噌定食 650kcal</code>）。
+    日別カードタップで dailyMealsDetail に遷移（既存）。
+  </p>
+</div>
+
+<!-- ============================================== -->
+<!-- 貯金タブ ver.2 -->
+<!-- ============================================== -->
+<div class="frame-wrapper">
+  <h2>② 貯金タブ <span class="badge v2">C案: Banking</span></h2>
+  <div class="phone">
+    <div class="status-bar"><span>9:41</span><span>● ● ●</span></div>
+    <div class="scroll">
+      <div class="h-screen text-l">カロリー貯金</div>
+
+      <!-- Hero: Bank balance gauge with circular progress -->
+      <div class="bank-hero">
+        <svg viewBox="0 0 200 200" class="ring">
+          <!-- background ring -->
+          <circle cx="100" cy="100" r="86" fill="none"
+                  stroke="rgba(255,255,255,0.5)" stroke-width="14"/>
+          <!-- progress ring (target=5000kcal, current=3210, ~64%) -->
+          <circle cx="100" cy="100" r="86" fill="none"
+                  stroke="#E0576A" stroke-width="14" stroke-linecap="round"
+                  stroke-dasharray="540" stroke-dashoffset="195"
+                  transform="rotate(-90 100 100)"/>
+        </svg>
+        <div class="ring-center">
+          <div class="pig-sm">🐷</div>
+          <div class="bal-label">残高</div>
+          <div class="bal-value">+3,210<span class="unit"> kcal</span></div>
+          <div class="bal-sub">月目標 5,000 kcal の 64%</div>
+        </div>
+        <!-- transactions strip -->
+        <div class="txn-strip">
+          <div class="txn">
+            <div class="txn-when">今日</div>
+            <div class="txn-amt pos">+420 kcal 入金</div>
+          </div>
+          <div class="txn-divider"></div>
+          <div class="txn">
+            <div class="txn-when">昨日</div>
+            <div class="txn-amt neg">−180 kcal 出金</div>
+          </div>
+          <div class="txn-divider"></div>
+          <div class="txn">
+            <div class="txn-when">30日平均</div>
+            <div class="txn-amt pos">+107 kcal/日</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 月次目標達成度 + ExpectedVsActual 統合 (ver.2維持) -->
+      <div class="card">
+        <div class="mg-head">
+          <div class="h-section">今月の目標達成度</div>
+          <div class="pct">64%</div>
+        </div>
+        <div class="body-muted">2026年5月 (残り22日)</div>
+        <div class="mg-bar"><div style="width:64%"></div></div>
+        <div class="mg-grid">
+          <div class="mg-cell">
+            <div class="label">目標</div>
+            <div class="val target">-1.5 kg</div>
+          </div>
+          <div class="mg-cell">
+            <div class="label">理論</div>
+            <div class="val expected">-1.4 kg</div>
+          </div>
+          <div class="mg-cell">
+            <div class="label">実測</div>
+            <div class="val actual">-0.9 kg</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 体重トレンドチャート (kg軸単独 / Happy Scale流) -->
+      <div class="chart-card">
+        <div class="chart-title">体重トレンド</div>
+        <div class="chart-sub">実測 + 理想ペース + 目標体重ライン</div>
+        <div class="weight-chart">
+          <span class="axis-label tl" style="left:10px;">kg</span>
+          <span class="axis-label tr">68.5</span>
+          <span class="axis-label br">66.0</span>
+          <svg viewBox="0 0 320 150" preserveAspectRatio="none">
+            <!-- target weight horizontal line -->
+            <line x1="0" y1="120" x2="320" y2="120"
+                  stroke="#E0576A" stroke-width="1.5" stroke-dasharray="2 4"/>
+            <text x="6" y="116" fill="#E0576A" font-size="9">🎯 目標 66.0kg</text>
+
+            <!-- ideal pace curve (exponential decay shape, dashed grey) -->
+            <path d="M 0,30 Q 80,60 160,82 T 320,118"
+                  stroke="#B0B0B0" stroke-width="1.5" stroke-dasharray="4 3"
+                  fill="none"/>
+            <text x="240" y="100" fill="#888" font-size="9">理想ペース</text>
+
+            <!-- actual weight line -->
+            <path d="M 0,30 C 30,32 60,38 100,42 S 180,58 220,68 280,82 320,90"
+                  stroke="#4A90E2" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+            <!-- weight scatter dots (lighter) -->
+            <circle cx="20"  cy="36" r="1.5" fill="#A0C4E8"/>
+            <circle cx="50"  cy="33" r="1.5" fill="#A0C4E8"/>
+            <circle cx="80"  cy="40" r="1.5" fill="#A0C4E8"/>
+            <circle cx="120" cy="46" r="1.5" fill="#A0C4E8"/>
+            <circle cx="150" cy="52" r="1.5" fill="#A0C4E8"/>
+            <circle cx="190" cy="62" r="1.5" fill="#A0C4E8"/>
+            <circle cx="220" cy="68" r="1.5" fill="#A0C4E8"/>
+            <circle cx="260" cy="78" r="1.5" fill="#A0C4E8"/>
+            <circle cx="300" cy="88" r="1.5" fill="#A0C4E8"/>
+            <!-- trend points larger -->
+            <circle cx="0"   cy="30" r="3" fill="#4A90E2"/>
+            <circle cx="80"  cy="40" r="3" fill="#4A90E2"/>
+            <circle cx="160" cy="55" r="3" fill="#4A90E2"/>
+            <circle cx="240" cy="73" r="3" fill="#4A90E2"/>
+            <circle cx="320" cy="90" r="3" fill="#4A90E2"/>
+            <!-- predicted reach marker -->
+            <circle cx="305" cy="120" r="4" fill="#E0576A"/>
+            <text x="195" y="138" fill="#E0576A" font-size="9">予測到達: 7/12</text>
+          </svg>
+        </div>
+        <div class="chart-legend">
+          <span class="lg-weight">トレンド(7日移動平均)</span>
+          <span class="lg-scatter">実測点</span>
+          <span class="lg-ideal">理想ペース</span>
+        </div>
+      </div>
+
+      <!-- 日別収支スパークライン -->
+      <div class="card">
+        <div class="mg-head">
+          <div class="h-section">日別カロリー貯金</div>
+          <div class="body-sm body-muted">過去30日</div>
+        </div>
+        <div class="spark">
+          <svg viewBox="0 0 320 50" preserveAspectRatio="none">
+            <line x1="0" y1="25" x2="320" y2="25" stroke="rgba(0,0,0,0.12)" stroke-width="1"/>
+            <g>
+              <rect x="2"   y="11" width="8" height="14" fill="#34C759"/>
+              <rect x="13"  y="6"  width="8" height="19" fill="#34C759"/>
+              <rect x="24"  y="25" width="8" height="6"  fill="#FF3B30"/>
+              <rect x="35"  y="9"  width="8" height="16" fill="#34C759"/>
+              <rect x="46"  y="3"  width="8" height="22" fill="#34C759"/>
+              <rect x="57"  y="25" width="8" height="9"  fill="#FF3B30"/>
+              <rect x="68"  y="25" width="8" height="4"  fill="#FF3B30"/>
+              <rect x="79"  y="10" width="8" height="15" fill="#34C759"/>
+              <rect x="90"  y="5"  width="8" height="20" fill="#34C759"/>
+              <rect x="101" y="2"  width="8" height="23" fill="#34C759"/>
+              <rect x="112" y="25" width="8" height="11" fill="#FF3B30"/>
+              <rect x="123" y="11" width="8" height="14" fill="#34C759"/>
+              <rect x="134" y="7"  width="8" height="18" fill="#34C759"/>
+              <rect x="145" y="2"  width="8" height="23" fill="#34C759"/>
+              <rect x="156" y="25" width="8" height="5"  fill="#FF3B30"/>
+              <rect x="167" y="9"  width="8" height="16" fill="#34C759"/>
+              <rect x="178" y="6"  width="8" height="19" fill="#34C759"/>
+              <rect x="189" y="25" width="8" height="8"  fill="#FF3B30"/>
+              <rect x="200" y="10" width="8" height="15" fill="#34C759"/>
+              <rect x="211" y="4"  width="8" height="21" fill="#34C759"/>
+              <rect x="222" y="8"  width="8" height="17" fill="#34C759"/>
+              <rect x="233" y="25" width="8" height="4"  fill="#FF3B30"/>
+              <rect x="244" y="11" width="8" height="14" fill="#34C759"/>
+              <rect x="255" y="7"  width="8" height="18" fill="#34C759"/>
+              <rect x="266" y="25" width="8" height="9"  fill="#FF3B30"/>
+              <rect x="277" y="10" width="8" height="15" fill="#34C759"/>
+              <rect x="288" y="4"  width="8" height="21" fill="#34C759"/>
+              <rect x="299" y="2"  width="8" height="23" fill="#34C759"/>
+            </g>
+          </svg>
+        </div>
+        <div class="spark-kpi">
+          <div class="sk-cell">
+            <div class="sk-label">入金</div>
+            <div class="sk-val pos">+22 日</div>
+          </div>
+          <div class="sk-cell">
+            <div class="sk-label">出金</div>
+            <div class="sk-val neg">−8 日</div>
+          </div>
+          <div class="sk-cell">
+            <div class="sk-label">純貯金</div>
+            <div class="sk-val">+3,210</div>
+          </div>
+        </div>
+      </div>
+
+      <button class="reward-btn">🎁 貯金を使ってご褒美</button>
+
+    </div>
+    <div class="tab-bar">
+      <div class="tab"><div class="ic">🏠</div>ホーム</div>
+      <div class="tab"><div class="ic">📋</div>記録</div>
+      <div class="tab active"><div class="ic">🐷</div>貯金</div>
+      <div class="tab"><div class="ic">👤</div>プロフィール</div>
+    </div>
+  </div>
+  <p class="note">
+    <strong>C案の特徴:</strong>
+    Hero を「銀行残高ゲージ」化。円形プログレスは月目標までの達成率を表現、下に取引（入金/出金/平均）を3列で表示して<strong>家計簿アプリの語彙を借用</strong>。<br>
+    体重チャートは <strong>kg 軸単独</strong> で Happy Scale流。理想ペースは <strong>曲線（指数減衰）</strong>に。<br>
+    日別収支は<strong>スパークライン化</strong>して圧縮、KPI 3つ（入金/出金/純貯金）だけ添えて密度を抑える。
+  </p>
+</div>
+
+</div>
+
+<div class="row">
+<!-- ============================================== -->
+<!-- ご褒美画面 (LLM 提案版) -->
+<!-- ============================================== -->
+<div class="frame-wrapper">
+  <h2>③ ご褒美画面 <span class="badge v2">LLM 提案版</span></h2>
+  <div class="phone">
+    <div class="status-bar"><span>9:41</span><span>● ● ●</span></div>
+    <div class="app-bar"><span class="back">‹</span> ご褒美</div>
+    <div class="scroll">
+
+      <div class="reward-balance">
+        <div class="lbl">使える貯金</div>
+        <div class="val">3,210 kcal</div>
+        <div class="hint">体脂肪 約 0.46 kg 分の余裕があります</div>
+      </div>
+
+      <div class="slider-row">
+        <div class="label"><span>今日のご褒美に使う</span><span class="v">500 kcal</span></div>
+        <div class="slider-track">
+          <div class="slider-fill" style="width:33%"></div>
+          <div class="slider-knob" style="left:33%"></div>
+        </div>
+        <div class="body-sm" style="color:var(--textMuted);">0 kcal ←→ 1,500 kcal</div>
+      </div>
+
+      <div class="llm-section">
+        <div class="llm-head">
+          <span class="ai-pill">AI</span>
+          <span>あなたの今日の食事におすすめ</span>
+        </div>
+
+        <div class="llm-card selected">
+          <div class="em">🍰</div>
+          <div class="body">
+            <div class="name"><span>ティラミス 1個</span><span class="kc">320kcal</span></div>
+            <div class="reason">今週はタンパク質が十分。糖質をご褒美にしても全体PFCは崩れません。</div>
+          </div>
+        </div>
+        <div class="llm-card">
+          <div class="em">🍗</div>
+          <div class="body">
+            <div class="name"><span>からあげ 4個</span><span class="kc">480kcal</span></div>
+            <div class="reason">月初は脂質が控えめだったので脂質補給枠として◎</div>
+          </div>
+        </div>
+        <div class="llm-card">
+          <div class="em">🍕</div>
+          <div class="body">
+            <div class="name"><span>ピザ 1切れ</span><span class="kc">280kcal</span></div>
+            <div class="reason">夕食を軽め（〜400kcal）にすればちょうど予算内。</div>
+          </div>
+        </div>
+        <div class="llm-card">
+          <div class="em">🍺</div>
+          <div class="body">
+            <div class="name"><span>ビール 1缶 + チーズ</span><span class="kc">300kcal</span></div>
+            <div class="reason">過去30日で一度もアルコール記録なし。たまには。</div>
+          </div>
+        </div>
+
+        <div class="llm-foot">
+          ※ 提案は最近30日の食事履歴 / PFC傾向 / 月次目標達成度を踏まえて生成されます。
+          別の提案がほしい時は <strong>もう一度提案する</strong> をタップ。
+        </div>
+      </div>
+
+      <button class="reward-btn">🎁 このご褒美を確定（500 kcal 使う）</button>
+      <button class="reward-btn" style="background:white; color:var(--pigPinkDark); border:1px solid var(--pigPinkLight); box-shadow:none;">
+        ↻ もう一度提案する
+      </button>
+
+    </div>
+    <div class="tab-bar">
+      <div class="tab"><div class="ic">🏠</div>ホーム</div>
+      <div class="tab"><div class="ic">📋</div>記録</div>
+      <div class="tab active"><div class="ic">🐷</div>貯金</div>
+      <div class="tab"><div class="ic">👤</div>プロフィール</div>
+    </div>
+  </div>
+  <p class="note">
+    <strong>愛嬌機能 + 既存LLM活用:</strong>
+    DirectGeminiService に渡せるコンテキスト = 直近食事履歴 / PFCバランス / 月次目標達成度 / 使う kcal。
+    <strong>既存 generate-meal-advice-v2 と並ぶ「貯金 → ご褒美」専用プロンプト</strong>を1本足すだけ。<br>
+    UIフロー: <code>UseSavingsScreen</code> のスライダー連動で kcal を決める → AI提案カード4枚 → 選択 → savingsBalance.deduct() で確定。
+  </p>
+</div>
+
+</div>
+
+</body>
+</html>

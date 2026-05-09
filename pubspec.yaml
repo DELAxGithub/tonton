@@ -1,7 +1,7 @@
 name: tonton
 description: "A health tracking application with iOS HealthKit integration."
 publish_to: 'none'
-version: 1.7.1+32
+version: 1.7.1+34
 
 environment:
   sdk: ^3.7.2

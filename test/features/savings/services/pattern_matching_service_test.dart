@@ -120,6 +120,39 @@ void main() {
       expect(result.patternId, DietaryPatternId.rebound);
     });
 
+    test(
+        'regression: 7-day window, theory -0.58kg + actual +0.4kg should NOT '
+        'classify as smooth (real user 1.7.1+31)', () {
+      // Reproduce the screenshot: 5/3 → 5/9, daily deficit ~640 kcal,
+      // weight goes 67.8 → 67.5 → 67.5 → 67.5 → 67.9 → 68.3 → 68.3.
+      // Pre-fix this fell through to smooth because:
+      //   - bodyStall required actualDelta.abs() < 0.3 (failed on +0.4)
+      //   - saltSpike required 10+ days
+      //   - zigzag detrended std was ~0.22, below 0.4 threshold
+      final records = _genRecords(
+        start: start,
+        days: 7,
+        dailyKcalDeficit: 640, // ≈ -0.58 kg theory over 7 days
+      );
+      final actualWeights = [67.8, 67.5, 67.5, 67.5, 67.9, 68.3, 68.3];
+      final weights = <WeightRecord?>[
+        for (int i = 0; i < 7; i++) _w(records[i].date, actualWeights[i]),
+      ];
+      final result = PatternMatchingService.classify(
+        records: records,
+        weightRecords: weights,
+        idealKgList: List.filled(7, null), // user had no plan line
+        startingBodyWeightKg: 67.8,
+      );
+      // Must NOT be smooth — either bodyStall or saltSpike is acceptable
+      // (both indicate "actual diverging upward from theory").
+      expect(result.patternId, isNot(DietaryPatternId.smooth));
+      expect(
+        [DietaryPatternId.bodyStall, DietaryPatternId.saltSpike],
+        contains(result.patternId),
+      );
+    });
+
     test('returns initial water shed when first week drops fast then plateau',
         () {
       final records = _genRecords(

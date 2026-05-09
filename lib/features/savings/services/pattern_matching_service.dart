@@ -173,21 +173,23 @@ class PatternMatchingService {
       );
     }
 
-    // ⑧ 塩分スパイク: 直近 3-7 日で実測が急上昇 (>1.0kg) でその前は安定
-    if (actualKgs.length >= 10) {
-      final recent = actualKgs.entries.toList();
-      final lastWeekStart = recent[recent.length - 7].value;
-      final lastWeekEnd = recent.last.value;
-      final priorStart = recent[math.max(0, recent.length - 14)].value;
-      final priorEnd = recent[recent.length - 7].value;
-      final lastWeekChange = lastWeekEnd - lastWeekStart;
-      final priorWeekChange = priorEnd - priorStart;
-      if (lastWeekChange > 1.0 && priorWeekChange.abs() < 0.5) {
+    // ⑧ 塩分スパイク: 「一度下がってから +0.8kg 以上戻った」V 字パターン。
+    // start → min で 100g 以上落ちてないと「ただの単調増加 (=rebound)」とは
+    // 区別できないので除外する。(旧ルールは 10+ 日 + 7 日 vs 7 日比較で
+    // 短期データを取りこぼしていた既知バグの修正)
+    if (actualKgs.length >= 5) {
+      final values = actualKgs.values.toList();
+      final firstValue = values.first;
+      final lastValue = values.last;
+      final minValue = values.reduce(math.min);
+      final recovery = lastValue - minValue;
+      final lostBeforeSpike = firstValue - minValue;
+      if (recovery > 0.8 && lostBeforeSpike > 0.1) {
         return PatternMatchResult(
           patternId: DietaryPatternId.saltSpike,
-          similarity: _clamp01(0.5 + (lastWeekChange - 1.0) * 0.3),
+          similarity: _clamp01(0.5 + (recovery - 0.8) * 0.3),
           dataObservation: observation(
-            '直近 7 日で実測が ${fmt(lastWeekChange)} 急上昇 (それ以前は ${fmt(priorWeekChange)})。',
+            '実測が期間内最低値から +${recovery.toStringAsFixed(2)} kg 戻っている。',
           ),
         );
       }
@@ -215,14 +217,17 @@ class PatternMatchingService {
       );
     }
 
-    // ② 体側で停滞: 理論↓ だが実測がほぼ動かない
-    if (theoryDelta < -0.3 && actualDelta.abs() < 0.3) {
-      final gap = (actualDelta - theoryDelta).abs();
+    // ② 体側で停滞 / 上振れ: 理論↓ なのに実測 - 理論 が +500g 以上の乖離。
+    // 「実測がほぼゼロ」だけでなく「実測が逆方向に動いた」も含めて拾う。
+    // (旧ルール `actualDelta.abs() < 0.3` だと +0.4kg のような明らかな上振れが
+    //  smooth デフォルトに falls-through していた既知バグの修正)
+    final divergenceUp = actualDelta - theoryDelta;
+    if (theoryDelta < -0.3 && divergenceUp > 0.5) {
       return PatternMatchResult(
         patternId: DietaryPatternId.bodyStall,
-        similarity: _clamp01(0.5 + gap * 0.5),
+        similarity: _clamp01(0.5 + divergenceUp * 0.3),
         dataObservation: observation(
-          '理論との乖離が ${fmt(actualDelta - theoryDelta)} (実測 - 理論)。',
+          '理論との乖離が ${fmt(divergenceUp)} (実測 - 理論)。',
         ),
       );
     }

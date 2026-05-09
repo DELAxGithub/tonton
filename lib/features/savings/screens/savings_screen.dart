@@ -143,22 +143,42 @@ class SavingsScreen extends ConsumerWidget {
                 // 体重トレンドチャート (3線並走 / kg軸単独)
                 Builder(
                   builder: (_) {
-                    final startWeight = ref
-                            .watch(userGoalsProvider)
-                            .startingBodyWeightKg ??
-                        ref.watch(userGoalsProvider).bodyWeightKg ??
+                    final goals = ref.watch(userGoalsProvider);
+                    final startWeight = goals.startingBodyWeightKg ??
+                        goals.bodyWeightKg ??
                         (records.isNotEmpty &&
                                 weightRecords.isNotEmpty &&
                                 weightRecords.first != null
                             ? weightRecords.first!.weight
                             : 70.0);
+
+                    // idealWeightTrajectoryProvider は startingBodyWeightDate
+                    // が未設定だと空リストを返す。プロフィール開始日を未設定の
+                    // ユーザーでも計画線が描けるよう、フォールバックでローカル
+                    // 計算する: records.first.date を anchor、weeklyPace で線形。
+                    final hasIdealData = idealWeightsKg.any((v) => v != null);
+                    final planList = <double?>[];
+                    if (hasIdealData) {
+                      planList.addAll(idealWeightsKg);
+                    } else if (records.isNotEmpty) {
+                      final pace = goals.targetWeeklyPercentLoss;
+                      final anchor = records.first.date;
+                      for (final r in records) {
+                        final days = r.date.difference(anchor).inDays;
+                        final weeks = days / 7.0;
+                        planList.add(startWeight * (1 - pace * weeks));
+                      }
+                    } else {
+                      planList.addAll(idealWeightsKg);
+                    }
+
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         _ThreeLineChartCard(
                           records: records,
                           weightRecords: weightRecords,
-                          idealKgList: idealWeightsKg,
+                          idealKgList: planList,
                           startingBodyWeightKg: startWeight,
                           period: period,
                         ),
@@ -166,7 +186,7 @@ class SavingsScreen extends ConsumerWidget {
                         _PatternMatchSection(
                           records: records,
                           weightRecords: weightRecords,
-                          idealKgList: idealWeightsKg,
+                          idealKgList: planList,
                           startingBodyWeightKg: startWeight,
                         ),
                       ],

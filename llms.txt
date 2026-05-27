@@ -1,0 +1,33 @@
+# TonTon
+
+> Calorie savings iOS app: log meals via AI image analysis, sync with HealthKit, and track a daily energy balance like a savings account.
+
+## What this is
+
+TonTon is a Flutter-based iOS health-tracking application centered on the metaphor of "calorie savings." Users photograph meals, the AI analyzes the image to estimate macros, and consumption is reconciled against the day's energy expenditure pulled from HealthKit. Progress is visualized with PFC bars, daily activity rings, and goal-tracking screens.
+
+- Platform: Flutter (iOS first, with macOS / web shells in repo)
+- Backend: Supabase (Edge Functions, Postgres)
+- AI: Gemini-based image analysis service
+- State: Riverpod
+- Storage: Hive + SharedPreferences
+- Health: HealthKit (iOS)
+
+## Where to start
+
+- [README](https://github.com/DELAxGithub/tonton/blob/main/README.md) — overview, stack, setup
+- [docs/](https://github.com/DELAxGithub/tonton/tree/main/docs) — design system, env setup, ICON_FONT, Widgetbook
+- [lib/](https://github.com/DELAxGithub/tonton/tree/main/lib) — Flutter app source (features / shared / theming)
+- [supabase/](https://github.com/DELAxGithub/tonton/tree/main/supabase) — Edge Functions and SQL schema
+- [CLAUDE.md](https://github.com/DELAxGithub/tonton/blob/main/.claude/CLAUDE.md) — project memory, agent-harness rules
+
+## What this is NOT
+
+- Not a medical or clinical app — calorie/macro estimates are guidance only, not diagnosis
+- Not an Android app yet (Android port is on the backlog)
+- Not a calorie-restriction coaching service — the "savings" framing is descriptive, not prescriptive
+- Not a generic food database — meal logging is image-first via AI, no manual barcode database
+
+## License
+
+See [LICENSE](https://github.com/DELAxGithub/tonton/blob/main/LICENSE) in repo if present; otherwise treat code as proprietary.

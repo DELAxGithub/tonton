@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../../../core/providers/monthly_progress_provider.dart';
+import '../../../core/providers/health_repository_provider.dart';
 import '../../../core/providers/onboarding_start_date_provider.dart';
 import '../../../models/weight_record.dart';
 
@@ -15,7 +15,7 @@ Future<List<WeightRecord>> weightHistory(Ref ref) async {
   final startDate = ref.watch(onboardingStartDateProvider);
   if (startDate == null) return [];
 
-  final service = ref.watch(healthServiceProvider);
+  final service = ref.watch(healthDataRepositoryProvider);
   final raw = await service.getWeightHistory(startDate, DateTime.now());
 
   final byDay = <String, WeightRecord>{};

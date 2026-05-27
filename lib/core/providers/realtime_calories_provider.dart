@@ -4,14 +4,15 @@ import '../../models/daily_summary.dart';
 import '../../models/weight_record.dart';
 import '../../services/daily_summary_service.dart';
 import '../../providers/providers.dart';
+import 'health_repository_provider.dart';
 
 /// Provides an instance of [DailySummaryService].
 final dailySummaryServiceProvider = Provider<DailySummaryService>((ref) {
-  final healthService = ref.watch(healthServiceProvider);
+  final healthRepository = ref.watch(healthDataRepositoryProvider);
   final mealRecords = ref.read(mealRecordsProvider.notifier);
   final dataService = ref.read(dailySummaryDataServiceProvider);
   return DailySummaryService(
-    healthService: healthService,
+    healthService: healthRepository,
     mealRecords: mealRecords,
     dataService: dataService,
   );

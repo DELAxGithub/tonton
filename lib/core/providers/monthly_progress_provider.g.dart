@@ -6,7 +6,7 @@ part of 'monthly_progress_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$healthServiceHash() => r'98289cee4406da156329508b9bf2f4bbee2d0cca';
+String _$healthServiceHash() => r'9ed6a48f5595c3804419e1793b0cff0a1109673b';
 
 /// See also [healthService].
 @ProviderFor(healthService)
@@ -40,7 +40,7 @@ final userSettingsRepositoryProvider =
 typedef UserSettingsRepositoryRef
     = AutoDisposeProviderRef<UserSettingsRepository>;
 String _$calorieCalculationServiceHash() =>
-    r'a018d85ef762deda669aadae0194476c1c2ccb20';
+    r'349805e4e144ed30494d235b4cf007f78ede1580';
 
 /// See also [calorieCalculationService].
 @ProviderFor(calorieCalculationService)

@@ -10,7 +10,7 @@ import '../providers/user_profile_provider.dart';
 import '../../progress/providers/pfc_balance_provider.dart';
 import '../../health/providers/weight_record_provider.dart';
 import '../../health/providers/last_health_fetch_provider.dart';
-import '../../../services/health_service.dart';
+import '../../../core/providers/health_repository_provider.dart';
 import '../../../theme/tokens.dart';
 import '../../../theme/app_theme.dart';
 import '../../progress/providers/auto_pfc_provider.dart';
@@ -236,8 +236,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
   void _recalculateData(BuildContext context) {
     ref.invalidate(calorieSavingsDataProvider);
-    final service = HealthService();
-    service.getLatestWeight(DateTime.now()).then((record) async {
+    final repository = ref.read(healthDataRepositoryProvider);
+    repository.getLatestWeight(DateTime.now()).then((record) async {
       if (record != null) {
         await ref.read(userWeightProvider.notifier).setWeight(record.weight);
         await ref.read(userGoalsProvider.notifier).setBodyWeight(record.weight);

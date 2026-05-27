@@ -1,7 +1,7 @@
 // 1. All import directives first
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../services/onboarding_service.dart'; // Assuming this path is correct
-import '../../../services/health_service.dart';
+import '../../../core/providers/health_repository_provider.dart';
 import '../../../core/providers/onboarding_start_date_provider.dart'; // Assuming this path is correct
 
 // 2. All export directives next
@@ -13,8 +13,8 @@ export 'onboarding_completion_provider.dart' show onboardingCompletedProvider;
 /// Provides the onboarding service instance.
 final onboardingServiceProvider = Provider<OnboardingService>((ref) {
   final startNotifier = ref.read(onboardingStartDateProvider.notifier);
-  final healthService = HealthService();
-  return OnboardingService(startNotifier, healthService);
+  final healthRepository = ref.watch(healthDataRepositoryProvider);
+  return OnboardingService(startNotifier, healthRepository);
 });
 
 /// Provides the first launch timestamp if available.

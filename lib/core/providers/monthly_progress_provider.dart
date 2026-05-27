@@ -9,10 +9,18 @@ import '../../repositories/user_settings_repository.dart';
 import '../../services/health_service.dart';
 import '../../features/meal_logging/providers/meal_records_provider.dart';
 import 'calorie_savings_provider.dart';
+import 'health_repository_provider.dart';
 
 part 'monthly_progress_provider.g.dart';
 
 // Provider for health service
+//
+// Deprecated: prefer `healthDataRepositoryProvider`
+// (`lib/core/providers/health_repository_provider.dart`). This provider
+// returns the concrete iOS-only `HealthService` and exists only for
+// migration during ADR-0003 Phase 2. New call sites must depend on the
+// abstract `HealthDataRepository`.
+@Deprecated('Use healthDataRepositoryProvider (ADR-0003 Phase 2)')
 @riverpod
 HealthService healthService(Ref ref) {
   return HealthService();
@@ -27,7 +35,7 @@ UserSettingsRepository userSettingsRepository(Ref ref) {
 // Provider for calorie calculation service
 @riverpod
 CalorieCalculationService calorieCalculationService(Ref ref) {
-  final healthService = ref.watch(healthServiceProvider);
+  final healthService = ref.watch(healthDataRepositoryProvider);
   final mealRecords = ref.read(mealRecordsProvider.notifier);
 
   return CalorieCalculationService(

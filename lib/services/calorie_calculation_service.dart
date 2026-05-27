@@ -1,11 +1,11 @@
 import 'dart:developer' as developer;
 import '../models/daily_calorie_summary.dart';
 import '../models/monthly_progress_summary.dart';
-import '../services/health_service.dart';
+import '../services/health_data_repository.dart';
 import '../providers/providers.dart';
 
 class CalorieCalculationService {
-  final HealthService healthService;
+  final HealthDataRepository healthService;
   final MealRecords mealRecordsProvider;
 
   CalorieCalculationService({

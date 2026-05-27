@@ -2,11 +2,11 @@ import '../models/activity_summary.dart';
 import '../models/daily_summary.dart';
 import '../models/weight_record.dart';
 import '../providers/providers.dart';
-import 'health_service.dart';
+import 'health_data_repository.dart';
 import 'daily_summary_data_service.dart';
 
 class DailySummaryService {
-  final HealthService healthService;
+  final HealthDataRepository healthService;
   final MealRecords mealRecords;
   final DailySummaryDataService dataService;
 

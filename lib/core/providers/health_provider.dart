@@ -2,10 +2,16 @@ import 'package:flutter/foundation.dart';
 import 'dart:developer' as developer;
 import '../../models/activity_summary.dart';
 import '../../models/weight_record.dart';
+import '../../services/health_data_repository.dart';
 import '../../services/health_service.dart';
 
 class HealthProvider with ChangeNotifier {
-  final HealthService _healthService = HealthService();
+  HealthProvider({HealthDataRepository? healthRepository})
+      : _healthRepository = healthRepository ?? HealthService() {
+    developer.log('HealthProvider created', name: 'TonTon.HealthProvider');
+  }
+
+  final HealthDataRepository _healthRepository;
 
   bool _isLoading = false;
   bool _hasPermissions = false;
@@ -29,18 +35,13 @@ class HealthProvider with ChangeNotifier {
       _yesterdayActivity != null ||
       _yesterdayWeight != null;
 
-  // Constructor with debug output
-  HealthProvider() {
-    developer.log('HealthProvider created', name: 'TonTon.HealthProvider');
-  }
-
   // Initialize and request permissions
   Future<bool> requestPermissions() async {
     developer.log('Requesting permissions', name: 'TonTon.HealthProvider');
     _setLoading(true, 'HealthKitへのアクセス許可を確認中...');
 
     try {
-      _hasPermissions = await _healthService.requestPermissions();
+      _hasPermissions = await _healthRepository.requestPermissions();
       developer.log(
         'Permissions result: $_hasPermissions',
         name: 'TonTon.HealthProvider',
@@ -100,7 +101,7 @@ class HealthProvider with ChangeNotifier {
         name: 'TonTon.HealthProvider',
       );
       // Get today's data
-      _todayActivity = await _healthService.getTodayActivitySummary();
+      _todayActivity = await _healthRepository.getTodayActivitySummary();
       developer.log(
         'Today activity summary fetched: ${_todayActivity != null}',
         name: 'TonTon.HealthProvider',
@@ -114,8 +115,9 @@ class HealthProvider with ChangeNotifier {
         'Fetching yesterday activity summary and weight',
         name: 'TonTon.HealthProvider',
       );
-      _yesterdayActivity = await _healthService.getActivitySummary(yesterday);
-      _yesterdayWeight = await _healthService.getLatestWeight(yesterday);
+      _yesterdayActivity =
+          await _healthRepository.getActivitySummary(yesterday);
+      _yesterdayWeight = await _healthRepository.getLatestWeight(yesterday);
 
       developer.log('Data fetch complete', name: 'TonTon.HealthProvider');
       _setStatus('データを取得しました');

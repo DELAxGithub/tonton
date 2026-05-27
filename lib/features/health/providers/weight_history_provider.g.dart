@@ -6,7 +6,7 @@ part of 'weight_history_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$weightHistoryHash() => r'a2508b332d41c1a390c98071af3222b828e6fe19';
+String _$weightHistoryHash() => r'c2bd06b9820fac67602d40ec4187504025196d04';
 
 /// HealthKit から onboardingStartDate 〜 今日の体重履歴を取得し、
 /// 同日複数測定はその日の最新 1 件に丸めて日付昇順で返す。

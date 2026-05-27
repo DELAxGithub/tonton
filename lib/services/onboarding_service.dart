@@ -1,15 +1,18 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../providers/providers.dart';
+import 'health_data_repository.dart';
 import 'health_service.dart';
 
 /// Handles persistence of onboarding status and first launch timestamp.
 class OnboardingService {
-  OnboardingService(this._startDateNotifier, [HealthService? healthService])
-    : _healthService = healthService ?? HealthService();
+  OnboardingService(
+    this._startDateNotifier, [
+    HealthDataRepository? healthRepository,
+  ]) : _healthRepository = healthRepository ?? HealthService();
 
   final OnboardingStartDateNotifier _startDateNotifier;
-  final HealthService _healthService;
+  final HealthDataRepository _healthRepository;
 
   static const String _firstLaunchKey = 'firstLaunchTimestamp';
   static const String _completedKey = 'onboardingCompleted';
@@ -38,7 +41,7 @@ class OnboardingService {
 
   Future<void> requestHealthPermissionsIfNeeded() async {
     if (await _hasRequestedPermissions()) return;
-    final granted = await _healthService.requestPermissions();
+    final granted = await _healthRepository.requestPermissions();
     if (granted) {
       await _setPermissionsRequested();
     }

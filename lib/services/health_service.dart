@@ -3,8 +3,9 @@ import 'dart:developer' as developer;
 import '../models/activity_summary.dart';
 import '../models/weight_record.dart';
 import '../utils/format_activity_type_name.dart';
+import 'health_data_repository.dart';
 
-class HealthService {
+class HealthService implements HealthDataRepository {
   final Health _health = Health();
 
   static final _types = [

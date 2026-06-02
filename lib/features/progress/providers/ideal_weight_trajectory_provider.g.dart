@@ -7,7 +7,7 @@ part of 'ideal_weight_trajectory_provider.dart';
 // **************************************************************************
 
 String _$idealWeightTrajectoryHash() =>
-    r'351b9e6c9a1aaf325bcffb96bf933fa45cfd2c82';
+    r'f54920bbc805aee3c01ff380dae4b76f4673dd0d';
 
 /// UserGoals.startingBodyWeight + targetWeeklyPercentLoss から
 /// startingBodyWeightDate 〜 当月末日までの理想体重曲線を返す。

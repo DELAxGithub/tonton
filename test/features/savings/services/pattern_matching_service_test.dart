@@ -35,11 +35,7 @@ void main() {
     const startWeight = 68.5;
 
     test('returns low confidence when records < 7 days', () {
-      final records = _genRecords(
-        start: start,
-        days: 5,
-        dailyKcalDeficit: 500,
-      );
+      final records = _genRecords(start: start, days: 5, dailyKcalDeficit: 500);
       final result = PatternMatchingService.classify(
         records: records,
         weightRecords: List.filled(records.length, null),
@@ -106,7 +102,8 @@ void main() {
         dailyKcalDeficit: -300,
       );
       final weights = <WeightRecord?>[
-        for (int i = 0; i < 30; i++) _w(records[i].date, startWeight + i * 0.04),
+        for (int i = 0; i < 30; i++)
+          _w(records[i].date, startWeight + i * 0.04),
       ];
       final plan = <double?>[
         for (int i = 0; i < 30; i++) startWeight - (i / 30 * 1.5),
@@ -120,8 +117,75 @@ void main() {
       expect(result.patternId, DietaryPatternId.rebound);
     });
 
-    test(
-        'regression: 7-day window, theory -0.58kg + actual +0.4kg should NOT '
+    test('uses daily balances across month reset for theory trend', () {
+      final records = <CalorieSavingsRecord>[
+        CalorieSavingsRecord(
+          date: DateTime(2026, 5, 29),
+          caloriesConsumed: 1800,
+          caloriesBurned: 2300,
+          dailyBalance: 500,
+          cumulativeSavings: 12000,
+        ),
+        CalorieSavingsRecord(
+          date: DateTime(2026, 5, 30),
+          caloriesConsumed: 1800,
+          caloriesBurned: 2300,
+          dailyBalance: 500,
+          cumulativeSavings: 12500,
+        ),
+        CalorieSavingsRecord(
+          date: DateTime(2026, 5, 31),
+          caloriesConsumed: 1800,
+          caloriesBurned: 2300,
+          dailyBalance: 500,
+          cumulativeSavings: 13000,
+        ),
+        CalorieSavingsRecord(
+          date: DateTime(2026, 6, 1),
+          caloriesConsumed: 1800,
+          caloriesBurned: 2300,
+          dailyBalance: 500,
+          cumulativeSavings: 500,
+        ),
+        CalorieSavingsRecord(
+          date: DateTime(2026, 6, 2),
+          caloriesConsumed: 1800,
+          caloriesBurned: 2300,
+          dailyBalance: 500,
+          cumulativeSavings: 1000,
+        ),
+        CalorieSavingsRecord(
+          date: DateTime(2026, 6, 3),
+          caloriesConsumed: 1800,
+          caloriesBurned: 2300,
+          dailyBalance: 500,
+          cumulativeSavings: 1500,
+        ),
+        CalorieSavingsRecord(
+          date: DateTime(2026, 6, 4),
+          caloriesConsumed: 1800,
+          caloriesBurned: 2300,
+          dailyBalance: 500,
+          cumulativeSavings: 2000,
+        ),
+      ];
+      final weights = <WeightRecord?>[
+        for (int i = 0; i < records.length; i++)
+          _w(records[i].date, startWeight - i * 0.07),
+      ];
+
+      final result = PatternMatchingService.classify(
+        records: records,
+        weightRecords: weights,
+        idealKgList: List.filled(records.length, null),
+        startingBodyWeightKg: startWeight,
+      );
+
+      expect(result.dataObservation, contains('理論 −0.'));
+      expect(result.dataObservation, isNot(contains('理論 +')));
+    });
+
+    test('regression: 7-day window, theory -0.58kg + actual +0.4kg should NOT '
         'classify as smooth (real user 1.7.1+31)', () {
       // Reproduce the screenshot: 5/3 → 5/9, daily deficit ~640 kcal,
       // weight goes 67.8 → 67.5 → 67.5 → 67.5 → 67.9 → 68.3 → 68.3.
@@ -147,38 +211,42 @@ void main() {
       // Must NOT be smooth — either bodyStall or saltSpike is acceptable
       // (both indicate "actual diverging upward from theory").
       expect(result.patternId, isNot(DietaryPatternId.smooth));
-      expect(
-        [DietaryPatternId.bodyStall, DietaryPatternId.saltSpike],
-        contains(result.patternId),
-      );
+      expect([
+        DietaryPatternId.bodyStall,
+        DietaryPatternId.saltSpike,
+      ], contains(result.patternId));
     });
 
-    test('returns initial water shed when first week drops fast then plateau',
-        () {
-      final records = _genRecords(
-        start: start,
-        days: 30,
-        dailyKcalDeficit: 500,
-      );
-      // First 7 days drop ~1.5kg, then flat.
-      final weights = <WeightRecord?>[];
-      for (int i = 0; i < 30; i++) {
-        if (i < 7) {
-          weights.add(_w(records[i].date, startWeight - (i / 7) * 1.5));
-        } else {
-          weights.add(_w(records[i].date, startWeight - 1.5 - (i - 7) * 0.005));
+    test(
+      'returns initial water shed when first week drops fast then plateau',
+      () {
+        final records = _genRecords(
+          start: start,
+          days: 30,
+          dailyKcalDeficit: 500,
+        );
+        // First 7 days drop ~1.5kg, then flat.
+        final weights = <WeightRecord?>[];
+        for (int i = 0; i < 30; i++) {
+          if (i < 7) {
+            weights.add(_w(records[i].date, startWeight - (i / 7) * 1.5));
+          } else {
+            weights.add(
+              _w(records[i].date, startWeight - 1.5 - (i - 7) * 0.005),
+            );
+          }
         }
-      }
-      final plan = <double?>[
-        for (int i = 0; i < 30; i++) startWeight - (i / 30 * 1.95),
-      ];
-      final result = PatternMatchingService.classify(
-        records: records,
-        weightRecords: weights,
-        idealKgList: plan,
-        startingBodyWeightKg: startWeight,
-      );
-      expect(result.patternId, DietaryPatternId.initialWaterShed);
-    });
+        final plan = <double?>[
+          for (int i = 0; i < 30; i++) startWeight - (i / 30 * 1.95),
+        ];
+        final result = PatternMatchingService.classify(
+          records: records,
+          weightRecords: weights,
+          idealKgList: plan,
+          startingBodyWeightKg: startWeight,
+        );
+        expect(result.patternId, DietaryPatternId.initialWaterShed);
+      },
+    );
   });
 }

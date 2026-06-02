@@ -19,11 +19,12 @@ void main() {
     final completed = ref.watch(onboardingCompletedProvider);
     return GoRouter(
       initialLocation:
-          completed ? TontonRoutes.home : TontonRoutes.onboardingIntro,
+          completed == true ? TontonRoutes.home : TontonRoutes.onboardingIntro,
       routes: [
         GoRoute(
           path: TontonRoutes.home,
-          builder: (_, __) => const Scaffold(body: Text('Home Screen Test Mock')),
+          builder:
+              (_, __) => const Scaffold(body: Text('Home Screen Test Mock')),
         ),
         GoRoute(
           path: TontonRoutes.onboardingIntro,

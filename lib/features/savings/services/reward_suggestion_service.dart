@@ -6,8 +6,8 @@ import 'package:google_generative_ai/google_generative_ai.dart';
 
 import '../models/reward_suggestion.dart';
 
-/// 「ご褒美に使う kcal」を context に渡して、AI が一般的なご褒美フード候補を
-/// 4 件提案する。出力は構造化 JSON のみ・自然文の医療/個別アドバイスは含まない。
+/// 「今月の余白 kcal」を context に渡して、AI が一般的な食事候補を 4 件提案する。
+/// 出力は構造化 JSON のみ・自然文の医療/個別アドバイスは含まない。
 ///
 /// 既存 `DirectGeminiService` と同じ `gemini-2.5-flash` を使用。
 class RewardSuggestionService {
@@ -23,7 +23,7 @@ class RewardSuggestionService {
     return k;
   }
 
-  /// [budgetKcal] kcal 以内のご褒美候補を 4 件取得する。
+  /// [budgetKcal] kcal 以内の食事候補を 4 件取得する。
   ///
   /// [recentMealNames] と [monthlyAchievementPercent] は context として渡される
   /// (なくても動く)。LLM が「最近食べてないジャンル」「PFC 偏り補正」を
@@ -40,7 +40,7 @@ class RewardSuggestionService {
     );
 
     developer.log(
-      'Calling Gemini for reward suggestions (budget=$budgetKcal kcal)',
+      'Calling Gemini for food suggestions (budget=$budgetKcal kcal)',
       name: 'TonTon.RewardSuggestionService',
     );
 
@@ -56,16 +56,16 @@ class RewardSuggestionService {
     required List<String> recentMealNames,
     int? monthlyAchievementPercent,
   }) {
-    final mealsLine = recentMealNames.isEmpty
-        ? '(未提供)'
-        : recentMealNames.take(20).join(', ');
-    final achLine = monthlyAchievementPercent == null
-        ? '(未提供)'
-        : '$monthlyAchievementPercent%';
+    final mealsLine =
+        recentMealNames.isEmpty ? '(未提供)' : recentMealNames.take(20).join(', ');
+    final achLine =
+        monthlyAchievementPercent == null
+            ? '(未提供)'
+            : '$monthlyAchievementPercent%';
 
     return '''
 あなたは食事候補をリストアップするアシスタントです。
-ユーザーがダイエット中に「ご褒美」として食べてもよい kcal 予算が決まっています。
+ユーザーがダイエット中に無理なく楽しめる「余白」として kcal 目安が決まっています。
 その予算 ($budgetKcal kcal) 以内に収まる、一般的に知られている食品/メニューを 4 件提案してください。
 
 参考情報:

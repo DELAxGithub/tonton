@@ -4,7 +4,7 @@ class CalorieSavingsRecord {
   final double caloriesConsumed;
   final double caloriesBurned;
   final double dailyBalance; // Daily difference (burned - consumed)
-  final double cumulativeSavings; // Running total of savings
+  final double cumulativeSavings; // Running total of savings in the month
 
   CalorieSavingsRecord({
     required this.date,

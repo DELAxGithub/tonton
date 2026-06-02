@@ -15,29 +15,33 @@ class DirectGeminiService {
   static String get apiKey {
     if (_apiKey != null) return _apiKey!;
 
-    // Try to get from environment variables first
-    _apiKey = dotenv.env['GEMINI_API_KEY'];
+    const compileTimeKey = String.fromEnvironment('GEMINI_API_KEY');
+    _apiKey =
+        compileTimeKey.isNotEmpty
+            ? compileTimeKey
+            : dotenv.env['GEMINI_API_KEY'] ??
+                Platform.environment['GEMINI_API_KEY'];
 
     if (_apiKey == null || _apiKey!.isEmpty) {
       throw Exception(
-        'Gemini API key not found. Please set GEMINI_API_KEY in .env file',
+        'Gemini API key not found. Please set GEMINI_API_KEY via --dart-define, .env file, or environment variables.',
       );
     }
 
     return _apiKey!;
   }
 
-  Future<EstimatedMealNutrition?> analyzeImage(Uint8List imageBytes, {String mimeType = 'image/jpeg'}) async {
+  Future<EstimatedMealNutrition?> analyzeImage(
+    Uint8List imageBytes, {
+    String mimeType = 'image/jpeg',
+  }) async {
     try {
       developer.log(
         'Starting Gemini image analysis',
         name: 'TonTon.DirectGeminiService',
       );
 
-      final model = GenerativeModel(
-        model: 'gemini-2.5-flash',
-        apiKey: apiKey,
-      );
+      final model = GenerativeModel(model: 'gemini-2.5-flash', apiKey: apiKey);
 
       final prompt = '''
 あなたは専門の栄養士です。
@@ -157,17 +161,16 @@ class DirectGeminiService {
   }
 
   /// テキスト入力から栄養情報を推定する
-  Future<EstimatedMealNutrition?> analyzeTextDescription(String mealDescription) async {
+  Future<EstimatedMealNutrition?> analyzeTextDescription(
+    String mealDescription,
+  ) async {
     try {
       developer.log(
         'Starting Gemini text analysis: $mealDescription',
         name: 'TonTon.DirectGeminiService',
       );
 
-      final model = GenerativeModel(
-        model: 'gemini-2.5-flash',
-        apiKey: apiKey,
-      );
+      final model = GenerativeModel(model: 'gemini-2.5-flash', apiKey: apiKey);
 
       final prompt = '''
 あなたは専門の栄養士です。
@@ -199,7 +202,10 @@ class DirectGeminiService {
 
       final content = [Content.text(prompt)];
 
-      developer.log('Calling Gemini API (text)', name: 'TonTon.DirectGeminiService');
+      developer.log(
+        'Calling Gemini API (text)',
+        name: 'TonTon.DirectGeminiService',
+      );
       final response = await model.generateContent(content);
       final responseText = response.text;
 

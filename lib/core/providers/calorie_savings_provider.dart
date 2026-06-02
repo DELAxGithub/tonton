@@ -2,10 +2,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../models/calorie_savings_record.dart';
 import '../../models/daily_summary.dart';
 import '../../providers/providers.dart';
-import 'onboarding_start_date_provider.dart';
-import 'realtime_calories_provider.dart';
-import '../../features/meal_logging/providers/meal_records_provider.dart';
-import '../../features/progress/providers/selected_period_provider.dart';
 
 // Provider for monthly target
 final monthlySavingsTargetProvider = Provider<double>((ref) {
@@ -43,13 +39,16 @@ final dailySummariesProvider = FutureProvider<List<DailySummary>>((ref) async {
 
   while (!current.isAfter(endDate)) {
     final cached = dataService.getSummary(current);
-    final isToday = current.year == today.year &&
+    final isToday =
+        current.year == today.year &&
         current.month == today.month &&
         current.day == today.day;
     if (cached != null && !isToday) {
       final meals = service.mealRecords.getMealRecordsForDate(current);
-      final currentConsumed =
-          meals.fold<double>(0.0, (sum, m) => sum + m.calories);
+      final currentConsumed = meals.fold<double>(
+        0.0,
+        (sum, m) => sum + m.calories,
+      );
       if ((cached.caloriesConsumed - currentConsumed).abs() < 1.0) {
         summaries.add(cached);
       } else {
@@ -70,15 +69,20 @@ final dailySummariesProvider = FutureProvider<List<DailySummary>>((ref) async {
   return summaries;
 });
 
-// Provider for calorie savings data
-final calorieSavingsDataProvider = FutureProvider<List<CalorieSavingsRecord>>((
-  ref,
-) async {
-  final summariesAsync = await ref.watch(dailySummariesProvider.future);
-  final summaries = summariesAsync;
-
+List<CalorieSavingsRecord> buildMonthlyCalorieSavingsRecords(
+  List<DailySummary> summaries,
+) {
   double runningTotal = 0;
+  int? runningYear;
+  int? runningMonth;
+
   return summaries.map((summary) {
+    if (runningYear != summary.date.year ||
+        runningMonth != summary.date.month) {
+      runningTotal = 0;
+      runningYear = summary.date.year;
+      runningMonth = summary.date.month;
+    }
     final daily = summary.caloriesBurned - summary.caloriesConsumed;
     runningTotal += daily;
     return CalorieSavingsRecord(
@@ -89,6 +93,14 @@ final calorieSavingsDataProvider = FutureProvider<List<CalorieSavingsRecord>>((
       cumulativeSavings: runningTotal,
     );
   }).toList();
+}
+
+// Provider for calorie savings data
+final calorieSavingsDataProvider = FutureProvider<List<CalorieSavingsRecord>>((
+  ref,
+) async {
+  final summaries = await ref.watch(dailySummariesProvider.future);
+  return buildMonthlyCalorieSavingsRecords(summaries);
 });
 
 /// Filtered calorie savings records based on the selected period.
@@ -101,6 +113,11 @@ final filteredCalorieSavingsProvider = Provider<List<CalorieSavingsRecord>>((
   return recordsAsync.maybeWhen(
     data: (records) {
       if (period == SelectedPeriod.all) return records;
+      if (period == SelectedPeriod.month) {
+        final now = DateTime.now();
+        final monthStart = DateTime(now.year, now.month, 1);
+        return records.where((r) => !r.date.isBefore(monthStart)).toList();
+      }
       final days = switch (period) {
         SelectedPeriod.week => 7,
         SelectedPeriod.month => 30,

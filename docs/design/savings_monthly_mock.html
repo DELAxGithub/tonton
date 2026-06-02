@@ -1,0 +1,460 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TonTon 貯金画面 整理案</title>
+  <style>
+    :root {
+      --bg: #fff7f7;
+      --text: #171717;
+      --muted: #77777f;
+      --card: #ffffff;
+      --line: #dadde3;
+      --pink: #ff8e9d;
+      --pink-deep: #e95668;
+      --green: #2e9d64;
+      --blue: #2f73bd;
+      --gray: #90949b;
+      --soft: #f5f6f8;
+      --purple: #a67cf7;
+      --shadow: 0 8px 22px rgba(24, 28, 35, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans",
+        "Yu Gothic", "Segoe UI", sans-serif;
+    }
+
+    .phone {
+      max-width: 430px;
+      margin: 0 auto;
+      padding: 18px 18px 36px;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 10px 0 16px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: 0;
+    }
+
+    .month-pill {
+      padding: 7px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .card {
+      margin-top: 16px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--card);
+      box-shadow: var(--shadow);
+    }
+
+    .overview {
+      background: linear-gradient(160deg, #fff2f4 0%, #ffffff 68%);
+      border-color: #f1ccd2;
+    }
+
+    .overview-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .eyebrow {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .main-value {
+      margin-top: 4px;
+      font-size: 36px;
+      line-height: 1.05;
+      font-weight: 850;
+    }
+
+    .main-value small {
+      font-size: 15px;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .percent {
+      color: var(--pink-deep);
+      font-size: 22px;
+      font-weight: 850;
+      white-space: nowrap;
+    }
+
+    .bar {
+      height: 8px;
+      margin-top: 14px;
+      border-radius: 999px;
+      background: #eef0f4;
+      overflow: hidden;
+    }
+
+    .bar > i {
+      display: block;
+      width: 2.1%;
+      height: 100%;
+      border-radius: 999px;
+      background: var(--pink);
+    }
+
+    .mini-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .mini {
+      min-height: 60px;
+      padding: 9px 10px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.78);
+      border: 1px solid #f0e2e4;
+    }
+
+    .mini span,
+    .weight-cell span {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .mini strong {
+      display: block;
+      margin-top: 4px;
+      font-size: 14px;
+      color: var(--text);
+    }
+
+    .pace {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 12px;
+      padding: 9px 11px;
+      border-radius: 10px;
+      background: #ffe4e7;
+      color: var(--pink-deep);
+      font-size: 13px;
+      font-weight: 750;
+    }
+
+    .card h2 {
+      margin: 0;
+      font-size: 17px;
+      letter-spacing: 0;
+    }
+
+    .hint {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .chart {
+      width: 100%;
+      height: 176px;
+      margin-top: 14px;
+    }
+
+    .segmented {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      width: 230px;
+      margin: 18px auto 0;
+      border: 1px solid #bfc3cb;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #e8e9ed;
+    }
+
+    .segmented button {
+      border: 0;
+      padding: 10px 0;
+      background: transparent;
+      color: #111;
+      font-size: 17px;
+      font-weight: 750;
+    }
+
+    .segmented .active {
+      background: var(--pink);
+      color: #fff;
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .dot {
+      display: inline-block;
+      width: 9px;
+      height: 9px;
+      margin-right: 5px;
+      border-radius: 50%;
+      background: var(--pink);
+    }
+
+    .dot.blue { background: var(--blue); }
+    .dot.gray { background: var(--gray); }
+
+    .weight-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .weight-cell {
+      padding: 10px 8px;
+      border-radius: 10px;
+      background: var(--soft);
+      text-align: center;
+    }
+
+    .weight-cell strong {
+      display: block;
+      margin-top: 4px;
+      font-size: 18px;
+    }
+
+    .food-list {
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .food {
+      display: grid;
+      grid-template-columns: 34px 1fr auto;
+      gap: 10px;
+      align-items: start;
+      padding: 10px;
+      border: 1px solid #efe4f2;
+      border-radius: 10px;
+      background: #fff;
+    }
+
+    .food b {
+      display: block;
+      font-size: 13px;
+    }
+
+    .food p {
+      margin: 2px 0 0;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.35;
+    }
+
+    .kcal {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 750;
+      white-space: nowrap;
+    }
+
+    .button {
+      width: 100%;
+      margin-top: 18px;
+      padding: 15px;
+      border: 0;
+      border-radius: 12px;
+      background: var(--purple);
+      color: #fff;
+      font-size: 16px;
+      font-weight: 800;
+    }
+  </style>
+</head>
+<body>
+  <main class="phone">
+    <header>
+      <h1>カロリー貯金</h1>
+      <div class="month-pill">2026年6月</div>
+    </header>
+
+    <section class="card overview">
+      <div class="overview-top">
+        <div>
+          <div class="eyebrow">今月のカロリー貯金</div>
+          <div class="main-value">+306 <small>kcal</small></div>
+        </div>
+        <div class="percent">2%</div>
+      </div>
+      <div class="bar"><i></i></div>
+      <div class="mini-grid">
+        <div class="mini"><span>今日</span><strong>+306 kcal</strong></div>
+        <div class="mini"><span>残り</span><strong>14,094 kcal</strong></div>
+        <div class="mini"><span>あと</span><strong>29日</strong></div>
+      </div>
+      <div class="pace">△ 目標ペースより遅れています</div>
+    </section>
+
+    <section class="card">
+      <h2>6月の推移</h2>
+      <p class="hint">月初からの増減だけを表示します。</p>
+      <canvas id="savingsChart" class="chart" width="760" height="320"></canvas>
+      <div class="legend">
+        <span><i class="dot"></i>今月の累計</span>
+        <span><i class="dot gray"></i>0 kcalライン</span>
+      </div>
+    </section>
+
+    <div class="segmented">
+      <button class="active">週</button>
+      <button>月</button>
+      <button>全期間</button>
+    </div>
+
+    <section class="card">
+      <h2>体重トレンド</h2>
+      <p class="hint">計画 / 理論 / 実測を同じ体重軸で確認します。</p>
+      <canvas id="weightChart" class="chart" width="760" height="310"></canvas>
+      <div class="weight-grid">
+        <div class="weight-cell"><span>計画</span><strong style="color:#666">-0.41kg</strong></div>
+        <div class="weight-cell"><span>理論</span><strong style="color:var(--pink-deep)">-0.04kg</strong></div>
+        <div class="weight-cell"><span>実測</span><strong style="color:var(--blue)">-0.20kg</strong></div>
+      </div>
+      <div class="legend">
+        <span><i class="dot gray"></i>計画</span>
+        <span><i class="dot"></i>理論</span>
+        <span><i class="dot blue"></i>実測</span>
+      </div>
+    </section>
+
+    <button class="button">楽しみ候補を見る</button>
+
+    <section class="card">
+      <h2>楽しみ候補</h2>
+      <p class="hint">設定ではなく、今月の余白に収まる食べもの候補を画面内で提案します。</p>
+      <div class="food-list">
+        <div class="food">
+          <span style="font-size:24px">🍮</span>
+          <div><b>プリン 1個</b><p>軽めの甘いものとして収まりやすい候補。</p></div>
+          <div class="kcal">180 kcal</div>
+        </div>
+        <div class="food">
+          <span style="font-size:24px">🍗</span>
+          <div><b>からあげ 2個</b><p>食事寄りで満足感を作りやすい候補。</p></div>
+          <div class="kcal">240 kcal</div>
+        </div>
+        <div class="food">
+          <span style="font-size:24px">🍨</span>
+          <div><b>小さめアイス</b><p>量を決めやすく、余白に合わせやすい候補。</p></div>
+          <div class="kcal">210 kcal</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    function drawLineChart(canvasId, series, options = {}) {
+      const canvas = document.getElementById(canvasId);
+      const ctx = canvas.getContext("2d");
+      const width = canvas.width;
+      const height = canvas.height;
+      const pad = { left: 46, right: 18, top: 18, bottom: 42 };
+      const all = series.flatMap((s) => s.values);
+      const min = Math.min(...all, options.min ?? Infinity);
+      const max = Math.max(...all, options.max ?? -Infinity);
+      const range = max - min || 1;
+      const count = series[0].values.length;
+      const xStep = (width - pad.left - pad.right) / (count - 1);
+      const y = (value) => pad.top + (max - value) / range * (height - pad.top - pad.bottom);
+
+      ctx.clearRect(0, 0, width, height);
+      ctx.strokeStyle = "#dde2e8";
+      ctx.lineWidth = 1;
+      ctx.font = "22px -apple-system, BlinkMacSystemFont, sans-serif";
+      ctx.fillStyle = "#77777f";
+
+      for (let i = 0; i <= 4; i++) {
+        const value = min + range * i / 4;
+        const yy = y(value);
+        ctx.beginPath();
+        ctx.moveTo(pad.left, yy);
+        ctx.lineTo(width - pad.right, yy);
+        ctx.stroke();
+        const label = options.k ? `${Math.round(value / 100) / 10}k` : value.toFixed(1);
+        ctx.fillText(label, 4, yy + 7);
+      }
+
+      series.forEach((line) => {
+        ctx.strokeStyle = line.color;
+        ctx.lineWidth = line.width || 5;
+        ctx.setLineDash(line.dash || []);
+        ctx.beginPath();
+        line.values.forEach((value, index) => {
+          const x = pad.left + xStep * index;
+          const yy = y(value);
+          index === 0 ? ctx.moveTo(x, yy) : ctx.lineTo(x, yy);
+        });
+        ctx.stroke();
+
+        if (line.points) {
+          ctx.setLineDash([]);
+          line.values.forEach((value, index) => {
+            const x = pad.left + xStep * index;
+            const yy = y(value);
+            ctx.beginPath();
+            ctx.fillStyle = line.color;
+            ctx.arc(x, yy, 7, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = "#fff";
+            ctx.lineWidth = 4;
+            ctx.stroke();
+          });
+        }
+      });
+      ctx.setLineDash([]);
+    }
+
+    drawLineChart("savingsChart", [
+      { color: "#ff8e9d", values: [0, 306] }
+    ], { min: 0, max: 600, k: true });
+
+    drawLineChart("weightChart", [
+      { color: "#90949b", width: 4, dash: [12, 10], values: [67.8, 67.73, 67.66, 67.60, 67.53, 67.46, 67.39] },
+      { color: "#ff8e9d", values: [67.8, 67.79, 67.77, 67.76, 67.75, 67.74, 67.76], points: true },
+      { color: "#2f73bd", values: [67.8, 67.65, 67.66, 68.3, 67.9, 67.7, 67.6], points: true }
+    ], { min: 67.2, max: 68.4 });
+  </script>
+</body>
+</html>

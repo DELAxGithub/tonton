@@ -40,16 +40,22 @@ class ThreeLineWeightChart extends StatelessWidget {
       return const Center(child: Text('データがありません'));
     }
 
-    // 理論値: cumulative savings (kcal) を kg に変換して開始体重から引く。
-    final theoryKgs = <double>[
-      for (final r in records)
-        startingBodyWeightKg -
-            (r.cumulativeSavings / WeightLossCalculator.kcalPerKg),
-    ];
+    // 理論値: 表示期間の開始点を基準に、期間内の日次収支を積んで kg 換算する。
+    // 月初に cumulativeSavings がリセットされるため、累計値同士の差を使うと
+    // 月またぎの週表示で理論線が急に増える。
+    final chartAnchorWeightKg = _firstMeasuredWeight() ?? startingBodyWeightKg;
+    double visibleSavings = 0;
+    final theoryKgs = <double>[];
+    for (final r in records) {
+      visibleSavings += r.dailyBalance;
+      theoryKgs.add(
+        chartAnchorWeightKg - (visibleSavings / WeightLossCalculator.kcalPerKg),
+      );
+    }
 
     // y 範囲は 3 系列 + 開始体重から決める。
     final allValues = <double>[
-      startingBodyWeightKg,
+      chartAnchorWeightKg,
       ...theoryKgs,
       ...idealKgList.whereType<double>(),
       for (final w in weightRecords)
@@ -61,14 +67,17 @@ class ThreeLineWeightChart extends StatelessWidget {
     final tick = _tickIntervalFor(period: period, range: rawMax - rawMin);
 
     // tick 境界に揃えて余白を 1 ティック分とる。
-    final paddedMin =
-        ((rawMin / tick).floor() * tick - tick * 0.5).clamp(0.0, double.infinity);
+    final paddedMin = ((rawMin / tick).floor() * tick - tick * 0.5).clamp(
+      0.0,
+      double.infinity,
+    );
     final paddedMax = (rawMax / tick).ceil() * tick + tick * 0.5;
 
     // X 軸ラベル間引き間隔
-    final xLabelStride = records.length > 30
-        ? 7
-        : records.length > 14
+    final xLabelStride =
+        records.length > 30
+            ? 7
+            : records.length > 14
             ? 3
             : 1;
 
@@ -82,8 +91,8 @@ class ThreeLineWeightChart extends StatelessWidget {
           show: true,
           drawVerticalLine: false,
           horizontalInterval: tick,
-          getDrawingHorizontalLine: (value) =>
-              FlLine(color: Colors.grey.shade300, strokeWidth: 1),
+          getDrawingHorizontalLine:
+              (value) => FlLine(color: Colors.grey.shade300, strokeWidth: 1),
         ),
         titlesData: FlTitlesData(
           bottomTitles: AxisTitles(
@@ -108,11 +117,6 @@ class ThreeLineWeightChart extends StatelessWidget {
             ),
           ),
           leftTitles: AxisTitles(
-            axisNameWidget: const Text(
-              '体重 (kg)',
-              style: TextStyle(fontSize: 11),
-            ),
-            axisNameSize: 18,
             sideTitles: SideTitles(
               showTitles: true,
               reservedSize: 44,
@@ -192,36 +196,45 @@ class ThreeLineWeightChart extends StatelessWidget {
         ],
         lineTouchData: LineTouchData(
           touchTooltipData: LineTouchTooltipData(
-            getTooltipItems: (spots) => spots.map((spot) {
-              final idx = spot.x.toInt();
-              if (idx < 0 || idx >= records.length) return null;
-              final date = records[idx].date;
-              final dateStr = '${date.month}/${date.day}';
-              final label = switch (spot.barIndex) {
-                0 => '計画',
-                1 => '理論',
-                2 => '実測',
-                _ => '',
-              };
-              final color = switch (spot.barIndex) {
-                0 => Colors.grey.shade700,
-                1 => const Color(0xFFE0576A),
-                2 => const Color(0xFF2A6BB0),
-                _ => Colors.black,
-              };
-              return LineTooltipItem(
-                '$dateStr\n$label: ${spot.y.toStringAsFixed(2)} kg',
-                TextStyle(
-                  color: color,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 11,
-                ),
-              );
-            }).toList(),
+            getTooltipItems:
+                (spots) =>
+                    spots.map((spot) {
+                      final idx = spot.x.toInt();
+                      if (idx < 0 || idx >= records.length) return null;
+                      final date = records[idx].date;
+                      final dateStr = '${date.month}/${date.day}';
+                      final label = switch (spot.barIndex) {
+                        0 => '計画',
+                        1 => '理論',
+                        2 => '実測',
+                        _ => '',
+                      };
+                      final color = switch (spot.barIndex) {
+                        0 => Colors.grey.shade700,
+                        1 => const Color(0xFFE0576A),
+                        2 => const Color(0xFF2A6BB0),
+                        _ => Colors.black,
+                      };
+                      return LineTooltipItem(
+                        '$dateStr\n$label: ${spot.y.toStringAsFixed(2)} kg',
+                        TextStyle(
+                          color: color,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 11,
+                        ),
+                      );
+                    }).toList(),
           ),
         ),
       ),
     );
+  }
+
+  double? _firstMeasuredWeight() {
+    for (final record in weightRecords) {
+      if (record != null) return record.weight;
+    }
+    return null;
   }
 
   /// 期間別に y 軸の tick 間隔 (kg) を返す。
@@ -232,16 +245,14 @@ class ThreeLineWeightChart extends StatelessWidget {
   }) {
     switch (period) {
       case SelectedPeriod.week:
-        return 0.1;
       case SelectedPeriod.month:
-        return 0.25;
       case SelectedPeriod.quarter:
-        return 0.5;
       case SelectedPeriod.all:
         if (range <= 1) return 0.1;
-        if (range <= 3) return 0.25;
-        if (range <= 6) return 0.5;
-        return 1.0;
+        if (range <= 1.5) return 0.25;
+        if (range <= 3) return 0.5;
+        if (range <= 6) return 1.0;
+        return 2.0;
     }
   }
 }

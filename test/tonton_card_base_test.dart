@@ -11,11 +11,12 @@ void main() {
       ),
     );
 
-    final materialFinder = find.descendant(
+    final containerFinder = find.descendant(
       of: find.byType(TontonCardBase),
-      matching: find.byType(Material),
+      matching: find.byType(Container),
     );
-    final material = tester.widget<Material>(materialFinder);
-    expect(material.elevation, Elevation.level1);
+    final container = tester.widget<Container>(containerFinder.first);
+    final decoration = container.decoration! as BoxDecoration;
+    expect(decoration.boxShadow, Elevation.shadowLevel1);
   });
 }

@@ -1,26 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../providers/providers.dart';
 import '../../../models/calorie_savings_record.dart';
 import '../../../models/weight_record.dart';
-import '../../../design_system/organisms/hero_piggy_bank_display.dart';
 import '../../../design_system/atoms/tonton_button.dart';
 import '../../../utils/weight_loss_calculator.dart';
 import '../../../widgets/three_line_weight_chart.dart';
 import '../../../routes/router.dart';
-import '../../../utils/icon_mapper.dart';
 import '../../health/providers/weight_history_provider.dart';
 import '../../progress/providers/ideal_weight_trajectory_provider.dart';
-import '../../progress/widgets/monthly_goal_progress_card.dart';
+import '../../progress/providers/monthly_goal_progress_provider.dart';
 import '../models/pattern_narrative.dart';
 import '../services/pattern_matching_service.dart';
 import '../services/pattern_narrative_service.dart';
 import '../models/dietary_pattern.dart';
 import '../widgets/pattern_dictionary_card.dart';
 
-/// 貯金タブ。結果軸（カロリー貯金 + 体重 + 月次達成度 + ご褒美）に集約。
+/// 貯金タブ。結果軸（カロリー貯金 + 体重 + 楽しみ枠）に集約。
 /// 食事の日別履歴は記録タブに寄せた。
 class SavingsScreen extends ConsumerWidget {
   const SavingsScreen({super.key});
@@ -34,10 +33,15 @@ class SavingsScreen extends ConsumerWidget {
     return allRecordsAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (e, _) => Center(child: Text('Error: $e')),
-      data: (_) {
+      data: (allRecords) {
         final startDate = ref.watch(onboardingStartDateProvider);
+        final now = DateTime.now();
+        final monthStart = DateTime(now.year, now.month, 1);
 
         final records = List<CalorieSavingsRecord>.from(filteredRecords);
+        final currentMonthRecords = List<CalorieSavingsRecord>.from(
+          allRecords.where((r) => !r.date.isBefore(monthStart)),
+        );
 
         if (startDate != null && records.isNotEmpty) {
           final firstAllowed = DateTime(
@@ -46,6 +50,7 @@ class SavingsScreen extends ConsumerWidget {
             startDate.day,
           );
           records.removeWhere((r) => r.date.isBefore(firstAllowed));
+          currentMonthRecords.removeWhere((r) => r.date.isBefore(firstAllowed));
         }
 
         // Align weight + ideal trajectory by date so the chart can draw both
@@ -74,15 +79,17 @@ class SavingsScreen extends ConsumerWidget {
         ];
 
         final cumulativeSavings =
-            records.isNotEmpty ? records.last.cumulativeSavings : 0.0;
-        final weeklyAvg = ref.watch(weeklyAverageSavingsProvider);
-        final periodText = switch (period) {
-          SelectedPeriod.week => '過去7日間',
-          SelectedPeriod.month => '過去30日間',
-          SelectedPeriod.quarter => '過去30日間',
-          SelectedPeriod.all => '全期間',
-        };
-
+            currentMonthRecords.isNotEmpty
+                ? currentMonthRecords.last.cumulativeSavings
+                : 0.0;
+        final todaysBalance =
+            currentMonthRecords.isNotEmpty &&
+                    currentMonthRecords.last.date.year == now.year &&
+                    currentMonthRecords.last.date.month == now.month &&
+                    currentMonthRecords.last.date.day == now.day
+                ? currentMonthRecords.last.dailyBalance
+                : 0.0;
+        final monthlyProgress = ref.watch(monthlyGoalProgressProvider);
         return SafeArea(
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -98,53 +105,22 @@ class SavingsScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: 16),
 
-                // ヒーローカード
-                const HeroPiggyBankDisplay(),
-                const SizedBox(height: 20),
-
-                // 累計サマリーカード
-                _CumulativeSummaryCard(
+                _MonthlyOverviewCard(
                   cumulativeSavings: cumulativeSavings,
-                  weeklyAvg: weeklyAvg,
-                  periodText: periodText,
+                  todaysBalance: todaysBalance,
+                  monthlyProgress: monthlyProgress,
                 ),
                 const SizedBox(height: 20),
 
-                // 月次目標達成度（記録タブから移植）
-                const MonthlyGoalProgressCard(),
-                const SizedBox(height: 20),
-
-                // 期間セレクター
-                Center(
-                  child: SegmentedButton<SelectedPeriod>(
-                    segments: const [
-                      ButtonSegment(
-                        value: SelectedPeriod.week,
-                        label: Text('週'),
-                      ),
-                      ButtonSegment(
-                        value: SelectedPeriod.month,
-                        label: Text('月'),
-                      ),
-                      ButtonSegment(
-                        value: SelectedPeriod.all,
-                        label: Text('全期間'),
-                      ),
-                    ],
-                    selected: {period},
-                    onSelectionChanged: (Set<SelectedPeriod> newSelection) {
-                      ref.read(selectedPeriodProvider.notifier).state =
-                          newSelection.first;
-                    },
-                  ),
-                ),
+                _MonthlySavingsTrendCard(records: currentMonthRecords),
                 const SizedBox(height: 20),
 
                 // 体重トレンドチャート (3線並走 / kg軸単独)
                 Builder(
                   builder: (_) {
                     final goals = ref.watch(userGoalsProvider);
-                    final startWeight = goals.startingBodyWeightKg ??
+                    final startWeight =
+                        goals.startingBodyWeightKg ??
                         goals.bodyWeightKg ??
                         (records.isNotEmpty &&
                                 weightRecords.isNotEmpty &&
@@ -195,11 +171,11 @@ class SavingsScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: 20),
 
-                // ご褒美ボタン
+                // 楽しみ枠の候補ボタン
                 Center(
                   child: TontonButton.primary(
-                    label: 'ご褒美を使う',
-                    icon: TontonIcons.present,
+                    label: '楽しみ候補を見る',
+                    icon: Icons.restaurant_menu,
                     onPressed: () => context.push(TontonRoutes.useSavings),
                   ),
                 ),
@@ -213,9 +189,176 @@ class SavingsScreen extends ConsumerWidget {
   }
 }
 
+class _MonthlySavingsTrendCard extends StatelessWidget {
+  final List<CalorieSavingsRecord> records;
+
+  const _MonthlySavingsTrendCard({required this.records});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final monthLabel = DateTime.now().month;
+
+    final values = records.map((r) => r.cumulativeSavings).toList();
+    final minValue =
+        values.isEmpty ? 0.0 : values.reduce((a, b) => a < b ? a : b);
+    final maxValue =
+        values.isEmpty ? 0.0 : values.reduce((a, b) => a > b ? a : b);
+    final yPadding = ((maxValue - minValue).abs() * 0.15).clamp(200.0, 1200.0);
+    final minY = (minValue - yPadding).clamp(-100000.0, 0.0);
+    final maxY = (maxValue + yPadding).clamp(500.0, 100000.0);
+    final stride =
+        records.length > 20
+            ? 7
+            : records.length > 10
+            ? 3
+            : 1;
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '$monthLabel月の推移',
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              '月初からの増減だけを表示します',
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+              ),
+            ),
+            const SizedBox(height: 16),
+            SizedBox(
+              height: 180,
+              child:
+                  records.isEmpty
+                      ? Center(
+                        child: Text(
+                          '今月の記録はまだありません',
+                          style: theme.textTheme.bodyMedium,
+                        ),
+                      )
+                      : LineChart(
+                        LineChartData(
+                          minX: 0,
+                          maxX: (records.length - 1).toDouble(),
+                          minY: minY.toDouble(),
+                          maxY: maxY.toDouble(),
+                          gridData: FlGridData(
+                            show: true,
+                            drawVerticalLine: false,
+                            getDrawingHorizontalLine:
+                                (value) => FlLine(
+                                  color: theme.colorScheme.outline.withValues(
+                                    alpha: 0.18,
+                                  ),
+                                  strokeWidth: 1,
+                                ),
+                          ),
+                          titlesData: FlTitlesData(
+                            topTitles: const AxisTitles(
+                              sideTitles: SideTitles(showTitles: false),
+                            ),
+                            rightTitles: const AxisTitles(
+                              sideTitles: SideTitles(showTitles: false),
+                            ),
+                            leftTitles: AxisTitles(
+                              sideTitles: SideTitles(
+                                showTitles: true,
+                                reservedSize: 44,
+                                getTitlesWidget:
+                                    (value, meta) => Text(
+                                      value.abs() >= 1000
+                                          ? '${(value / 1000).toStringAsFixed(1)}k'
+                                          : value.toStringAsFixed(0),
+                                      style: const TextStyle(fontSize: 10),
+                                    ),
+                              ),
+                            ),
+                            bottomTitles: AxisTitles(
+                              sideTitles: SideTitles(
+                                showTitles: true,
+                                reservedSize: 28,
+                                getTitlesWidget: (value, meta) {
+                                  final index = value.toInt();
+                                  if (index < 0 || index >= records.length) {
+                                    return const SizedBox.shrink();
+                                  }
+                                  if (index % stride != 0) {
+                                    return const SizedBox.shrink();
+                                  }
+                                  return Padding(
+                                    padding: const EdgeInsets.only(top: 4),
+                                    child: Text(
+                                      '${records[index].date.day}日',
+                                      style: const TextStyle(fontSize: 10),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                          ),
+                          lineBarsData: [
+                            LineChartBarData(
+                              spots: [
+                                for (int i = 0; i < records.length; i++)
+                                  FlSpot(
+                                    i.toDouble(),
+                                    records[i].cumulativeSavings,
+                                  ),
+                              ],
+                              isCurved: true,
+                              color: theme.colorScheme.primary,
+                              barWidth: 3,
+                              belowBarData: BarAreaData(
+                                show: true,
+                                color: theme.colorScheme.primary.withValues(
+                                  alpha: 0.12,
+                                ),
+                              ),
+                              dotData: FlDotData(show: records.length <= 14),
+                            ),
+                          ],
+                          lineTouchData: LineTouchData(
+                            touchTooltipData: LineTouchTooltipData(
+                              getTooltipItems:
+                                  (spots) =>
+                                      spots.map((spot) {
+                                        final index = spot.x.toInt();
+                                        if (index < 0 ||
+                                            index >= records.length)
+                                          return null;
+                                        final record = records[index];
+                                        return LineTooltipItem(
+                                          '${record.date.month}/${record.date.day}\n'
+                                          '${record.cumulativeSavings.toStringAsFixed(0)} kcal',
+                                          TextStyle(
+                                            color: theme.colorScheme.primary,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        );
+                                      }).toList(),
+                            ),
+                          ),
+                        ),
+                      ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 /// 3 線並走チャート + 直下の 3 セル数値リードアウト (計画/理論/実測)。
 /// 旧 ExpectedVsActualCard を吸収する役割。
-class _ThreeLineChartCard extends StatelessWidget {
+class _ThreeLineChartCard extends ConsumerWidget {
   final List<CalorieSavingsRecord> records;
   final List<WeightRecord?> weightRecords;
   final List<double?> idealKgList;
@@ -231,37 +374,37 @@ class _ThreeLineChartCard extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    // Compute deltas from start weight for the readout.
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Compute visible-period deltas for the readout.
     String fmtDelta(double kg) {
       final sign = kg >= 0 ? '+' : '−';
       return '$sign${kg.abs().toStringAsFixed(2)}kg';
     }
 
     double? planDeltaKg;
-    if (idealKgList.isNotEmpty) {
-      // Last non-null ideal point.
-      for (final ideal in idealKgList.reversed) {
-        if (ideal != null) {
-          planDeltaKg = ideal - startingBodyWeightKg;
-          break;
-        }
-      }
+    final planValues = idealKgList.whereType<double>().toList();
+    if (planValues.length >= 2) {
+      planDeltaKg = planValues.last - planValues.first;
     }
 
     double? theoryDeltaKg;
     if (records.isNotEmpty) {
-      theoryDeltaKg =
-          -records.last.cumulativeSavings / WeightLossCalculator.kcalPerKg;
+      final visibleSavings = records.fold<double>(
+        0,
+        (sum, record) => sum + record.dailyBalance,
+      );
+      theoryDeltaKg = -visibleSavings / WeightLossCalculator.kcalPerKg;
     }
 
     double? actualDeltaKg;
-    for (final w in weightRecords.reversed) {
-      if (w != null) {
-        actualDeltaKg = w.weight - startingBodyWeightKg;
-        break;
-      }
+    final actualValues = [
+      for (final w in weightRecords)
+        if (w != null) w.weight,
+    ];
+    if (actualValues.length >= 2) {
+      actualDeltaKg = actualValues.last - actualValues.first;
     }
+    final theme = Theme.of(context);
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -275,19 +418,25 @@ class _ThreeLineChartCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            '体重トレンド',
-            style: Theme.of(
-              context,
-            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Text(
+                  '体重トレンド',
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              _TrendPeriodSelector(period: period),
+            ],
           ),
           const SizedBox(height: 4),
           Text(
-            '計画 (灰破線) / 理論 = カロリー貯金÷7700 / 実測 (HealthKit)',
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: Theme.of(
-                context,
-              ).colorScheme.onSurface.withValues(alpha: 0.6),
+            '計画 (灰破線) / 理論 = 期間内の日次収支÷7700 / 実測 (HealthKit)',
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
             ),
           ),
           const SizedBox(height: 12),
@@ -329,6 +478,38 @@ class _ThreeLineChartCard extends StatelessWidget {
   }
 }
 
+class _TrendPeriodSelector extends ConsumerWidget {
+  final SelectedPeriod period;
+
+  const _TrendPeriodSelector({required this.period});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return SegmentedButton<SelectedPeriod>(
+      showSelectedIcon: false,
+      style: ButtonStyle(
+        visualDensity: VisualDensity.compact,
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        padding: const WidgetStatePropertyAll(
+          EdgeInsets.symmetric(horizontal: 8),
+        ),
+        textStyle: WidgetStatePropertyAll(
+          Theme.of(context).textTheme.labelSmall,
+        ),
+      ),
+      segments: const [
+        ButtonSegment(value: SelectedPeriod.week, label: Text('7日')),
+        ButtonSegment(value: SelectedPeriod.month, label: Text('今月')),
+        ButtonSegment(value: SelectedPeriod.all, label: Text('全期間')),
+      ],
+      selected: {period},
+      onSelectionChanged: (newSelection) {
+        ref.read(selectedPeriodProvider.notifier).state = newSelection.first;
+      },
+    );
+  }
+}
+
 class _ReadoutCell extends StatelessWidget {
   final String label;
   final String value;
@@ -346,10 +527,9 @@ class _ReadoutCell extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
         decoration: BoxDecoration(
-          color: Theme.of(context)
-              .colorScheme
-              .surfaceContainerHighest
-              .withValues(alpha: 0.5),
+          color: Theme.of(
+            context,
+          ).colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
           borderRadius: BorderRadius.circular(8),
         ),
         child: Column(
@@ -377,40 +557,46 @@ class _ReadoutCell extends StatelessWidget {
   }
 }
 
-/// 累計貯金サマリーカード
-class _CumulativeSummaryCard extends StatelessWidget {
+class _MonthlyOverviewCard extends StatelessWidget {
   final double cumulativeSavings;
-  final double weeklyAvg;
-  final String periodText;
+  final double todaysBalance;
+  final MonthlyGoalProgress monthlyProgress;
 
-  const _CumulativeSummaryCard({
+  const _MonthlyOverviewCard({
     required this.cumulativeSavings,
-    required this.weeklyAvg,
-    required this.periodText,
+    required this.todaysBalance,
+    required this.monthlyProgress,
   });
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final progressPercent = (monthlyProgress.progressRatio * 100).clamp(0, 999);
+    final barProgress = monthlyProgress.progressRatio.clamp(0.0, 1.0);
+    final paceColor = _paceColor(monthlyProgress.pace, theme);
+    final todayText =
+        '${todaysBalance >= 0 ? "+" : ""}${todaysBalance.toStringAsFixed(0)} kcal';
+
     return Card(
       elevation: 2,
-      color: Theme.of(context).colorScheme.primaryContainer,
+      color: theme.colorScheme.primaryContainer,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: Theme.of(
-                      context,
-                    ).colorScheme.primary.withValues(alpha: 0.1),
+                    color: theme.colorScheme.primary.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Icon(
                     Icons.savings_outlined,
-                    color: Theme.of(context).colorScheme.primary,
+                    color: theme.colorScheme.primary,
                     size: 24,
                   ),
                 ),
@@ -420,26 +606,69 @@ class _CumulativeSummaryCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        '累計カロリー貯金',
-                        style: Theme.of(
-                          context,
-                        ).textTheme.labelMedium?.copyWith(
-                          color: Theme.of(context)
-                              .colorScheme
-                              .onPrimaryContainer
+                        '今月のカロリー貯金',
+                        style: theme.textTheme.labelMedium?.copyWith(
+                          color: theme.colorScheme.onPrimaryContainer
                               .withValues(alpha: 0.7),
                         ),
                       ),
                       const SizedBox(height: 2),
                       Text(
                         '${cumulativeSavings > 0 ? "+" : ""}${cumulativeSavings.toStringAsFixed(0)} kcal',
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        style: theme.textTheme.headlineSmall?.copyWith(
                           fontWeight: FontWeight.bold,
-                          color:
-                              Theme.of(context).colorScheme.onPrimaryContainer,
+                          color: theme.colorScheme.onPrimaryContainer,
                         ),
                       ),
                     ],
+                  ),
+                ),
+                Text(
+                  '${progressPercent.round()}%',
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    color: paceColor,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(999),
+              child: LinearProgressIndicator(
+                value: barProgress.toDouble(),
+                minHeight: 8,
+                backgroundColor: theme.colorScheme.surface.withValues(
+                  alpha: 0.72,
+                ),
+                valueColor: AlwaysStoppedAnimation<Color>(paceColor),
+              ),
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: _MiniMetric(
+                    label: '今日',
+                    value: todayText,
+                    color:
+                        todaysBalance >= 0 ? Colors.green.shade700 : paceColor,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: _MiniMetric(
+                    label: '残り',
+                    value: '${monthlyProgress.remainingKcal.round()} kcal',
+                    color: theme.colorScheme.onPrimaryContainer,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: _MiniMetric(
+                    label: 'あと',
+                    value: '${monthlyProgress.daysRemaining}日',
+                    color: theme.colorScheme.onPrimaryContainer,
                   ),
                 ),
               ],
@@ -448,30 +677,23 @@ class _CumulativeSummaryCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surface,
+                color: theme.colorScheme.surface,
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Row(
                 children: [
                   Icon(
-                    weeklyAvg > 0
-                        ? Icons.thumb_up_outlined
-                        : Icons.info_outline,
+                    _paceIcon(monthlyProgress.pace),
                     size: 16,
-                    color: Theme.of(
-                      context,
-                    ).colorScheme.onSurface.withValues(alpha: 0.7),
+                    color: paceColor,
                   ),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      weeklyAvg > 0
-                          ? '$periodTextの平均: +${weeklyAvg.toStringAsFixed(0)} kcal/日'
-                          : '$periodTextの貯金を確認してみましょう',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Theme.of(
-                          context,
-                        ).colorScheme.onSurface.withValues(alpha: 0.8),
+                      _paceText(monthlyProgress.pace),
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: paceColor,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                   ),
@@ -480,6 +702,88 @@ class _CumulativeSummaryCard extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Color _paceColor(MonthlyPace pace, ThemeData theme) {
+    switch (pace) {
+      case MonthlyPace.onTrack:
+        return Colors.green.shade600;
+      case MonthlyPace.slightlyBehind:
+        return Colors.orange.shade700;
+      case MonthlyPace.wayBehind:
+        return Colors.red.shade600;
+      case MonthlyPace.notStarted:
+        return theme.colorScheme.outline;
+    }
+  }
+
+  IconData _paceIcon(MonthlyPace pace) {
+    switch (pace) {
+      case MonthlyPace.onTrack:
+        return Icons.check_circle_outline;
+      case MonthlyPace.slightlyBehind:
+        return Icons.info_outline;
+      case MonthlyPace.wayBehind:
+        return Icons.warning_amber;
+      case MonthlyPace.notStarted:
+        return Icons.hourglass_empty;
+    }
+  }
+
+  String _paceText(MonthlyPace pace) {
+    switch (pace) {
+      case MonthlyPace.onTrack:
+        return '今月はペース内です';
+      case MonthlyPace.slightlyBehind:
+        return '少し遅れていますが調整できます';
+      case MonthlyPace.wayBehind:
+        return '目標ペースより遅れています';
+      case MonthlyPace.notStarted:
+        return '今月はこれからです';
+    }
+  }
+}
+
+class _MiniMetric extends StatelessWidget {
+  final String label;
+  final String value;
+  final Color color;
+
+  const _MiniMetric({
+    required this.label,
+    required this.value,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface.withValues(alpha: 0.82),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.55),
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            value,
+            style: theme.textTheme.labelLarge?.copyWith(
+              color: color,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -557,10 +861,11 @@ class _PatternMatchSectionState extends State<_PatternMatchSection> {
           icon: const Icon(Icons.search, size: 18),
           label: const Text('いま何が起きてる？'),
           style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFFB08AFF),
-            foregroundColor: Colors.white,
+            backgroundColor: const Color(0xFFF5EDFF),
+            foregroundColor: const Color(0xFF5B3EA8),
             padding: const EdgeInsets.symmetric(vertical: 12),
             shape: RoundedRectangleBorder(
+              side: const BorderSide(color: Color(0xFFDCC9F0)),
               borderRadius: BorderRadius.circular(10),
             ),
             textStyle: const TextStyle(

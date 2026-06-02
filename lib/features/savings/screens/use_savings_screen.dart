@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 
 import '../../../design_system/atoms/tonton_button.dart';
 import '../../../design_system/templates/standard_page_layout.dart';
 import '../../../providers/providers.dart';
-import '../../../utils/icon_mapper.dart';
 import '../models/reward_suggestion.dart';
 import '../services/reward_suggestion_service.dart';
 
@@ -18,7 +16,6 @@ class UseSavingsScreen extends ConsumerStatefulWidget {
 }
 
 class _UseSavingsScreenState extends ConsumerState<UseSavingsScreen> {
-  DateTime _selectedDate = DateTime.now();
   double _amountToUse = 0;
 
   bool _suggestionsLoading = false;
@@ -26,16 +23,10 @@ class _UseSavingsScreenState extends ConsumerState<UseSavingsScreen> {
   List<RewardSuggestion> _suggestions = const [];
   RewardSuggestion? _pickedSuggestion;
 
-  Future<void> _pickDate() async {
-    final picked = await showDatePicker(
-      context: context,
-      initialDate: _selectedDate,
-      firstDate: DateTime.now().subtract(const Duration(days: 365)),
-      lastDate: DateTime.now().add(const Duration(days: 365)),
-    );
-    if (picked != null) {
-      setState(() => _selectedDate = picked);
-    }
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _fetchSuggestions());
   }
 
   Future<void> _confirm() async {
@@ -44,23 +35,26 @@ class _UseSavingsScreenState extends ConsumerState<UseSavingsScreen> {
         .deduct(_amountToUse.roundToDouble());
     if (!mounted) return;
     final pickedName = _pickedSuggestion?.name;
-    final msg = pickedName != null
-        ? '${_amountToUse.round()} kcal を使いました ($pickedName)'
-        : '${_amountToUse.round()} kcal を使いました';
+    final msg =
+        pickedName != null
+            ? '$pickedName を楽しみ枠に入れました'
+            : '${_amountToUse.round()} kcal を楽しみ枠に入れました';
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
     context.pop();
   }
 
   Future<void> _fetchSuggestions() async {
+    final balance = ref.read(savingsBalanceProvider).round();
+    final budgetKcal = balance > 0 ? balance.clamp(100, 1000).toInt() : 350;
+
     setState(() {
       _suggestionsLoading = true;
       _suggestionsError = null;
       _suggestions = const [];
       _pickedSuggestion = null;
+      _amountToUse = budgetKcal.toDouble();
     });
     try {
-      final budget = _amountToUse.round();
-      final budgetKcal = budget > 0 ? budget : 500; // フォールバック
       final result = await RewardSuggestionService.suggest(
         budgetKcal: budgetKcal,
       );
@@ -81,7 +75,7 @@ class _UseSavingsScreenState extends ConsumerState<UseSavingsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('ご褒美設定')),
+      appBar: AppBar(title: const Text('楽しみ候補')),
       body: StandardPageLayout(
         children: [
           Consumer(
@@ -97,18 +91,19 @@ class _UseSavingsScreenState extends ConsumerState<UseSavingsScreen> {
                 child: Column(
                   children: [
                     Text(
-                      '使える貯金',
+                      '今月の楽しみ枠',
                       style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                        color: Theme.of(context)
-                            .colorScheme
-                            .onPrimaryContainer
-                            .withValues(alpha: 0.7),
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onPrimaryContainer.withValues(alpha: 0.7),
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       '$balance kcal',
-                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                      style: Theme.of(
+                        context,
+                      ).textTheme.headlineMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: Theme.of(context).colorScheme.onPrimaryContainer,
                       ),
@@ -119,31 +114,24 @@ class _UseSavingsScreenState extends ConsumerState<UseSavingsScreen> {
             },
           ),
           const SizedBox(height: 16),
-          ListTile(
-            leading: Icon(TontonIcons.calendar),
-            title: const Text('いつのご褒美にする？'),
-            subtitle: Text(DateFormat.yMd().format(_selectedDate)),
-            onTap: _pickDate,
-          ),
-          const SizedBox(height: 8),
-          Text('いくら使う？ (${_amountToUse.round()} kcal)'),
-          Slider(
-            value: _amountToUse,
-            onChanged: (v) => setState(() => _amountToUse = v),
-            min: 0,
-            max: 1000,
-            divisions: 20,
+          Text(
+            '食べるものを「許可/禁止」で決めるより、今月の余白に収まる候補として選びます。',
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurface.withValues(alpha: 0.68),
+              height: 1.5,
+            ),
           ),
           const SizedBox(height: 16),
 
-          // ----- AI suggestions section -----
           _buildSuggestionsSection(context),
 
           const SizedBox(height: 24),
           TontonButton.primary(
-            label: 'この内容でご褒美を設定！',
-            icon: TontonIcons.present,
-            onPressed: _amountToUse > 0 ? _confirm : null,
+            label: 'これを楽しみ枠にする',
+            icon: Icons.check,
+            onPressed: _pickedSuggestion == null ? null : _confirm,
           ),
         ],
       ),
@@ -169,10 +157,7 @@ class _UseSavingsScreenState extends ConsumerState<UseSavingsScreen> {
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 6,
-                  vertical: 2,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
                     colors: [Color(0xFFB08AFF), Color(0xFF7EAAFF)],
@@ -191,7 +176,7 @@ class _UseSavingsScreenState extends ConsumerState<UseSavingsScreen> {
               const SizedBox(width: 8),
               const Expanded(
                 child: Text(
-                  'ご褒美フードの候補',
+                  '食べてもよさそうな候補',
                   style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
                 ),
               ),
@@ -203,8 +188,7 @@ class _UseSavingsScreenState extends ConsumerState<UseSavingsScreen> {
                 )
               else
                 IconButton(
-                  onPressed:
-                      _amountToUse > 0 ? _fetchSuggestions : null,
+                  onPressed: _fetchSuggestions,
                   icon: const Icon(Icons.refresh, size: 18),
                   visualDensity: VisualDensity.compact,
                   padding: EdgeInsets.zero,
@@ -218,7 +202,7 @@ class _UseSavingsScreenState extends ConsumerState<UseSavingsScreen> {
               !_suggestionsLoading &&
               _suggestionsError == null) ...[
             Text(
-              '使う kcal を決めて「↻」で AI 候補を取得します。',
+              '今月の余白に合わせた候補を取得します。',
               style: TextStyle(
                 fontSize: 11,
                 color: Colors.grey.shade700,
@@ -227,9 +211,9 @@ class _UseSavingsScreenState extends ConsumerState<UseSavingsScreen> {
             ),
             const SizedBox(height: 8),
             ElevatedButton.icon(
-              onPressed: _amountToUse > 0 ? _fetchSuggestions : null,
+              onPressed: _fetchSuggestions,
               icon: const Icon(Icons.auto_awesome, size: 16),
-              label: const Text('AI に提案してもらう'),
+              label: const Text('候補を出す'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFFB08AFF),
                 foregroundColor: Colors.white,
@@ -267,7 +251,7 @@ class _UseSavingsScreenState extends ConsumerState<UseSavingsScreen> {
           if (_suggestions.isNotEmpty) ...[
             const SizedBox(height: 10),
             Text(
-              '※ 一般情報の提示です。医療判断は専門家にご相談ください。',
+              '※ 一般的な食品候補です。体調や制限がある場合は無理せず調整してください。',
               style: TextStyle(
                 fontSize: 9,
                 color: Colors.grey.shade600,
@@ -301,13 +285,12 @@ class _RewardSuggestionTile extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
-          color: selected
-              ? const Color(0xFFFFF0EE)
-              : Colors.white.withValues(alpha: 0.9),
+          color:
+              selected
+                  ? const Color(0xFFFFF0EE)
+                  : Colors.white.withValues(alpha: 0.9),
           border: Border.all(
-            color: selected
-                ? const Color(0xFFFF9AA2)
-                : const Color(0xFFEFE6F2),
+            color: selected ? const Color(0xFFFF9AA2) : const Color(0xFFEFE6F2),
             width: selected ? 2 : 1,
           ),
           borderRadius: BorderRadius.circular(10),

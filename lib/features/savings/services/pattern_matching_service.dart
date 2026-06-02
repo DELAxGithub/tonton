@@ -54,12 +54,18 @@ class PatternMatchingService {
 
     final n = records.length;
 
-    // 理論線 (kg)
-    final theoryKgs = <double>[
-      for (final r in records)
+    // 理論線 (kg): 表示期間内の日次収支を積む。
+    // cumulativeSavings は月初にリセットされるため、月またぎの期間判定に
+    // 直接使うと理論線が突然増えたように見える。
+    double visibleSavings = 0;
+    final theoryKgs = <double>[];
+    for (final r in records) {
+      visibleSavings += r.dailyBalance;
+      theoryKgs.add(
         startingBodyWeightKg -
-            (r.cumulativeSavings / WeightLossCalculator.kcalPerKg),
-    ];
+            (visibleSavings / WeightLossCalculator.kcalPerKg),
+      );
+    }
 
     // 実測 (有効値のみ)
     final actualKgs = <int, double>{};
@@ -77,13 +83,14 @@ class PatternMatchingService {
     }
 
     // ----- 統計量 -----
-    final theoryDelta = theoryKgs.last - theoryKgs.first; // 負 = 減量
-    final actualDelta = hasActual
-        ? actualKgs.values.last - actualKgs.values.first
-        : 0.0;
-    final planDelta = planKgs.isNotEmpty
-        ? planKgs.values.last - planKgs.values.first
-        : theoryDelta;
+    final theoryDelta =
+        -visibleSavings / WeightLossCalculator.kcalPerKg; // 負 = 減量
+    final actualDelta =
+        hasActual ? actualKgs.values.last - actualKgs.values.first : 0.0;
+    final planDelta =
+        planKgs.isNotEmpty
+            ? planKgs.values.last - planKgs.values.first
+            : theoryDelta;
 
     // 実測のトレンド除去後の標準偏差 (= 折れ線の "ジグザグ度")。
     // 単純な std だと右肩下がりの単調減少でも値が大きくなる (range/√12) ため、
@@ -96,10 +103,12 @@ class PatternMatchingService {
       final span = last.key - first.key;
       final slope = span > 0 ? (last.value - first.value) / span : 0;
       final residuals = <double>[
-        for (final e in entries) e.value - (first.value + slope * (e.key - first.key)),
+        for (final e in entries)
+          e.value - (first.value + slope * (e.key - first.key)),
       ];
       final mean = residuals.reduce((a, b) => a + b) / residuals.length;
-      final variance = residuals
+      final variance =
+          residuals
               .map((r) => (r - mean) * (r - mean))
               .reduce((a, b) => a + b) /
           residuals.length;
@@ -107,36 +116,36 @@ class PatternMatchingService {
     }
 
     // 半分前後で実測の slope を比較 (whoosh 検出に使う)
-    final firstHalfActual = actualKgs.entries
-        .where((e) => e.key < n / 2)
-        .map((e) => e.value)
-        .toList();
-    final secondHalfActual = actualKgs.entries
-        .where((e) => e.key >= n / 2)
-        .map((e) => e.value)
-        .toList();
-    final firstHalfDrop = firstHalfActual.length >= 2
-        ? firstHalfActual.last - firstHalfActual.first
-        : 0.0;
-    final secondHalfDrop = secondHalfActual.length >= 2
-        ? secondHalfActual.last - secondHalfActual.first
-        : 0.0;
+    final firstHalfActual =
+        actualKgs.entries
+            .where((e) => e.key < n / 2)
+            .map((e) => e.value)
+            .toList();
+    final secondHalfActual =
+        actualKgs.entries
+            .where((e) => e.key >= n / 2)
+            .map((e) => e.value)
+            .toList();
+    final firstHalfDrop =
+        firstHalfActual.length >= 2
+            ? firstHalfActual.last - firstHalfActual.first
+            : 0.0;
+    final secondHalfDrop =
+        secondHalfActual.length >= 2
+            ? secondHalfActual.last - secondHalfActual.first
+            : 0.0;
 
     // 初週 (最初の 7 日) と それ以降の slope を比較 (initial water shed)
-    final firstWeekActual = actualKgs.entries
-        .where((e) => e.key < 7)
-        .map((e) => e.value)
-        .toList();
-    final restActual = actualKgs.entries
-        .where((e) => e.key >= 7)
-        .map((e) => e.value)
-        .toList();
-    final firstWeekDrop = firstWeekActual.length >= 2
-        ? firstWeekActual.last - firstWeekActual.first
-        : 0.0;
-    final restDrop = restActual.length >= 2
-        ? restActual.last - restActual.first
-        : 0.0;
+    final firstWeekActual =
+        actualKgs.entries.where((e) => e.key < 7).map((e) => e.value).toList();
+    final restActual =
+        actualKgs.entries.where((e) => e.key >= 7).map((e) => e.value).toList();
+    final firstWeekDrop =
+        firstWeekActual.length >= 2
+            ? firstWeekActual.last - firstWeekActual.first
+            : 0.0;
+    final restDrop =
+        restActual.length >= 2 ? restActual.last - restActual.first : 0.0;
 
     String fmt(double kg) {
       final sign = kg >= 0 ? '+' : '−';
@@ -149,7 +158,9 @@ class PatternMatchingService {
     // ----- 判定ルール (優先順位順) -----
 
     // ⑦ 初期の水分抜け: 最初の 7 日で大きく落ちて、その後ほぼ横ばい
-    if (firstWeekDrop < -0.8 && restActual.length >= 2 && restDrop.abs() < 0.4) {
+    if (firstWeekDrop < -0.8 &&
+        restActual.length >= 2 &&
+        restDrop.abs() < 0.4) {
       return PatternMatchResult(
         patternId: DietaryPatternId.initialWaterShed,
         similarity: _clamp01(0.6 + (firstWeekDrop.abs() - 0.8) * 0.3),
@@ -167,9 +178,7 @@ class PatternMatchingService {
       return PatternMatchResult(
         patternId: DietaryPatternId.whoosh,
         similarity: _clamp01(0.6 + (secondHalfDrop.abs() - 0.6) * 0.4),
-        dataObservation: observation(
-          '前半は横ばい、後半に ${fmt(secondHalfDrop)} の降下。',
-        ),
+        dataObservation: observation('前半は横ばい、後半に ${fmt(secondHalfDrop)} の降下。'),
       );
     }
 
@@ -211,9 +220,7 @@ class PatternMatchingService {
       return PatternMatchResult(
         patternId: DietaryPatternId.rebound,
         similarity: _clamp01(0.6 + (theoryDelta + actualDelta) * 0.2),
-        dataObservation: observation(
-          '理論と実測が一致して上向き。',
-        ),
+        dataObservation: observation('理論と実測が一致して上向き。'),
       );
     }
 
@@ -226,9 +233,7 @@ class PatternMatchingService {
       return PatternMatchResult(
         patternId: DietaryPatternId.bodyStall,
         similarity: _clamp01(0.5 + divergenceUp * 0.3),
-        dataObservation: observation(
-          '理論との乖離が ${fmt(divergenceUp)} (実測 - 理論)。',
-        ),
+        dataObservation: observation('理論との乖離が ${fmt(divergenceUp)} (実測 - 理論)。'),
       );
     }
 

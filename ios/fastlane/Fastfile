@@ -1,5 +1,8 @@
 default_platform(:ios)
 
+require "json"
+require "tempfile"
+
 # nomameshi 系 fastlane 標準を tonton (Flutter) 向けに調整したもの。
 # - 署名: fastlane match (storage = DELAxGithub/fastlane-match private repo)
 # - SUPABASE_URL / SUPABASE_ANON_KEY / GEMINI_API_KEY は ../.env から読む
@@ -70,12 +73,24 @@ platform :ios do
     end
 
     # Flutter build (no codesign; fastlane が後で署名)
-    sh(
-      "cd ../.. && flutter build ios --release --no-codesign " \
-      "--dart-define=SUPABASE_URL=#{supabase_url} " \
-      "--dart-define=SUPABASE_ANON_KEY=#{supabase_anon_key} " \
-      "--dart-define=GEMINI_API_KEY=#{gemini_api_key}"
-    )
+    # Secrets are passed through a temporary dart-define file so fastlane logs
+    # do not print API keys in the command line.
+    defines_file = Tempfile.new(["tonton-dart-defines", ".json"])
+    begin
+      defines_file.write(JSON.generate({
+        "SUPABASE_URL" => supabase_url,
+        "SUPABASE_ANON_KEY" => supabase_anon_key,
+        "GEMINI_API_KEY" => gemini_api_key
+      }))
+      defines_file.close
+
+      sh(
+        "cd ../.. && flutter build ios --release --no-codesign " \
+        "--dart-define-from-file=#{defines_file.path}"
+      )
+    ensure
+      defines_file.close! if defines_file
+    end
 
     build_app(
       workspace: "Runner.xcworkspace",

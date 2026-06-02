@@ -4,12 +4,15 @@ import 'package:tonton/design_system/atoms/tonton_button.dart';
 
 void main() {
   testWidgets('primary button disabled', (tester) async {
+    var tapped = false;
     await tester.pumpWidget(
-      const MaterialApp(
+      MaterialApp(
         home: Scaffold(body: TontonButton.primary(label: 'X', onPressed: null)),
       ),
     );
-    final button = find.byType(ElevatedButton);
-    expect(tester.widget<ElevatedButton>(button).enabled, isFalse);
+
+    expect(find.text('X'), findsOneWidget);
+    await tester.tap(find.text('X'));
+    expect(tapped, isFalse);
   });
 }

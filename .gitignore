@@ -70,3 +70,10 @@ supabase/.temp/
 # macOS metadata
 .DS_Store
 **/.DS_Store
+
+# Local credentials; commit reference templates only
+.env
+.env.*
+!.env*.tpl
+*.p8
+*.p12

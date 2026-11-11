@@ -70,7 +70,8 @@ bundle exec fastlane ios beta
 
 ## 既知の注意
 
-- ビルド番号 `1.7.1+36`: 過去 TestFlight は `+30` 投入（devlog 2026-05-09）。`+36` は未使用想定だが、
-  もし「build already exists」で弾かれたら `pubspec.yaml` の build 番号を `+37` 以降に bump。
+- ビルド番号: 2026-11-11 に ASC API で確認した TestFlight 最新は `1.7.1+38`（pubspec は `+36` で古い）。
+  次に上げる build は **`+39` 以降**（`+37`/`+38` は使用済みで「build already exists」になる）。
+  なお `+38` を含む全 build が期限切れ（2026-08-31）で、TestFlight で配信できる有効 build は現在ない。
 - `flutter analyze` の error は **全て `widgetbook/` 配下の既存ドリフト**（TestFlight ビルド対象外）。beta には無関係。
 - `force push しない` / `MATCH_PASSWORD を平文で .env / git に置かない`（keychain or op 経由のみ）。
